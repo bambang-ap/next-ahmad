@@ -1,0 +1,7 @@
+/node_modules
+/dist
+/.next
+*.map
+*.lock
+*.env
+yarn-error.log
