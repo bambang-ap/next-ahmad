@@ -1,3 +1,5 @@
+import "./globals.css";
+
 import React from "react";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { AppProps } from "next/app";
@@ -5,7 +7,7 @@ import { RecoilRoot } from "recoil";
 
 const queryClient = new QueryClient();
 
-export default ({ Component, pageProps }: AppProps) => {
+const App = ({ Component, pageProps }: AppProps) => {
   return (
     <QueryClientProvider client={queryClient}>
       <RecoilRoot>
@@ -14,3 +16,5 @@ export default ({ Component, pageProps }: AppProps) => {
     </QueryClientProvider>
   );
 };
+
+export default App;
