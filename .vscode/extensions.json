@@ -1,12 +1,12 @@
 {
 	"recommendations": [
-		"kelset.rn-full-pack",
-		"kisstkondoros.vscode-codemetrics",
-		"usernamehw.errorlens",
-		"esbenp.prettier-vscode",
-		"waderyan.gitblame",
+		"bradlc.vscode-tailwindcss",
 		"eamodio.gitlens",
+		"esbenp.prettier-vscode",
+		"jgclark.vscode-todo-highlight",
+		"kisstkondoros.vscode-codemetrics",
 		"streetsidesoftware.code-spell-checker",
-		"jgclark.vscode-todo-highlight"
+		"usernamehw.errorlens",
+		"waderyan.gitblame"
 	]
 }

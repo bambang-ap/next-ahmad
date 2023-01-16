@@ -1,6 +1,5 @@
 {
-  "cSpell.words": [
-  ],
+  "cSpell.words": [],
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"
   },
@@ -32,6 +31,7 @@
   "files.eol": "\n",
   "tailwindCSS.classAttributes": [
     "className",
-    "className\\w+"
+    "className\\w+",
+    "\\w+ClassName"
   ]
 }

@@ -20,11 +20,23 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@appTypes/*": [
+        "./src/appTypes/*"
+      ],
       "@components": [
         "./src/components"
       ],
+      "@appComponent/*": [
+        "./src/components/app/*"
+      ],
       "@constants": [
         "./src/constants"
+      ],
+      "@hooks": [
+        "./src/hooks"
+      ],
+      "@hoc": [
+        "./src/hoc"
       ],
       "@recoil/*": [
         "./src/recoil/*"
