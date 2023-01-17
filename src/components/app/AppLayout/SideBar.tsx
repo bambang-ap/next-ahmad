@@ -1,19 +1,13 @@
 import React from 'react';
 
 import {useRouter} from 'next/router';
-import {d} from 'pages/app/index';
-import {useSetRecoilState} from 'recoil';
-
 export const SideBar = () => {
-	const dd = useSetRecoilState(d);
-	const {push} = useRouter();
+	const {push, pathname} = useRouter();
+
 	return (
-		<aside className="w-64" aria-label="Sidebar">
-			<div className="px-3 py-4 overflow-y-auto rounded bg-gray-50 dark:bg-gray-800">
+		<aside className="w-1/5 h-full" aria-label="Sidebar">
+			<div className="px-3 py-4 overflow-y-auto bg-gray-50 dark:bg-gray-800 h-full">
 				<ul className="space-y-2">
-					<li>
-						<input onChange={e => dd(e.target.value)} />
-					</li>
 					<li>
 						<button onClick={() => push('/app')}>app</button>
 					</li>
@@ -32,7 +26,7 @@ export const SideBar = () => {
 								xmlns="http://www.w3.org/2000/svg">
 								<path d="M5 3a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2V5a2 2 0 00-2-2H5zM5 11a2 2 0 00-2 2v2a2 2 0 002 2h2a2 2 0 002-2v-2a2 2 0 00-2-2H5zM11 5a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2V5zM11 13a2 2 0 012-2h2a2 2 0 012 2v2a2 2 0 01-2 2h-2a2 2 0 01-2-2v-2z"></path>
 							</svg>
-							<span className="flex-1 ml-3 whitespace-nowrap">Kanban</span>
+							<span className="flex-1 ml-3 whitespace-nowrap">{pathname}</span>
 							<span className="inline-flex items-center justify-center px-2 ml-3 text-sm font-medium text-gray-800 bg-gray-200 rounded-full dark:bg-gray-700 dark:text-gray-300">
 								Pro
 							</span>
