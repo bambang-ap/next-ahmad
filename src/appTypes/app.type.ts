@@ -1,6 +1,7 @@
-import {ROLE} from '@enum';
-
-export type TUser = Record<'id' | 'username', string> & {role: ROLE};
+export type TUser = Record<
+	'id' | 'email' | 'password' | 'name' | 'role' | 'createdAt' | 'updatedAt',
+	string
+>;
 
 export type Session = {
 	expires: string;

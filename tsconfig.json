@@ -20,8 +20,11 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
-      "@server/*": [
-        "./server/*"
+      "@server": [
+        "./server"
+      ],
+      "@database": [
+        "./server/database"
       ],
       "@appTypes/*": [
         "./src/appTypes/*"

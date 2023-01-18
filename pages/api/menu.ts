@@ -1,7 +1,7 @@
-import {getSession, Response} from '@server/utils';
 import {NextApiRequest, NextApiResponse} from 'next';
 
 import {TMenu} from '@appTypes/app.type';
+import {getSession, Response} from '@server';
 
 const menu: TMenu[] = [
 	{id: '1', title: 'master menu', icon: '', path: ''},
