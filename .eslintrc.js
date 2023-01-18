@@ -111,7 +111,7 @@ module.exports = {
 
 				'operator-linebreak': 0,
 
-				'react-hooks/exhaustive-deps': 1,
+				'react-hooks/exhaustive-deps': 0,
 				'consistent-return': 1,
 				'default-case': 0,
 				'no-underscore-dangle': 0,

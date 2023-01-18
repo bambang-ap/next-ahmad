@@ -1,4 +1,5 @@
 import './globals.css';
+import 'global-methods';
 
 import React from 'react';
 
@@ -18,7 +19,11 @@ export default function App({
 	return (
 		<QueryClientProvider client={queryClient}>
 			<RecoilRoot>
-				<SessionProvider session={session}>
+				<SessionProvider
+					session={session}
+					refetchInterval={30000}
+					refetchWhenOffline={false}
+					refetchOnWindowFocus={false}>
 					{getLayout(<Component {...pageProps} />)}
 				</SessionProvider>
 			</RecoilRoot>

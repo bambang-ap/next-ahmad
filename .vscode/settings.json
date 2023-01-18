@@ -33,5 +33,6 @@
     "className",
     "className\\w+",
     "\\w+ClassName"
-  ]
+  ],
+  "files.exclude": {}
 }

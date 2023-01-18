@@ -20,6 +20,9 @@
     "incremental": true,
     "baseUrl": ".",
     "paths": {
+      "@server/*": [
+        "./server/*"
+      ],
       "@appTypes/*": [
         "./src/appTypes/*"
       ],
@@ -32,11 +35,17 @@
       "@constants": [
         "./src/constants"
       ],
+      "@enum": [
+        "./src/constants/enum"
+      ],
       "@hooks": [
         "./src/hooks"
       ],
       "@hoc": [
         "./src/hoc"
+      ],
+      "@queries": [
+        "./src/queries"
       ],
       "@recoil/*": [
         "./src/recoil/*"

@@ -1,7 +1,11 @@
+import {ROLE} from '@enum';
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-const authOptions: NextAuthOptions = {
+import {Session} from '@appTypes/app.type';
+
+export const authOptions: NextAuthOptions = {
+	secret: process.env.AUTH_SECRET,
 	session: {strategy: 'jwt'},
 	providers: [
 		CredentialsProvider({
@@ -32,11 +36,19 @@ const authOptions: NextAuthOptions = {
 		signIn: '/auth/signin',
 	},
 	callbacks: {
+		session(params) {
+			const session: Session = {
+				...params.session,
+				user: {id: '1234', username: 'abcdefg', role: ROLE.ADMIN},
+			};
+			return session;
+		},
 		jwt(params) {
 			// update token
 			if (params.user?.role) {
 				params.token.role = params.user.role;
 			}
+
 			// return final_token
 			return params.token;
 		},
