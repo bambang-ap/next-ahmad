@@ -9,4 +9,5 @@ export type AppPropsWithLayout = AppProps & {
 
 export type NextPageWithLayout = NextPage & {
 	getLayout?: (page: ReactNode) => ReactNode;
+	authPage?: (page: ReactNode) => ReactNode;
 };

@@ -6,13 +6,14 @@ import {useRouter} from 'next/router';
 import {Session} from '@appTypes/app.type';
 
 export const useAuth = () => {
-	const {replace} = useRouter();
-	const {status} = useSession();
+	const {replace, pathname} = useRouter();
+	const {status, data} = useSession();
 
 	useEffect(() => {
 		if (status === 'unauthenticated') replace('/auth/signin');
-		if (status === 'authenticated') replace('/app');
-	}, [status]);
+		if (status === 'authenticated' && !pathname.includes('/app'))
+			replace('/app');
+	}, [status, pathname, data]);
 };
 
 export const useSession = () => {

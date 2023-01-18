@@ -1,5 +1,5 @@
 export type TUser = Record<
-	'id' | 'email' | 'password' | 'name' | 'role' | 'createdAt' | 'updatedAt',
+	'id' | 'email' | 'password' | 'name' | 'role',
 	string
 >;
 
@@ -9,10 +9,11 @@ export type Session = {
 };
 
 export type TMenu = {
-	id: string;
-	title: string;
-	icon: string;
-	path: string;
-	id_parent?: string;
+	parent_id?: string;
 	subMenu?: TMenu[];
+} & Record<'id' | 'title' | 'icon' | 'path' | 'accepted_role', string>;
+
+export type TRole = {
+	id: number;
+	name: string;
 };

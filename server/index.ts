@@ -13,10 +13,10 @@ export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 export const Response = <T extends object>(res: NextApiResponse) => {
 	return {
 		success(body: T) {
-			return res.status(500).json(body);
+			return res.status(200).send(body);
 		},
 		error(message: string) {
-			return res.status(500).json({message});
+			return res.status(500).send({message});
 		},
 	};
 };

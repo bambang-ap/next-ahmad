@@ -1,8 +1,9 @@
 import React from 'react';
 
-import {useFetchMenu} from '@queries';
+import {useRouter} from 'next/router';
 
 import {TMenu} from '@appTypes/app.type';
+import {useFetchMenu} from '@queries';
 
 export const SideBar = () => {
 	const {data} = useFetchMenu();
@@ -17,14 +18,21 @@ export const SideBar = () => {
 };
 
 const RenderMenu = ({data}: {data?: TMenu[]}) => {
+	const {push} = useRouter();
+
 	return (
 		<ul className="ml-6 space-y-2">
-			{data?.map(({title, subMenu}) => {
+			{data?.map(({title, path, subMenu}) => {
+				const redirect = () => {
+					push(path);
+				};
 				return (
 					<li key={title}>
-						<span className="flex-1 ml-3 text-app-neutral-00 whitespace-nowrap">
+						<button
+							className="text-app-neutral-00 text-left"
+							onClick={redirect}>
 							{title}
-						</span>
+						</button>
 						<RenderMenu data={subMenu} />
 					</li>
 				);

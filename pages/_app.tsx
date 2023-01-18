@@ -5,6 +5,7 @@ import React from 'react';
 
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {SessionProvider} from 'next-auth/react';
+import {ReactQueryDevtools} from 'node_modules/@tanstack/react-query-devtools/build/lib/devtools';
 import {RecoilRoot} from 'recoil';
 import {AppPropsWithLayout} from 'src/appTypes/props.type';
 
@@ -18,6 +19,7 @@ export default function App({
 
 	return (
 		<QueryClientProvider client={queryClient}>
+			<ReactQueryDevtools />
 			<RecoilRoot>
 				<SessionProvider
 					session={session}

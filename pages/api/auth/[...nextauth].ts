@@ -1,8 +1,9 @@
-import {ROLE} from '@enum';
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
 import {Session} from '@appTypes/app.type';
+
+const role = 'user';
 
 export const authOptions: NextAuthOptions = {
 	secret: process.env.AUTH_SECRET,
@@ -27,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 					id: '1234',
 					name: 'John Doe',
 					email: 'john@gmail.com',
-					role: 'admin',
+					role,
 				};
 			},
 		}),
@@ -39,7 +40,7 @@ export const authOptions: NextAuthOptions = {
 		session(params) {
 			const session: Session = {
 				...params.session,
-				user: {id: '1234', username: 'abcdefg', role: ROLE.ADMIN},
+				user: {id: '1234', email: 'sdhf', name: 'dsfdsfdsf', role},
 			};
 			return session;
 		},

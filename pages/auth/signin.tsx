@@ -1,13 +1,11 @@
 import {FormEventHandler, useState, useEffect} from 'react';
 
-import {useFetchMenu} from '@queries';
 import {signIn} from 'next-auth/react';
 import {useRouter} from 'next/router';
 
 import {useSession} from '@hooks';
 
 export default function SignIn() {
-	const {data} = useFetchMenu();
 	const {status} = useSession();
 	const {replace} = useRouter();
 
