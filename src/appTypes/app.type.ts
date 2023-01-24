@@ -10,7 +10,7 @@ export type Session = {
 
 export type TMenu = {
 	parent_id?: string;
-	subMenu?: TMenu[];
+	subMenu: TMenu[];
 } & Record<'id' | 'title' | 'icon' | 'path' | 'accepted_role', string>;
 
 export type TRole = {

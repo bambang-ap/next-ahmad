@@ -1,8 +1,8 @@
-import {OrmMenu} from '@database';
 import {NextApiRequest, NextApiResponse} from 'next';
 import {Op} from 'sequelize';
 
 import {TMenu} from '@appTypes/app.type';
+import {OrmMenu} from '@database';
 import {getSession, Response} from '@server';
 
 export default async function apiMenu(
@@ -13,17 +13,11 @@ export default async function apiMenu(
 
 	if (!hasSession) return Response(res).error('You have no credentials');
 
-	const menu = await OrmMenu.findAll({
+	const allMenu = await OrmMenu.findAll({
 		where: {accepted_role: {[Op.substring]: session?.user?.role}},
 		order: [['index', 'asc']],
 		raw: true,
 	});
-
-	const allMenu = (menu as unknown as TMenu[]).nest(
-		'subMenu',
-		'id',
-		'parent_id',
-	);
 
 	return Response(res).success(allMenu);
 }

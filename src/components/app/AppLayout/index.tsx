@@ -10,7 +10,7 @@ export default function AppLayout({children}: PropsWithChildren) {
 			<SideBar />
 			<div className="flex-col w-full">
 				<Header />
-				<div className="w-full h-full overflow-y-auto">{children}</div>
+				<div className="w-full h-full overflow-y-auto pb-12">{children}</div>
 			</div>
 		</div>
 	);

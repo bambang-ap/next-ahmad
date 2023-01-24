@@ -1,7 +1,7 @@
 import './globals.css';
 import 'global-methods';
 
-import React from 'react';
+import React, {Suspense} from 'react';
 
 import {QueryClient, QueryClientProvider} from '@tanstack/react-query';
 import {SessionProvider} from 'next-auth/react';
@@ -18,17 +18,19 @@ export default function App({
 	const getLayout = Component.getLayout ?? (page => page);
 
 	return (
-		<QueryClientProvider client={queryClient}>
-			<ReactQueryDevtools />
-			<RecoilRoot>
-				<SessionProvider
-					session={session}
-					refetchInterval={30000}
-					refetchWhenOffline={false}
-					refetchOnWindowFocus={false}>
-					{getLayout(<Component {...pageProps} />)}
-				</SessionProvider>
-			</RecoilRoot>
-		</QueryClientProvider>
+		<Suspense>
+			<QueryClientProvider client={queryClient}>
+				<ReactQueryDevtools />
+				<RecoilRoot>
+					<SessionProvider
+						session={session}
+						refetchInterval={30000}
+						refetchWhenOffline={false}
+						refetchOnWindowFocus={false}>
+						{getLayout(<Component {...pageProps} />)}
+					</SessionProvider>
+				</RecoilRoot>
+			</QueryClientProvider>
+		</Suspense>
 	);
 }
