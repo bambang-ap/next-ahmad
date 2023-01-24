@@ -14,13 +14,15 @@ export const useFetchMenu = () => {
 	});
 };
 
-export const useManageMenu = <D, R>() => {
-	const postMenu = (method: Method) => (data: D) =>
-		axios({url: '/api/menu', method, data});
+export const useManageMenu = () => {
+	const manageMenu =
+		<D>(method: Method) =>
+		(data: D) =>
+			axios({url: '/api/menu', method, data});
 
 	return {
-		post: useMutation(postMenu('POST')),
-		put: useMutation(postMenu('PUT')),
-		delete: useMutation(postMenu('DELETE')),
+		post: useMutation(manageMenu('POST')),
+		put: useMutation(manageMenu('PUT')),
+		delete: useMutation(manageMenu('DELETE')),
 	};
 };

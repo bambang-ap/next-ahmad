@@ -9,17 +9,17 @@ import {
 type Props<F extends FieldValues> = ControlledComponentProps<F> & InputProps;
 
 function InputComponent<F extends FieldValues>(props: Props<F>) {
-	const {controller, className} = props;
+	const {controller, placeholder, className} = props;
 
 	const {field, fieldState} = controller ?? {};
 
 	return (
 		<>
-			<input className={`${className}`} {...field} />
+			<input placeholder={placeholder} className={`${className}`} {...field} />
 			{fieldState?.error?.message}
 		</>
 	);
 }
 
-export type InputProps = {className?: string};
+export type InputProps = {className?: string; placeholder?: string};
 export const Input = withReactFormController(InputComponent);

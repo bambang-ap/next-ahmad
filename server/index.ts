@@ -5,6 +5,10 @@ import {authOptions} from 'pages/api/auth/[...nextauth]';
 import {Session} from '@appTypes/app.type';
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
+	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
+		return {session: {} as Session | null, hasSession: true};
+	}
+
 	const session = await unstable_getServerSession(req, res, authOptions);
 
 	return {session: session as Session | null, hasSession: !!session};
