@@ -3,7 +3,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import {OrmRole} from '@database';
 import {getSession, Response} from '@server';
 
-export default async function apiUser(
+export default async function apiRole(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
@@ -41,11 +41,13 @@ async function insertRole(req: NextApiRequest, res: NextApiResponse) {
 async function updateRole(req: NextApiRequest, res: NextApiResponse) {
 	const {id, name} = req.body as {id: string; name: string};
 	const updatedRole = await OrmRole.update({name}, {where: {id}});
+
 	return Response(res).success(updatedRole);
 }
 
 async function deleteRole(req: NextApiRequest, res: NextApiResponse) {
 	const {id} = req.body as {id: string};
 	const createdRole = await OrmRole.destroy({where: {id}});
+
 	return Response(res).success({success: createdRole});
 }

@@ -30,6 +30,8 @@ export default function Menu() {
 	const iconKey = useRecoilValue(atoms);
 
 	const iconModalSelectedValue = watch(iconKey);
+	const mappedMenu = dataMenu?.data.slice().nest('subMenu', 'id', 'parent_id');
+
 	const submit = handleSubmit(values => {
 		const bodyParam = dataMenu?.data.reduce<TMenu[]>((acc, menu) => {
 			const {id, ...restMenu} = menu;
@@ -83,43 +85,44 @@ export default function Menu() {
 					}}
 				/>
 			</Modal>
-			<div className="-ml-6 px-6">
-				<button onClick={submit}>Submit</button>
+
+			<form onSubmit={submit}>
+				<button type="submit">Submit</button>
 				<div className="flex ml-6">
 					<label className="w-1/3">Title</label>
 					<label className="w-1/3">Icon</label>
 					<label className="w-1/3">Role</label>
 				</div>
-				<table className="table-auto w-full">
-					<RenderMenu
-						modalRef={modalRef}
-						control={control}
-						data={dataMenu?.data}
-						setValue={setValue}
-					/>
-				</table>
-			</div>
+
+				<RenderMenu
+					modalRef={modalRef}
+					control={control}
+					data={mappedMenu}
+					setValue={setValue}
+				/>
+			</form>
 		</>
 	);
 }
 
 const RenderMenu = (props: {
+	className?: string;
 	data?: TMenu[];
 	control: Control<FormMenu>;
 	setValue: UseFormSetValue<FormMenu>;
 	modalRef: MutableRefObject<ModalRef | null>;
 }) => {
 	const {data: dataRole} = useFetchRole();
-	const {data, control, setValue, modalRef} = props;
+	const {data, control, setValue, className, modalRef} = props;
 
 	const setKey = useSetRecoilState(atoms);
 
 	return (
-		<>
+		<table className={`${className} w-full`}>
 			{data?.map(({id, subMenu}) => {
 				return (
-					<Fragment key={id}>
-						<tr>
+					<>
+						<tr className="w-full">
 							<td>
 								<Input control={control} fieldName={`${id}.title`} />
 							</td>
@@ -148,7 +151,7 @@ const RenderMenu = (props: {
 						</tr>
 						{subMenu?.length > 0 && (
 							<tr>
-								<td colSpan={3}>
+								<td className="pl-5" colSpan={3}>
 									<RenderMenu
 										setValue={setValue}
 										modalRef={modalRef}
@@ -158,10 +161,10 @@ const RenderMenu = (props: {
 								</td>
 							</tr>
 						)}
-					</Fragment>
+					</>
 				);
 			})}
-		</>
+		</table>
 	);
 };
 

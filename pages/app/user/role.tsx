@@ -55,7 +55,6 @@ export default function Role() {
 			<Modal title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild control={control} />
-					<button type="submit">Submit</button>
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
@@ -102,9 +101,15 @@ const ModalChild = ({control}: {control: Control<RoleForm>}) => {
 		return (
 			<div>
 				<label>Hapus ?</label>
+				<button type="submit">Ya</button>
 			</div>
 		);
 	}
 
-	return <Input control={control} fieldName="name" placeholder="name" />;
+	return (
+		<>
+			<Input control={control} fieldName="name" placeholder="name" />
+			<button type="submit">Submit</button>
+		</>
+	);
 };

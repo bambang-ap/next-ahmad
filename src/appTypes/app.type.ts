@@ -1,7 +1,6 @@
-export type TUser = Record<
-	'id' | 'email' | 'password' | 'name' | 'role',
-	string
->;
+export type TUser = Record<'id' | 'email' | 'name' | 'role', string> & {
+	password?: string;
+};
 
 export type Session = {
 	expires: string;
