@@ -29,21 +29,17 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 				const selectedClassName =
 					path === pathname ? 'border border-app-accent-04' : '';
 				const redirect = () => {
-					push(path);
+					if (path) push(path);
 				};
 				return (
-					<div
-						className={`${selectedClassName} flex flex-col w-full justify-center rounded p-2`}
-						key={title}>
-						<button className="flex" onClick={redirect}>
-							<Icon className="mr-2 pt-1 text-white" name={icon} />
-							<label className="text-app-neutral-00 text-left">{title}</label>
+					<div className="flex flex-col w-full" key={title}>
+						<button
+							onClick={redirect}
+							className={`${selectedClassName} items-center rounded p-2 flex cursor-pointer`}>
+							<Icon className="text-app-neutral-00 mr-2" name={icon} />
+							<div className="text-app-neutral-00 text-left">{title}</div>
 						</button>
-						{subMenu?.length > 0 && (
-							<div className="mt-4">
-								<RenderMenu data={subMenu} />
-							</div>
-						)}
+						{subMenu?.length > 0 && <RenderMenu data={subMenu} />}
 					</div>
 				);
 			})}
