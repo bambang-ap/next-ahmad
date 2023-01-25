@@ -50,6 +50,9 @@
       "@queries": [
         "./src/queries"
       ],
+      "@utils": [
+        "./src/utils"
+      ],
       "@recoil/*": [
         "./src/recoil/*"
       ]

@@ -9,7 +9,9 @@ import {ReactQueryDevtools} from 'node_modules/@tanstack/react-query-devtools/bu
 import {RecoilRoot} from 'recoil';
 import {AppPropsWithLayout} from 'src/appTypes/props.type';
 
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+	defaultOptions: {queries: {refetchOnWindowFocus: false}},
+});
 
 export default function App({
 	Component,

@@ -21,8 +21,6 @@ export const useManageMenu = () => {
 			axios({url: '/api/menu', method, data});
 
 	return {
-		post: useMutation(manageMenu('POST')),
-		put: useMutation(manageMenu('PUT')),
-		delete: useMutation(manageMenu('DELETE')),
+		put: useMutation(manageMenu<TMenu[]>('PUT')),
 	};
 };

@@ -26,26 +26,26 @@ export default async function apiUser(
 }
 
 async function getRole(res: NextApiResponse) {
-	const roles = await OrmRole.findAll({raw: true});
+	const roles = await OrmRole.findAll({order: [['id', 'asc']], raw: true});
 
 	return Response(res).success(roles);
 }
 
 async function insertRole(req: NextApiRequest, res: NextApiResponse) {
-	const createdRole = await OrmRole.create({name: req.body.name});
+	const {name} = req.body as {name: string};
+	const createdRole = await OrmRole.create({name});
 
 	return Response(res).success(createdRole);
 }
 
 async function updateRole(req: NextApiRequest, res: NextApiResponse) {
-	const updatedRole = await OrmRole.update(
-		{name: req.body.name},
-		{where: {id: req.body.id}},
-	);
+	const {id, name} = req.body as {id: string; name: string};
+	const updatedRole = await OrmRole.update({name}, {where: {id}});
 	return Response(res).success(updatedRole);
 }
 
 async function deleteRole(req: NextApiRequest, res: NextApiResponse) {
-	const createdRole = await OrmRole.destroy({where: {id: req.body.id}});
+	const {id} = req.body as {id: string};
+	const createdRole = await OrmRole.destroy({where: {id}});
 	return Response(res).success({success: createdRole});
 }

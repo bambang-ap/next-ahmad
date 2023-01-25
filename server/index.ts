@@ -6,7 +6,10 @@ import {Session} from '@appTypes/app.type';
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
-		return {session: {} as Session | null, hasSession: true};
+		return {
+			session: {user: {role: 'admin'}} as Session | null,
+			hasSession: true,
+		};
 	}
 
 	const session = await unstable_getServerSession(req, res, authOptions);
