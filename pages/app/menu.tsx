@@ -5,7 +5,7 @@ import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
 
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu} from '@appTypes/app.type';
-import {CheckBox, Input, Modal, ModalRef} from '@components';
+import {CheckBox, Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchMenu, useFetchRole, useManageMenu} from '@queries';
 
@@ -88,12 +88,6 @@ export default function Menu() {
 
 			<form onSubmit={submit}>
 				<button type="submit">Submit</button>
-				<div className="flex ml-6">
-					<label className="w-1/3">Title</label>
-					<label className="w-1/3">Icon</label>
-					<label className="w-1/3">Role</label>
-				</div>
-
 				<RenderMenu
 					modalRef={modalRef}
 					control={control}
@@ -106,6 +100,7 @@ export default function Menu() {
 }
 
 const RenderMenu = (props: {
+	noHeader?: boolean;
 	className?: string;
 	data?: TMenu[];
 	control: Control<FormMenu>;
@@ -113,58 +108,61 @@ const RenderMenu = (props: {
 	modalRef: MutableRefObject<ModalRef | null>;
 }) => {
 	const {data: dataRole} = useFetchRole();
-	const {data, control, setValue, className, modalRef} = props;
+	const {data, noHeader, control, setValue, modalRef} = props;
 
 	const setKey = useSetRecoilState(atoms);
 
 	return (
-		<table className={`${className} w-full`}>
-			{data?.map(({id, subMenu}) => {
+		<Table
+			data={data ?? []}
+			header={noHeader ? undefined : ['Title', 'Icon', 'Role']}
+			renderItemEach={({item: {subMenu}}) => {
+				if (subMenu?.length <= 0) return false;
+
+				return (
+					<td colSpan={3}>
+						<RenderMenu
+							noHeader
+							setValue={setValue}
+							modalRef={modalRef}
+							control={control}
+							data={subMenu}
+						/>
+					</td>
+				);
+			}}
+			renderItem={({item: {id}}) => {
 				return (
 					<>
-						<tr className="w-full">
-							<td>
-								<Input control={control} fieldName={`${id}.title`} />
-							</td>
-							<td>
-								<Input control={control} fieldName={`${id}.icon`} />
-								<button
-									onClick={() => {
-										setKey(`${id}.icon`);
-										modalRef.current?.show();
-									}}>
-									Change Icon
-								</button>
-							</td>
-							<td>
-								{dataRole?.data.map(role => {
-									return (
-										<CheckBox
-											key={role.id}
-											control={control}
-											fieldName={`${id}.role.${role.name}`}
-											label={role.name}
-										/>
-									);
-								})}
-							</td>
-						</tr>
-						{subMenu?.length > 0 && (
-							<tr>
-								<td className="pl-5" colSpan={3}>
-									<RenderMenu
-										setValue={setValue}
-										modalRef={modalRef}
+						<td>
+							<Input control={control} fieldName={`${id}.title`} />
+						</td>
+						<td>
+							<Input control={control} fieldName={`${id}.icon`} />
+							<button
+								onClick={() => {
+									setKey(`${id}.icon`);
+									modalRef.current?.show();
+								}}>
+								Change Icon
+							</button>
+						</td>
+						<td>
+							{dataRole?.data.map(role => {
+								return (
+									<CheckBox
+										key={role.id}
 										control={control}
-										data={subMenu}
+										fieldName={`${id}.role.${role.name}`}
+										label={role.name}
 									/>
-								</td>
-							</tr>
-						)}
+								);
+							})}
+						</td>
 					</>
 				);
-			})}
-		</table>
+			}}
+		/>
 	);
 };
 

@@ -2,7 +2,7 @@ import {useRef} from 'react';
 
 import {Control, useForm, useWatch} from 'react-hook-form';
 
-import {Input, Modal, ModalRef} from '@components';
+import {Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchRole, useManageRole} from '@queries';
 
@@ -60,33 +60,27 @@ export default function Role() {
 			<div className="overflow-x-auto w-full">
 				<button onClick={() => showModal('add', {})}>Add</button>
 
-				<table className="table-auto overflow-scroll w-full">
-					<thead>
-						<tr>
-							<th>Role</th>
-							<th>Action</th>
-						</tr>
-					</thead>
-					<tbody>
-						{data?.data.map(({id, name}) => {
-							return (
-								<tr key={id}>
-									<td>{name}</td>
-									<td>
-										<div>
-											<button onClick={() => showModal('edit', {id, name})}>
-												Edit
-											</button>
-											<button onClick={() => showModal('delete', {id})}>
-												Delete
-											</button>
-										</div>
-									</td>
-								</tr>
-							);
-						})}
-					</tbody>
-				</table>
+				<Table
+					data={data?.data ?? []}
+					header={['Role', 'Action']}
+					renderItem={({item: {id, name}}) => {
+						return (
+							<>
+								<td>{name}</td>
+								<td>
+									<div>
+										<button onClick={() => showModal('edit', {id, name})}>
+											Edit
+										</button>
+										<button onClick={() => showModal('delete', {id})}>
+											Delete
+										</button>
+									</div>
+								</td>
+							</>
+						);
+					}}
+				/>
 			</div>
 		</>
 	);
