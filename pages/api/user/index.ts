@@ -8,7 +8,7 @@ export default async function apiUser(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const {hasSession} = await getSession(req, res);
+	const {hasSession, session} = await getSession(req, res);
 
 	if (!hasSession) return Response(res).error('You have no credentials');
 
@@ -27,7 +27,10 @@ export default async function apiUser(
 }
 
 async function getUser(res: NextApiResponse) {
-	const roles = await OrmUser.findAll({order: [['id', 'asc']], raw: true});
+	const roles = await OrmUser.findAll({
+		order: [['id', 'asc']],
+		raw: true,
+	});
 
 	return Response(res).success(roles);
 }
