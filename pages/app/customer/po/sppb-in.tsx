@@ -1,32 +1,31 @@
 import {getLayout} from '@hoc';
 
-export default function Customer() {
+// SUrat jalan dari customer
+
+export default function InSPPB() {
 	return (
 		<>
 			<div>
-				<button>Add customer</button>
+				<button>Add SPPB In</button>
 				<button>Export Excel</button>
 			</div>
 			<table className="table-auto">
 				<thead>
 					<tr>
 						<td>ID</td>
-						<td>Name</td>
-						<td>Address</td>
-						<td>Email</td>
-						<td>Phone</td>
-						<td>Action</td>
+						<td>ID PO</td>
+						<td>Produk</td>
+						<td>QTY</td>
+						<td>Tgl Masuk</td>
 					</tr>
 				</thead>
 				<tbody>
 					<tr>
 						<td>ID</td>
 						<td>Name</td>
-						<td>Address</td>
-						<td>Email</td>
-						<td>Phone</td>
+						<td>Detail PO</td>
 						<td>
-							<button>SHow</button>
+							<button>Show</button>
 							<button>Edit</button>
 							<button>Delete</button>
 						</td>
@@ -34,10 +33,10 @@ export default function Customer() {
 				</tbody>
 			</table>
 			<input type="file" />
-			<div>Import data customer</div>
+			<div>Import data PO customer</div>
 			<button>submit</button>
 		</>
 	);
 }
 
-Customer.getLayout = getLayout;
+InSPPB.getLayout = getLayout;

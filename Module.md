@@ -10,6 +10,7 @@
     - crud user (based on role)
     - list user
       - generate qr
+- Mesin produksi
 - menu master customer
   - crud customer (based on role)
   - list customer
