@@ -9,7 +9,10 @@ export default function SignIn() {
 	const {status} = useSession();
 	const {replace} = useRouter();
 
-	const [userInfo, setUserInfo] = useState({email: '', password: ''});
+	const [userInfo, setUserInfo] = useState({
+		email: 'john@gmail.com',
+		password: '1234',
+	});
 	const handleSubmit: FormEventHandler<HTMLFormElement> = async e => {
 		// validate your userinfo
 		e.preventDefault();
