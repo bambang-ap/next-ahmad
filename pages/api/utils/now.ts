@@ -1,10 +1,9 @@
-import moment from 'moment';
 import {NextApiHandler} from 'next';
 
-import {Response} from '@server';
+import {getNow, Response} from '@server';
 
-const now: NextApiHandler = (req, res) => {
-	const today = moment().toLocaleString();
+const now: NextApiHandler = (_, res) => {
+	const today = getNow();
 
 	return Response(res).success({today});
 };

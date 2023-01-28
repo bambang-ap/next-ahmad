@@ -1,3 +1,4 @@
+import moment from 'moment';
 import {NextApiRequest, NextApiResponse} from 'next';
 import {unstable_getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
@@ -26,4 +27,12 @@ export const Response = <T extends object>(res: NextApiResponse) => {
 			return res.status(500).send({message});
 		},
 	};
+};
+
+export const getNow = () => {
+	return moment().toLocaleString();
+};
+
+export const generateId = () => {
+	return `${uuid()}-${moment(getNow()).unix()}`;
 };
