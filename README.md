@@ -2,3 +2,7 @@
 - `cd next-ahmad`
 - `yarn install`
 - `yarn dev`
+
+app: https://nextjs.org/
+
+UI: https://tailwindcss.com/docs
