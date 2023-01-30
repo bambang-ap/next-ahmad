@@ -1,3 +1,5 @@
+export type ModalType = 'add' | 'edit' | 'delete';
+
 export type TUser = Record<'id' | 'email' | 'name' | 'role', string> & {
 	password?: string;
 };
@@ -16,3 +18,5 @@ export type TRole = {
 	id: number;
 	name: string;
 };
+
+export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;

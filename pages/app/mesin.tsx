@@ -2,33 +2,30 @@ import {useRef} from 'react';
 
 import {Control, useForm, useWatch} from 'react-hook-form';
 
-import {ModalType, TUser} from '@appTypes/app.type';
+import {ModalType, TMesin} from '@appTypes/app.type';
 import {Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
-import {useFetchUser, useManageUser} from '@queries';
+import {useFetchMesin, useManageMesin} from '@queries';
 
-type UserForm = {
+type MesinForm = TMesin & {
 	type: ModalType;
-} & Partial<TUser>;
+};
 
-export default function User() {
+export default function Mesin() {
 	const modalRef = useRef<ModalRef>(null);
-	const manageRole = useManageUser();
+	const manageMesin = useManageMesin();
 
-	const {data, refetch} = useFetchUser();
-	const {control, handleSubmit, watch, reset} = useForm<UserForm>({});
+	const {data, refetch} = useFetchMesin();
+	const {control, handleSubmit, watch, reset} = useForm<MesinForm>({});
 
 	const modalType = watch('type');
 	const modalTitle =
 		modalType === 'add'
-			? 'Tambah user'
+			? 'Tambah mesin'
 			: modalType === 'edit'
-			? 'Ubah user'
-			: 'Hapus user?';
-
-	const submit = handleSubmit(({type, ...values}) => {
-		const {id} = values;
-
+			? 'Ubah mesin'
+			: 'Hapus mesin?';
+	const submit = handleSubmit(({type, id, name, nomor_mesin}) => {
 		const onSuccess = () => {
 			modalRef.current?.hide();
 			refetch();
@@ -36,17 +33,17 @@ export default function User() {
 
 		switch (type) {
 			case 'add':
-				return manageRole.post.mutate({...values, id: uuid()}, {onSuccess});
+				return manageMesin.post.mutate({name, nomor_mesin}, {onSuccess});
 			case 'edit':
-				return manageRole.put.mutate(values, {onSuccess});
+				return manageMesin.put.mutate({name, id, nomor_mesin}, {onSuccess});
 			case 'delete':
-				return manageRole.delete.mutate({id}, {onSuccess});
+				return manageMesin.delete.mutate({id}, {onSuccess});
 			default:
 				return;
 		}
 	});
 
-	function showModal(type: ModalType, initValue: Omit<UserForm, 'type'>) {
+	function showModal(type: ModalType, initValue: Omit<MesinForm, 'type'>) {
 		reset({...initValue, type});
 		modalRef.current?.show();
 	}
@@ -63,14 +60,12 @@ export default function User() {
 
 				<Table
 					data={data?.data ?? []}
-					header={['Name', 'Email', 'Role', 'Action']}
+					header={['Mesin', 'Action']}
 					renderItem={({item}) => {
-						const {id, email, role, name} = item;
+						const {id, name} = item;
 						return (
 							<>
 								<td>{name}</td>
-								<td>{email}</td>
-								<td>{role}</td>
 								<td>
 									<div>
 										<button onClick={() => showModal('edit', item)}>
@@ -90,9 +85,9 @@ export default function User() {
 	);
 }
 
-User.getLayout = getLayout;
+Mesin.getLayout = getLayout;
 
-const ModalChild = ({control}: {control: Control<UserForm>}) => {
+const ModalChild = ({control}: {control: Control<MesinForm>}) => {
 	const modalType = useWatch({control, name: 'type'});
 
 	if (modalType === 'delete') {
@@ -107,9 +102,6 @@ const ModalChild = ({control}: {control: Control<UserForm>}) => {
 	return (
 		<>
 			<Input control={control} fieldName="name" placeholder="name" />
-			<Input control={control} fieldName="email" placeholder="email" />
-			<Input control={control} fieldName="role" placeholder="role" />
-			<Input control={control} fieldName="password" placeholder="password" />
 			<button type="submit">Submit</button>
 		</>
 	);

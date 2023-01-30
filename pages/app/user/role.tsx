@@ -2,14 +2,12 @@ import {useRef} from 'react';
 
 import {Control, useForm, useWatch} from 'react-hook-form';
 
+import {ModalType, TRole} from '@appTypes/app.type';
 import {Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchRole, useManageRole} from '@queries';
 
-type ModalType = 'add' | 'edit' | 'delete';
-type RoleForm = {
-	id?: number;
-	name?: string;
+type RoleForm = Partial<TRole> & {
 	type: ModalType;
 };
 

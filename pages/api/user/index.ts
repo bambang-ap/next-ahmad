@@ -8,7 +8,7 @@ export default async function apiUser(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const {hasSession, session} = await getSession(req, res);
+	const {hasSession} = await getSession(req, res);
 
 	if (!hasSession) return Response(res).error('You have no credentials');
 
@@ -36,7 +36,7 @@ async function getUser(res: NextApiResponse) {
 }
 
 async function insertUser(req: NextApiRequest, res: NextApiResponse) {
-	const body = req.body as Omit<TUser, 'id'>;
+	const body = req.body as TUser;
 	const createdRole = await OrmUser.create(body);
 
 	return Response(res).success(createdRole);

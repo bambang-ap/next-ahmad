@@ -1,5 +1,6 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 
+import {TRole} from '@appTypes/app.type';
 import {OrmRole} from '@database';
 import {getSession, Response} from '@server';
 
@@ -32,21 +33,21 @@ async function getRole(res: NextApiResponse) {
 }
 
 async function insertRole(req: NextApiRequest, res: NextApiResponse) {
-	const {name} = req.body as {name: string};
+	const {name} = req.body as TRole;
 	const createdRole = await OrmRole.create({name});
 
 	return Response(res).success(createdRole);
 }
 
 async function updateRole(req: NextApiRequest, res: NextApiResponse) {
-	const {id, name} = req.body as {id: string; name: string};
+	const {id, name} = req.body as TRole;
 	const updatedRole = await OrmRole.update({name}, {where: {id}});
 
 	return Response(res).success(updatedRole);
 }
 
 async function deleteRole(req: NextApiRequest, res: NextApiResponse) {
-	const {id} = req.body as {id: string};
+	const {id} = req.body as Pick<TRole, 'id'>;
 	const createdRole = await OrmRole.destroy({where: {id}});
 
 	return Response(res).success({success: createdRole});
