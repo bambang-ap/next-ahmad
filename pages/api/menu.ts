@@ -27,7 +27,10 @@ async function getMenu(req: NextApiRequest, res: NextApiResponse) {
 
 	const allMenu = await OrmMenu.findAll({
 		where: {accepted_role: {[Op.substring]: session?.user?.role}},
-		order: [['index', 'asc']],
+		order: [
+			['index', 'asc'],
+			['title', 'asc'],
+		],
 		raw: true,
 	});
 

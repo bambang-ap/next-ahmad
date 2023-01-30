@@ -1,5 +1,8 @@
 import * as svgIcon from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FieldValues} from 'react-hook-form';
+
+import {withReactFormController, ControlledComponentProps} from '@hoc';
 
 type IconName = Exclude<keyof typeof svgIcon, 'prefix' | 'fas'>;
 
@@ -8,6 +11,19 @@ export type IconProps = {
 	className?: string;
 	onClick?: NoopVoid;
 };
+
+type IconFormComponentProps<F extends FieldValues> =
+	ControlledComponentProps<F> & Omit<IconProps, 'name'>;
+
+const IconFormComponent = <F extends FieldValues>(
+	props: IconFormComponentProps<F>,
+) => {
+	const {controller, ...rest} = props;
+
+	return <Icon name={controller?.field.value as IconName} {...rest} />;
+};
+
+export const IconForm = withReactFormController(IconFormComponent);
 
 export function Icon({name, onClick, className}: IconProps) {
 	return (

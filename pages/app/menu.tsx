@@ -5,7 +5,7 @@ import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
 
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu} from '@appTypes/app.type';
-import {CheckBox, Input, Modal, ModalRef, Table} from '@components';
+import {CheckBox, IconForm, Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchMenu, useFetchRole, useManageMenu} from '@queries';
 
@@ -138,14 +138,14 @@ const RenderMenu = (props: {
 							<Input control={control} fieldName={`${id}.title`} />
 						</td>
 						<td>
-							<Input control={control} fieldName={`${id}.icon`} />
-							<button
+							<IconForm
+								control={control}
+								fieldName={`${id}.icon`}
 								onClick={() => {
 									setKey(`${id}.icon`);
 									modalRef.current?.show();
-								}}>
-								Change Icon
-							</button>
+								}}
+							/>
 						</td>
 						<td>
 							{dataRole?.data.map(role => {
