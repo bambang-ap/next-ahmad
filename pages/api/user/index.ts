@@ -2,7 +2,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 
 import {TUser} from '@appTypes/app.type';
 import {OrmUser} from '@database';
-import {getSession, Response} from '@server';
+import {generateId, getSession, Response} from '@server';
 
 export default async function apiUser(
 	req: NextApiRequest,
@@ -37,7 +37,7 @@ async function getUser(res: NextApiResponse) {
 
 async function insertUser(req: NextApiRequest, res: NextApiResponse) {
 	const body = req.body as TUser;
-	const createdRole = await OrmUser.create(body);
+	const createdRole = await OrmUser.create({...body, id: generateId()});
 
 	return Response(res).success(createdRole);
 }

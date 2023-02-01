@@ -2,7 +2,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 
 import {TMesin} from '@appTypes/app.type';
 import {OrmMesin} from '@database';
-import {getSession, Response} from '@server';
+import {generateId, getSession, Response} from '@server';
 
 export default async function apiMesin(
 	req: NextApiRequest,
@@ -34,7 +34,7 @@ async function getMesin(res: NextApiResponse) {
 
 async function insertMesin(req: NextApiRequest, res: NextApiResponse) {
 	const body = req.body as TMesin;
-	const createdMesin = await OrmMesin.create(body);
+	const createdMesin = await OrmMesin.create({...body, id: generateId()});
 
 	return Response(res).success(createdMesin);
 }

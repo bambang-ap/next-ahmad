@@ -9,7 +9,7 @@ const fetchMesin = () => axios.get('/api/mesin');
 export const useFetchMesin = () => {
 	const {data} = useSession();
 
-	return useQuery<AxiosResponse<TMesin[]>>(['role', data?.user?.id], {
+	return useQuery<AxiosResponse<TMesin[]>>(['mesin', data?.user?.id], {
 		queryFn: fetchMesin,
 	});
 };
