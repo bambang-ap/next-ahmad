@@ -8,7 +8,7 @@ export type ModalRef = {
 };
 export type ModalProps = {
 	children: JSX.Element;
-	title: string;
+	title?: string;
 	visible?: boolean;
 	renderFooter?: () => JSX.Element;
 };

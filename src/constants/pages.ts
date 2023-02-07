@@ -7,6 +7,7 @@ import {
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 } from '@appTypes/app.type';
+import {InputProps} from '@components';
 import {
 	useFetchRole,
 	useFetchUser,
@@ -24,15 +25,60 @@ import {
 	useManageCustomerSPPBOut,
 } from '@queries';
 
-export const allowedPages = {
+type Action = 'add' | 'edit' | 'delete';
+
+type AllowedPages = {
+	table: {header: string[]};
+	queries: {useFetch: Fetch; useManage: Manage};
+	modalField: Partial<Record<Action, ColUnion[]>>;
+	text: {
+		modal: Partial<Record<Action, string>>;
+	};
+};
+
+type Fetch =
+	| typeof useFetchMesin
+	| typeof useFetchMesin
+	| typeof useFetchCustomer
+	| typeof useFetchCustomerPO
+	| typeof useFetchUser
+	| typeof useFetchRole;
+type Manage =
+	| typeof useManageMesin
+	| typeof useManageMesin
+	| typeof useManageCustomer
+	| typeof useManageCustomerPO
+	| typeof useManageCustomerSPPBIn
+	| typeof useManageCustomerSPPBOut
+	| typeof useManageUser
+	| typeof useManageRole;
+
+export type Types =
+	| TCustomer
+	| TCustomerPO
+	| TCustomerSPPBIn
+	| TCustomerSPPBOut
+	| TMesin
+	| TRole
+	| TUser;
+
+export type ColUnion = FieldForm<UnionToIntersection<Types>>;
+
+export type FieldForm<T extends {}> = {
+	col: keyof T;
+	type?: InputProps['type'];
+	label?: string;
+};
+
+export const allowedPages: Record<string, AllowedPages> = {
 	'/app/mesin': {
 		queries: {useFetch: useFetchMesin, useManage: useManageMesin},
 		table: {
 			header: ['Name', 'Nomor Mesin', 'Action'],
 		},
 		modalField: {
-			add: ['name', 'nomor_mesin'] as (keyof TMesin)[],
-			edit: ['name', 'nomor_mesin'] as (keyof TMesin)[],
+			add: [{col: 'name'}, {col: 'nomor_mesin'}] as FieldForm<TMesin>[],
+			edit: [{col: 'name'}, {col: 'nomor_mesin'}] as FieldForm<TMesin>[],
 		},
 		text: {
 			modal: {
@@ -48,7 +94,7 @@ export const allowedPages = {
 			header: ['Name', 'Action'],
 		},
 		modalField: {
-			add: ['name'] as (keyof TCustomer)[],
+			add: [{col: 'name'}] as FieldForm<TCustomer>[],
 			get edit() {
 				return this.add;
 			},
@@ -67,7 +113,7 @@ export const allowedPages = {
 			header: ['Name', 'Action'],
 		},
 		modalField: {
-			add: ['name'] as (keyof TCustomerPO)[],
+			add: [{col: 'name'}] as FieldForm<TCustomerPO>[],
 			get edit() {
 				return this.add;
 			},
@@ -89,7 +135,7 @@ export const allowedPages = {
 			header: ['Name', 'ID PO', 'Action'],
 		},
 		modalField: {
-			add: ['name', 'id_po'] as (keyof TCustomerSPPBIn)[],
+			add: [{col: 'name'}, {col: 'id_po'}] as FieldForm<TCustomerSPPBIn>[],
 			get edit() {
 				return this.add;
 			},
@@ -111,7 +157,7 @@ export const allowedPages = {
 			header: ['Name', 'ID PO', 'Action'],
 		},
 		modalField: {
-			add: ['name', 'id_po'] as (keyof TCustomerSPPBOut)[],
+			add: [{col: 'name'}, {col: 'id_po'}] as FieldForm<TCustomerSPPBOut>[],
 			get edit() {
 				return this.add;
 			},
@@ -130,8 +176,17 @@ export const allowedPages = {
 			header: ['Name', 'Email', 'Role', 'Action'],
 		},
 		modalField: {
-			add: ['name', 'email', 'role', 'password'] as (keyof TUser)[],
-			edit: ['name', 'email', 'role'] as (keyof TUser)[],
+			add: [
+				{col: 'name'},
+				{col: 'email'},
+				{col: 'role'},
+				{col: 'password'},
+			] as FieldForm<TUser>[],
+			edit: [
+				{col: 'name'},
+				{col: 'email'},
+				{col: 'role'},
+			] as FieldForm<TUser>[],
 		},
 		text: {
 			modal: {
@@ -147,7 +202,7 @@ export const allowedPages = {
 			header: ['Role', 'Action'],
 		},
 		modalField: {
-			add: ['name'] as (keyof TRole)[],
+			add: [{col: 'name'}] as FieldForm<TRole>[],
 			get edit() {
 				return this.add;
 			},

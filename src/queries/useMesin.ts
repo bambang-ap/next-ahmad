@@ -2,10 +2,11 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import axios, {AxiosResponse} from 'axios';
 
 import {TMesin} from '@appTypes/app.type';
+import {CRUD_ENABLED} from '@enum';
 import {useSession} from '@hooks';
 import {Method} from '@queries';
 
-const fetchMesin = () => axios.get('/api/mesin');
+const fetchMesin = () => axios.get(`/api/${CRUD_ENABLED.MESIN}`);
 export const useFetchMesin = () => {
 	const {data} = useSession();
 
@@ -18,7 +19,7 @@ export const useManageMesin = () => {
 	const manageMesin =
 		<D>(method: Method) =>
 		(data: D) =>
-			axios({url: '/api/mesin', method, data});
+			axios({url: `/api/${CRUD_ENABLED.MESIN}`, method, data});
 
 	return {
 		post: useMutation(manageMesin<Omit<TMesin, 'id'>>('POST')),

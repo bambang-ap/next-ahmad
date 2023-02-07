@@ -1,16 +1,17 @@
 import {DataTypes} from 'sequelize';
 
 import {TCustomerSPPBOut} from '@appTypes/app.type';
+import {CRUD_ENABLED} from '@enum';
 
 import {defaultExcludeColumn, DefinedModel, ORM} from './_init';
 
 export const OrmCustomerSPPBOut: DefinedModel<TCustomerSPPBOut> = ORM.define(
-	'CustomerSPPBOut',
+	CRUD_ENABLED.CUSTOMER_SPPB_OUT,
 	{
 		name: {type: DataTypes.STRING},
 	},
 	{
-		tableName: 'customer_sppb_out',
+		tableName: CRUD_ENABLED.CUSTOMER_SPPB_OUT,
 		defaultScope: {
 			attributes: {
 				exclude: defaultExcludeColumn,

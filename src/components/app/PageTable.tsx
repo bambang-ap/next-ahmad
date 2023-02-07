@@ -5,7 +5,7 @@ import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
 import {Input, Modal, ModalRef, Table} from '@components';
-import {allowedPages} from '@constants';
+import {allowedPages, ColUnion, Types, FieldForm} from '@constants';
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -116,15 +116,30 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 	return (
 		<>
 			{modalType === 'add' &&
-				modalField.add.map(e => (
-					<Input key={e} control={control} fieldName={e} placeholder={e} />
+				modalField?.add?.map(item => (
+					<RenderField key={item.col} control={control} item={item} />
 				))}
 			{modalType === 'edit' &&
-				modalField.edit.map(e => (
-					<Input key={e} control={control} fieldName={e} placeholder={e} />
+				modalField?.edit?.map(item => (
+					<RenderField key={item.col} control={control} item={item} />
 				))}
 
 			<button type="submit">Submit</button>
 		</>
+	);
+};
+
+const RenderField = (props: {control: Control; item: ColUnion}) => {
+	const {control, item} = props;
+	const {col, type = 'text', label} = item;
+
+	return (
+		<Input
+			type={type}
+			label={label}
+			control={control}
+			fieldName={col}
+			placeholder={col}
+		/>
 	);
 };

@@ -23,7 +23,7 @@ const IconFormComponent = <F extends FieldValues>(
 	return <Icon name={controller?.field.value as IconName} {...rest} />;
 };
 
-export const IconForm = IconFormComponent;
+export const IconForm = withReactFormController(IconFormComponent);
 
 export function Icon({name, onClick, className}: IconProps) {
 	return (

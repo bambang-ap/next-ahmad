@@ -5,7 +5,7 @@ import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
 
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu} from '@appTypes/app.type';
-import {CheckBox, IconForm, Input, Modal, ModalRef, Table} from '@components';
+import {IconForm, Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchMenu, useFetchRole, useManageMenu} from '@queries';
 
@@ -147,10 +147,11 @@ const RenderMenu = (props: {
 								}}
 							/>
 						</td>
-						<td>
+						<td className="flex">
 							{dataRole?.data.map(role => {
 								return (
-									<CheckBox
+									<Input
+										type="checkbox"
 										key={role.id}
 										control={control}
 										fieldName={`${id}.role.${role.name}`}
