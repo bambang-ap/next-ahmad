@@ -75,8 +75,8 @@ export type FieldForm<T extends {}> = {
 	| {
 			type: 'select';
 			editable?: boolean;
-			onSelect: (item: any) => string;
 			renderItem: TableProps<any>['renderItem'];
+			onSelect: (item: any) => string;
 			useFetch: () => UseQueryResult<AxiosResponse<unknown[], any>, unknown>;
 	  }
 );
@@ -136,9 +136,12 @@ export const allowedPages: Record<string, AllowedPages> = {
 					{
 						col: 'id_customer',
 						type: 'select',
+						editable: false,
 						useFetch: () => useFetchCustomer(),
 						onSelect: (item: TCustomer) => item.id,
-						renderItem: ({item}: MMapValue<TCustomer>) => <div>{item.id}</div>,
+						renderItem: ({item}: MMapValue<TCustomer>) => (
+							<div>{item.name}</div>
+						),
 					},
 				];
 			},

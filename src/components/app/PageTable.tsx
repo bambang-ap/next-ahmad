@@ -167,10 +167,9 @@ const RenderSelect = ({
 
 	return (
 		<Select
-			data={data?.data ?? []}
-			editable={false}
-			control={control}
 			fieldName={name}
+			control={control}
+			data={data?.data ?? []}
 			renderItem={renderItem}
 			onSelect={({item}) => field.onChange(onSelect(item))}
 		/>
