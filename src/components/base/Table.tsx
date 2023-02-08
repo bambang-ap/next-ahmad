@@ -1,12 +1,10 @@
 import {Fragment} from 'react';
 
-type TableProps<T> = {
+export type TableProps<T> = {
 	data: T[];
 	header?: string[];
-	renderItem: (...args: Parameters<GetProps<Array<T>['mmap']>>) => JSX.Element;
-	renderItemEach?: (
-		...args: Parameters<TableProps<T>['renderItem']>
-	) => JSX.Element | false;
+	renderItem: MMapCallback<T, JSX.Element>;
+	renderItemEach: MMapCallback<T, JSX.Element | false>;
 };
 
 export const Table = <T,>(props: TableProps<T>) => {

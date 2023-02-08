@@ -22,6 +22,6 @@ export type TRole = {
 export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;
 
 export type TCustomer = Record<'id' | 'name', string>;
-export type TCustomerPO = Record<'id' | 'name', string>;
+export type TCustomerPO = Record<'id' | 'name' | 'id_customer', string>;
 export type TCustomerSPPBIn = Record<'id' | 'id_po' | 'name', string>;
 export type TCustomerSPPBOut = Record<'id' | 'id_po' | 'name', string>;

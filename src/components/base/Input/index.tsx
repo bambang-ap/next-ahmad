@@ -1,4 +1,4 @@
-import React, {HTMLInputTypeAttribute} from 'react';
+import React from 'react';
 
 import {FieldValues} from 'react-hook-form';
 import {
@@ -6,9 +6,20 @@ import {
 	withReactFormController,
 } from 'src/hoc/withReactFormController';
 
-type Props<F extends FieldValues> = ControlledComponentProps<F> & InputProps;
+export type InputProps = {
+	className?: string;
+	placeholder?: string;
+	type?: 'text' | 'checkbox';
+	label?: string;
+};
 
-function InputComponent<F extends FieldValues>(props: Props<F>) {
+export const Input = withReactFormController(InputComponent);
+
+export * from './Select';
+
+function InputComponent<F extends FieldValues>(
+	props: ControlledComponentProps<F, InputProps>,
+) {
 	const {controller, type, label, placeholder, className} = props;
 
 	const {
@@ -44,11 +55,3 @@ function InputComponent<F extends FieldValues>(props: Props<F>) {
 		</>
 	);
 }
-
-export type InputProps = {
-	className?: string;
-	placeholder?: string;
-	type?: HTMLInputTypeAttribute;
-	label?: string;
-};
-export const Input = withReactFormController(InputComponent);

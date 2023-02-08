@@ -1,11 +1,17 @@
 import {useRef} from 'react';
 
 import {useRouter} from 'next/router';
-import {Control, useForm, useWatch} from 'react-hook-form';
+import {
+	Control,
+	useController,
+	useForm,
+	useFormState,
+	useWatch,
+} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
-import {Input, Modal, ModalRef, Table} from '@components';
-import {allowedPages, ColUnion, Types, FieldForm} from '@constants';
+import {Input, Modal, ModalRef, Select, Table} from '@components';
+import {allowedPages, ColUnion} from '@constants';
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -129,17 +135,44 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 	);
 };
 
-const RenderField = (props: {control: Control; item: ColUnion}) => {
+type Y = {control: Control; item: ColUnion};
+
+const RenderField = (props: Y) => {
 	const {control, item} = props;
-	const {col, type = 'text', label} = item;
+	const {col, label} = item;
+
+	if (item.type === 'select') return <RenderSelect {...props} />;
 
 	return (
 		<Input
-			type={type}
+			type={item.type}
 			label={label}
 			control={control}
 			fieldName={col}
 			placeholder={col}
+		/>
+	);
+};
+
+const RenderSelect = ({
+	control,
+	item,
+}: Omit<Y, 'item'> & {
+	item: Extract<Y['item'], {type: 'select'}>;
+}) => {
+	const {col: name, renderItem, onSelect, useFetch} = item;
+
+	const {data} = useFetch();
+	const {field} = useController({control, name});
+
+	return (
+		<Select
+			data={data?.data ?? []}
+			editable={false}
+			control={control}
+			fieldName={name}
+			renderItem={renderItem}
+			onSelect={({item}) => field.onChange(onSelect(item))}
 		/>
 	);
 };

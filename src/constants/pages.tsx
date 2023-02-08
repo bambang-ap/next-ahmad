@@ -1,3 +1,6 @@
+import {UseQueryResult} from '@tanstack/react-query';
+import {AxiosResponse} from 'axios';
+
 import {
 	TRole,
 	TUser,
@@ -7,7 +10,7 @@ import {
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 } from '@appTypes/app.type';
-import {InputProps} from '@components';
+import {InputProps, SelectProps, TableProps} from '@components';
 import {
 	useFetchRole,
 	useFetchUser,
@@ -66,9 +69,17 @@ export type ColUnion = FieldForm<UnionToIntersection<Types>>;
 
 export type FieldForm<T extends {}> = {
 	col: keyof T;
-	type?: InputProps['type'];
 	label?: string;
-};
+} & (
+	| {type?: InputProps['type']}
+	| {
+			type: 'select';
+			editable?: boolean;
+			onSelect: (item: any) => string;
+			renderItem: TableProps<any>['renderItem'];
+			useFetch: () => UseQueryResult<AxiosResponse<unknown[], any>, unknown>;
+	  }
+);
 
 export const allowedPages: Record<string, AllowedPages> = {
 	'/app/mesin': {
@@ -77,8 +88,12 @@ export const allowedPages: Record<string, AllowedPages> = {
 			header: ['Name', 'Nomor Mesin', 'Action'],
 		},
 		modalField: {
-			add: [{col: 'name'}, {col: 'nomor_mesin'}] as FieldForm<TMesin>[],
-			edit: [{col: 'name'}, {col: 'nomor_mesin'}] as FieldForm<TMesin>[],
+			get add(): FieldForm<TMesin>[] {
+				return [{col: 'name'}, {col: 'nomor_mesin'}];
+			},
+			get edit() {
+				return this.add;
+			},
 		},
 		text: {
 			modal: {
@@ -94,7 +109,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			header: ['Name', 'Action'],
 		},
 		modalField: {
-			add: [{col: 'name'}] as FieldForm<TCustomer>[],
+			get add(): FieldForm<TCustomer>[] {
+				return [{col: 'name'}];
+			},
 			get edit() {
 				return this.add;
 			},
@@ -110,10 +127,21 @@ export const allowedPages: Record<string, AllowedPages> = {
 	'/app/customer/po': {
 		queries: {useFetch: useFetchCustomerPO, useManage: useManageCustomerPO},
 		table: {
-			header: ['Name', 'Action'],
+			header: ['Name', 'ID Customer', 'Action'],
 		},
 		modalField: {
-			add: [{col: 'name'}] as FieldForm<TCustomerPO>[],
+			get add(): FieldForm<TCustomerPO>[] {
+				return [
+					{col: 'name'},
+					{
+						col: 'id_customer',
+						type: 'select',
+						useFetch: () => useFetchCustomer(),
+						onSelect: (item: TCustomer) => item.id,
+						renderItem: ({item}: MMapValue<TCustomer>) => <div>{item.id}</div>,
+					},
+				];
+			},
 			get edit() {
 				return this.add;
 			},
@@ -135,7 +163,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			header: ['Name', 'ID PO', 'Action'],
 		},
 		modalField: {
-			add: [{col: 'name'}, {col: 'id_po'}] as FieldForm<TCustomerSPPBIn>[],
+			get add(): FieldForm<TCustomerSPPBIn>[] {
+				return [{col: 'name'}, {col: 'id_po'}];
+			},
 			get edit() {
 				return this.add;
 			},
@@ -157,7 +187,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			header: ['Name', 'ID PO', 'Action'],
 		},
 		modalField: {
-			add: [{col: 'name'}, {col: 'id_po'}] as FieldForm<TCustomerSPPBOut>[],
+			get add(): FieldForm<TCustomerSPPBOut>[] {
+				return [{col: 'name'}, {col: 'id_po'}];
+			},
 			get edit() {
 				return this.add;
 			},
@@ -176,17 +208,17 @@ export const allowedPages: Record<string, AllowedPages> = {
 			header: ['Name', 'Email', 'Role', 'Action'],
 		},
 		modalField: {
-			add: [
-				{col: 'name'},
-				{col: 'email'},
-				{col: 'role'},
-				{col: 'password'},
-			] as FieldForm<TUser>[],
-			edit: [
-				{col: 'name'},
-				{col: 'email'},
-				{col: 'role'},
-			] as FieldForm<TUser>[],
+			get add(): FieldForm<TUser>[] {
+				return [
+					{col: 'name'},
+					{col: 'email'},
+					{col: 'role'},
+					{col: 'password'},
+				];
+			},
+			get edit(): FieldForm<TUser>[] {
+				return [{col: 'name'}, {col: 'email'}, {col: 'role'}];
+			},
 		},
 		text: {
 			modal: {
@@ -202,7 +234,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			header: ['Role', 'Action'],
 		},
 		modalField: {
-			add: [{col: 'name'}] as FieldForm<TRole>[],
+			get add(): FieldForm<TRole>[] {
+				return [{col: 'name'}];
+			},
 			get edit() {
 				return this.add;
 			},

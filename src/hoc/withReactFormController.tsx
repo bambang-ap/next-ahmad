@@ -9,9 +9,12 @@ import {
 	UseControllerReturn,
 } from 'react-hook-form';
 
-export type ControlledComponentProps<F extends FieldValues> = {
+export type ControlledComponentProps<
+	F extends FieldValues,
+	T extends {} = {},
+> = {
 	controller: UseControllerReturn<F>;
-};
+} & T;
 
 export const withReactFormController = <T extends {}, F extends FieldValues>(
 	Component: (

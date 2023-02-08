@@ -9,6 +9,7 @@ export const OrmCustomerPO: DefinedModel<TCustomerPO> = ORM.define(
 	CRUD_ENABLED.CUSTOMER_PO,
 	{
 		name: {type: DataTypes.STRING},
+		id_customer: {type: DataTypes.STRING},
 	},
 	{
 		tableName: CRUD_ENABLED.CUSTOMER_PO,

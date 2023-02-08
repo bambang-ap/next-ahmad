@@ -12,11 +12,8 @@ export type IconProps = {
 	onClick?: NoopVoid;
 };
 
-type IconFormComponentProps<F extends FieldValues> =
-	ControlledComponentProps<F> & Omit<IconProps, 'name'>;
-
 const IconFormComponent = <F extends FieldValues>(
-	props: IconFormComponentProps<F>,
+	props: ControlledComponentProps<F, Omit<IconProps, 'name'>>,
 ) => {
 	const {controller, ...rest} = props;
 
