@@ -26,6 +26,8 @@ const IconFormComponent = <F extends FieldValues>(
 export const IconForm = withReactFormController(IconFormComponent);
 
 export function Icon({name, onClick, className}: IconProps) {
+	if (!name) return null;
+
 	return (
 		<FontAwesomeIcon
 			onClick={onClick}

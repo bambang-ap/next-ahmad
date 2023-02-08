@@ -1,3 +1,5 @@
+import {Fragment} from 'react';
+
 type TableProps<T> = {
 	data: T[];
 	header?: string[];
@@ -26,12 +28,12 @@ export const Table = <T,>(props: TableProps<T>) => {
 					{data.mmap((item, index) => {
 						const isRenderEach = renderItemEach?.(item, index);
 						return (
-							<>
+							<Fragment key={index}>
 								<tr>{renderItem(item, index)}</tr>
 								{isRenderEach && renderItemEach && (
 									<tr>{renderItemEach(item, index)}</tr>
 								)}
-							</>
+							</Fragment>
 						);
 					})}
 				</tbody>

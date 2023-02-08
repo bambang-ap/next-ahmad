@@ -9,13 +9,13 @@ export default async function apiCrud(
 	req: NextApiRequest,
 	res: NextApiResponse,
 ) {
-	const {hasSession} = await getSession(req, res);
-
-	if (!hasSession) return Response(res).error('You have no credentials');
-
 	const orm = MAPPING_CRUD_ORM[req.query.crud as keyof typeof MAPPING_CRUD_ORM];
 
 	if (!orm) return Response(res).error('The page you access not found');
+
+	const {hasSession} = await getSession(req, res);
+
+	if (!hasSession) return Response(res).error('You have no credentials');
 
 	switch (req.method) {
 		case 'GET':

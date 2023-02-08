@@ -11,23 +11,21 @@ type Props<F extends FieldValues> = ControlledComponentProps<F> & InputProps;
 function InputComponent<F extends FieldValues>(props: Props<F>) {
 	const {controller, type, label, placeholder, className} = props;
 
-	const {field, fieldState} = controller ?? {};
+	const {
+		fieldState,
+		field: {value, ...field},
+	} = controller;
 
-	const errorMessage = <label>{fieldState?.error?.message}</label>;
+	const errorMessage = <label>{fieldState.error?.message}</label>;
 
 	if (type === 'checkbox') {
 		function onCheck() {
-			controller?.field?.onChange(!controller?.field.value);
+			field.onChange(!value);
 		}
 
 		return (
-			<div className={className} onClick={onCheck}>
-				<input
-					{...controller?.field}
-					type="checkbox"
-					checked={controller?.field.value}
-					onClick={onCheck}
-				/>
+			<div className={`${className}`} onClick={onCheck}>
+				<input {...field} type="checkbox" checked={value} onClick={onCheck} />
 				<label>{label}</label>
 				{errorMessage}
 			</div>

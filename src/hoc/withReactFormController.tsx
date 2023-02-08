@@ -10,7 +10,7 @@ import {
 } from 'react-hook-form';
 
 export type ControlledComponentProps<F extends FieldValues> = {
-	controller?: UseControllerReturn<F>;
+	controller: UseControllerReturn<F>;
 };
 
 export const withReactFormController = <T extends {}, F extends FieldValues>(
@@ -22,8 +22,8 @@ export const withReactFormController = <T extends {}, F extends FieldValues>(
 		control: Control<F>;
 		fieldName: FieldPath<F>;
 		className?: string;
-	} & T;
-	return function ReturnComponent({
+	} & Omit<T, keyof ControlledComponentProps<F>>;
+	return function Decorated({
 		rules,
 		control,
 		fieldName,
