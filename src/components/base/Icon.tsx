@@ -12,14 +12,6 @@ export type IconProps = {
 	onClick?: NoopVoid;
 };
 
-const IconFormComponent = <F extends FieldValues>(
-	props: ControlledComponentProps<F, Omit<IconProps, 'name'>>,
-) => {
-	const {controller, ...rest} = props;
-
-	return <Icon name={controller?.field.value as IconName} {...rest} />;
-};
-
 export const IconForm = withReactFormController(IconFormComponent);
 
 export function Icon({name, onClick, className}: IconProps) {
@@ -32,4 +24,12 @@ export function Icon({name, onClick, className}: IconProps) {
 			icon={svgIcon[name as IconName]}
 		/>
 	);
+}
+
+function IconFormComponent<F extends FieldValues>(
+	props: ControlledComponentProps<F, Omit<IconProps, 'name'>>,
+) {
+	const {controller, ...rest} = props;
+
+	return <Icon name={controller?.field.value as IconName} {...rest} />;
 }

@@ -2,6 +2,7 @@ import {useState} from 'react';
 
 import {FieldValues} from 'react-hook-form';
 
+import {focusInputClassName, inputClassName} from '@constants';
 import {ControlledComponentProps, withReactFormController} from '@hoc';
 
 import {Icon} from '../Icon';
@@ -24,10 +25,16 @@ function SelectComponent<T, F extends FieldValues>({
 		field: {value, name, onChange},
 	} = controller;
 
+	const visibleClassName =
+		visible && 'rounded-tr-none rounded-tl-none border-t-0';
+	const visibleClassNameParent = visible && 'rounded-br-none rounded-bl-none';
+
 	return (
-		<div className="h-10">
-			<div className="flex">
+		<div className="pb-2 relative">
+			<div
+				className={`flex items-center ${inputClassName} ${visibleClassNameParent} ${focusInputClassName}`}>
 				<input
+					className="outline-none flex flex-1 mr-2"
 					type="text"
 					value={value}
 					placeholder={name}
@@ -38,16 +45,22 @@ function SelectComponent<T, F extends FieldValues>({
 					onClick={() => setVisible(e => !e)}
 				/>
 			</div>
-			<div
-				className={`fixed ${!visible && 'h-0'} overflow-hidden bg-white z-10`}>
-				{data.mmap((item, index) => {
-					return (
-						<div onClick={() => onSelect?.(item, index)}>
-							{renderItem(item, index)}
-						</div>
-					);
-				})}
-			</div>
+			{visible && (
+				<div
+					className={`${inputClassName} ${visibleClassName} max-h-28 overflow-y-auto border overflow-hidden bg-white z-50`}>
+					{data.mmap((item, index) => {
+						return (
+							<div
+								onClick={() => {
+									onSelect?.(item, index);
+									setVisible(false);
+								}}>
+								{renderItem(item, index)}
+							</div>
+						);
+					})}
+				</div>
+			)}
 		</div>
 	);
 }

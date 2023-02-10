@@ -10,7 +10,7 @@ import {
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 } from '@appTypes/app.type';
-import {InputProps, SelectProps, TableProps} from '@components';
+import {InputProps, TableProps} from '@components';
 import {
 	useFetchRole,
 	useFetchUser,
@@ -30,8 +30,10 @@ import {
 
 type Action = 'add' | 'edit' | 'delete';
 
+type Body<T extends Record<string, any>> = (keyof T)[];
+
 type AllowedPages = {
-	table: {header: string[]};
+	table: {header: string[]; body: Body<any>};
 	queries: {useFetch: Fetch; useManage: Manage};
 	modalField: Partial<Record<Action, ColUnion[]>>;
 	text: {
@@ -70,11 +72,11 @@ export type ColUnion = FieldForm<UnionToIntersection<Types>>;
 export type FieldForm<T extends {}> = {
 	col: keyof T;
 	label?: string;
+	editable?: boolean;
 } & (
 	| {type?: InputProps['type']}
 	| {
 			type: 'select';
-			editable?: boolean;
 			renderItem: TableProps<any>['renderItem'];
 			onSelect: (item: any) => string;
 			useFetch: () => UseQueryResult<AxiosResponse<unknown[], any>, unknown>;
@@ -86,6 +88,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		queries: {useFetch: useFetchMesin, useManage: useManageMesin},
 		table: {
 			header: ['Name', 'Nomor Mesin', 'Action'],
+			get body(): Body<TMesin> {
+				return ['name', 'nomor_mesin'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TMesin>[] {
@@ -107,6 +112,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		queries: {useFetch: useFetchCustomer, useManage: useManageCustomer},
 		table: {
 			header: ['Name', 'Action'],
+			get body(): Body<TCustomer> {
+				return ['name'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomer>[] {
@@ -128,6 +136,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		queries: {useFetch: useFetchCustomerPO, useManage: useManageCustomerPO},
 		table: {
 			header: ['Name', 'ID Customer', 'Action'],
+			get body(): Body<TCustomerPO> {
+				return ['name', 'id_customer'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomerPO>[] {
@@ -164,10 +175,24 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		table: {
 			header: ['Name', 'ID PO', 'Action'],
+			get body(): Body<TCustomerSPPBIn> {
+				return ['name', 'id_po'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomerSPPBIn>[] {
-				return [{col: 'name'}, {col: 'id_po'}];
+				return [
+					{col: 'name'},
+					{
+						col: 'id_po',
+						type: 'select',
+						useFetch: () => useFetchCustomerPO(),
+						onSelect: (item: TCustomerPO) => item.id,
+						renderItem: ({item}: MMapValue<TCustomerPO>) => (
+							<div>{item.id}</div>
+						),
+					},
+				];
 			},
 			get edit() {
 				return this.add;
@@ -188,10 +213,24 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		table: {
 			header: ['Name', 'ID PO', 'Action'],
+			get body(): Body<TCustomerSPPBOut> {
+				return ['name', 'id_po'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomerSPPBOut>[] {
-				return [{col: 'name'}, {col: 'id_po'}];
+				return [
+					{col: 'name'},
+					{
+						col: 'id_po',
+						type: 'select',
+						useFetch: () => useFetchCustomerPO(),
+						onSelect: (item: TCustomerPO) => item.id,
+						renderItem: ({item}: MMapValue<TCustomerPO>) => (
+							<div>{item.id}</div>
+						),
+					},
+				];
 			},
 			get edit() {
 				return this.add;
@@ -209,6 +248,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		queries: {useFetch: useFetchUser, useManage: useManageUser},
 		table: {
 			header: ['Name', 'Email', 'Role', 'Action'],
+			get body(): Body<TUser> {
+				return ['name', 'email', 'role'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TUser>[] {
@@ -235,6 +277,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		queries: {useFetch: useFetchRole, useManage: useManageRole},
 		table: {
 			header: ['Role', 'Action'],
+			get body(): Body<TRole> {
+				return ['name'];
+			},
 		},
 		modalField: {
 			get add(): FieldForm<TRole>[] {

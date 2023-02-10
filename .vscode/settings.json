@@ -1,6 +1,9 @@
 {
   "cSpell.words": [
-    "manajemen"
+    "manajemen",
+    "mesin",
+    "Nomor",
+    "SPPB"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

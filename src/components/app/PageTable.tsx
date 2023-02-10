@@ -78,13 +78,13 @@ const RenderPage = ({path}: {path: string}) => {
 				<Table
 					data={data?.data ?? []}
 					header={table.header}
-					renderItem={({item: {id, ...rest}}) => {
-						const restTd = Object.entries(rest);
+					renderItem={({item}) => {
+						const {id, ...rest} = item;
 
 						return (
 							<>
-								{restTd.map(([key, value]) => (
-									<td key={key}>{value}</td>
+								{table.body?.map?.(key => (
+									<td key={key}>{item[key]}</td>
 								))}
 								<td>
 									<div>
@@ -135,16 +135,18 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 	);
 };
 
-type Y = {control: Control; item: ColUnion};
+type RenderFieldProps = {control: Control; item: ColUnion};
 
-const RenderField = (props: Y) => {
+const RenderField = (props: RenderFieldProps) => {
 	const {control, item} = props;
-	const {col, label} = item;
+	const {col, label, editable} = item;
 
-	if (item.type === 'select') return <RenderSelect {...props} />;
+	if (item.type === 'select')
+		return <RenderSelect control={control} item={item} />;
 
 	return (
 		<Input
+			editable={editable}
 			type={item.type}
 			label={label}
 			control={control}
@@ -155,18 +157,20 @@ const RenderField = (props: Y) => {
 };
 
 const RenderSelect = ({
-	control,
 	item,
-}: Omit<Y, 'item'> & {
-	item: Extract<Y['item'], {type: 'select'}>;
+	control,
+}: {
+	item: Extract<RenderFieldProps['item'], {type: 'select'}>;
+	control: RenderFieldProps['control'];
 }) => {
-	const {col: name, renderItem, onSelect, useFetch} = item;
+	const {col: name, renderItem, editable, onSelect, useFetch} = item;
 
 	const {data} = useFetch();
 	const {field} = useController({control, name});
 
 	return (
 		<Select
+			editable={editable}
 			fieldName={name}
 			control={control}
 			data={data?.data ?? []}
