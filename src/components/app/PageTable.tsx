@@ -1,13 +1,7 @@
 import {useRef} from 'react';
 
 import {useRouter} from 'next/router';
-import {
-	Control,
-	useController,
-	useForm,
-	useFormState,
-	useWatch,
-} from 'react-hook-form';
+import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
 import {Input, Modal, ModalRef, Select, Table} from '@components';
@@ -29,7 +23,7 @@ const RenderPage = ({path}: {path: string}) => {
 		allowedPages[path as keyof typeof allowedPages];
 
 	const modalRef = useRef<ModalRef>(null);
-	const manageRole = queries?.useManage?.();
+	const manage = queries?.useManage?.();
 
 	const {data, refetch} = queries?.useFetch?.() ?? {};
 	const {control, handleSubmit, watch, reset} = useForm();
@@ -50,11 +44,11 @@ const RenderPage = ({path}: {path: string}) => {
 
 		switch (type) {
 			case 'add':
-				return manageRole.post.mutate(rest, {onSuccess});
+				return manage.post.mutate(rest, {onSuccess});
 			case 'edit':
-				return manageRole.put.mutate({...rest, id}, {onSuccess});
+				return manage.put.mutate({...rest, id}, {onSuccess});
 			case 'delete':
-				return manageRole.delete.mutate({id}, {onSuccess});
+				return manage.delete.mutate({id}, {onSuccess});
 			default:
 				return;
 		}
@@ -87,14 +81,12 @@ const RenderPage = ({path}: {path: string}) => {
 									<td key={key}>{item[key]}</td>
 								))}
 								<td>
-									<div>
-										<button onClick={() => showModal('edit', {id, ...rest})}>
-											Edit
-										</button>
-										<button onClick={() => showModal('delete', {id})}>
-											Delete
-										</button>
-									</div>
+									<button onClick={() => showModal('edit', {id, ...rest})}>
+										Edit
+									</button>
+									<button onClick={() => showModal('delete', {id})}>
+										Delete
+									</button>
 								</td>
 							</>
 						);
@@ -121,12 +113,8 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 
 	return (
 		<>
-			{modalType === 'add' &&
+			{(modalType === 'add' || modalType === 'edit') &&
 				modalField?.add?.map(item => (
-					<RenderField key={item.col} control={control} item={item} />
-				))}
-			{modalType === 'edit' &&
-				modalField?.edit?.map(item => (
 					<RenderField key={item.col} control={control} item={item} />
 				))}
 

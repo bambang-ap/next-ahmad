@@ -4,7 +4,7 @@ export type TableProps<T> = {
 	data: T[];
 	header?: string[];
 	renderItem: MMapCallback<T, JSX.Element>;
-	renderItemEach: MMapCallback<T, JSX.Element | false>;
+	renderItemEach?: MMapCallback<T, JSX.Element | false>;
 };
 
 export const Table = <T,>(props: TableProps<T>) => {

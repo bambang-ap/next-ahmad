@@ -135,15 +135,16 @@ export const allowedPages: Record<string, AllowedPages> = {
 	'/app/customer/po': {
 		queries: {useFetch: useFetchCustomerPO, useManage: useManageCustomerPO},
 		table: {
-			header: ['Name', 'ID Customer', 'Action'],
+			header: ['Name', 'Nomor PO', 'ID Customer', 'Action'],
 			get body(): Body<TCustomerPO> {
-				return ['name', 'id_customer'];
+				return ['name', 'nomor_po', 'id_customer', 'nomor_po'];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomerPO>[] {
 				return [
 					{col: 'name'},
+					{col: 'nomor_po'},
 					{
 						col: 'id_customer',
 						type: 'select',

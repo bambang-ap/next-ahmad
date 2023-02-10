@@ -6,3 +6,9 @@
 app: https://nextjs.org/
 
 UI: https://tailwindcss.com/docs
+
+
+PO
+	id(PK), nomor_po(unique), etc
+	SPPB In
+		id, nomor_po(FK -> nomor_po)

@@ -1,5 +1,5 @@
 import moment from 'moment';
-import {NextApiRequest, NextApiResponse} from 'next';
+import {NextApiHandler, NextApiRequest, NextApiResponse} from 'next';
 import {unstable_getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
 
@@ -56,4 +56,16 @@ export const getNow = () => {
 
 export const generateId = () => {
 	return `${uuid()}-${moment(getNow()).unix()}`;
+};
+
+export const checkCredential = async (
+	req: NextApiRequest,
+	res: NextApiResponse,
+	callback: NoopVoid | (() => Promise<void>),
+) => {
+	const {hasSession} = await getSession(req, res);
+
+	if (!hasSession) return Response(res).error('You have no credentials');
+
+	return callback();
 };
