@@ -65,4 +65,4 @@ function SelectComponent<T, F extends FieldValues>({
 	);
 }
 
-export const Select = withReactFormController(SelectComponent);
+export const Select = SelectComponent;

@@ -1,5 +1,6 @@
 import {signOut} from 'next-auth/react';
 
+import {Button} from '@components';
 import {useAuth} from '@hooks';
 
 export default function Header() {
@@ -7,7 +8,7 @@ export default function Header() {
 
 	return (
 		<div className="w-full h-10">
-			<button onClick={() => signOut({redirect: false})}>Logout</button>
+			<Button onClick={() => signOut({redirect: false})}>Logout</Button>
 		</div>
 	);
 }

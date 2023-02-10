@@ -3,7 +3,7 @@ import {useRef} from 'react';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalTypePreview, TCustomerPO} from '@appTypes/app.type';
-import {Modal, ModalRef, Table} from '@components';
+import {Button, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchCustomerPO, useManageCustomerPO} from '@queries';
 
@@ -60,7 +60,7 @@ export default function POCustomer() {
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
-				<button onClick={() => showModal('add', {})}>Add</button>
+				<Button onClick={() => showModal('add', {})}>Add</Button>
 
 				<Table
 					data={data?.data ?? []}
@@ -74,11 +74,11 @@ export default function POCustomer() {
 								<td>{nomor_po}</td>
 								<td>{id_customer}</td>
 								<td>
-									<button>Preview</button>
-									<button onClick={() => showModal('edit', item)}>Edit</button>
-									<button onClick={() => showModal('delete', {id})}>
+									<Button>Preview</Button>
+									<Button onClick={() => showModal('edit', item)}>Edit</Button>
+									<Button onClick={() => showModal('delete', {id})}>
 										Delete
-									</button>
+									</Button>
 								</td>
 							</>
 						);
@@ -96,14 +96,14 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 		return (
 			<div>
 				<label>Hapus ?</label>
-				<button type="submit">Ya</button>
+				<Button type="submit">Ya</Button>
 			</div>
 		);
 	}
 
 	return (
 		<>
-			<button type="submit">Submit</button>
+			<Button type="submit">Submit</Button>
 		</>
 	);
 };

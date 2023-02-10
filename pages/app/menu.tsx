@@ -5,7 +5,7 @@ import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
 
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu} from '@appTypes/app.type';
-import {IconForm, Input, Modal, ModalRef, Table} from '@components';
+import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchMenu, useFetchRole, useManageMenu} from '@queries';
 
@@ -87,7 +87,7 @@ export default function Menu() {
 			</Modal>
 
 			<form onSubmit={submit}>
-				<button type="submit">Submit</button>
+				<Button type="submit">Submit</Button>
 				<RenderMenu
 					modalRef={modalRef}
 					control={control}

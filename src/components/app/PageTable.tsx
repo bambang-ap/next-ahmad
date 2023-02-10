@@ -4,7 +4,7 @@ import {useRouter} from 'next/router';
 import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
-import {Input, Modal, ModalRef, Select, Table} from '@components';
+import {Button, Input, Modal, ModalRef, Select, Table} from '@components';
 import {allowedPages, ColUnion} from '@constants';
 
 export const PageTable = () => {
@@ -67,7 +67,7 @@ const RenderPage = ({path}: {path: string}) => {
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
-				<button onClick={() => showModal('add', {})}>Add</button>
+				<Button onClick={() => showModal('add', {})}>Add</Button>
 
 				<Table
 					data={data?.data ?? []}
@@ -81,12 +81,12 @@ const RenderPage = ({path}: {path: string}) => {
 									<td key={key}>{item[key]}</td>
 								))}
 								<td>
-									<button onClick={() => showModal('edit', {id, ...rest})}>
+									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
-									</button>
-									<button onClick={() => showModal('delete', {id})}>
+									</Button>
+									<Button onClick={() => showModal('delete', {id})}>
 										Delete
-									</button>
+									</Button>
 								</td>
 							</>
 						);
@@ -106,7 +106,7 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 		return (
 			<div>
 				<label>Hapus ?</label>
-				<button type="submit">Ya</button>
+				<Button type="submit">Ya</Button>
 			</div>
 		);
 	}
@@ -118,7 +118,7 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 					<RenderField key={item.col} control={control} item={item} />
 				))}
 
-			<button type="submit">Submit</button>
+			<Button type="submit">Submit</Button>
 		</>
 	);
 };

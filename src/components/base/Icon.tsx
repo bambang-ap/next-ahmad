@@ -12,7 +12,7 @@ export type IconProps = {
 	onClick?: NoopVoid;
 };
 
-export const IconForm = withReactFormController(IconFormComponent);
+export const IconForm = IconFormComponent;
 
 export function Icon({name, onClick, className}: IconProps) {
 	if (!name) return null;

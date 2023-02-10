@@ -3,7 +3,7 @@ import React from 'react';
 import {useRouter} from 'next/router';
 
 import {TMenu} from '@appTypes/app.type';
-import {Icon} from '@components';
+import {Button, ButtonProps, Icon} from '@components';
 import {useFetchMenu} from '@queries';
 
 export const SideBar = () => {
@@ -21,25 +21,28 @@ export const SideBar = () => {
 };
 
 const RenderMenu = ({data}: {data?: TMenu[]}) => {
-	const {push, pathname} = useRouter();
+	const {push, isReady, asPath} = useRouter();
+
+	if (!isReady) return null;
 
 	return (
 		<div className="ml-6 space-y-2">
 			{data?.map(({title, icon, path, subMenu}) => {
-				const selectedClassName =
-					path === pathname ? 'border border-app-accent-04' : '';
+				const selectedVariant: ButtonProps['variant'] =
+					path === asPath ? 'primary' : 'secondary';
 				const redirect = () => {
 					if (path) push(path);
 				};
 				return (
 					<div className="flex flex-col w-full" key={title}>
-						<button
-							onClick={redirect}
-							className={`${selectedClassName} items-center rounded p-2 flex cursor-pointer`}>
-							<Icon className="text-app-neutral-00 mr-2" name={icon} />
-							<div className="text-app-neutral-00 text-left">{title}</div>
-						</button>
-						{subMenu?.length > 0 && <RenderMenu data={subMenu} />}
+						<Button variant={selectedVariant} icon={icon} onClick={redirect}>
+							{title}
+						</Button>
+						{subMenu?.length > 0 && (
+							<div className="mt-2">
+								<RenderMenu data={subMenu} />
+							</div>
+						)}
 					</div>
 				);
 			})}
