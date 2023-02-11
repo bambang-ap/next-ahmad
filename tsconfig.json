@@ -10,7 +10,11 @@
     "incremental": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "module": "ESNext",
     "moduleResolution": "node",
     "noEmit": true,
@@ -29,8 +33,58 @@
     "skipLibCheck": true,
     "sourceMap": true,
     "strict": true,
-    "target": "ESNext"
+    "target": "ESNext",
+    "baseUrl": ".",
+    "paths": {
+      "@server": [
+        "./server"
+      ],
+      "@database": [
+        "./server/database"
+      ],
+      "@appTypes/*": [
+        "./src/appTypes/*"
+      ],
+      "@components": [
+        "./src/components"
+      ],
+      "@appComponent/*": [
+        "./src/components/app/*"
+      ],
+      "@constants": [
+        "./src/constants"
+      ],
+      "@enum": [
+        "./src/constants/enum"
+      ],
+      "@hooks": [
+        "./src/hooks"
+      ],
+      "@hoc": [
+        "./src/hoc"
+      ],
+      "@formController": [
+        "./src/hoc/withReactFormController"
+      ],
+      "@queries": [
+        "./src/queries"
+      ],
+      "@utils": [
+        "./src/utils"
+      ],
+      "@recoil/*": [
+        "./src/recoil/*"
+      ]
+    }
   },
-  "exclude": [".next", "node_modules"],
-  "include": [".next/types/**/*.ts", "next-env.d.ts", "**/*.ts", "**/*.tsx"]
+  "exclude": [
+    ".next",
+    "node_modules"
+  ],
+  "include": [
+    ".next/types/**/*.ts",
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx"
+  ]
 }

@@ -1,0 +1,12 @@
+{
+	"recommendations": [
+		"bradlc.vscode-tailwindcss",
+		"eamodio.gitlens",
+		"esbenp.prettier-vscode",
+		"jgclark.vscode-todo-highlight",
+		"kisstkondoros.vscode-codemetrics",
+		"streetsidesoftware.code-spell-checker",
+		"usernamehw.errorlens",
+		"waderyan.gitblame"
+	]
+}
