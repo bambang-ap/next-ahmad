@@ -4,7 +4,7 @@ import {useRouter} from 'next/router';
 import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
-import {Button, Input, Modal, ModalRef, Select, Table} from '@components';
+import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
 
 export const PageTable = () => {
@@ -78,7 +78,9 @@ const RenderPage = ({path}: {path: string}) => {
 						return (
 							<>
 								{table.body?.map?.(key => (
-									<td key={key}>{item[key]}</td>
+									<td key={key}>
+										<Text>{item[key]}</Text>
+									</td>
 								))}
 								<td className="flex">
 									<Button onClick={() => showModal('edit', {id, ...rest})}>

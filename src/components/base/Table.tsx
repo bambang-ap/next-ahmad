@@ -1,5 +1,7 @@
 import {Fragment} from 'react';
 
+import {Text} from '@components';
+
 export type TableProps<T> = {
 	data: T[];
 	header?: string[];
@@ -17,7 +19,9 @@ export const Table = <T,>(props: TableProps<T>) => {
 					<thead>
 						<tr>
 							{header.map(head => (
-								<th key={head}>{head}</th>
+								<th key={head}>
+									<Text>{head}</Text>
+								</th>
 							))}
 						</tr>
 					</thead>

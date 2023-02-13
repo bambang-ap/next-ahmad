@@ -3,7 +3,7 @@ import {useRef} from 'react';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalTypePreview, TCustomerPO} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Table} from '@components';
+import {Button, Modal, ModalRef, Table, Text} from '@components';
 import {getLayout} from '@hoc';
 import {useFetchCustomerPO, useManageCustomerPO} from '@queries';
 
@@ -70,9 +70,15 @@ export default function POCustomer() {
 
 						return (
 							<>
-								<td>{name}</td>
-								<td>{nomor_po}</td>
-								<td>{id_customer}</td>
+								<td>
+									<Text>{name}</Text>
+								</td>
+								<td>
+									<Text>{nomor_po}</Text>
+								</td>
+								<td>
+									<Text>{id_customer}</Text>
+								</td>
 								<td className="flex">
 									<Button>Preview</Button>
 									<Button onClick={() => showModal('edit', item)}>Edit</Button>

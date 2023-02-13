@@ -1,4 +1,4 @@
-import {Navbar} from 'flowbite-react';
+import {DarkThemeToggle, Navbar} from 'flowbite-react';
 import {signOut} from 'next-auth/react';
 import {useRecoilState} from 'recoil';
 
@@ -18,7 +18,7 @@ export default function Header() {
 				onClick={() => setSidebarOpen(e => !e)}
 			/>
 			<Button onClick={() => signOut({redirect: false})}>Logout</Button>
-			{/* <DarkThemeToggle /> */}
+			<DarkThemeToggle />
 		</Navbar>
 	);
 }
