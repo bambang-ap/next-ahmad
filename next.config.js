@@ -1,12 +1,9 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
-	experimental: {
-		appDir: true,
-	},
 	images: {
 		domains: ['flowbite.com'],
 	},
-	reactStrictMode: true,
+	reactStrictMode: false,
 	swcMinify: true,
 };
 

@@ -1,8 +1,7 @@
 export * from './colors';
-export * from './sizes';
 export * from './pages';
+export * from './sizes';
 
-export const focusInputClassName =
-	'border focus-within:border-app-secondary-03';
+export const focusInputClassName = 'border border-app-secondary-03';
 
 export const inputClassName = 'px-2 py-1 rounded';

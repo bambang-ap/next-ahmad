@@ -1,0 +1,38 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html,
+body,
+#__next {
+	height: 100vh;
+	margin: 0;
+	overflow: hidden;
+}
+
+div.container {
+	max-width: 300px;
+	height: 200px;
+	display: flex;
+	flex-direction: column;
+}
+
+div.head {
+	background: gray;
+	flex: 0;
+}
+
+div.body {
+	position: relative; /* <------------------------- required */
+	background: silver;
+	flex: 1;
+}
+
+div.scrolled-body {
+	position: absolute; /* <------------------------- required */
+	left: 0;
+	top: 0;
+	right: 0;
+	bottom: 0; /* <------- required */
+	overflow-y: auto; /* <--------------------------- required */
+}
