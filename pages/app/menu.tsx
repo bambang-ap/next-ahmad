@@ -1,4 +1,4 @@
-import {Fragment, MutableRefObject, useEffect, useRef} from 'react';
+import {MutableRefObject, useEffect, useRef} from 'react';
 
 import {Control, useForm, UseFormSetValue} from 'react-hook-form';
 import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
@@ -116,11 +116,11 @@ const RenderMenu = (props: {
 		<Table
 			data={data ?? []}
 			header={noHeader ? undefined : ['Title', 'Icon', 'Role']}
-			renderItemEach={({item: {subMenu}}) => {
+			renderItemEach={({item: {subMenu}, Cell}) => {
 				if (subMenu?.length <= 0) return false;
 
 				return (
-					<td colSpan={3}>
+					<Cell colSpan={3}>
 						<RenderMenu
 							noHeader
 							setValue={setValue}
@@ -128,16 +128,16 @@ const RenderMenu = (props: {
 							control={control}
 							data={subMenu}
 						/>
-					</td>
+					</Cell>
 				);
 			}}
-			renderItem={({item: {id}}) => {
+			renderItem={({item: {id}, Cell}) => {
 				return (
 					<>
-						<td>
+						<Cell>
 							<Input control={control} fieldName={`${id}.title`} />
-						</td>
-						<td>
+						</Cell>
+						<Cell>
 							<IconForm
 								control={control}
 								fieldName={`${id}.icon`}
@@ -146,11 +146,12 @@ const RenderMenu = (props: {
 									modalRef.current?.show();
 								}}
 							/>
-						</td>
-						<td className="flex">
+						</Cell>
+						<Cell className="flex">
 							{dataRole?.data.map(role => {
 								return (
 									<Input
+										className="mr-2"
 										type="checkbox"
 										key={role.id}
 										control={control}
@@ -159,7 +160,7 @@ const RenderMenu = (props: {
 									/>
 								);
 							})}
-						</td>
+						</Cell>
 					</>
 				);
 			}}

@@ -36,6 +36,9 @@
     "target": "ESNext",
     "baseUrl": ".",
     "paths": {
+      "@tailwind/*": [
+        "./tailwind/*"
+      ],
       "@server": [
         "./server"
       ],

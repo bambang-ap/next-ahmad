@@ -1,6 +1,7 @@
-import React, {forwardRef, useImperativeHandle, useState} from 'react';
+import {forwardRef, useImperativeHandle, useState} from 'react';
 
 import {Icon} from './Icon';
+import {Text} from './Text';
 
 export type ModalRef = {
 	show: (callback?: () => Promise<void>) => void;
@@ -43,12 +44,12 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 
 	return (
 		<>
-			<div className="opacity-25 fixed inset-0 z-40 bg-black"></div>
+			<div className="opacity-75 dark:opacity-40 fixed inset-0 z-40 bg-black dark:bg-white"></div>
 			<div className="justify-center items-center flex overflow-x-hidden overflow-y-auto fixed inset-0 z-50 outline-none focus:outline-none">
 				<div className="relative w-auto my-6 mx-auto max-w-3xl">
-					<div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white outline-none focus:outline-none">
+					<div className="border-0 rounded-lg shadow-lg relative flex flex-col w-full bg-white dark:bg-gray-800 outline-none focus:outline-none">
 						<div className="flex items-start justify-between p-5 border-b border-solid border-slate-200 rounded-t">
-							<h3 className="text-3xl font-semibold">{title}</h3>
+							<Text className="text-3xl font-semibold">{title}</Text>
 							<Icon onClick={() => hide()} name="faClose" />
 						</div>
 						<div className="max-h-[200px] overflow-auto">

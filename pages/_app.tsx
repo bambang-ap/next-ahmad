@@ -8,6 +8,8 @@ import {ReactQueryDevtools} from 'node_modules/@tanstack/react-query-devtools/bu
 import {RecoilRoot} from 'recoil';
 import {AppPropsWithLayout} from 'src/appTypes/props.type';
 
+import {themeClassName} from '@tailwind/theme';
+
 const queryClient = new QueryClient({
 	defaultOptions: {queries: {refetchOnWindowFocus: false}},
 });
@@ -19,7 +21,11 @@ export default function App({
 	const getLayout = Component.getLayout ?? (page => page);
 
 	return (
-		<Flowbite theme={{dark: true}}>
+		<Flowbite
+			theme={{
+				dark: true,
+				theme: themeClassName,
+			}}>
 			<QueryClientProvider client={queryClient}>
 				<ReactQueryDevtools />
 				<RecoilRoot>

@@ -1,10 +1,11 @@
+import * as svgIcon from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FieldValues} from 'react-hook-form';
+
 import {
 	ControlledComponentProps,
 	withReactFormController,
 } from '@formController';
-import * as svgIcon from '@fortawesome/free-solid-svg-icons';
-import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
-import {FieldValues} from 'react-hook-form';
 
 type IconName = Exclude<keyof typeof svgIcon, 'prefix' | 'fas'>;
 
@@ -22,7 +23,7 @@ export function Icon({name, onClick, className}: IconProps) {
 	return (
 		<FontAwesomeIcon
 			onClick={onClick}
-			className={className}
+			className={`text-app-neutral-10 dark:text-white ${className}`}
 			icon={svgIcon[name as IconName]}
 		/>
 	);

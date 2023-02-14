@@ -1,11 +1,12 @@
 import {FieldValues} from 'react-hook-form';
 
-import {Icon} from '@components';
+import {Icon, Text} from '@components';
 import {focusInputClassName, inputClassName} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
 } from '@formController';
+import {classNames} from '@utils';
 
 export type InputProps = {
 	className?: string;
@@ -47,15 +48,16 @@ function InputComponent<F extends FieldValues>(
 		}
 
 		return (
-			<div className={`cursor-pointer ${className}`} onClick={onCheck}>
-				<input
-					{...field}
-					className="focus:outline-none"
-					type="checkbox"
-					checked={value}
-					onClick={onCheck}
-				/>
-				<label>{label}</label>
+			<div
+				className={classNames(
+					`flex items-center cursor-pointer !px-0 !py-0`,
+					className,
+				)}
+				onClick={onCheck}>
+				<div className="flex justify-center items-center mr-2 border rounded h-6 w-6">
+					{value && <Icon name="faCheck" />}
+				</div>
+				<Text>{label}</Text>
 				{errorMessage}
 			</div>
 		);
@@ -63,11 +65,12 @@ function InputComponent<F extends FieldValues>(
 
 	return (
 		<div className="pb-2">
-			<label>{label}</label>
-			<div className={`${className} ${inputClassName} ${focusInputClassName}`}>
+			<Text>{label}</Text>
+			<div
+				className={classNames(className, inputClassName, focusInputClassName)}>
 				<input
 					placeholder={placeholder}
-					className="focus:outline-none w-full"
+					className="bg-transparent focus:outline-none w-full"
 					value={value}
 					{...field}
 				/>
