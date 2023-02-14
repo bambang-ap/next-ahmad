@@ -2,7 +2,15 @@ import {Button as ButtonFlowbite} from 'flowbite-react';
 
 import {Icon, IconProps, TouchableProps} from '@components';
 export type ButtonProps = TouchableProps & {
-	variant?: 'primary' | 'secondary';
+	variant?:
+		| 'dark'
+		| 'failure'
+		| 'gray'
+		| 'info'
+		| 'light'
+		| 'purple'
+		| 'success'
+		| 'warning';
 	icon?: IconProps['name'];
 	iconClassName?: string;
 	children?: string;
@@ -14,7 +22,7 @@ export function Button(props: ButtonProps) {
 		iconClassName,
 		children,
 		icon,
-		variant = 'primary',
+		variant = 'light',
 		...rest
 	} = props;
 

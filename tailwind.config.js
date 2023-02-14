@@ -16,13 +16,8 @@ module.exports = {
 	plugins: [require('flowbite/plugin')],
 	theme: {
 		extend: {
-			colors,
 			fontFamily: {
 				'noto-sans': ['Noto Sans', 'Noto Sans_bold'],
-			},
-			fontSize: {
-				'app-body': 13,
-				'app-header': 28,
 			},
 		},
 	},

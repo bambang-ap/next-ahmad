@@ -1,15 +1,12 @@
-import {classNames} from '@utils';
+import {ReactNode} from 'react';
+
+import {Label} from 'flowbite-react';
 
 type TextProps = {
-	children?: string;
+	children?: ReactNode;
 	className?: string;
 };
 
 export function Text({children, className}: TextProps) {
-	return (
-		<label
-			className={classNames('text-app-neutral-10 dark:text-white', className)}>
-			{children}
-		</label>
-	);
+	return <Label className={className}>{children}</Label>;
 }

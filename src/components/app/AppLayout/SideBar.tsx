@@ -1,4 +1,5 @@
 import classNames from 'classnames';
+import {Sidebar as Sidebaree} from 'flowbite-react';
 import Link from 'next/link';
 import {useRouter} from 'next/router';
 
@@ -11,13 +12,54 @@ export const SideBar = () => {
 
 	const mappedMenu = data?.data.slice().nest('subMenu', 'id', 'parent_id');
 
-	return <RenderMenu data={mappedMenu} />;
+	return (
+		<Sidebaree>
+			<Sidebaree.Items>
+				<Sidebaree.ItemGroup>
+					<RenderMenu data={mappedMenu} />
+				</Sidebaree.ItemGroup>
+			</Sidebaree.Items>
+		</Sidebaree>
+	);
 };
+
+const RenderLink = (props: GetProps<typeof Link>) => <Link {...props} />;
 
 const RenderMenu = ({data}: {data?: TMenu[]}) => {
 	const {isReady, asPath} = useRouter();
 
 	if (!isReady) return null;
+
+	return (
+		<>
+			{data?.map(({id, title, icon, path, subMenu}) => {
+				const pathRedirect = typeof path === 'string' ? path : '';
+				const isSelected = path === asPath;
+
+				if (subMenu.length > 0) {
+					return (
+						<Sidebaree.Collapse
+							key={id}
+							label={title}
+							icon={() => <Icon name={icon} />}>
+							<RenderMenu data={subMenu} />
+						</Sidebaree.Collapse>
+					);
+				}
+
+				return (
+					<Sidebaree.Item
+						icon={() => <Icon name={icon} />}
+						className={isSelected ? 'wasd' : 'jklm'}
+						key={id}
+						href={pathRedirect}
+						as={RenderLink}>
+						{title}
+					</Sidebaree.Item>
+				);
+			})}
+		</>
+	);
 
 	return (
 		<ul>

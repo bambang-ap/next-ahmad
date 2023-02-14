@@ -1,6 +1,6 @@
 import {FC, Fragment} from 'react';
 
-import {Table as Tablee, TableCellProps} from 'flowbite-react';
+import {Table as TableFlowbite, TableCellProps} from 'flowbite-react';
 
 type TRenderItem<T, R> = (
 	value: MMapValue<T> & {Cell: FC<TableCellProps>},
@@ -19,30 +19,34 @@ export const Table = <T,>(props: TableProps<T>) => {
 
 	return (
 		<div className="w-full">
-			<Tablee striped>
+			<TableFlowbite striped>
 				{header && (
-					<Tablee.Head>
+					<TableFlowbite.Head>
 						{header.map(head => (
-							<Tablee.HeadCell key={head}>{head}</Tablee.HeadCell>
+							<TableFlowbite.HeadCell key={head}>{head}</TableFlowbite.HeadCell>
 						))}
-					</Tablee.Head>
+					</TableFlowbite.Head>
 				)}
-				<Tablee.Body>
+				<TableFlowbite.Body>
 					{data.mmap((item, index) => {
-						const itemWithCell = {...item, Cell: Tablee.Cell};
+						const itemWithCell = {...item, Cell: TableFlowbite.Cell};
 						const isRenderEach = renderItemEach?.(itemWithCell, index);
 
 						return (
 							<Fragment key={index}>
-								<Tablee.Row>{renderItem?.(itemWithCell, index)}</Tablee.Row>
+								<TableFlowbite.Row>
+									{renderItem?.(itemWithCell, index)}
+								</TableFlowbite.Row>
 								{isRenderEach && renderItemEach && (
-									<Tablee.Row>{renderItemEach(itemWithCell, index)}</Tablee.Row>
+									<TableFlowbite.Row>
+										{renderItemEach(itemWithCell, index)}
+									</TableFlowbite.Row>
 								)}
 							</Fragment>
 						);
 					})}
-				</Tablee.Body>
-			</Tablee>
+				</TableFlowbite.Body>
+			</TableFlowbite>
 		</div>
 	);
 };

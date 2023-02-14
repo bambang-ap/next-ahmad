@@ -72,24 +72,24 @@ const RenderPage = ({path}: {path: string}) => {
 				<Table
 					data={data?.data ?? []}
 					header={table.header}
-					renderItem={({item}) => {
+					renderItem={({item, Cell}) => {
 						const {id, ...rest} = item;
 
 						return (
 							<>
 								{table.body?.map?.(key => (
-									<td key={key}>
+									<Cell key={key}>
 										<Text>{item[key]}</Text>
-									</td>
+									</Cell>
 								))}
-								<td className="flex">
+								<Cell className="flex">
 									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
 									</Button>
 									<Button onClick={() => showModal('delete', {id})}>
 										Delete
 									</Button>
-								</td>
+								</Cell>
 							</>
 						);
 					}}

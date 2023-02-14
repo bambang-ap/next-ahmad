@@ -1,3 +1,4 @@
+import {TextInput as InputFlowbite} from 'flowbite-react';
 import {FieldValues} from 'react-hook-form';
 
 import {Icon, Text} from '@components';
@@ -36,10 +37,10 @@ function InputComponent<F extends FieldValues>(
 	} = controller;
 
 	const errorMessage = fieldState.error?.message && (
-		<label className="text-app-secondary-03 flex items-center">
+		<Text className="text-app-secondary-03 flex items-center">
 			<Icon name="faWarning" className="mr-2" />
 			{fieldState.error?.message}
-		</label>
+		</Text>
 	);
 
 	if (type === 'checkbox') {
@@ -64,13 +65,21 @@ function InputComponent<F extends FieldValues>(
 	}
 
 	return (
+		<div className="flex">
+			{label && <Text className="mb-2">{label}</Text>}
+			<InputFlowbite placeholder={placeholder} value={value} {...field} />
+			{errorMessage}
+		</div>
+	);
+
+	return (
 		<div className="pb-2">
 			<Text>{label}</Text>
 			<div
 				className={classNames(className, inputClassName, focusInputClassName)}>
 				<input
-					placeholder={placeholder}
 					className="bg-transparent focus:outline-none w-full"
+					placeholder={placeholder}
 					value={value}
 					{...field}
 				/>

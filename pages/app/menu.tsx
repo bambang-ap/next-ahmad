@@ -135,7 +135,11 @@ const RenderMenu = (props: {
 				return (
 					<>
 						<Cell>
-							<Input control={control} fieldName={`${id}.title`} />
+							<Input
+								label="sjdfkjsdjf"
+								control={control}
+								fieldName={`${id}.title`}
+							/>
 						</Cell>
 						<Cell>
 							<IconForm
