@@ -2,8 +2,6 @@
  * @type {import('@types/tailwindcss/tailwind-config').TailwindConfig}
  */
 
-const colors = require('./tailwind/colors');
-
 module.exports = {
 	content: [
 		'./node_modules/flowbite/**/*.js',

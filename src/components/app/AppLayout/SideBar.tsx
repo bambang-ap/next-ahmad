@@ -26,19 +26,33 @@ export const SideBar = () => {
 const RenderLink = (props: GetProps<typeof Link>) => <Link {...props} />;
 
 const RenderMenu = ({data}: {data?: TMenu[]}) => {
-	const {isReady, asPath} = useRouter();
+	const {isReady, push, asPath} = useRouter();
 
 	if (!isReady) return null;
 
 	return (
 		<>
 			{data?.map(({id, title, icon, path, subMenu}) => {
-				const pathRedirect = typeof path === 'string' ? path : '';
+				const hasPath = typeof path === 'string';
+				const pathRedirect = hasPath ? path : '';
 				const isSelected = path === asPath;
 
 				if (subMenu.length > 0) {
+					const d = hasPath && {
+						onClick(e) {
+							function isE(node) {
+								if (node?.localName === 'button') return node?.parentElement;
+								return isE(node?.parentElement);
+							}
+							const er = isE(e.target);
+							er.lastChild.toggleAttribute('hidden');
+							if (!isSelected) push(pathRedirect);
+						},
+					};
+
 					return (
 						<Sidebaree.Collapse
+							{...d}
 							key={id}
 							label={title}
 							icon={() => <Icon name={icon} />}>
