@@ -76,16 +76,16 @@ export default function POCustomer() {
 
 				<Table
 					data={data?.data ?? []}
-					header={['Name', 'Nomor PO', 'ID Customer', 'Action']}
+					header={['Name', 'Nomor PO', 'Customer', 'Action']}
 					renderItem={({item, Cell}) => {
-						const {id, id_customer, name, nomor_po} = item;
+						const {id, name, customer, nomor_po} = item;
 
 						return (
 							<>
 								<Cell>{name}</Cell>
 								<Cell>{nomor_po}</Cell>
-								<Cell>{id_customer}</Cell>
-								<Cell>
+								<Cell>{customer?.name}</Cell>
+								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('preview', item)}>
 										Preview
 									</Button>
@@ -137,7 +137,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 	}
 
 	return (
-		<>
+		<div className="gap-y-2 flex flex-col">
 			<Input disabled={isPreview} control={control} fieldName="name" />
 			<Input disabled={isPreview} control={control} fieldName="nomor_po" />
 			<Select
@@ -149,7 +149,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 			/>
 
 			{!isPreview && (
-				<div className="flex">
+				<div className="gap-x-2 flex">
 					<div className="flex-1">
 						<Input
 							disabled={isPreview}
@@ -184,6 +184,6 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 					Submit
 				</Button>
 			)}
-		</>
+		</div>
 	);
 };

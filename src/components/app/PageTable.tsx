@@ -82,7 +82,7 @@ const RenderPage = ({path}: {path: string}) => {
 										<Text>{item[key]}</Text>
 									</Cell>
 								))}
-								<Cell className="flex">
+								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
 									</Button>

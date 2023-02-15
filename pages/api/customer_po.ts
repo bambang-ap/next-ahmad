@@ -1,6 +1,7 @@
 import {NextApiHandler, NextApiRequest, NextApiResponse} from 'next';
 
-import {OrmCustomerPO, OrmCustomerPOItem} from '@database';
+import {TCustomerPO} from '@appTypes/app.type';
+import {OrmCustomer, OrmCustomerPO, OrmCustomerPOItem} from '@database';
 import {checkCredential, Response} from '@server';
 
 const apiCustomerPO: NextApiHandler = async (req, res) => {
@@ -20,10 +21,15 @@ export default apiCustomerPO;
 
 async function getCustomerPO(_: NextApiRequest, res: NextApiResponse) {
 	const allPO = await OrmCustomerPO.findAll({raw: true});
-	const joinedPOPromises = allPO.map(async ({nomor_po, ...rest}) => {
-		const po_item = await OrmCustomerPOItem.findAll({where: {nomor_po}});
-		return {nomor_po, ...rest, po_item};
-	});
+	const joinedPOPromises = allPO.map(
+		async ({nomor_po, id_customer, ...rest}: TCustomerPO) => {
+			const po_item = await OrmCustomerPOItem.findAll({where: {nomor_po}});
+			const customer = await OrmCustomer.findOne({
+				where: {id: id_customer},
+			});
+			return {nomor_po, id_customer, customer, po_item, ...rest};
+		},
+	);
 	const joinedPO = await Promise.all(joinedPOPromises);
 	return Response(res).success(joinedPO);
 }
