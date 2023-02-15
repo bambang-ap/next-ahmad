@@ -1,11 +1,12 @@
 import {DataTypes} from 'sequelize';
 
 import {TMenu} from '@appTypes/app.type';
+import {TABLES} from '@enum';
 
 import {defaultExcludeColumn, DefinedModel, ORM} from './_init';
 
 export const OrmMenu: DefinedModel<Omit<TMenu, 'subMenu'>> = ORM.define(
-	'Menu',
+	TABLES.MENU,
 	{
 		title: {type: DataTypes.STRING, allowNull: false},
 		parent_id: {type: DataTypes.STRING},
@@ -14,7 +15,7 @@ export const OrmMenu: DefinedModel<Omit<TMenu, 'subMenu'>> = ORM.define(
 		accepted_role: {type: DataTypes.STRING, allowNull: false},
 	},
 	{
-		tableName: 'menu',
+		tableName: TABLES.MENU,
 		defaultScope: {
 			attributes: {
 				exclude: defaultExcludeColumn,

@@ -2,23 +2,24 @@ import {FC, Fragment} from 'react';
 
 import {Table as TableFlowbite, TableCellProps} from 'flowbite-react';
 
-type TRenderItem<T, R> = (
-	value: MMapValue<T> & {Cell: FC<TableCellProps>},
-	index: number,
-) => R;
+import {classNames} from '@utils';
 
-export type TableProps<T> = {
+type VV = {Cell: FC<TableCellProps>};
+type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
+
+export type TableProps<T, VV = {}> = {
 	data: T[];
 	header?: string[];
-	renderItem?: TRenderItem<T, JSX.Element>;
-	renderItemEach?: TRenderItem<T, JSX.Element | false>;
+	className?: string;
+	renderItem?: TRenderItem<T, JSX.Element, VV>;
+	renderItemEach?: TRenderItem<T, JSX.Element | false, VV>;
 };
 
-export const Table = <T,>(props: TableProps<T>) => {
-	const {data, header, renderItem, renderItemEach} = props;
+export const Table = <T,>(props: TableProps<T, VV>) => {
+	const {data, header, className, renderItem, renderItemEach} = props;
 
 	return (
-		<div className="w-full">
+		<div className={classNames('w-full', className)}>
 			<TableFlowbite striped>
 				{header && (
 					<TableFlowbite.Head>

@@ -1,11 +1,23 @@
 import {useRef} from 'react';
 
-import {Control, useForm, useWatch} from 'react-hook-form';
+import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomerPO} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Table, Text} from '@components';
+import {ModalTypePreview, TCustomerPO, TPOItem} from '@appTypes/app.type';
+import {
+	Button,
+	Input,
+	Modal,
+	ModalRef,
+	Select,
+	SelectPropsData,
+	Table,
+} from '@components';
 import {getLayout} from '@hoc';
-import {useFetchCustomerPO, useManageCustomerPO} from '@queries';
+import {
+	useFetchCustomer,
+	useFetchCustomerPO,
+	useManageCustomerPO,
+} from '@queries';
 
 type FormType = TCustomerPO & {
 	type: ModalTypePreview;
@@ -65,27 +77,23 @@ export default function POCustomer() {
 				<Table
 					data={data?.data ?? []}
 					header={['Name', 'Nomor PO', 'ID Customer', 'Action']}
-					renderItem={({item}) => {
+					renderItem={({item, Cell}) => {
 						const {id, id_customer, name, nomor_po} = item;
 
 						return (
 							<>
-								<td>
-									<Text>{name}</Text>
-								</td>
-								<td>
-									<Text>{nomor_po}</Text>
-								</td>
-								<td>
-									<Text>{id_customer}</Text>
-								</td>
-								<td className="flex">
-									<Button>Preview</Button>
+								<Cell>{name}</Cell>
+								<Cell>{nomor_po}</Cell>
+								<Cell>{id_customer}</Cell>
+								<Cell>
+									<Button onClick={() => showModal('preview', item)}>
+										Preview
+									</Button>
 									<Button onClick={() => showModal('edit', item)}>Edit</Button>
 									<Button onClick={() => showModal('delete', {id})}>
 										Delete
 									</Button>
-								</td>
+								</Cell>
 							</>
 						);
 					}}
@@ -96,7 +104,28 @@ export default function POCustomer() {
 }
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
-	const modalType = useWatch({control, name: 'type'});
+	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
+
+	const {data} = useFetchCustomer();
+	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
+	const {
+		field: {onChange: onChangePoItem},
+	} = useController({control, name: 'po_item'});
+
+	const isPreview = modalType === 'preview';
+	const mappedData = (data?.data ?? []).map<SelectPropsData>(({name, id}) => ({
+		label: name,
+		value: id,
+	}));
+
+	const submitItem = handleSubmit(({name}) => {
+		onChangePoItem([{name}].concat(poItem ?? []));
+		reset({name: ''});
+	});
+
+	function removeItem(index: number) {
+		onChangePoItem(poItem?.remove(index));
+	}
 
 	if (modalType === 'delete') {
 		return (
@@ -109,7 +138,52 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 	return (
 		<>
-			<Button type="submit">Submit</Button>
+			<Input disabled={isPreview} control={control} fieldName="name" />
+			<Input disabled={isPreview} control={control} fieldName="nomor_po" />
+			<Select
+				disabled={isPreview}
+				firstOption="- Pilih customer -"
+				control={control}
+				data={mappedData}
+				fieldName="id_customer"
+			/>
+
+			{!isPreview && (
+				<div className="flex">
+					<div className="flex-1">
+						<Input
+							disabled={isPreview}
+							control={poItemControl}
+							fieldName="name"
+						/>
+					</div>
+					<Button onClick={submitItem}>Add</Button>
+				</div>
+			)}
+
+			{poItem && (
+				<Table
+					className="max-h-72 overflow-y-auto"
+					header={isPreview ? ['Name'] : ['Name', 'Action']}
+					data={poItem}
+					renderItem={({Cell, item}, index) => {
+						return (
+							<>
+								<Cell>{item.name}</Cell>
+								{!isPreview && (
+									<Button onClick={() => removeItem(index)}>Remove</Button>
+								)}
+							</>
+						);
+					}}
+				/>
+			)}
+
+			{!isPreview && (
+				<Button className="w-full" type="submit">
+					Submit
+				</Button>
+			)}
 		</>
 	);
 };

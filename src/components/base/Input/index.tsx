@@ -2,7 +2,6 @@ import {TextInput as InputFlowbite} from 'flowbite-react';
 import {FieldValues} from 'react-hook-form';
 
 import {Icon, Text} from '@components';
-import {focusInputClassName, inputClassName} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
@@ -14,7 +13,7 @@ export type InputProps = {
 	placeholder?: string;
 	type?: 'text' | 'checkbox';
 	label?: string;
-	editable?: boolean;
+	disabled?: boolean;
 };
 
 export const Input = withReactFormController(InputComponent);
@@ -22,14 +21,7 @@ export const Input = withReactFormController(InputComponent);
 function InputComponent<F extends FieldValues>(
 	props: ControlledComponentProps<F, InputProps>,
 ) {
-	const {
-		type,
-		label,
-		className,
-		controller,
-		placeholder,
-		editable = true,
-	} = props;
+	const {type, label, disabled, className, controller, placeholder} = props;
 
 	const {
 		fieldState,
@@ -65,26 +57,15 @@ function InputComponent<F extends FieldValues>(
 	}
 
 	return (
-		<div className="flex">
+		<>
 			{label && <Text className="mb-2">{label}</Text>}
-			<InputFlowbite placeholder={placeholder} value={value} {...field} />
+			<InputFlowbite
+				disabled={disabled}
+				placeholder={placeholder}
+				value={value}
+				{...field}
+			/>
 			{errorMessage}
-		</div>
-	);
-
-	return (
-		<div className="pb-2">
-			<Text>{label}</Text>
-			<div
-				className={classNames(className, inputClassName, focusInputClassName)}>
-				<input
-					className="bg-transparent focus:outline-none w-full"
-					placeholder={placeholder}
-					value={value}
-					{...field}
-				/>
-			</div>
-			{errorMessage}
-		</div>
+		</>
 	);
 }

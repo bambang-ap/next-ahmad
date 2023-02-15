@@ -1,6 +1,6 @@
 import {NextApiHandler, NextApiRequest, NextApiResponse} from 'next';
 
-import {OrmCustomerPO} from '@database';
+import {OrmCustomerPO, OrmCustomerPOItem} from '@database';
 import {checkCredential, Response} from '@server';
 
 const apiCustomerPO: NextApiHandler = async (req, res) => {
@@ -18,12 +18,16 @@ const apiCustomerPO: NextApiHandler = async (req, res) => {
 
 export default apiCustomerPO;
 
-async function getCustomerPO(req: NextApiRequest, res: NextApiResponse) {
-	const allMenu = await OrmCustomerPO.findAll({raw: true});
-
-	return Response(res).success(allMenu);
+async function getCustomerPO(_: NextApiRequest, res: NextApiResponse) {
+	const allPO = await OrmCustomerPO.findAll({raw: true});
+	const joinedPOPromises = allPO.map(async ({nomor_po, ...rest}) => {
+		const po_item = await OrmCustomerPOItem.findAll({where: {nomor_po}});
+		return {nomor_po, ...rest, po_item};
+	});
+	const joinedPO = await Promise.all(joinedPOPromises);
+	return Response(res).success(joinedPO);
 }
 
-async function updateCustomerPO(req: NextApiRequest, res: NextApiResponse) {
+async function updateCustomerPO(_: NextApiRequest, res: NextApiResponse) {
 	return Response(res).error('Method not allowed');
 }

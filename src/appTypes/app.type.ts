@@ -23,7 +23,8 @@ export type TRole = {
 export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;
 
 export type TCustomer = Record<'id' | 'name', string>;
-export type TCustomerPO = Record<
+export type TPOItem = Record<'id' | 'name' | 'nomor_po', string>;
+export type TCustomerPO = {po_item?: TPOItem[]} & Record<
 	'id' | 'name' | 'id_customer' | 'nomor_po',
 	string
 >;

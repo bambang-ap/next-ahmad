@@ -1,10 +1,10 @@
 import {useRef} from 'react';
 
 import {useRouter} from 'next/router';
-import {Control, useController, useForm, useWatch} from 'react-hook-form';
+import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
-import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
+import {Button, Input, Modal, ModalRef, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
 
 export const PageTable = () => {
@@ -131,9 +131,6 @@ const RenderField = (props: RenderFieldProps) => {
 	const {control, item} = props;
 	const {col, label, editable} = item;
 
-	if (item.type === 'select')
-		return <RenderSelect control={control} item={item} />;
-
 	return (
 		<Input
 			editable={editable}
@@ -142,30 +139,6 @@ const RenderField = (props: RenderFieldProps) => {
 			control={control}
 			fieldName={col}
 			placeholder={col}
-		/>
-	);
-};
-
-const RenderSelect = ({
-	item,
-	control,
-}: {
-	item: Extract<RenderFieldProps['item'], {type: 'select'}>;
-	control: RenderFieldProps['control'];
-}) => {
-	const {col: name, renderItem, editable, onSelect, useFetch} = item;
-
-	const {data} = useFetch();
-	const {field} = useController({control, name});
-
-	return (
-		<Select
-			editable={editable}
-			fieldName={name}
-			control={control}
-			data={data?.data ?? []}
-			renderItem={renderItem}
-			onSelect={({item}) => field.onChange(onSelect(item))}
 		/>
 	);
 };

@@ -1,31 +1,26 @@
-import {UseQueryResult} from '@tanstack/react-query';
-import {AxiosResponse} from 'axios';
-
 import {
-	TRole,
-	TUser,
-	TMesin,
 	TCustomer,
 	TCustomerPO,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	TMesin,
+	TRole,
+	TUser,
 } from '@appTypes/app.type';
-import {InputProps, TableProps} from '@components';
+import {InputProps} from '@components';
 import {
+	useFetchCustomer,
+	useFetchCustomerPO,
+	useFetchMesin,
 	useFetchRole,
 	useFetchUser,
+	useManageCustomer,
+	useManageCustomerPO,
+	useManageCustomerSPPBIn,
+	useManageCustomerSPPBOut,
+	useManageMesin,
 	useManageRole,
 	useManageUser,
-	useManageMesin,
-	useFetchMesin,
-	useFetchCustomer,
-	useManageCustomer,
-	useFetchCustomerPO,
-	useManageCustomerPO,
-	useFetchCustomerSPPBIn,
-	useManageCustomerSPPBIn,
-	useFetchCustomerSPPBOut,
-	useManageCustomerSPPBOut,
 } from '@queries';
 
 type Action = 'add' | 'edit' | 'delete';
@@ -43,13 +38,11 @@ type AllowedPages = {
 
 type Fetch =
 	| typeof useFetchMesin
-	| typeof useFetchMesin
 	| typeof useFetchCustomer
 	| typeof useFetchCustomerPO
 	| typeof useFetchUser
 	| typeof useFetchRole;
 type Manage =
-	| typeof useManageMesin
 	| typeof useManageMesin
 	| typeof useManageCustomer
 	| typeof useManageCustomerPO
@@ -73,15 +66,7 @@ export type FieldForm<T extends {}> = {
 	col: keyof T;
 	label?: string;
 	editable?: boolean;
-} & (
-	| {type?: InputProps['type']}
-	| {
-			type: 'select';
-			renderItem: TableProps<any>['renderItem'];
-			onSelect: (item: any) => string;
-			useFetch: () => UseQueryResult<AxiosResponse<unknown[], any>, unknown>;
-	  }
-);
+} & {type?: InputProps['type']};
 
 export const allowedPages: Record<string, AllowedPages> = {
 	'/app/mesin': {
@@ -129,119 +114,6 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: 'Tambah customer',
 				edit: 'Ubah customer',
 				delete: 'Hapus customer',
-			},
-		},
-	},
-	'/app/customer/po': {
-		queries: {useFetch: useFetchCustomerPO, useManage: useManageCustomerPO},
-		table: {
-			header: ['Name', 'Nomor PO', 'ID Customer', 'Action'],
-			get body(): Body<TCustomerPO> {
-				return ['name', 'nomor_po', 'id_customer', 'nomor_po'];
-			},
-		},
-		modalField: {
-			get add(): FieldForm<TCustomerPO>[] {
-				return [
-					{col: 'name'},
-					{col: 'nomor_po'},
-					{
-						col: 'id_customer',
-						type: 'select',
-						editable: false,
-						useFetch: () => useFetchCustomer(),
-						onSelect: (item: TCustomer) => item.id,
-						renderItem: ({item}: MMapValue<TCustomer>) => (
-							<div>{item.name}</div>
-						),
-					},
-				];
-			},
-			get edit() {
-				return this.add;
-			},
-		},
-		text: {
-			modal: {
-				add: 'Tambah customer PO',
-				edit: 'Ubah customer PO',
-				delete: 'Hapus customer PO',
-			},
-		},
-	},
-	'/app/customer/sppb-in': {
-		queries: {
-			useFetch: useFetchCustomerSPPBIn,
-			useManage: useManageCustomerSPPBIn,
-		},
-		table: {
-			header: ['Name', 'ID PO', 'Action'],
-			get body(): Body<TCustomerSPPBIn> {
-				return ['name', 'id_po'];
-			},
-		},
-		modalField: {
-			get add(): FieldForm<TCustomerSPPBIn>[] {
-				return [
-					{col: 'name'},
-					{
-						col: 'id_po',
-						type: 'select',
-						useFetch: () => useFetchCustomerPO(),
-						onSelect: (item: TCustomerPO) => item.id,
-						renderItem: ({item}: MMapValue<TCustomerPO>) => (
-							<div>{item.id}</div>
-						),
-					},
-				];
-			},
-			get edit() {
-				return this.add;
-			},
-		},
-		text: {
-			modal: {
-				add: 'Tambah customer SPPB In',
-				edit: 'Ubah customer SPPB In',
-				delete: 'Hapus customer SPPB In',
-			},
-		},
-	},
-	'/app/customer/sppb-out': {
-		queries: {
-			useFetch: useFetchCustomerSPPBOut,
-			useManage: useManageCustomerSPPBOut,
-		},
-		table: {
-			header: ['Name', 'ID PO', 'Action'],
-			get body(): Body<TCustomerSPPBOut> {
-				return ['name', 'id_po'];
-			},
-		},
-		modalField: {
-			get add(): FieldForm<TCustomerSPPBOut>[] {
-				return [
-					{col: 'name'},
-					{
-						col: 'id_po',
-						type: 'select',
-						useFetch: () => useFetchCustomerPO(),
-						onSelect: (item: TCustomerPO) => item.id,
-						renderItem: ({item}: MMapValue<TCustomerPO>) => (
-							<div>{item.id}</div>
-						),
-					},
-				];
-			},
-			get edit() {
-				return this.add;
-			},
-		},
-		text: {
-			modal: {
-				add: 'Tambah customer SPPB Out',
-				edit: 'Ubah customer SPPB Out',
-				delete: 'Hapus customer SPPB Out',
 			},
 		},
 	},
