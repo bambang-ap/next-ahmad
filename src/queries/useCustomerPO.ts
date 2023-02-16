@@ -27,6 +27,8 @@ export const useManageCustomerPO = () => {
 	return {
 		post: useMutation(manageCustomerPO<Omit<TCustomerPO, 'id'>>('POST')),
 		put: useMutation(manageCustomerPO<TCustomerPO>('PUT')),
-		delete: useMutation(manageCustomerPO<Pick<TCustomerPO, 'id'>>('DELETE')),
+		delete: useMutation(
+			manageCustomerPO<Pick<TCustomerPO, 'nomor_po'>>('DELETE'),
+		),
 	};
 };

@@ -53,7 +53,10 @@ export default function POCustomer() {
 			case 'edit':
 				return manageCustomerPO.put.mutate({...rest, id}, {onSuccess});
 			case 'delete':
-				return manageCustomerPO.delete.mutate({id}, {onSuccess});
+				return manageCustomerPO.delete.mutate(
+					{nomor_po: rest.nomor_po},
+					{onSuccess},
+				);
 		}
 
 		return null;
@@ -90,7 +93,7 @@ export default function POCustomer() {
 										Preview
 									</Button>
 									<Button onClick={() => showModal('edit', item)}>Edit</Button>
-									<Button onClick={() => showModal('delete', {id})}>
+									<Button onClick={() => showModal('delete', {nomor_po})}>
 										Delete
 									</Button>
 								</Cell>
@@ -113,6 +116,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 	} = useController({control, name: 'po_item'});
 
 	const isPreview = modalType === 'preview';
+	const isEdit = modalType === 'edit';
 	const mappedData = (data?.data ?? []).map<SelectPropsData>(({name, id}) => ({
 		label: name,
 		value: id,
@@ -139,7 +143,11 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 	return (
 		<div className="gap-y-2 flex flex-col">
 			<Input disabled={isPreview} control={control} fieldName="name" />
-			<Input disabled={isPreview} control={control} fieldName="nomor_po" />
+			<Input
+				disabled={isPreview || isEdit}
+				control={control}
+				fieldName="nomor_po"
+			/>
 			<Select
 				disabled={isPreview}
 				firstOption="- Pilih customer -"
