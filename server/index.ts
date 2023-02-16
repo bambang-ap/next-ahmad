@@ -1,26 +1,15 @@
 import moment from 'moment';
-import {NextApiHandler, NextApiRequest, NextApiResponse} from 'next';
+import {NextApiRequest, NextApiResponse} from 'next';
 import {unstable_getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
 
 import {Session} from '@appTypes/app.type';
 import {CRUD_ENABLED} from '@enum';
 
-import {
-	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerSPPBIn,
-	OrmCustomerSPPBOut,
-	OrmMesin,
-	OrmRole,
-	OrmUser,
-} from './database';
+import {OrmCustomer, OrmMesin, OrmRole, OrmUser} from './database';
 
 export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.CUSTOMER]: OrmCustomer,
-	[CRUD_ENABLED.CUSTOMER_PO]: OrmCustomerPO,
-	[CRUD_ENABLED.CUSTOMER_SPPB_IN]: OrmCustomerSPPBIn,
-	[CRUD_ENABLED.CUSTOMER_SPPB_OUT]: OrmCustomerSPPBOut,
 	[CRUD_ENABLED.MESIN]: OrmMesin,
 	[CRUD_ENABLED.ROLE]: OrmRole,
 	[CRUD_ENABLED.USER]: OrmUser,
