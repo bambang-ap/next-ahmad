@@ -2,12 +2,12 @@ import {useMutation, useQuery} from '@tanstack/react-query';
 import axios, {AxiosResponse} from 'axios';
 
 import {TCustomerSPPBOut} from '@appTypes/app.type';
-import {CRUD_ENABLED} from '@enum';
+import {TABLES} from '@enum';
 import {useSession} from '@hooks';
 import {Method} from '@queries';
 
 const fetchCustomerSPPBOut = () =>
-	axios.get(`/api/${CRUD_ENABLED.CUSTOMER_SPPB_OUT}`);
+	axios.get(`/api/${TABLES.CUSTOMER_SPPB_OUT}`);
 export const useFetchCustomerSPPBOut = () => {
 	const {data} = useSession();
 
@@ -23,7 +23,7 @@ export const useManageCustomerSPPBOut = () => {
 	const manageCustomerSPPBOut =
 		<D>(method: Method) =>
 		(data: D) =>
-			axios({url: `/api/${CRUD_ENABLED.CUSTOMER_SPPB_OUT}`, method, data});
+			axios({url: `/api/${TABLES.CUSTOMER_SPPB_OUT}`, method, data});
 
 	return {
 		post: useMutation(

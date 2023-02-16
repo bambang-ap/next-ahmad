@@ -9,6 +9,7 @@ import {CRUD_ENABLED, TABLES} from '@enum';
 import {
 	OrmCustomer,
 	OrmCustomerSPPBIn,
+	OrmCustomerSPPBOut,
 	OrmMesin,
 	OrmRole,
 	OrmUser,
@@ -17,6 +18,7 @@ import {
 export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.CUSTOMER]: OrmCustomer,
 	[TABLES.CUSTOMER_SPPB_IN]: OrmCustomerSPPBIn,
+	[TABLES.CUSTOMER_SPPB_OUT]: OrmCustomerSPPBOut,
 	[CRUD_ENABLED.MESIN]: OrmMesin,
 	[CRUD_ENABLED.ROLE]: OrmRole,
 	[CRUD_ENABLED.USER]: OrmUser,

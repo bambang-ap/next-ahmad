@@ -1,8 +1,9 @@
 import {useRef} from 'react';
 
+import {useRouter} from 'next/router';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
-import {ModalType, TCustomerSPPBIn} from '@appTypes/app.type';
+import {ModalType, TCustomerSPPBIn, TCustomerSPPBOut} from '@appTypes/app.type';
 import {
 	Button,
 	Input,
@@ -12,34 +13,72 @@ import {
 	SelectPropsData,
 	Table,
 } from '@components';
+import {TABLES} from '@enum';
 import {getLayout} from '@hoc';
 import {
 	useFetchCustomerPO,
 	useFetchCustomerSPPBIn,
+	useFetchCustomerSPPBOut,
 	useManageCustomerSPPBIn,
+	useManageCustomerSPPBOut,
 } from '@queries';
+
+const a = {
+	[TABLES.CUSTOMER_SPPB_IN]: {
+		modal: {
+			title: {
+				add: '',
+				edit: '',
+				delete: '',
+			},
+		},
+		table: {
+			header: ['Name', 'Nomor PO', 'Action'],
+			row: ['name', 'nomor_po'] as (keyof TCustomerSPPBIn)[],
+		},
+		queries: {manage: useManageCustomerSPPBIn, fetch: useFetchCustomerSPPBIn},
+	},
+	[TABLES.CUSTOMER_SPPB_OUT]: {
+		modal: {
+			title: {
+				add: '',
+				edit: '',
+				delete: '',
+			},
+		},
+		table: {
+			header: ['Name', 'Nomor PO', 'Action'],
+			row: ['name', 'nomor_po'] as (keyof TCustomerSPPBOut)[],
+		},
+		queries: {manage: useManageCustomerSPPBOut, fetch: useFetchCustomerSPPBOut},
+	},
+};
+type Y = typeof a[keyof typeof a];
 
 type FormType = TCustomerSPPBIn & {
 	type: ModalType;
 };
 
 SPPB.getLayout = getLayout;
-export default function SPPB() {
-	const modalRef = useRef<ModalRef>(null);
-	const manageCustomerPO = useManageCustomerSPPBIn();
 
-	const {data, refetch} = useFetchCustomerSPPBIn();
+export default function SPPB() {
+	const {isReady, query} = useRouter();
+
+	const path = a[query.sppb as keyof typeof a];
+
+	if (!isReady || !path) return null;
+
+	return <RenderSPPB {...path} />;
+}
+function RenderSPPB(path: Y) {
+	const modalRef = useRef<ModalRef>(null);
+	const manageCustomerPO = path.queries.manage();
+
+	const {data, refetch} = path.queries.fetch();
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');
-	const {modalTitle} = {
-		get modalTitle() {
-			if (modalType === 'add') return 'Tambah SPPB IN';
-			if (modalType === 'edit') return 'Edit SPPB IN';
-			if (modalType === 'delete') return 'Hapus SPPB IN';
-			return 'SPPB IN';
-		},
-	};
+	const modalTitle = path.modal.title[modalType];
 
 	const submit = handleSubmit(({type, id, ...rest}) => {
 		const onSuccess = () => {
@@ -74,15 +113,15 @@ export default function SPPB() {
 
 				<Table
 					data={data?.data ?? []}
-					header={['Name', 'Nomor PO', 'Action']}
+					header={path.table.header}
 					renderItem={({item, Cell}) => {
 						const {id, ...rest} = item;
-						const {name, nomor_po} = rest;
 
 						return (
 							<>
-								<Cell>{name}</Cell>
-								<Cell>{nomor_po}</Cell>
+								{path.table.row.map(row => (
+									<Cell key={row}>{rest[row]}</Cell>
+								))}
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('edit', item)}>Edit</Button>
 									<Button onClick={() => showModal('delete', {id})}>
