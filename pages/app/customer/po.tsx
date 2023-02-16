@@ -81,7 +81,7 @@ export default function POCustomer() {
 					data={data?.data ?? []}
 					header={['Name', 'Nomor PO', 'Customer', 'Action']}
 					renderItem={({item, Cell}) => {
-						const {id, name, customer, nomor_po} = item;
+						const {name, customer, nomor_po} = item;
 
 						return (
 							<>

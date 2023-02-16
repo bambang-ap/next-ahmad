@@ -4,12 +4,19 @@ import {unstable_getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
 
 import {Session} from '@appTypes/app.type';
-import {CRUD_ENABLED} from '@enum';
+import {CRUD_ENABLED, TABLES} from '@enum';
 
-import {OrmCustomer, OrmMesin, OrmRole, OrmUser} from './database';
+import {
+	OrmCustomer,
+	OrmCustomerSPPBIn,
+	OrmMesin,
+	OrmRole,
+	OrmUser,
+} from './database';
 
 export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.CUSTOMER]: OrmCustomer,
+	[TABLES.CUSTOMER_SPPB_IN]: OrmCustomerSPPBIn,
 	[CRUD_ENABLED.MESIN]: OrmMesin,
 	[CRUD_ENABLED.ROLE]: OrmRole,
 	[CRUD_ENABLED.USER]: OrmUser,

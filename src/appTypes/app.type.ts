@@ -28,5 +28,5 @@ export type TCustomerPO = {po_item?: TPOItem[]; customer?: TCustomer} & Record<
 	'id' | 'name' | 'id_customer' | 'nomor_po',
 	string
 >;
-export type TCustomerSPPBIn = Record<'id' | 'id_po' | 'name', string>;
-export type TCustomerSPPBOut = Record<'id' | 'id_po' | 'name', string>;
+export type TCustomerSPPBIn = Record<'id' | 'nomor_po' | 'name', string>;
+export type TCustomerSPPBOut = Record<'id' | 'nomor_po' | 'name', string>;

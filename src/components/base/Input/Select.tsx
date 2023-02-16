@@ -6,7 +6,7 @@ import {
 	withReactFormController,
 } from '@formController';
 
-export type SelectPropsData = Record<'label' | 'value', string>;
+export type SelectPropsData = {label?: string; value: string};
 
 export type SelectProps = {
 	firstOption?: string;
@@ -35,7 +35,7 @@ function SelectComponent<F extends FieldValues>({
 			)}
 			{data.map(({label, value: val}) => (
 				<option key={val} value={val}>
-					{label}
+					{label || val}
 				</option>
 			))}
 		</SelectFlowbite>

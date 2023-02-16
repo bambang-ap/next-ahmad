@@ -39,6 +39,8 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 		return {show, hide};
 	});
 
+	if (!visible) return null;
+
 	return (
 		<ModalFlowbite show={visible} onClose={() => hide()}>
 			<ModalFlowbite.Header className="items-center">
