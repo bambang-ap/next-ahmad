@@ -7,6 +7,7 @@ import {SessionProvider} from 'next-auth/react';
 import {ReactQueryDevtools} from 'node_modules/@tanstack/react-query-devtools/build/lib/devtools';
 import {RecoilRoot} from 'recoil';
 import {AppPropsWithLayout} from 'src/appTypes/props.type';
+import {trpc} from 'src/utils/trpc';
 
 import {themeClassName} from '@tailwind/theme';
 
@@ -14,7 +15,7 @@ const queryClient = new QueryClient({
 	defaultOptions: {queries: {refetchOnWindowFocus: false}},
 });
 
-export default function App({
+function App({
 	Component,
 	pageProps: {session, ...pageProps},
 }: AppPropsWithLayout) {
@@ -41,3 +42,5 @@ export default function App({
 		</Flowbite>
 	);
 }
+
+export default trpc.withTRPC(App);
