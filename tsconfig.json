@@ -43,6 +43,12 @@
       "@server": [
         "./server"
       ],
+      "@trpc": [
+        "./server/trpc"
+      ],
+      "@trpc/*": [
+        "./server/trpc/*"
+      ],
       "@database": [
         "./server/database"
       ],
@@ -75,6 +81,9 @@
       ],
       "@utils": [
         "./src/utils"
+      ],
+      "@utils/*": [
+        "./src/utils/*"
       ],
       "@recoil/*": [
         "./src/recoil/*"

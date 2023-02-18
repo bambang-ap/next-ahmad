@@ -22,12 +22,8 @@ export type TRole = {
 
 export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;
 
-export type TCustomer = Record<'id' | 'name', string>;
-export type TPOItem = Record<'id' | 'name' | 'nomor_po', string>;
-export type TCustomerPO = {po_item?: TPOItem[]; customer?: TCustomer} & Record<
-	'id' | 'name' | 'id_customer' | 'nomor_po',
-	string
->;
 export type TCustomerSPPBIn = Record<'id' | 'nomor_po' | 'name', string>;
 export type TCustomerSPPBOut = Record<'id' | 'nomor_po' | 'name', string>;
 export type TInstruksiKanban = Record<'id' | 'name', string>;
+
+export type {TCustomer, TCustomerPO, TPOItem, ZId} from './app.zod';

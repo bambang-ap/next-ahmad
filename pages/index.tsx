@@ -1,9 +1,11 @@
-import {trpc} from 'src/utils/trpc';
+import {trpc} from '@utils/trpc';
 
 export default function Home() {
 	// useAuth();
 
-	const hello = trpc.hello.useQuery({text: 'client'});
-	console.log(hello.data);
+	const hello = trpc.customer_po.useQuery();
+
+	console.log(hello?.data);
+
 	return null;
 }
