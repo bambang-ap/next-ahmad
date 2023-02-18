@@ -10,6 +10,7 @@ import {
 	OrmCustomer,
 	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
+	OrmKanbanInstruksi,
 	OrmMesin,
 	OrmRole,
 	OrmUser,
@@ -22,6 +23,7 @@ export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.MESIN]: OrmMesin,
 	[CRUD_ENABLED.ROLE]: OrmRole,
 	[CRUD_ENABLED.USER]: OrmUser,
+	[CRUD_ENABLED.INSTRUKSI_KANBAN]: OrmKanbanInstruksi,
 };
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {

@@ -30,3 +30,4 @@ export type TCustomerPO = {po_item?: TPOItem[]; customer?: TCustomer} & Record<
 >;
 export type TCustomerSPPBIn = Record<'id' | 'nomor_po' | 'name', string>;
 export type TCustomerSPPBOut = Record<'id' | 'nomor_po' | 'name', string>;
+export type TInstruksiKanban = Record<'id' | 'name', string>;

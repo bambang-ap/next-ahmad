@@ -3,6 +3,7 @@ import {
 	TCustomerPO,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	TInstruksiKanban,
 	TMesin,
 	TRole,
 	TUser,
@@ -11,6 +12,7 @@ import {InputProps} from '@components';
 import {
 	useFetchCustomer,
 	useFetchCustomerPO,
+	useFetchInstruksiKanban,
 	useFetchMesin,
 	useFetchRole,
 	useFetchUser,
@@ -18,6 +20,7 @@ import {
 	useManageCustomerPO,
 	useManageCustomerSPPBIn,
 	useManageCustomerSPPBOut,
+	useManageInstruksiKanban,
 	useManageMesin,
 	useManageRole,
 	useManageUser,
@@ -90,6 +93,33 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: 'Tambah mesin',
 				edit: 'Ubah mesin',
 				delete: 'Hapus mesin',
+			},
+		},
+	},
+	'/app/kanban/instruksi': {
+		queries: {
+			useFetch: useFetchInstruksiKanban,
+			useManage: useManageInstruksiKanban,
+		},
+		table: {
+			header: ['Name', 'Action'],
+			get body(): Body<TInstruksiKanban> {
+				return ['name'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TInstruksiKanban>[] {
+				return [{col: 'name'}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah instruksi kanban',
+				edit: 'Ubah instruksi kanban',
+				delete: 'Hapus instruksi kanban',
 			},
 		},
 	},

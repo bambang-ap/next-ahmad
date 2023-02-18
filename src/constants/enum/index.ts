@@ -15,4 +15,5 @@ export enum CRUD_ENABLED {
 	MESIN = 'mesin',
 	ROLE = 'role',
 	USER = 'user',
+	INSTRUKSI_KANBAN = 'instruksi_kanban',
 }
