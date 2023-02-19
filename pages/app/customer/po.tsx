@@ -12,8 +12,8 @@ import {
 	SelectPropsData,
 	Table,
 } from '@components';
+import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
-import {useFetchCustomer} from '@queries';
 import {trpc} from '@utils/trpc';
 
 type FormType = TCustomerPO & {
@@ -107,7 +107,7 @@ export default function POCustomer() {
 const ModalChild = ({control}: {control: Control<FormType>}) => {
 	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
-	const {data} = useFetchCustomer();
+	const {data} = trpc.basic_query.useQuery({target: CRUD_ENABLED.CUSTOMER});
 	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
 	const {
 		field: {onChange: onChangePoItem},
@@ -115,7 +115,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 	const isPreview = modalType === 'preview';
 	const isEdit = modalType === 'edit';
-	const mappedData = (data?.data ?? []).map<SelectPropsData>(({name, id}) => ({
+	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
 		label: name,
 		value: id,
 	}));

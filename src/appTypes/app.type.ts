@@ -1,5 +1,11 @@
-export type ModalType = 'add' | 'edit' | 'delete';
-export type ModalTypePreview = 'preview' | 'add' | 'edit' | 'delete';
+export type {
+	ModalType,
+	ModalTypePreview,
+	TCustomer,
+	TCustomerPO,
+	TPOItem,
+	ZId,
+} from './app.zod';
 
 export type TUser = Record<'id' | 'email' | 'name' | 'role', string> & {
 	password?: string;
@@ -25,5 +31,3 @@ export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;
 export type TCustomerSPPBIn = Record<'id' | 'nomor_po' | 'name', string>;
 export type TCustomerSPPBOut = Record<'id' | 'nomor_po' | 'name', string>;
 export type TInstruksiKanban = Record<'id' | 'name', string>;
-
-export type {TCustomer, TCustomerPO, TPOItem, ZId} from './app.zod';

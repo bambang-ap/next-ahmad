@@ -6,6 +6,7 @@ import {Control, useForm, useWatch} from 'react-hook-form';
 import {ModalType} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
+import {trpc} from '@utils/trpc';
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -19,13 +20,19 @@ export const PageTable = () => {
 };
 
 const RenderPage = ({path}: {path: string}) => {
-	const {text, table, queries} =
-		allowedPages[path as keyof typeof allowedPages];
+	const {
+		text,
+		table,
+		queries,
+		enumName: target,
+	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalRef = useRef<ModalRef>(null);
 	const manage = queries?.useManage?.();
+	const {mutate} = trpc.basic_mutate.useMutation();
 
-	const {data, refetch} = queries?.useFetch?.() ?? {};
+	// const {data, refetch} = queries?.useFetch?.() ?? {};
+	const {data, refetch} = trpc.basic_query.useQuery({target});
 	const {control, handleSubmit, watch, reset} = useForm();
 
 	const modalType = watch('type');
@@ -43,14 +50,12 @@ const RenderPage = ({path}: {path: string}) => {
 		};
 
 		switch (type) {
-			case 'add':
-				return manage.post.mutate(rest, {onSuccess});
 			case 'edit':
-				return manage.put.mutate({...rest, id}, {onSuccess});
+				return mutate({target, type, body: {...rest, id}}, {onSuccess});
 			case 'delete':
-				return manage.delete.mutate({id}, {onSuccess});
+				return mutate({target, type, body: {id}}, {onSuccess});
 			default:
-				return;
+				return mutate({target, type, body: rest}, {onSuccess});
 		}
 	});
 
@@ -70,7 +75,7 @@ const RenderPage = ({path}: {path: string}) => {
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 
 				<Table
-					data={data?.data ?? []}
+					data={data ?? []}
 					header={table.header}
 					renderItem={({item, Cell}) => {
 						const {id, ...rest} = item;

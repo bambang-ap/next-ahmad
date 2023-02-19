@@ -1,3 +1,5 @@
+import {z} from 'zod';
+
 export enum TABLES {
 	CUSTOMER = 'customer',
 	CUSTOMER_PO = 'customer_po',
@@ -10,6 +12,8 @@ export enum TABLES {
 	USER = 'user',
 }
 
+export const Z_TABLES = z.nativeEnum(TABLES);
+
 export enum CRUD_ENABLED {
 	CUSTOMER = 'customer',
 	MESIN = 'mesin',
@@ -17,3 +21,5 @@ export enum CRUD_ENABLED {
 	USER = 'user',
 	INSTRUKSI_KANBAN = 'instruksi_kanban',
 }
+
+export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

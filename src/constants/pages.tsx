@@ -9,6 +9,7 @@ import {
 	TUser,
 } from '@appTypes/app.type';
 import {InputProps} from '@components';
+import {CRUD_ENABLED} from '@enum';
 import {
 	useFetchCustomer,
 	useFetchCustomerPO,
@@ -31,6 +32,7 @@ type Action = 'add' | 'edit' | 'delete';
 type Body<T extends Record<string, any>> = (keyof T)[];
 
 type AllowedPages = {
+	enumName: CRUD_ENABLED;
 	table: {header: string[]; body: Body<any>};
 	queries: {useFetch: Fetch; useManage: Manage};
 	modalField: Partial<Record<Action, ColUnion[]>>;
@@ -73,6 +75,7 @@ export type FieldForm<T extends {}> = {
 
 export const allowedPages: Record<string, AllowedPages> = {
 	'/app/mesin': {
+		enumName: CRUD_ENABLED.MESIN,
 		queries: {useFetch: useFetchMesin, useManage: useManageMesin},
 		table: {
 			header: ['Name', 'Nomor Mesin', 'Action'],
@@ -97,6 +100,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 	'/app/kanban/instruksi': {
+		enumName: CRUD_ENABLED.INSTRUKSI_KANBAN,
 		queries: {
 			useFetch: useFetchInstruksiKanban,
 			useManage: useManageInstruksiKanban,
@@ -124,6 +128,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 	'/app/customer': {
+		enumName: CRUD_ENABLED.CUSTOMER,
 		queries: {useFetch: useFetchCustomer, useManage: useManageCustomer},
 		table: {
 			header: ['Name', 'Action'],
@@ -148,6 +153,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 	'/app/user': {
+		enumName: CRUD_ENABLED.USER,
 		queries: {useFetch: useFetchUser, useManage: useManageUser},
 		table: {
 			header: ['Name', 'Email', 'Role', 'Action'],
@@ -177,6 +183,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 	'/app/user/role': {
+		enumName: CRUD_ENABLED.ROLE,
 		queries: {useFetch: useFetchRole, useManage: useManageRole},
 		table: {
 			header: ['Role', 'Action'],

@@ -1,5 +1,14 @@
 import {z} from 'zod';
 
+export type ModalType = z.infer<typeof uModalType>;
+export const uModalType = z.union([
+	z.literal('add'),
+	z.literal('edit'),
+	z.literal('delete'),
+]);
+export type ModalTypePreview = z.infer<typeof uModalTypePreview>;
+export const uModalTypePreview = z.union([uModalType, z.literal('preview')]);
+
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
