@@ -20,6 +20,8 @@ export enum CRUD_ENABLED {
 	ROLE = 'role',
 	USER = 'user',
 	INSTRUKSI_KANBAN = 'instruksi_kanban',
+	CUSTOMER_SPPB_IN = 'customer_sppb_in',
+	CUSTOMER_SPPB_OUT = 'customer_sppb_out',
 }
 
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

@@ -30,3 +30,18 @@ export const tCustomerPO = zId.and(
 		po_item: z.array(tPOItem).optional(),
 	}),
 );
+
+export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
+export const tCustomerSPPBIn = zId.and(
+	z.object({name: z.string(), nomor_po: z.string()}),
+);
+
+export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
+export const tCustomerSPPBOut = zId.and(
+	z.object({name: z.string(), nomor_po: z.string()}),
+);
+
+export type TInstruksiKanban = z.infer<typeof tInstruksiKanban>;
+export const tInstruksiKanban = zId.and(
+	z.object({name: z.string(), nomor_po: z.string()}),
+);

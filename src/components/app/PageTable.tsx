@@ -4,7 +4,7 @@ import {useRouter} from 'next/router';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
-import {Button, Input, Modal, ModalRef, Table, Text} from '@components';
+import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
 import {trpc} from '@utils/trpc';
 
@@ -13,8 +13,7 @@ export const PageTable = () => {
 
 	const hasPage = allowedPages[asPath as keyof typeof allowedPages];
 
-	if (!isReady) return null;
-	if (!hasPage) return null;
+	if (!isReady || !hasPage) return null;
 
 	return <RenderPage path={asPath} />;
 };
@@ -23,15 +22,12 @@ const RenderPage = ({path}: {path: string}) => {
 	const {
 		text,
 		table,
-		queries,
 		enumName: target,
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalRef = useRef<ModalRef>(null);
-	const manage = queries?.useManage?.();
 	const {mutate} = trpc.basic_mutate.useMutation();
 
-	// const {data, refetch} = queries?.useFetch?.() ?? {};
 	const {data, refetch} = trpc.basic_query.useQuery({target});
 	const {control, handleSubmit, watch, reset} = useForm();
 
@@ -76,13 +72,13 @@ const RenderPage = ({path}: {path: string}) => {
 
 				<Table
 					data={data ?? []}
-					header={table.header}
+					header={table?.header}
 					renderItem={({item, Cell}) => {
 						const {id, ...rest} = item;
 
 						return (
 							<>
-								{table.body?.map?.(key => (
+								{table?.body?.map?.(key => (
 									<Cell key={key}>
 										<Text>{item[key]}</Text>
 									</Cell>
@@ -105,14 +101,14 @@ const RenderPage = ({path}: {path: string}) => {
 };
 
 const ModalChild = ({control, path}: {control: Control; path: string}) => {
-	const {modalField} = allowedPages[path as keyof typeof allowedPages];
+	const {modalField} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalType = useWatch({control, name: 'type'});
 
 	if (modalType === 'delete') {
 		return (
 			<div>
-				<label>Hapus ?</label>
+				<Text>Hapus ?</Text>
 				<Button type="submit">Ya</Button>
 			</div>
 		);
@@ -134,11 +130,23 @@ type RenderFieldProps = {control: Control; item: ColUnion};
 
 const RenderField = (props: RenderFieldProps) => {
 	const {control, item} = props;
-	const {col, label, editable} = item;
+	const {col, label} = item;
+
+	if (item.type === 'select') {
+		const query = item.dataQuery();
+
+		return (
+			<Select
+				control={control}
+				fieldName="nomor_po"
+				firstOption={item.firstOption}
+				data={item.dataMapping(query.data) ?? []}
+			/>
+		);
+	}
 
 	return (
 		<Input
-			editable={editable}
 			type={item.type}
 			label={label}
 			control={control}

@@ -3,6 +3,9 @@ export type {
 	ModalTypePreview,
 	TCustomer,
 	TCustomerPO,
+	TCustomerSPPBIn,
+	TCustomerSPPBOut,
+	TInstruksiKanban,
 	TPOItem,
 	ZId,
 } from './app.zod';
@@ -27,7 +30,3 @@ export type TRole = {
 };
 
 export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;
-
-export type TCustomerSPPBIn = Record<'id' | 'nomor_po' | 'name', string>;
-export type TCustomerSPPBOut = Record<'id' | 'nomor_po' | 'name', string>;
-export type TInstruksiKanban = Record<'id' | 'name', string>;
