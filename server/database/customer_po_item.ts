@@ -10,6 +10,7 @@ export const OrmCustomerPOItem: DefinedModel<TPOItem> = ORM.define(
 	{
 		name: {type: DataTypes.STRING},
 		nomor_po: {type: DataTypes.STRING},
+		qty: {type: DataTypes.STRING},
 	},
 	{
 		tableName: TABLES.CUSTOMER_PO_ITEM,

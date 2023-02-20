@@ -23,9 +23,11 @@ type FormType = TCustomerPO & {
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
+	const insertPO = trpc.customer_po_insert.useMutation();
+	const updatePO = trpc.customer_po_update.useMutation();
+	const deletePO = trpc.customer_po_delete.useMutation();
 
 	const {data, refetch} = trpc.customer_po_get.useQuery({type: 'customer'});
-
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');
@@ -46,15 +48,11 @@ export default function POCustomer() {
 
 		switch (type) {
 			case 'add':
-				return trpc.customer_po_delete.useMutation().mutate(rest, {onSuccess});
+				return insertPO.mutate(rest, {onSuccess});
 			case 'edit':
-				return trpc.customer_po_delete
-					.useMutation()
-					.mutate({...rest, id}, {onSuccess});
+				return updatePO.mutate({...rest, id}, {onSuccess});
 			case 'delete':
-				return trpc.customer_po_delete
-					.useMutation()
-					.mutate({nomor_po: rest.nomor_po}, {onSuccess});
+				return deletePO.mutate({nomor_po: rest.nomor_po}, {onSuccess});
 		}
 
 		return null;
@@ -156,11 +154,19 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 			{!isPreview && (
 				<div className="gap-x-2 flex">
-					<div className="flex-1">
+					<div className="flex flex-1 gap-x-2">
 						<Input
+							className="flex-1"
 							disabled={isPreview}
 							control={poItemControl}
 							fieldName="name"
+						/>
+						<Input
+							className="flex-1"
+							disabled={isPreview}
+							control={poItemControl}
+							type="number"
+							fieldName="qty"
 						/>
 					</div>
 					<Button onClick={submitItem}>Add</Button>
