@@ -24,7 +24,7 @@ const apiCustomerPO: NextApiHandler = async (req, res) => {
 export default apiCustomerPO;
 
 async function getCustomerPO(_: NextApiRequest, res: NextApiResponse) {
-	const allPO = await OrmCustomerPO.findAll({raw: true});
+	const allPO = await OrmCustomerPO.findAll();
 	const joinedPOPromises = allPO.map(
 		async ({nomor_po, id_customer, ...rest}: TCustomerPO) => {
 			const po_item = await OrmCustomerPOItem.findAll({where: {nomor_po}});

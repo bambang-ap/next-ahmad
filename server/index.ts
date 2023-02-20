@@ -5,6 +5,7 @@ import {authOptions} from 'pages/api/auth/[...nextauth]';
 
 import {Session} from '@appTypes/app.type';
 import {CRUD_ENABLED, TABLES} from '@enum';
+import {TRPCError} from '@trpc/server';
 
 import {
 	OrmCustomer,
@@ -77,7 +78,12 @@ export const checkCredentialV2 = async <T>(
 ) => {
 	const {hasSession} = await getSession(req, res);
 
-	if (!hasSession) return Response(res).error('You have no credentials');
+	if (!hasSession) {
+		throw new TRPCError({
+			code: 'FORBIDDEN',
+			message: 'You have no credentials',
+		});
+	}
 
 	return callback();
 };

@@ -76,9 +76,6 @@
       "@formController": [
         "./src/hoc/withReactFormController"
       ],
-      "@queries": [
-        "./src/queries"
-      ],
       "@utils": [
         "./src/utils"
       ],

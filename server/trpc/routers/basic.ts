@@ -10,7 +10,7 @@ const basicRouters = {
 		.input(z.object({target: Z_CRUD_ENABLED}))
 		.query(async ({input}) => {
 			const orm = MAPPING_CRUD_ORM[input.target];
-			const ormResult = await orm.findAll({order: [['id', 'asc']], raw: true});
+			const ormResult = await orm.findAll({order: [['id', 'asc']]});
 			return ormResult;
 		}),
 	basic_mutate: procedure
@@ -18,7 +18,7 @@ const basicRouters = {
 			z.object({
 				target: Z_CRUD_ENABLED,
 				type: uModalType,
-				body: z.any(), // tCustomer.or(tCustomerPO),
+				body: z.any(),
 			}),
 		)
 		.mutation(async ({input}) => {

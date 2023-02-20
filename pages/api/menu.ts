@@ -31,7 +31,6 @@ async function getMenu(req: NextApiRequest, res: NextApiResponse) {
 			['index', 'asc'],
 			['title', 'asc'],
 		],
-		raw: true,
 	});
 
 	return Response(res).success(allMenu);

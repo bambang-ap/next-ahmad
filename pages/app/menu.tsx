@@ -6,8 +6,9 @@ import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu} from '@appTypes/app.type';
 import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
+import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
-import {useFetchMenu, useFetchRole, useManageMenu} from '@queries';
+import {trpc} from '@utils/trpc';
 
 type FormMenu = Record<
 	string,
@@ -22,18 +23,26 @@ const atoms = atom({
 export default function Menu() {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {put} = useManageMenu();
-	const {data: dataMenu, refetch} = useFetchMenu();
-	const {data: dataRole} = useFetchRole();
+	const {mutate} = trpc.menu_mutate.useMutation();
+	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu_get.useQuery(
+		{type: 'menu'},
+	);
+	const {data: mappedMenu, refetch} = trpc.menu_get.useQuery({
+		type: 'menu',
+		sorted: true,
+	});
+	const {data: dataRole} = trpc.basic_query.useQuery({
+		target: CRUD_ENABLED.ROLE,
+	});
+
 	const {control, reset, watch, setValue, handleSubmit} = useForm<FormMenu>();
 
 	const iconKey = useRecoilValue(atoms);
 
 	const iconModalSelectedValue = watch(iconKey);
-	const mappedMenu = dataMenu?.data.slice().nest('subMenu', 'id', 'parent_id');
 
 	const submit = handleSubmit(values => {
-		const bodyParam = dataMenu?.data.reduce<TMenu[]>((acc, menu) => {
+		const bodyParam = mappedMenu?.reduce<TMenu[]>((acc, menu) => {
 			const {id, ...restMenu} = menu;
 			const {icon, role, title} = values[id];
 
@@ -49,15 +58,20 @@ export default function Menu() {
 			return acc;
 		}, []);
 
-		put.mutate(bodyParam ?? [], {onSuccess: () => refetch()});
+		mutate(bodyParam ?? [], {
+			onSuccess: () => {
+				refetch();
+				reftechUnMapped();
+			},
+		});
 	});
 
 	useEffect(() => {
-		const formDefaultValue = dataMenu?.data.reduce(
+		const formDefaultValue = unMappedMenu?.reduce(
 			(ret, {id, title, icon, accepted_role}) => {
 				const roles = accepted_role.split(',');
 				const role =
-					dataRole?.data?.reduce((acc, role) => {
+					dataRole?.reduce((acc, role) => {
 						return {...acc, [role.name]: roles.includes(role.name)};
 					}, {} as Record<string, boolean>) ?? {};
 
@@ -66,11 +80,11 @@ export default function Menu() {
 					[id]: {title, icon, role},
 				};
 			},
-			{} as FormMenu,
+			{},
 		);
 
 		reset(formDefaultValue);
-	}, [dataMenu?.data, dataRole?.data]);
+	}, [unMappedMenu, dataRole]);
 
 	return (
 		<>
@@ -107,7 +121,9 @@ const RenderMenu = (props: {
 	setValue: UseFormSetValue<FormMenu>;
 	modalRef: MutableRefObject<ModalRef | null>;
 }) => {
-	const {data: dataRole} = useFetchRole();
+	const {data: dataRole} = trpc.basic_query.useQuery({
+		target: CRUD_ENABLED.ROLE,
+	});
 	const {data, noHeader, control, setValue, modalRef} = props;
 
 	const setKey = useSetRecoilState(atoms);
@@ -152,7 +168,7 @@ const RenderMenu = (props: {
 							/>
 						</Cell>
 						<Cell className="flex">
-							{dataRole?.data.map(role => {
+							{dataRole?.map(role => {
 								return (
 									<Input
 										className="mr-2"

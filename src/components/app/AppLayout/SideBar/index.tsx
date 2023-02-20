@@ -2,18 +2,16 @@ import {useRouter} from 'next/router';
 
 import {TMenu} from '@appTypes/app.type';
 import {Icon} from '@components';
-import {useFetchMenu} from '@queries';
+import {trpc} from '@utils/trpc';
 
 import Sidebar from './component';
 
 export const SideBar = () => {
-	const {data} = useFetchMenu();
-
-	const mappedMenu = data?.data.slice().nest('subMenu', 'id', 'parent_id');
+	const {data} = trpc.menu_get.useQuery({type: 'menu', sorted: true});
 
 	return (
 		<Sidebar>
-			<RenderMenu data={mappedMenu} />
+			<RenderMenu data={data} />
 		</Sidebar>
 	);
 };
@@ -28,7 +26,7 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 			{data?.map(({id, title, icon, path, subMenu}) => {
 				const isSelected = path === asPath;
 
-				if (subMenu.length > 0) {
+				if (subMenu?.length > 0) {
 					return (
 						<Sidebar.Collapse
 							key={id}

@@ -48,3 +48,17 @@ export const tInstruksiKanban = zId.extend({
 	name: z.string(),
 	nomor_po: z.string(),
 });
+
+const baseTMenu = z.object({
+	id: z.string(),
+	title: z.string(),
+	icon: z.string(),
+	path: z.string(),
+	accepted_role: z.string(),
+	parent_id: z.string().nullish(),
+});
+
+export type TMenu = z.infer<typeof baseTMenu> & {subMenu?: TMenu[]};
+export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
+	subMenu: z.lazy(() => tMenu.array()),
+});

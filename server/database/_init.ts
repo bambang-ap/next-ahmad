@@ -15,5 +15,6 @@ export const ORM = new Sequelize(
 	{
 		dialect: 'postgres',
 		host: process.env.PGSQL_HOST,
+		query: {raw: true},
 	},
 );

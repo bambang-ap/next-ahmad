@@ -21,19 +21,15 @@ const customer_poRouters = {
 		)
 		.query(async ({ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const allPO = await OrmCustomerPO.findAll({
-					raw: true,
-				});
+				const allPO = await OrmCustomerPO.findAll();
 				// @ts-ignore
 				const joinedPOPromises = (allPO as TCustomerPO[]).map(
 					async ({nomor_po, id_customer, ...rest}) => {
 						const po_item = await OrmCustomerPOItem.findAll({
 							where: {nomor_po},
-							raw: true,
 						});
 						const customer = await OrmCustomer.findOne({
 							where: {id: id_customer},
-							raw: true,
 						});
 						return {...rest, nomor_po, id_customer, customer, po_item};
 					},
