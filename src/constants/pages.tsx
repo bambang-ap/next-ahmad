@@ -8,51 +8,26 @@ import {
 	TRole,
 	TUser,
 } from '@appTypes/app.type';
-import {InputProps} from '@components';
-import {
-	useFetchCustomer,
-	useFetchCustomerPO,
-	useFetchInstruksiKanban,
-	useFetchMesin,
-	useFetchRole,
-	useFetchUser,
-	useManageCustomer,
-	useManageCustomerPO,
-	useManageCustomerSPPBIn,
-	useManageCustomerSPPBOut,
-	useManageInstruksiKanban,
-	useManageMesin,
-	useManageRole,
-	useManageUser,
-} from '@queries';
+import {InputProps, SelectPropsData} from '@components';
+import {CRUD_ENABLED} from '@enum';
+import {TRPCClientErrorLike} from '@trpc/client';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import {AnyProcedure} from '@trpc/server';
+import {inferTransformedProcedureOutput} from '@trpc/server/shared';
+import {trpc} from '@utils/trpc';
 
 type Action = 'add' | 'edit' | 'delete';
 
 type Body<T extends Record<string, any>> = (keyof T)[];
 
-type AllowedPages = {
+export type AllowedPages = {
+	enumName: CRUD_ENABLED;
 	table: {header: string[]; body: Body<any>};
-	queries: {useFetch: Fetch; useManage: Manage};
 	modalField: Partial<Record<Action, ColUnion[]>>;
 	text: {
 		modal: Partial<Record<Action, string>>;
 	};
 };
-
-type Fetch =
-	| typeof useFetchMesin
-	| typeof useFetchCustomer
-	| typeof useFetchCustomerPO
-	| typeof useFetchUser
-	| typeof useFetchRole;
-type Manage =
-	| typeof useManageMesin
-	| typeof useManageCustomer
-	| typeof useManageCustomerPO
-	| typeof useManageCustomerSPPBIn
-	| typeof useManageCustomerSPPBOut
-	| typeof useManageUser
-	| typeof useManageRole;
 
 export type Types =
 	| TCustomer
@@ -68,12 +43,94 @@ export type ColUnion = FieldForm<UnionToIntersection<Types>>;
 export type FieldForm<T extends {}> = {
 	col: keyof T;
 	label?: string;
-	editable?: boolean;
-} & {type?: InputProps['type']};
+} & (
+	| {type?: InputProps['type']}
+	| {
+			type: 'select';
+			firstOption?: string;
+			dataMapping: (item: any[]) => SelectPropsData[];
+			dataQuery: () => UseTRPCQueryResult<
+				inferTransformedProcedureOutput<AnyProcedure>,
+				TRPCClientErrorLike<AnyProcedure>
+			>;
+	  }
+);
 
 export const allowedPages: Record<string, AllowedPages> = {
+	'/app/customer/customer_sppb_in': {
+		enumName: CRUD_ENABLED.CUSTOMER_SPPB_IN,
+		table: {
+			header: ['Name', 'Nomor PO', 'Action'],
+			get body(): Body<TCustomerSPPBIn> {
+				return ['name', 'nomor_po'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TCustomerSPPBIn>[] {
+				return [
+					{col: 'name'},
+					{
+						col: 'nomor_po',
+						type: 'select',
+						firstOption: '- Pilih PO -',
+						dataQuery: () =>
+							trpc.customer_po_get.useQuery({type: 'forSelection'}),
+						dataMapping: (item: TCustomerPO[]) =>
+							item?.map(({nomor_po}) => ({value: nomor_po})),
+					},
+				];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah SPPB In',
+				edit: 'Ubah SPPB In',
+				delete: 'Hapus SPPB In',
+			},
+		},
+	},
+
+	'/app/customer/customer_sppb_out': {
+		enumName: CRUD_ENABLED.CUSTOMER_SPPB_OUT,
+		table: {
+			header: ['Name', 'Nomor PO', 'Action'],
+			get body(): Body<TCustomerSPPBOut> {
+				return ['name', 'nomor_po'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TCustomerSPPBOut>[] {
+				return [
+					{col: 'name'},
+					{
+						col: 'nomor_po',
+						type: 'select',
+						firstOption: '- Pilih PO -',
+						dataQuery: () =>
+							trpc.customer_po_get.useQuery({type: 'forSelection'}),
+						dataMapping: (item: TCustomerPO[]) =>
+							item?.map(({nomor_po}) => ({value: nomor_po})),
+					},
+				];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah SPPB Out',
+				edit: 'Ubah SPPB Out',
+				delete: 'Hapus SPPB Out',
+			},
+		},
+	},
+
 	'/app/mesin': {
-		queries: {useFetch: useFetchMesin, useManage: useManageMesin},
+		enumName: CRUD_ENABLED.MESIN,
 		table: {
 			header: ['Name', 'Nomor Mesin', 'Action'],
 			get body(): Body<TMesin> {
@@ -96,11 +153,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			},
 		},
 	},
+
 	'/app/kanban/instruksi': {
-		queries: {
-			useFetch: useFetchInstruksiKanban,
-			useManage: useManageInstruksiKanban,
-		},
+		enumName: CRUD_ENABLED.INSTRUKSI_KANBAN,
 		table: {
 			header: ['Name', 'Action'],
 			get body(): Body<TInstruksiKanban> {
@@ -123,8 +178,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			},
 		},
 	},
+
 	'/app/customer': {
-		queries: {useFetch: useFetchCustomer, useManage: useManageCustomer},
+		enumName: CRUD_ENABLED.CUSTOMER,
 		table: {
 			header: ['Name', 'Action'],
 			get body(): Body<TCustomer> {
@@ -147,8 +203,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			},
 		},
 	},
+
 	'/app/user': {
-		queries: {useFetch: useFetchUser, useManage: useManageUser},
+		enumName: CRUD_ENABLED.USER,
 		table: {
 			header: ['Name', 'Email', 'Role', 'Action'],
 			get body(): Body<TUser> {
@@ -176,8 +233,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 			},
 		},
 	},
+
 	'/app/user/role': {
-		queries: {useFetch: useFetchRole, useManage: useManageRole},
+		enumName: CRUD_ENABLED.ROLE,
 		table: {
 			header: ['Role', 'Action'],
 			get body(): Body<TRole> {

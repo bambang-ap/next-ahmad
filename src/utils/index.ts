@@ -1,3 +1,3 @@
-import shjdkf from 'classnames';
+import classnames from 'classnames';
 
-export const classNames = shjdkf;
+export const classNames = classnames;

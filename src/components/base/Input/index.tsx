@@ -11,7 +11,7 @@ import {classNames} from '@utils';
 export type InputProps = {
 	className?: string;
 	placeholder?: string;
-	type?: 'text' | 'checkbox';
+	type?: 'text' | 'checkbox' | 'number';
 	label?: string;
 	disabled?: boolean;
 };
@@ -57,15 +57,16 @@ function InputComponent<F extends FieldValues>(
 	}
 
 	return (
-		<>
+		<div className={className}>
 			{label && <Text className="mb-2">{label}</Text>}
 			<InputFlowbite
+				type={type}
 				disabled={disabled}
 				placeholder={placeholder}
 				value={value}
 				{...field}
 			/>
 			{errorMessage}
-		</>
+		</div>
 	);
 }

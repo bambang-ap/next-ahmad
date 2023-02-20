@@ -25,11 +25,11 @@ export default function AppLayout({children}: PropsWithChildren) {
 				style={{height: clientHeight}}
 				className="absolute flex bottom-0 w-full">
 				{isSidebarOpen && (
-					<div className="overflow-y-auto w-1/6">
+					<div className="overflow-y-auto bg-white dark:bg-gray-800 w-3/12">
 						<SideBar />
 					</div>
 				)}
-				<div className="flex-1 overflow-y-auto">{children}</div>
+				<div className="flex-1 overflow-y-auto p-4">{children}</div>
 			</div>
 		</div>
 	);

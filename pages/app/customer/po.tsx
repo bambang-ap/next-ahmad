@@ -12,12 +12,9 @@ import {
 	SelectPropsData,
 	Table,
 } from '@components';
+import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
-import {
-	useFetchCustomer,
-	useFetchCustomerPO,
-	useManageCustomerPO,
-} from '@queries';
+import {trpc} from '@utils/trpc';
 
 type FormType = TCustomerPO & {
 	type: ModalTypePreview;
@@ -26,9 +23,11 @@ type FormType = TCustomerPO & {
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
-	const manageCustomerPO = useManageCustomerPO();
+	const insertPO = trpc.customer_po_insert.useMutation();
+	const updatePO = trpc.customer_po_update.useMutation();
+	const deletePO = trpc.customer_po_delete.useMutation();
 
-	const {data, refetch} = useFetchCustomerPO();
+	const {data, refetch} = trpc.customer_po_get.useQuery({type: 'customer'});
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');
@@ -49,14 +48,11 @@ export default function POCustomer() {
 
 		switch (type) {
 			case 'add':
-				return manageCustomerPO.post.mutate(rest, {onSuccess});
+				return insertPO.mutate(rest, {onSuccess});
 			case 'edit':
-				return manageCustomerPO.put.mutate({...rest, id}, {onSuccess});
+				return updatePO.mutate({...rest, id}, {onSuccess});
 			case 'delete':
-				return manageCustomerPO.delete.mutate(
-					{nomor_po: rest.nomor_po},
-					{onSuccess},
-				);
+				return deletePO.mutate({nomor_po: rest.nomor_po}, {onSuccess});
 		}
 
 		return null;
@@ -78,7 +74,7 @@ export default function POCustomer() {
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 
 				<Table
-					data={data?.data ?? []}
+					data={data ?? []}
 					header={['Name', 'Nomor PO', 'Customer', 'Action']}
 					renderItem={({item, Cell}) => {
 						const {name, customer, nomor_po} = item;
@@ -109,7 +105,7 @@ export default function POCustomer() {
 const ModalChild = ({control}: {control: Control<FormType>}) => {
 	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
-	const {data} = useFetchCustomer();
+	const {data} = trpc.basic_query.useQuery({target: CRUD_ENABLED.CUSTOMER});
 	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
 	const {
 		field: {onChange: onChangePoItem},
@@ -117,7 +113,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 	const isPreview = modalType === 'preview';
 	const isEdit = modalType === 'edit';
-	const mappedData = (data?.data ?? []).map<SelectPropsData>(({name, id}) => ({
+	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
 		label: name,
 		value: id,
 	}));
@@ -158,11 +154,19 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 			{!isPreview && (
 				<div className="gap-x-2 flex">
-					<div className="flex-1">
+					<div className="flex flex-1 gap-x-2">
 						<Input
+							className="flex-1"
 							disabled={isPreview}
 							control={poItemControl}
 							fieldName="name"
+						/>
+						<Input
+							className="flex-1"
+							disabled={isPreview}
+							control={poItemControl}
+							type="number"
+							fieldName="qty"
 						/>
 					</div>
 					<Button onClick={submitItem}>Add</Button>

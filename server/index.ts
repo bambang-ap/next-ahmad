@@ -69,3 +69,15 @@ export const checkCredential = async (
 
 	return callback();
 };
+
+export const checkCredentialV2 = async <T>(
+	req: NextApiRequest,
+	res: NextApiResponse,
+	callback: (() => Promise<T>) | (() => T),
+) => {
+	const {hasSession} = await getSession(req, res);
+
+	if (!hasSession) return Response(res).error('You have no credentials');
+
+	return callback();
+};
