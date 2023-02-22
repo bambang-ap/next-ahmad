@@ -7,8 +7,7 @@ import {CRUD_ENABLED} from '@enum';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 import {Context} from '@trpc/context';
-
-import {appRouter} from '.';
+import {appRouter} from '@trpc/routers';
 
 async function getKanban(ctx: Context) {
 	const routerCaller = appRouter.createCaller(ctx);
