@@ -23,11 +23,11 @@ type FormType = TCustomerPO & {
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
-	const insertPO = trpc.customer_po_insert.useMutation();
-	const updatePO = trpc.customer_po_update.useMutation();
-	const deletePO = trpc.customer_po_delete.useMutation();
+	const insertPO = trpc.customer_po.add.useMutation();
+	const updatePO = trpc.customer_po.update.useMutation();
+	const deletePO = trpc.customer_po.delete.useMutation();
 
-	const {data, refetch} = trpc.customer_po_get.useQuery({type: 'customer'});
+	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer'});
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');
@@ -105,7 +105,7 @@ export default function POCustomer() {
 const ModalChild = ({control}: {control: Control<FormType>}) => {
 	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
-	const {data} = trpc.basic_query.useQuery({target: CRUD_ENABLED.CUSTOMER});
+	const {data} = trpc.basic.get.useQuery({target: CRUD_ENABLED.CUSTOMER});
 	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
 	const {
 		field: {onChange: onChangePoItem},

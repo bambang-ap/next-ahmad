@@ -23,15 +23,15 @@ const atoms = atom({
 export default function Menu() {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {mutate} = trpc.menu_mutate.useMutation();
-	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu_get.useQuery(
+	const {mutate} = trpc.menu.mutate.useMutation();
+	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
 		{type: 'menu'},
 	);
-	const {data: mappedMenu, refetch} = trpc.menu_get.useQuery({
+	const {data: mappedMenu, refetch} = trpc.menu.get.useQuery({
 		type: 'menu',
 		sorted: true,
 	});
-	const {data: dataRole} = trpc.basic_query.useQuery({
+	const {data: dataRole} = trpc.basic.get.useQuery({
 		target: CRUD_ENABLED.ROLE,
 	});
 
@@ -121,7 +121,7 @@ const RenderMenu = (props: {
 	setValue: UseFormSetValue<FormMenu>;
 	modalRef: MutableRefObject<ModalRef | null>;
 }) => {
-	const {data: dataRole} = trpc.basic_query.useQuery({
+	const {data: dataRole} = trpc.basic.get.useQuery({
 		target: CRUD_ENABLED.ROLE,
 	});
 	const {data, noHeader, control, setValue, modalRef} = props;

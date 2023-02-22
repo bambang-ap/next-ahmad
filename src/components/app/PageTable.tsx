@@ -26,9 +26,9 @@ const RenderPage = ({path}: {path: string}) => {
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalRef = useRef<ModalRef>(null);
-	const {mutate} = trpc.basic_mutate.useMutation();
+	const {mutate} = trpc.basic.mutate.useMutation();
 
-	const {data, refetch} = trpc.basic_query.useQuery({target});
+	const {data, refetch} = trpc.basic.get.useQuery({target});
 	const {control, handleSubmit, watch, reset} = useForm();
 
 	const modalType = watch('type');

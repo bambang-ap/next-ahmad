@@ -5,10 +5,9 @@ import customer_poRouters from './customer_po';
 import menuRouters from './menu';
 
 export const appRouter = router({
-	...basicRouters,
-	...customer_poRouters,
-	...menuRouters,
+	menu: menuRouters,
+	basic: basicRouters,
+	customer_po: customer_poRouters,
 });
 
-// export type definition of API
 export type AppRouter = typeof appRouter;

@@ -5,10 +5,10 @@ import {TMenu} from '@appTypes/app.type';
 import {tMenu} from '@appTypes/app.zod';
 import {OrmMenu} from '@database';
 import {checkCredentialV2, getSession} from '@server';
-import {procedure} from '@trpc';
+import {procedure, router} from '@trpc';
 
-const menuRouters = {
-	menu_get: procedure
+const menuRouters = router({
+	get: procedure
 		.input(z.object({type: z.literal('menu'), sorted: z.boolean().optional()}))
 		.query(({ctx: {req, res}, input: {sorted}}) => {
 			return checkCredentialV2(req, res, async () => {
@@ -28,7 +28,8 @@ const menuRouters = {
 				return allMenu;
 			});
 		}),
-	menu_mutate: procedure
+
+	mutate: procedure
 		.input(tMenu.array())
 		.mutation(({ctx: {req, res}, input}) => {
 			return checkCredentialV2(req, res, async () => {
@@ -41,5 +42,5 @@ const menuRouters = {
 				return updatedMenu;
 			});
 		}),
-};
+});
 export default menuRouters;

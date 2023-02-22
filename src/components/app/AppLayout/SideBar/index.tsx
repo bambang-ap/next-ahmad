@@ -7,7 +7,7 @@ import {trpc} from '@utils/trpc';
 import Sidebar from './component';
 
 export const SideBar = () => {
-	const {data} = trpc.menu_get.useQuery({type: 'menu', sorted: true});
+	const {data} = trpc.menu.get.useQuery({type: 'menu', sorted: true});
 
 	return (
 		<Sidebar>

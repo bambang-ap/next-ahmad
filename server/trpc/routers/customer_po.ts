@@ -10,10 +10,10 @@ import {
 	OrmCustomerSPPBOut,
 } from '@database';
 import {checkCredentialV2, generateId} from '@server';
-import {procedure} from '@trpc';
+import {procedure, router} from '@trpc';
 
-const customer_poRouters = {
-	customer_po_get: procedure
+const customer_poRouters = router({
+	get: procedure
 		.input(
 			z.object({
 				type: z.string(),
@@ -41,7 +41,7 @@ const customer_poRouters = {
 			});
 		}),
 
-	customer_po_insert: procedure
+	add: procedure
 		.input(tCustomerPO.omit({id: true}))
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
@@ -55,7 +55,7 @@ const customer_poRouters = {
 			});
 		}),
 
-	customer_po_update: procedure
+	update: procedure
 		.input(tCustomerPO)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
@@ -76,7 +76,7 @@ const customer_poRouters = {
 			});
 		}),
 
-	customer_po_delete: procedure
+	delete: procedure
 		.input(tCustomerPO.pick({nomor_po: true}))
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
@@ -88,6 +88,6 @@ const customer_poRouters = {
 				return {message: 'Success'};
 			});
 		}),
-};
+});
 
 export default customer_poRouters;

@@ -3,17 +3,18 @@ import {z} from 'zod';
 import {uModalType} from '@appTypes/app.zod';
 import {Z_CRUD_ENABLED} from '@enum';
 import {generateId, MAPPING_CRUD_ORM} from '@server';
-import {procedure} from '@trpc';
+import {procedure, router} from '@trpc';
 
-const basicRouters = {
-	basic_query: procedure
+const basicRouters = router({
+	get: procedure
 		.input(z.object({target: Z_CRUD_ENABLED}))
 		.query(async ({input}) => {
 			const orm = MAPPING_CRUD_ORM[input.target];
 			const ormResult = await orm.findAll({order: [['id', 'asc']]});
 			return ormResult;
 		}),
-	basic_mutate: procedure
+
+	mutate: procedure
 		.input(
 			z.object({
 				target: Z_CRUD_ENABLED,
@@ -36,6 +37,6 @@ const basicRouters = {
 					return orm.create({...rest, id: generateId()});
 			}
 		}),
-};
+});
 
 export default basicRouters;
