@@ -1,17 +1,19 @@
 import {DataTypes} from 'sequelize';
 
-import {TInstruksiKanban} from '@appTypes/app.type';
-import {CRUD_ENABLED} from '@enum';
+import {TKanban} from '@appTypes/app.zod';
+import {TABLES} from '@enum';
 
 import {defaultExcludeColumn, DefinedModel, ORM} from './_init';
 
-export const OrmKanbanInstruksi: DefinedModel<TInstruksiKanban> = ORM.define(
-	CRUD_ENABLED.INSTRUKSI_KANBAN,
+export const OrmKanban: DefinedModel<TKanban> = ORM.define(
+	TABLES.KANBAN,
 	{
-		name: {type: DataTypes.STRING, allowNull: false},
+		id_instruksi_kanban: {type: DataTypes.STRING},
+		id_mesin: {type: DataTypes.STRING},
+		nomor_po: {type: DataTypes.STRING},
 	},
 	{
-		tableName: CRUD_ENABLED.INSTRUKSI_KANBAN,
+		tableName: TABLES.KANBAN,
 		defaultScope: {
 			attributes: {
 				exclude: [...defaultExcludeColumn, 'password'],

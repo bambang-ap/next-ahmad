@@ -7,10 +7,15 @@ import {procedure, router} from '@trpc';
 
 const basicRouters = router({
 	get: procedure
-		.input(z.object({target: Z_CRUD_ENABLED}))
-		.query(async ({input}) => {
-			const orm = MAPPING_CRUD_ORM[input.target];
-			const ormResult = await orm.findAll({order: [['id', 'asc']]});
+		.input(
+			z.object({
+				target: Z_CRUD_ENABLED,
+				where: z.record(z.union([z.string(), z.number()])).nullish(),
+			}),
+		)
+		.query(async ({input: {target, where}}) => {
+			const orm = MAPPING_CRUD_ORM[target];
+			const ormResult = await orm.findAll({where, order: [['id', 'asc']]});
 			return ormResult;
 		}),
 

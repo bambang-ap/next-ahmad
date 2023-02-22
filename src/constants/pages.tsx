@@ -74,7 +74,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						type: 'select',
 						firstOption: '- Pilih PO -',
 						dataQuery: () =>
-							trpc.customer_po.get.useQuery({type: 'forSelection'}),
+							trpc.customer_po.get.useQuery({type: 'customer_po'}),
 						dataMapping: (item: TCustomerPO[]) =>
 							item?.map(({nomor_po}) => ({value: nomor_po})),
 					},
@@ -110,7 +110,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						type: 'select',
 						firstOption: '- Pilih PO -',
 						dataQuery: () =>
-							trpc.customer_po.get.useQuery({type: 'forSelection'}),
+							trpc.customer_po.get.useQuery({type: 'customer_po'}),
 						dataMapping: (item: TCustomerPO[]) =>
 							item?.map(({nomor_po}) => ({value: nomor_po})),
 					},

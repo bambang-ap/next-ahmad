@@ -3,9 +3,14 @@ export type {
 	ModalTypePreview,
 	TCustomer,
 	TCustomerPO,
+	TCustomerPOExtended,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 	TInstruksiKanban,
+	TKanban,
+	TKanbanExtended,
+	TMenu,
+	TMesin,
 	TPOItem,
 	ZId,
 } from './app.zod';
@@ -19,14 +24,7 @@ export type Session = {
 	user?: TUser;
 };
 
-export type TMenu = {
-	parent_id?: string;
-	subMenu: TMenu[];
-} & Record<'id' | 'title' | 'icon' | 'path' | 'accepted_role', string>;
-
 export type TRole = {
 	id: number;
 	name: string;
 };
-
-export type TMesin = Record<'id' | 'nomor_mesin' | 'name', string>;

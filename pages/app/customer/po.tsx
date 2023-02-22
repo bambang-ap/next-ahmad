@@ -27,7 +27,7 @@ export default function POCustomer() {
 	const updatePO = trpc.customer_po.update.useMutation();
 	const deletePO = trpc.customer_po.delete.useMutation();
 
-	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer'});
+	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer_po'});
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');

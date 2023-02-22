@@ -27,8 +27,18 @@ export const tCustomerPO = zId.extend({
 	name: z.string(),
 	id_customer: z.string(),
 	nomor_po: z.string(),
+});
+
+export type TCustomerPOExtended = z.infer<typeof tCustomerPOExtended>;
+export const tCustomerPOExtended = tCustomerPO.extend({
 	customer: tCustomer.nullish(),
 	po_item: z.array(tPOItem).nullish(),
+});
+
+export type TMesin = z.infer<typeof tMesin>;
+export const tMesin = zId.extend({
+	name: z.string(),
+	nomor_mesin: z.string(),
 });
 
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
@@ -47,6 +57,20 @@ export type TInstruksiKanban = z.infer<typeof tInstruksiKanban>;
 export const tInstruksiKanban = zId.extend({
 	name: z.string(),
 	nomor_po: z.string(),
+});
+
+export type TKanban = z.infer<typeof tKanban>;
+export const tKanban = zId.extend({
+	nomor_po: z.string(),
+	id_instruksi_kanban: z.string(),
+	id_mesin: z.string(),
+});
+
+export type TKanbanExtended = z.infer<typeof tKanbanExtended>;
+export const tKanbanExtended = tKanban.extend({
+	po: tCustomerPO.array().nullish(),
+	mesin: tMesin.array().nullish(),
+	instruksi_kanban: tInstruksiKanban.array().nullish(),
 });
 
 const baseTMenu = z.object({

@@ -1,33 +1,34 @@
 import {useRef} from 'react';
 
-import {Control, useController, useForm, useWatch} from 'react-hook-form';
+import {Control, useForm, useWatch} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomerPO, TPOItem} from '@appTypes/app.type';
+import {ModalTypePreview, TKanban} from '@appTypes/app.type';
 import {
 	Button,
-	Input,
 	Modal,
 	ModalRef,
 	Select,
-	SelectPropsData,
+	selectMapper,
 	Table,
 } from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
 
-type FormType = TCustomerPO & {
+type FormType = TKanban & {
 	type: ModalTypePreview;
 };
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
-	const insertPO = trpc.customer_po.add.useMutation();
-	const updatePO = trpc.customer_po.update.useMutation();
-	const deletePO = trpc.customer_po.delete.useMutation();
+	const insertPO = trpc.kanban.add.useMutation();
+	const updatePO = trpc.kanban.update.useMutation();
+	const deletePO = trpc.kanban.delete.useMutation();
 
-	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer'});
+	const {data, refetch} = trpc.kanban.get.useQuery({
+		type: 'kanban',
+	});
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');
@@ -75,15 +76,22 @@ export default function POCustomer() {
 
 				<Table
 					data={data ?? []}
-					header={['Name', 'Nomor PO', 'Customer', 'Action']}
+					header={[
+						'Nomor PO',
+						'Nama Mesin',
+						'Instruksi Kanban',
+						'Customer',
+						'Action',
+					]}
 					renderItem={({item, Cell}) => {
-						const {name, customer, nomor_po} = item;
+						const {nomor_po, mesin, instruksi_kanban, po} = item;
 
 						return (
 							<>
-								<Cell>{name}</Cell>
 								<Cell>{nomor_po}</Cell>
-								<Cell>{customer?.name}</Cell>
+								<Cell>{mesin?.[0]?.name}</Cell>
+								<Cell>{instruksi_kanban?.[0]?.name}</Cell>
+								<Cell>{po?.[0]?.customer?.name}</Cell>
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('preview', item)}>
 										Preview
@@ -103,29 +111,19 @@ export default function POCustomer() {
 }
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
-	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
+	const [modalType] = useWatch({control, name: ['type']});
 
-	const {data} = trpc.basic.get.useQuery({target: CRUD_ENABLED.CUSTOMER});
-	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
-	const {
-		field: {onChange: onChangePoItem},
-	} = useController({control, name: 'po_item'});
-
-	const isPreview = modalType === 'preview';
-	const isEdit = modalType === 'edit';
-	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
-		label: name,
-		value: id,
-	}));
-
-	const submitItem = handleSubmit(({name}) => {
-		onChangePoItem([{name}].concat(poItem ?? []));
-		reset({name: ''});
+	const {data: dataMesin} = trpc.basic.get.useQuery({
+		target: CRUD_ENABLED.MESIN,
+	});
+	const {data: dataInstruksi} = trpc.basic.get.useQuery({
+		target: CRUD_ENABLED.INSTRUKSI_KANBAN,
+	});
+	const {data: dataPo} = trpc.customer_po.get.useQuery({
+		type: 'customer_po',
 	});
 
-	function removeItem(index: number) {
-		onChangePoItem(poItem?.remove(index));
-	}
+	const isPreview = modalType === 'preview';
 
 	if (modalType === 'delete') {
 		return (
@@ -138,58 +136,27 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 	return (
 		<div className="gap-y-2 flex flex-col">
-			<Input disabled={isPreview} control={control} fieldName="name" />
-			<Input
-				disabled={isPreview || isEdit}
+			<Select
+				disabled={isPreview}
+				firstOption="- Pilih PO -"
 				control={control}
+				data={selectMapper(dataPo ?? [], 'nomor_po')}
 				fieldName="nomor_po"
 			/>
 			<Select
 				disabled={isPreview}
-				firstOption="- Pilih customer -"
+				firstOption="- Pilih Instruksi -"
 				control={control}
-				data={mappedData}
-				fieldName="id_customer"
+				data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
+				fieldName="id_instruksi_kanban"
 			/>
-
-			{!isPreview && (
-				<div className="gap-x-2 flex">
-					<div className="flex flex-1 gap-x-2">
-						<Input
-							className="flex-1"
-							disabled={isPreview}
-							control={poItemControl}
-							fieldName="name"
-						/>
-						<Input
-							className="flex-1"
-							disabled={isPreview}
-							control={poItemControl}
-							type="number"
-							fieldName="qty"
-						/>
-					</div>
-					<Button onClick={submitItem}>Add</Button>
-				</div>
-			)}
-
-			{poItem && (
-				<Table
-					className="max-h-72 overflow-y-auto"
-					header={isPreview ? ['Name'] : ['Name', 'Action']}
-					data={poItem}
-					renderItem={({Cell, item}, index) => {
-						return (
-							<>
-								<Cell>{item.name}</Cell>
-								{!isPreview && (
-									<Button onClick={() => removeItem(index)}>Remove</Button>
-								)}
-							</>
-						);
-					}}
-				/>
-			)}
+			<Select
+				disabled={isPreview}
+				firstOption="- Pilih Mesin -"
+				control={control}
+				data={selectMapper(dataMesin ?? [], 'id', 'name')}
+				fieldName="id_mesin"
+			/>
 
 			{!isPreview && (
 				<Button className="w-full" type="submit">

@@ -10,6 +10,8 @@ export enum TABLES {
 	MESIN = 'mesin',
 	ROLE = 'role',
 	USER = 'user',
+	KANBAN = 'kanban',
+	INSTRUKSI_KANBAN = 'instruksi_kanban',
 }
 
 export const Z_TABLES = z.nativeEnum(TABLES);
