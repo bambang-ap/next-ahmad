@@ -6,46 +6,45 @@ import {OrmKanban} from '@database';
 import {CRUD_ENABLED} from '@enum';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
-import {Context} from '@trpc/context';
 import {appRouter} from '@trpc/routers';
-
-async function getKanban(ctx: Context) {
-	const routerCaller = appRouter.createCaller(ctx);
-	const allPO = await OrmKanban.findAll();
-	// @ts-ignore
-	const joinedPOPromises = (allPO as TKanbanExtended[]).map<TKanbanExtended>(
-		async item => {
-			const {nomor_po, id_instruksi_kanban, id_mesin} = item;
-			const po = await routerCaller.customer_po.get({
-				nomor_po,
-				type: 'customer_po',
-			});
-			const instruksi_kanban = await routerCaller.basic.get({
-				where: {id: id_instruksi_kanban},
-				target: CRUD_ENABLED.INSTRUKSI_KANBAN,
-			});
-			const mesin = await routerCaller.basic.get({
-				where: {id: id_mesin},
-				target: CRUD_ENABLED.MESIN,
-			});
-			// return {...item, nomor_po, po};
-			return {...item, nomor_po, instruksi_kanban, mesin, po};
-		},
-	);
-
-	const joinedPO = await Promise.all(joinedPOPromises);
-
-	return joinedPO as TKanbanExtended[];
-}
 
 const kanbanRouters = router({
 	get get() {
 		return procedure
 			.input(z.object({type: z.literal('kanban')}))
 			.query(async ({ctx: {req, res}}) => {
-				return checkCredentialV2(req, res, async () => {
-					return getKanban({req, res});
-				});
+				return checkCredentialV2(
+					req,
+					res,
+					async (): Promise<TKanbanExtended[]> => {
+						const routerCaller = appRouter.createCaller({req, res});
+						const allPO = await OrmKanban.findAll();
+						// @ts-ignore
+						const joinedPOPromises = (allPO as TKanban[]).map<
+							Promise<TKanbanExtended>
+						>(async item => {
+							const {nomor_po, id_instruksi_kanban, id_mesin} = item;
+							const po = await routerCaller.customer_po.get({
+								nomor_po,
+								type: 'customer_po',
+							});
+							const instruksi_kanban = await routerCaller.basic.get({
+								where: {id: id_instruksi_kanban},
+								target: CRUD_ENABLED.INSTRUKSI_KANBAN,
+							});
+							const mesin = await routerCaller.basic.get({
+								where: {id: id_mesin},
+								target: CRUD_ENABLED.MESIN,
+							});
+
+							return {...item, nomor_po, instruksi_kanban, mesin, po};
+						});
+
+						const joinedPO = await Promise.all(joinedPOPromises);
+
+						return joinedPO;
+					},
+				);
 			});
 	},
 
