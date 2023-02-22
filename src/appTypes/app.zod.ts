@@ -27,8 +27,8 @@ export const tCustomerPO = zId.extend({
 	name: z.string(),
 	id_customer: z.string(),
 	nomor_po: z.string(),
-	customer: tCustomer.nullable(),
-	po_item: z.array(tPOItem).nullable(),
+	customer: tCustomer.nullish(),
+	po_item: z.array(tPOItem).nullish(),
 });
 
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;

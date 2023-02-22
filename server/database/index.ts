@@ -3,7 +3,7 @@ export * from './customer_po';
 export * from './customer_po_item';
 export * from './customer_sppb_in';
 export * from './customer_sppb_out';
-export * from './instruksi_kanban';
+export * from './kanban_instruksi';
 export * from './menu';
 export * from './mesin';
 export * from './role';
