@@ -111,8 +111,8 @@ export default function POCustomer() {
 }
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
-	const [modalType] = useWatch({control, name: ['type']});
-
+	const [modalType, id] = useWatch({control, name: ['type', 'id']});
+	const {data: qrImage} = trpc.qr.useQuery(id);
 	const {data: dataMesin} = trpc.basic.get.useQuery({
 		target: CRUD_ENABLED.MESIN,
 	});
@@ -157,6 +157,12 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 				data={selectMapper(dataMesin ?? [], 'id', 'name')}
 				fieldName="id_mesin"
 			/>
+
+			{isPreview && qrImage && (
+				<div className="bg-white h-52 flex self-center mt-4">
+					<img alt="qr_svg" src={qrImage} className="h-full" />
+				</div>
+			)}
 
 			{!isPreview && (
 				<Button className="w-full" type="submit">

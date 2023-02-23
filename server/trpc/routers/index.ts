@@ -1,3 +1,6 @@
+import qr from 'qr-image';
+import {z} from 'zod';
+
 import {getNow} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -11,6 +14,13 @@ export const appRouter = router({
 		const today = getNow();
 
 		return today;
+	}),
+	qr: procedure.input(z.string()).query(({input}) => {
+		const qr_svg = qr.imageSync(input, {
+			type: 'svg',
+		});
+
+		return `data:image/svg+xml;utf8,${qr_svg}`;
 	}),
 	menu: menuRouters,
 	basic: basicRouters,
