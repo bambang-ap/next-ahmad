@@ -1,50 +1,39 @@
 import {MutableRefObject, useEffect, useRef} from 'react';
 
-import {Control, useForm, UseFormSetValue} from 'react-hook-form';
-import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
+import ReactDragListView from 'react-drag-listview';
+import {Control, UseFormSetValue} from 'react-hook-form';
+import {useRecoilValue, useSetRecoilState} from 'recoil';
 
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu, TRole} from '@appTypes/app.type';
 import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
-import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
-import {trpc} from '@utils/trpc';
-
-type FormMenu = Record<
-	string,
-	{title: string; icon: string; role: Record<string, boolean>}
->;
-
-const atoms = atom({
-	key: 'atoms',
-	default: '',
-});
+import {FormMenu, useMenu} from '@hooks';
+import {atomMenuIconKey} from '@recoil/atoms';
+import {selectorMappedMenu} from '@recoil/selectors';
 
 export default function Menu() {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {mutate} = trpc.menu.mutate.useMutation();
-	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
-		{type: 'menu'},
-	);
-	const {data: mappedMenu, refetch} = trpc.menu.get.useQuery({
-		type: 'menu',
-		sorted: true,
-	});
-	const {data: dataRole} = trpc.basic.get.useQuery<TRole, TRole[]>({
-		target: CRUD_ENABLED.ROLE,
-	});
-
-	const {control, reset, watch, setValue, handleSubmit} = useForm<FormMenu>();
-
-	const iconKey = useRecoilValue(atoms);
+	const {
+		dataRole,
+		mappedMenu,
+		unMappedMenu,
+		menuForm,
+		mutateMenu,
+		refetchMapped,
+		reftechUnMapped,
+	} = useMenu();
+	const {control, reset, watch, setValue, handleSubmit} = menuForm;
+	const iconKey = useRecoilValue(atomMenuIconKey);
+	const changeOrder = useSetRecoilState(selectorMappedMenu);
 
 	const iconModalSelectedValue = watch(iconKey);
 
 	const submit = handleSubmit(values => {
 		const bodyParam = unMappedMenu?.reduce<TMenu[]>((acc, menu) => {
 			const {id, ...restMenu} = menu;
-			const {icon, role, title} = values[id] as FormMenu[string];
+			const {icon, role, title, index} = values[id] as FormMenu[string];
 
 			const accepted_role = Object.entries(role)
 				.reduce<string[]>((roles, [key, value]) => {
@@ -53,14 +42,14 @@ export default function Menu() {
 				}, [])
 				.join(',');
 
-			acc.push({...restMenu, icon, title, id, accepted_role});
+			acc.push({...restMenu, index, icon, title, id, accepted_role});
 
 			return acc;
 		}, []);
 
-		mutate(bodyParam ?? [], {
+		mutateMenu(bodyParam ?? [], {
 			onSuccess: () => {
-				refetch();
+				refetchMapped();
 				reftechUnMapped();
 			},
 		});
@@ -102,13 +91,20 @@ export default function Menu() {
 
 			<form onSubmit={submit}>
 				<Button type="submit">Submit</Button>
-				<RenderMenu
-					dataRole={dataRole}
-					modalRef={modalRef}
-					control={control}
-					data={mappedMenu}
-					setValue={setValue}
-				/>
+				<ReactDragListView
+					onDragEnd={(fromIndex, toIndex) => {
+						changeOrder({fromIndex, toIndex});
+					}}
+					nodeSelector="tr"
+					handleSelector="tr">
+					<RenderMenu
+						dataRole={dataRole}
+						modalRef={modalRef}
+						control={control}
+						data={mappedMenu}
+						setValue={setValue}
+					/>
+				</ReactDragListView>
 			</form>
 		</>
 	);
@@ -125,7 +121,7 @@ const RenderMenu = (props: {
 }) => {
 	const {data, dataRole, noHeader, control, setValue, modalRef} = props;
 
-	const setKey = useSetRecoilState(atoms);
+	const setKey = useSetRecoilState(atomMenuIconKey);
 
 	return (
 		<Table
@@ -150,7 +146,7 @@ const RenderMenu = (props: {
 			renderItem={({item: {id}, Cell}) => {
 				return (
 					<>
-						<Cell>
+						<Cell className="flex">
 							<Input control={control} fieldName={`${id}.title`} />
 							<Input
 								control={control}
