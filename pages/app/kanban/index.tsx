@@ -77,6 +77,7 @@ export default function POCustomer() {
 				<Table
 					data={data ?? []}
 					header={[
+						'ID',
 						'Nomor PO',
 						'Nama Mesin',
 						'Instruksi Kanban',
@@ -84,10 +85,11 @@ export default function POCustomer() {
 						'Action',
 					]}
 					renderItem={({item, Cell}) => {
-						const {nomor_po, mesin, instruksi_kanban, po} = item;
+						const {id, nomor_po, mesin, instruksi_kanban, po} = item;
 
 						return (
 							<>
+								<Cell>{id}</Cell>
 								<Cell>{nomor_po}</Cell>
 								<Cell>{mesin?.[0]?.name}</Cell>
 								<Cell>{instruksi_kanban?.[0]?.name}</Cell>

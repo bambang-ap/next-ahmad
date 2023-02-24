@@ -4,7 +4,7 @@ import {Control, useForm, UseFormSetValue} from 'react-hook-form';
 import {atom, useRecoilValue, useSetRecoilState} from 'recoil';
 
 import {AllIcon} from '@appComponent/AllIcon';
-import {TMenu} from '@appTypes/app.type';
+import {TMenu, TRole} from '@appTypes/app.type';
 import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
@@ -31,7 +31,7 @@ export default function Menu() {
 		type: 'menu',
 		sorted: true,
 	});
-	const {data: dataRole} = trpc.basic.get.useQuery({
+	const {data: dataRole} = trpc.basic.get.useQuery<TRole, TRole[]>({
 		target: CRUD_ENABLED.ROLE,
 	});
 
@@ -42,9 +42,9 @@ export default function Menu() {
 	const iconModalSelectedValue = watch(iconKey);
 
 	const submit = handleSubmit(values => {
-		const bodyParam = mappedMenu?.reduce<TMenu[]>((acc, menu) => {
+		const bodyParam = unMappedMenu?.reduce<TMenu[]>((acc, menu) => {
 			const {id, ...restMenu} = menu;
-			const {icon, role, title} = values[id];
+			const {icon, role, title} = values[id] as FormMenu[string];
 
 			const accepted_role = Object.entries(role)
 				.reduce<string[]>((roles, [key, value]) => {
@@ -68,7 +68,7 @@ export default function Menu() {
 
 	useEffect(() => {
 		const formDefaultValue = unMappedMenu?.reduce(
-			(ret, {id, title, icon, accepted_role}) => {
+			(ret, {id, title, icon, accepted_role, index}) => {
 				const roles = accepted_role.split(',');
 				const role =
 					dataRole?.reduce((acc, role) => {
@@ -77,7 +77,7 @@ export default function Menu() {
 
 				return {
 					...ret,
-					[id]: {title, icon, role},
+					[id]: {title, icon, role, index},
 				};
 			},
 			{},
@@ -103,6 +103,7 @@ export default function Menu() {
 			<form onSubmit={submit}>
 				<Button type="submit">Submit</Button>
 				<RenderMenu
+					dataRole={dataRole}
 					modalRef={modalRef}
 					control={control}
 					data={mappedMenu}
@@ -120,11 +121,9 @@ const RenderMenu = (props: {
 	control: Control<FormMenu>;
 	setValue: UseFormSetValue<FormMenu>;
 	modalRef: MutableRefObject<ModalRef | null>;
+	dataRole?: TRole[];
 }) => {
-	const {data: dataRole} = trpc.basic.get.useQuery({
-		target: CRUD_ENABLED.ROLE,
-	});
-	const {data, noHeader, control, setValue, modalRef} = props;
+	const {data, dataRole, noHeader, control, setValue, modalRef} = props;
 
 	const setKey = useSetRecoilState(atoms);
 
@@ -133,12 +132,13 @@ const RenderMenu = (props: {
 			data={data ?? []}
 			header={noHeader ? undefined : ['Title', 'Icon', 'Role']}
 			renderItemEach={({item: {subMenu}, Cell}) => {
-				if (subMenu?.length <= 0) return false;
+				if (!subMenu || (subMenu && subMenu?.length <= 0)) return false;
 
 				return (
 					<Cell colSpan={3}>
 						<RenderMenu
 							noHeader
+							dataRole={dataRole}
 							setValue={setValue}
 							modalRef={modalRef}
 							control={control}
@@ -151,10 +151,11 @@ const RenderMenu = (props: {
 				return (
 					<>
 						<Cell>
+							<Input control={control} fieldName={`${id}.title`} />
 							<Input
-								label="sjdfkjsdjf"
 								control={control}
-								fieldName={`${id}.title`}
+								type="number"
+								fieldName={`${id}.index`}
 							/>
 						</Cell>
 						<Cell>

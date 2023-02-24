@@ -77,12 +77,13 @@ const baseTMenu = z.object({
 	id: z.string(),
 	title: z.string(),
 	icon: z.string(),
-	path: z.string(),
+	path: z.string().nullable(),
 	accepted_role: z.string(),
 	parent_id: z.string().nullish(),
+	index: z.number(),
 });
 
 export type TMenu = z.infer<typeof baseTMenu> & {subMenu?: TMenu[]};
 export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
-	subMenu: z.lazy(() => tMenu.array()),
+	subMenu: z.lazy(() => tMenu.array()).optional(),
 });

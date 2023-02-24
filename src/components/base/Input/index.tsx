@@ -1,3 +1,5 @@
+import {ChangeEventHandler} from 'react';
+
 import {TextInput as InputFlowbite} from 'flowbite-react';
 import {FieldValues} from 'react-hook-form';
 
@@ -25,7 +27,7 @@ function InputComponent<F extends FieldValues>(
 
 	const {
 		fieldState,
-		field: {value, ...field},
+		field: {value, onChange, ...field},
 	} = controller;
 
 	const errorMessage = fieldState.error?.message && (
@@ -37,7 +39,7 @@ function InputComponent<F extends FieldValues>(
 
 	if (type === 'checkbox') {
 		function onCheck() {
-			field.onChange(!value);
+			onChange(!value);
 		}
 
 		return (
@@ -56,6 +58,11 @@ function InputComponent<F extends FieldValues>(
 		);
 	}
 
+	const onChangeEvent: ChangeEventHandler<HTMLInputElement> = function (event) {
+		if (type === 'number') return onChange(parseInt(event.target.value));
+		return onChange(event);
+	};
+
 	return (
 		<div className={className}>
 			{label && <Text className="mb-2">{label}</Text>}
@@ -64,6 +71,7 @@ function InputComponent<F extends FieldValues>(
 				disabled={disabled}
 				placeholder={placeholder}
 				value={value}
+				onChange={onChangeEvent}
 				{...field}
 			/>
 			{errorMessage}

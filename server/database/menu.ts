@@ -13,6 +13,7 @@ export const OrmMenu: DefinedModel<Omit<TMenu, 'subMenu'>> = ORM.define(
 		icon: {type: DataTypes.STRING},
 		path: {type: DataTypes.STRING},
 		accepted_role: {type: DataTypes.STRING, allowNull: false},
+		index: {type: DataTypes.NUMBER, allowNull: false},
 	},
 	{
 		tableName: TABLES.MENU,
