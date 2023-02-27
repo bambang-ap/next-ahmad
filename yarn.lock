@@ -2077,9 +2077,9 @@ global-dirs@^0.1.1:
   dependencies:
     ini "^1.3.4"
 
-global-methods@bambang-ap/global-methods#2.1.1:
-  version "2.1.1"
-  resolved "https://codeload.github.com/bambang-ap/global-methods/tar.gz/a927e74c8d3b258b1238ef253cfd2f0521523adc"
+global-methods@bambang-ap/global-methods#2.1.0:
+  version "2.1.0"
+  resolved "https://codeload.github.com/bambang-ap/global-methods/tar.gz/560659819c25cf8c68a688d4ac0c5d1de1c61f86"
 
 global-modules@^1.0.0:
   version "1.0.0"

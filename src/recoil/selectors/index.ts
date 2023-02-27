@@ -1,11 +1,14 @@
+import {UseFormReset} from 'react-hook-form';
 import {DefaultValue, selector} from 'recoil';
 
+import {FormMenu} from '@hooks';
 import {atomMappedMenu} from '@recoil/atoms';
 
 export const selectorMappedMenu = selector<{
 	fromIndex: number;
 	toIndex: number;
 	dataSourceIndex?: number;
+	reset: UseFormReset<FormMenu>;
 }>({
 	key: 'selectorMappedMenu',
 	get: noop as any,
@@ -14,16 +17,20 @@ export const selectorMappedMenu = selector<{
 
 		const menu = get(atomMappedMenu);
 
-		const {fromIndex, toIndex, dataSourceIndex} = value;
-
-		const f = menu.slice().changeOrder(fromIndex, toIndex);
-		console.log({menu, f});
-
-		return;
+		const {fromIndex, toIndex, reset, dataSourceIndex} = value;
 
 		if (dataSourceIndex && dataSourceIndex >= 0) {
 			// const targetMenu = menu[dataSourceIndex];
 			// set(atomMappedMenu, menu.replace());
-		} else set(atomMappedMenu, menu.changeOrder(fromIndex, toIndex));
+		} else {
+			const orderedMenu = menu.changeOrder(fromIndex, toIndex);
+			set(atomMappedMenu, orderedMenu);
+			reset(formMenu => {
+				return orderedMenu.reduce((ret, item, index) => {
+					const {id} = item;
+					return {...ret, [id]: {...formMenu[id], index}};
+				}, {});
+			});
+		}
 	},
 });

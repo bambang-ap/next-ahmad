@@ -12,6 +12,8 @@ import {FormMenu, useMenu} from '@hooks';
 import {atomMenuIconKey} from '@recoil/atoms';
 import {selectorMappedMenu} from '@recoil/selectors';
 
+Menu.getLayout = getLayout;
+
 export default function Menu() {
 	const modalRef = useRef<ModalRef>(null);
 
@@ -56,7 +58,7 @@ export default function Menu() {
 	});
 
 	useEffect(() => {
-		const formDefaultValue = unMappedMenu?.reduce(
+		const formDefaultValue = unMappedMenu?.reduce<FormMenu>(
 			(ret, {id, title, icon, accepted_role, index}) => {
 				const roles = accepted_role.split(',');
 				const role =
@@ -93,7 +95,7 @@ export default function Menu() {
 				<Button type="submit">Submit</Button>
 				<ReactDragListView
 					onDragEnd={(fromIndex, toIndex) => {
-						changeOrder({fromIndex, toIndex});
+						changeOrder({fromIndex, toIndex, reset});
 					}}
 					nodeSelector="tr"
 					handleSelector="tr">
@@ -184,5 +186,3 @@ const RenderMenu = (props: {
 		/>
 	);
 };
-
-Menu.getLayout = getLayout;
