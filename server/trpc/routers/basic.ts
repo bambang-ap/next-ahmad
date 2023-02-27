@@ -37,7 +37,7 @@ const basicRouters = router({
 				case 'delete':
 					return orm.destroy({where: {id}});
 				case 'edit':
-					return orm.update(body, {where: {id}});
+					return orm.update(rest, {where: {id}});
 				default:
 					return orm.create({...rest, id: generateId()});
 			}
