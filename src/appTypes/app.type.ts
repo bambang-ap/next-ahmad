@@ -1,4 +1,5 @@
 export type {
+	BaseMenu,
 	ModalType,
 	ModalTypePreview,
 	TCustomer,
@@ -12,19 +13,12 @@ export type {
 	TMenu,
 	TMesin,
 	TPOItem,
+	TRole,
+	TScanFinishGood,
+	TScanOutBarang,
+	TScanProduksi,
+	TScanQc,
+	TSession,
+	TUser,
 	ZId,
 } from './app.zod';
-
-export type TUser = Record<'id' | 'email' | 'name' | 'role', string> & {
-	password?: string;
-};
-
-export type Session = {
-	expires: string;
-	user?: TUser;
-};
-
-export type TRole = {
-	id: number;
-	name: string;
-};

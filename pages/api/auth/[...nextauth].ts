@@ -1,7 +1,7 @@
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-import {Session} from '@appTypes/app.type';
+import {TSession} from '@appTypes/app.type';
 
 const role = 'user';
 
@@ -38,7 +38,7 @@ export const authOptions: NextAuthOptions = {
 	},
 	callbacks: {
 		session(params) {
-			const session: Session = {
+			const session: TSession = {
 				...params.session,
 				user: {id: '1234', email: 'sdhf', name: 'dsfdsfdsf', role},
 			};

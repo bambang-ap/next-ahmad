@@ -1,11 +1,11 @@
 import {DataTypes} from 'sequelize';
 
-import {TMenu} from '@appTypes/app.type';
+import {BaseMenu} from '@appTypes/app.zod';
 import {TABLES} from '@enum';
 
 import {defaultExcludeColumn, DefinedModel, ORM} from './_init';
 
-export const OrmMenu: DefinedModel<Omit<TMenu, 'subMenu'>> = ORM.define(
+export const OrmMenu: DefinedModel<BaseMenu> = ORM.define(
 	TABLES.MENU,
 	{
 		title: {type: DataTypes.STRING, allowNull: false},

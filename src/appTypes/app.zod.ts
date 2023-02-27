@@ -12,6 +12,20 @@ export const uModalTypePreview = z.union([uModalType, z.literal('preview')]);
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
+export type TUser = z.infer<typeof tUser>;
+export const tUser = zId.extend({
+	email: z.string(),
+	name: z.string(),
+	role: z.string(),
+	password: z.string().nullish(),
+});
+
+export type TSession = z.infer<typeof tSession>;
+export const tSession = z.object({expires: z.string(), user: tUser.nullish()});
+
+export type TRole = z.infer<typeof tRole>;
+export const tRole = z.object({id: z.number(), name: z.string()});
+
 export type TCustomer = z.infer<typeof tCustomer>;
 export const tCustomer = zId.extend({name: z.string()});
 
@@ -73,7 +87,8 @@ export const tKanbanExtended = tKanban.extend({
 	instruksi_kanban: tInstruksiKanban.array().nullish(),
 });
 
-const baseTMenu = z.object({
+export type BaseMenu = z.infer<typeof baseTMenu>;
+export const baseTMenu = z.object({
 	id: z.string(),
 	title: z.string(),
 	icon: z.string(),
@@ -83,7 +98,23 @@ const baseTMenu = z.object({
 	index: z.number(),
 });
 
-export type TMenu = z.infer<typeof baseTMenu> & {subMenu?: TMenu[]};
+export type TMenu = BaseMenu & {subMenu?: TMenu[]};
 export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
 	subMenu: z.lazy(() => tMenu.array()).optional(),
+});
+
+const baseScan = zId.extend({status: z.boolean(), id_kanban: z.string()});
+
+export type TScanProduksi = z.infer<typeof tScanProduksi>;
+export const tScanProduksi = baseScan.extend({});
+
+export type TScanQc = z.infer<typeof tScanQc>;
+export const tScanQc = baseScan.extend({id_scan_produksi: z.string()});
+
+export type TScanFinishGood = z.infer<typeof tScanFinishGood>;
+export const tScanFinishGood = baseScan.extend({id_scan_qc: z.string()});
+
+export type TScanOutBarang = z.infer<typeof tScanOutBarang>;
+export const tScanOutBarang = baseScan.extend({
+	id_scan_finish_good: z.string(),
 });

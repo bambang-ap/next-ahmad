@@ -3,7 +3,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import {unstable_getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
 
-import {Session} from '@appTypes/app.type';
+import {TSession} from '@appTypes/app.type';
 import {CRUD_ENABLED, TABLES} from '@enum';
 import {TRPCError} from '@trpc/server';
 
@@ -30,14 +30,14 @@ export const MAPPING_CRUD_ORM = {
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
 		return {
-			session: {user: {role: 'admin'}} as Session | null,
+			session: {user: {role: 'admin'}} as TSession | null,
 			hasSession: true,
 		};
 	}
 
 	const session = await unstable_getServerSession(req, res, authOptions);
 
-	return {session: session as Session | null, hasSession: !!session};
+	return {session: session as TSession | null, hasSession: !!session};
 };
 
 export const Response = <T extends object>(res: NextApiResponse) => {
