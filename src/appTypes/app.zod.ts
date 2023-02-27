@@ -14,7 +14,7 @@ export const zId = z.object({id: z.string()});
 
 export type TUser = z.infer<typeof tUser>;
 export const tUser = zId.extend({
-	email: z.string(),
+	email: z.string().email(),
 	name: z.string(),
 	role: z.string(),
 	password: z.string().nullish(),
@@ -91,8 +91,8 @@ export type BaseMenu = z.infer<typeof baseTMenu>;
 export const baseTMenu = z.object({
 	id: z.string(),
 	title: z.string(),
-	icon: z.string(),
-	path: z.string().nullable(),
+	icon: z.string().nullish(),
+	path: z.string().nullish(),
 	accepted_role: z.string(),
 	parent_id: z.string().nullish(),
 	index: z.number(),
