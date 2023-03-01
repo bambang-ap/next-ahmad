@@ -12,7 +12,6 @@ const menuRouters = router({
 		.input(z.object({type: z.literal('menu'), sorted: z.boolean().optional()}))
 		.query(({ctx: {req, res}, input: {sorted}}) => {
 			return checkCredentialV2(req, res, async session => {
-				console.log(session);
 				// @ts-ignore
 				const allMenu = (await OrmMenu.findAll({
 					where: {accepted_role: {[Op.substring]: session?.user?.role}},

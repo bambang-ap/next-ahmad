@@ -13,7 +13,7 @@ export const OrmMenu: DefinedModel<BaseMenu> = ORM.define(
 		icon: {type: DataTypes.STRING},
 		path: {type: DataTypes.STRING},
 		accepted_role: {type: DataTypes.STRING, allowNull: false},
-		// index: {type: DataTypes.NUMBER, allowNull: false},
+		index: {type: DataTypes.NUMBER, allowNull: false},
 	},
 	{
 		tableName: TABLES.MENU,
