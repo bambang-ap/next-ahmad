@@ -69,6 +69,8 @@ const RenderPage = ({path}: {path: string}) => {
 			</Modal>
 			<div className="overflow-x-auto w-full">
 				<Button onClick={() => showModal('add', {})}>Add</Button>
+				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
+				<Button onClick={() => showModal('add', {})}>Import</Button>
 
 				<Table
 					data={data ?? []}

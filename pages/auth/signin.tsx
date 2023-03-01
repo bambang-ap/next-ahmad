@@ -23,10 +23,20 @@ export default function SignIn() {
 	}, [status, replace]);
 
 	return (
-		<form onSubmit={onSubmit}>
-			<Input control={control} fieldName="email" />
-			<Input type="password" control={control} fieldName="password" />
-			<Button type="submit">Login</Button>
-		</form>
+		<div className="h-full flex flex-col justify-center items-center">
+			<div className="flex w-1/2 rounded overflow-hidden">
+				<form
+					className="flex flex-col flex-1 bg-neutral-300 p-4 justify-center gap-y-2"
+					onSubmit={onSubmit}>
+					<img src="/assets/logo-imi.png" />
+					<Input control={control} fieldName="email" />
+					<Input type="password" control={control} fieldName="password" />
+					<Button type="submit">Login</Button>
+				</form>
+				<div className="flex flex-1 bg-neutral-600">
+					<img src="/assets/login-bg.jpg" />
+				</div>
+			</div>
+		</div>
 	);
 }

@@ -69,7 +69,7 @@ function InputComponent<F extends FieldValues>(
 			<InputFlowbite
 				type={type}
 				disabled={disabled}
-				placeholder={placeholder}
+				placeholder={placeholder || field.name}
 				value={value}
 				onChange={onChangeEvent}
 				{...field}

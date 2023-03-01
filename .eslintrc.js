@@ -37,6 +37,8 @@ module.exports = {
 				'max-len': [1, {code: 100}],
 				'no-return-await': 1,
 				'implicit-arrow-linebreak': 0,
+				'@next/next/no-img-element': 0,
+				'jsx-a11y/alt-text': 0,
 				// 'no-tabs': ['error', {allowIndentationTabs: true}],
 				// indent: ['error', 'tab'],
 				'no-shadow': 0,

@@ -16,6 +16,7 @@ import {
 	Select,
 	SelectPropsData,
 	Table,
+	Text,
 } from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
@@ -143,12 +144,6 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 	return (
 		<div className="gap-y-2 flex flex-col">
-			<Input disabled={isPreview} control={control} fieldName="name" />
-			<Input
-				disabled={isPreview || isEdit}
-				control={control}
-				fieldName="nomor_po"
-			/>
 			<Select
 				disabled={isPreview}
 				firstOption="- Pilih customer -"
@@ -156,26 +151,35 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 				data={mappedData}
 				fieldName="id_customer"
 			/>
+			<Input
+				disabled={isPreview || isEdit}
+				control={control}
+				fieldName="nomor_po"
+			/>
+			<Input disabled={isPreview} control={control} fieldName="name" />
 
 			{!isPreview && (
-				<div className="gap-x-2 flex">
-					<div className="flex flex-1 gap-x-2">
-						<Input
-							className="flex-1"
-							disabled={isPreview}
-							control={poItemControl}
-							fieldName="name"
-						/>
-						<Input
-							className="flex-1"
-							disabled={isPreview}
-							control={poItemControl}
-							type="number"
-							fieldName="qty"
-						/>
+				<>
+					<Text className="flex self-center">PO Items</Text>
+					<div className="gap-x-2 flex">
+						<div className="flex flex-1 gap-x-2">
+							<Input
+								className="flex-1"
+								disabled={isPreview}
+								control={poItemControl}
+								fieldName="name"
+							/>
+							<Input
+								className="flex-1"
+								disabled={isPreview}
+								control={poItemControl}
+								type="number"
+								fieldName="qty"
+							/>
+						</div>
+						<Button onClick={submitItem}>Add</Button>
 					</div>
-					<Button onClick={submitItem}>Add</Button>
-				</div>
+				</>
 			)}
 
 			{poItem && (
