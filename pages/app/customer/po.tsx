@@ -123,9 +123,9 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 		value: id,
 	}));
 
-	const submitItem = handleSubmit(({name}) => {
-		onChangePoItem([{name}].concat(poItem ?? []));
-		reset({name: ''});
+	const submitItem = handleSubmit(({name, qty}) => {
+		onChangePoItem([{name, qty}].concat(poItem ?? []));
+		reset({name: '', qty: undefined});
 	});
 
 	function removeItem(index: number) {
@@ -187,6 +187,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 						return (
 							<>
 								<Cell>{item.name}</Cell>
+								<Cell>{item.qty}</Cell>
 								{!isPreview && (
 									<Button onClick={() => removeItem(index)}>Remove</Button>
 								)}

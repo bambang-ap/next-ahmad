@@ -54,7 +54,7 @@ const customer_poRouters = router({
 		}),
 
 	add: procedure
-		.input(tCustomerPOExtended.omit({id: true}))
+		.input(tCustomerPOExtended.omit({id: true}).deepPartial())
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
 				const {po_item, nomor_po, ...body} = input;
@@ -68,7 +68,7 @@ const customer_poRouters = router({
 		}),
 
 	update: procedure
-		.input(tCustomerPOExtended)
+		.input(tCustomerPOExtended.deepPartial())
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
 				const {id, po_item, nomor_po, ...body} = input;

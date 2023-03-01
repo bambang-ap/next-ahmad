@@ -36,7 +36,7 @@ const basicRouters = router({
 			const {id, ...rest} = body;
 
 			const orm = MAPPING_CRUD_ORM[target];
-
+			console.log({...rest, id: generateId()});
 			switch (type) {
 				case 'delete':
 					return orm.destroy({where: {id}});

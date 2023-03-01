@@ -147,11 +147,10 @@ const RenderMenu = (props: {
 				return (
 					<>
 						<Cell className="flex">
-							<Input control={control} fieldName={`${id}.title`} />
 							<Input
+								className="flex-1"
 								control={control}
-								type="number"
-								fieldName={`${id}.index`}
+								fieldName={`${id}.title`}
 							/>
 						</Cell>
 						<Cell>
@@ -166,6 +165,8 @@ const RenderMenu = (props: {
 						</Cell>
 						<Cell className="flex">
 							{dataRole?.map(role => {
+								if (role.name === 'admin') return null;
+
 								return (
 									<Input
 										className="mr-2"

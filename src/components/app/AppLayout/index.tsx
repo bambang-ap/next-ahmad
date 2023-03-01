@@ -7,7 +7,7 @@ import {atomSidebarOpen} from '@recoil/atoms';
 import Header from './Header';
 import {SideBar} from './SideBar';
 
-const id = 'jhsdf';
+const id = 'app-container';
 
 export default function AppLayout({children}: PropsWithChildren) {
 	const isSidebarOpen = useRecoilValue(atomSidebarOpen);
@@ -29,7 +29,9 @@ export default function AppLayout({children}: PropsWithChildren) {
 						<SideBar />
 					</div>
 				)}
-				<div className="flex-1 overflow-y-auto p-4">{children}</div>
+				<div className="flex-1 overflow-y-auto p-4 bg-white dark:bg-gray-300">
+					{children}
+				</div>
 			</div>
 		</div>
 	);
