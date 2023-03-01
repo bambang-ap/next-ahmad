@@ -1,9 +1,8 @@
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-import {TSession} from '@appTypes/app.type';
-
-const role = 'user';
+import {TSession, TUser} from '@appTypes/app.type';
+import {OrmUser} from '@database';
 
 export const authOptions: NextAuthOptions = {
 	secret: process.env.AUTH_SECRET,
@@ -12,24 +11,22 @@ export const authOptions: NextAuthOptions = {
 		CredentialsProvider({
 			type: 'credentials',
 			credentials: {},
-			authorize(credentials) {
+			async authorize(credentials) {
 				const {email, password} = credentials as {
 					email: string;
 					password: string;
 				};
-				// perform you login logic
-				// find out user from db
-				if (email !== 'john@gmail.com' || password !== '1234') {
-					throw new Error('invalid credentials');
-				}
 
-				// if everything is fine
-				return {
-					id: '1234',
-					name: 'John Doe',
-					email: 'john@gmail.com',
-					role,
-				};
+				// @ts-ignore
+				const user = (await OrmUser.findOne({
+					where: {email, password},
+				})) as TUser;
+
+				if (!user) throw new Error('invalid credentials');
+
+				const {role, id, name} = user;
+
+				return {id, name, email, role};
 			},
 		}),
 	],
@@ -37,10 +34,15 @@ export const authOptions: NextAuthOptions = {
 		signIn: '/auth/signin',
 	},
 	callbacks: {
-		session(params) {
+		async session(params) {
+			console.log(params);
 			const session: TSession = {
 				...params.session,
-				user: {id: '1234', email: 'sdhf', name: 'dsfdsfdsf', role},
+				// @ts-ignore
+				user: (await OrmUser.findOne({
+					// @ts-ignore
+					where: {email: params.token.email},
+				})) as TUser,
 			};
 			return session;
 		},

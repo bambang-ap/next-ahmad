@@ -1,6 +1,6 @@
 import moment from 'moment';
 import {NextApiRequest, NextApiResponse} from 'next';
-import {unstable_getServerSession} from 'next-auth';
+import {getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
 
 import {TSession} from '@appTypes/app.type';
@@ -30,14 +30,14 @@ export const MAPPING_CRUD_ORM = {
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
 		return {
-			session: {user: {role: 'admin'}} as TSession | null,
+			session: {user: {role: 'admin'}} as TSession,
 			hasSession: true,
 		};
 	}
 
-	const session = await unstable_getServerSession(req, res, authOptions);
+	const session = (await getServerSession(req, res, authOptions)) as TSession;
 
-	return {session: session as TSession | null, hasSession: !!session};
+	return {session, hasSession: !!session};
 };
 
 export const Response = <T extends object>(res: NextApiResponse) => {
@@ -74,9 +74,9 @@ export const checkCredential = async (
 export const checkCredentialV2 = async <T>(
 	req: NextApiRequest,
 	res: NextApiResponse,
-	callback: (() => Promise<T>) | (() => T),
+	callback: ((session: TSession) => Promise<T>) | ((session: TSession) => T),
 ) => {
-	const {hasSession} = await getSession(req, res);
+	const {hasSession, session} = await getSession(req, res);
 
 	if (!hasSession) {
 		throw new TRPCError({
@@ -85,5 +85,5 @@ export const checkCredentialV2 = async <T>(
 		});
 	}
 
-	return callback();
+	return callback(session);
 };

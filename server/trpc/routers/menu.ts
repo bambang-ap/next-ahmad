@@ -4,16 +4,15 @@ import {z} from 'zod';
 import {TMenu} from '@appTypes/app.type';
 import {tMenu} from '@appTypes/app.zod';
 import {OrmMenu} from '@database';
-import {checkCredentialV2, getSession} from '@server';
+import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 
 const menuRouters = router({
 	get: procedure
 		.input(z.object({type: z.literal('menu'), sorted: z.boolean().optional()}))
 		.query(({ctx: {req, res}, input: {sorted}}) => {
-			return checkCredentialV2(req, res, async () => {
-				const {session} = await getSession(req, res);
-
+			return checkCredentialV2(req, res, async session => {
+				console.log(session);
 				// @ts-ignore
 				const allMenu = (await OrmMenu.findAll({
 					where: {accepted_role: {[Op.substring]: session?.user?.role}},

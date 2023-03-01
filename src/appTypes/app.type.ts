@@ -1,3 +1,5 @@
+import type {TKanbanExtended, TScan} from './app.zod';
+
 export type {
 	BaseMenu,
 	ModalType,
@@ -14,11 +16,11 @@ export type {
 	TMesin,
 	TPOItem,
 	TRole,
-	TScanFinishGood,
-	TScanOutBarang,
-	TScanProduksi,
-	TScanQc,
+	TScan,
+	TScanTarget,
 	TSession,
 	TUser,
 	ZId,
 } from './app.zod';
+
+export type TDataScan = {dataKanban: TKanbanExtended[]} & TScan;

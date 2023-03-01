@@ -12,10 +12,7 @@ export enum TABLES {
 	USER = 'user',
 	KANBAN = 'kanban',
 	INSTRUKSI_KANBAN = 'instruksi_kanban',
-	SCAN_PRODUKSI = 'scan_produksi',
-	SCAN_QC = 'scan_qc',
-	SCAN_FINISH_GOOD = 'scan_finish_good',
-	SCAN_OUT_BARANG = 'scan_out_barang',
+	SCAN = 'scan',
 }
 
 export const Z_TABLES = z.nativeEnum(TABLES);
@@ -28,6 +25,7 @@ export enum CRUD_ENABLED {
 	INSTRUKSI_KANBAN = 'instruksi_kanban',
 	CUSTOMER_SPPB_IN = 'customer_sppb_in',
 	CUSTOMER_SPPB_OUT = 'customer_sppb_out',
+	SCAN = 'scan',
 }
 
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

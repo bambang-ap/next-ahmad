@@ -1,6 +1,5 @@
 import {MutableRefObject, useEffect, useRef} from 'react';
 
-import ReactDragListView from 'react-drag-listview';
 import {Control, UseFormSetValue} from 'react-hook-form';
 import {useRecoilValue, useSetRecoilState} from 'recoil';
 
@@ -10,7 +9,6 @@ import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
 import {getLayout} from '@hoc';
 import {FormMenu, useMenu} from '@hooks';
 import {atomMenuIconKey} from '@recoil/atoms';
-import {selectorMappedMenu} from '@recoil/selectors';
 
 Menu.getLayout = getLayout;
 
@@ -28,7 +26,7 @@ export default function Menu() {
 	} = useMenu();
 	const {control, reset, watch, setValue, handleSubmit} = menuForm;
 	const iconKey = useRecoilValue(atomMenuIconKey);
-	const changeOrder = useSetRecoilState(selectorMappedMenu);
+	// const changeOrder = useSetRecoilState(selectorMappedMenu);
 
 	const iconModalSelectedValue = watch(iconKey);
 
@@ -93,20 +91,20 @@ export default function Menu() {
 
 			<form onSubmit={submit}>
 				<Button type="submit">Submit</Button>
-				<ReactDragListView
+				{/* <ReactDragListView
 					onDragEnd={(fromIndex, toIndex) => {
 						changeOrder({fromIndex, toIndex, reset});
 					}}
 					nodeSelector="tr"
-					handleSelector="tr">
-					<RenderMenu
-						dataRole={dataRole}
-						modalRef={modalRef}
-						control={control}
-						data={mappedMenu}
-						setValue={setValue}
-					/>
-				</ReactDragListView>
+					handleSelector="tr"> */}
+				<RenderMenu
+					dataRole={dataRole}
+					modalRef={modalRef}
+					control={control}
+					data={mappedMenu}
+					setValue={setValue}
+				/>
+				{/* </ReactDragListView> */}
 			</form>
 		</>
 	);

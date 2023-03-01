@@ -2,7 +2,12 @@ import {useRef} from 'react';
 
 import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomerPO, TPOItem} from '@appTypes/app.type';
+import {
+	ModalTypePreview,
+	TCustomerPO,
+	TCustomerPOExtended,
+	TPOItem,
+} from '@appTypes/app.type';
 import {
 	Button,
 	Input,
@@ -18,7 +23,7 @@ import {trpc} from '@utils/trpc';
 
 type FormType = TCustomerPO & {
 	type: ModalTypePreview;
-};
+} & Pick<TCustomerPOExtended, 'po_item'>;
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {

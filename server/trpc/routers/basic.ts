@@ -5,12 +5,16 @@ import {Z_CRUD_ENABLED} from '@enum';
 import {generateId, MAPPING_CRUD_ORM} from '@server';
 import {procedure, router} from '@trpc';
 
+export const basicWhere = z
+	.record(z.union([z.string(), z.number(), z.boolean()]))
+	.optional();
+
 const basicRouters = router({
 	get: procedure
 		.input(
 			z.object({
 				target: Z_CRUD_ENABLED,
-				where: z.record(z.union([z.string(), z.number()])).nullish(),
+				where: basicWhere,
 			}),
 		)
 		.query(async ({input: {target, where}}) => {

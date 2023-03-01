@@ -8,7 +8,7 @@ import {
 } from 'sequelize';
 import {z} from 'zod';
 
-import {defaultExcludeColumn, ORM} from '../_init';
+import {defaultExcludeColumn, DefinedModel, ORM} from '../_init';
 
 const workerMap = {
 	ZodObject: parseObject,
@@ -77,7 +77,7 @@ export function generateAttributes<T extends z.ZodTypeAny>(
 	zodRef: T,
 	primaryKey?: keyof z.infer<T>,
 	defaultScopeAttributes?: FindAttributeOptions,
-) {
+): DefinedModel<z.infer<T>> {
 	const attributes = parseZod(zodRef) as ModelAttributes<any, z.infer<T>>;
 
 	// @ts-ignore

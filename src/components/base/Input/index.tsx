@@ -13,7 +13,7 @@ import {classNames} from '@utils';
 export type InputProps = {
 	className?: string;
 	placeholder?: string;
-	type?: 'text' | 'checkbox' | 'number';
+	type?: 'text' | 'checkbox' | 'number' | 'password';
 	label?: string;
 	disabled?: boolean;
 };
