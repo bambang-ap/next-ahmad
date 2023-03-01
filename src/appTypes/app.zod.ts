@@ -27,7 +27,12 @@ export type TRole = z.infer<typeof tRole>;
 export const tRole = z.object({id: z.number(), name: z.string()});
 
 export type TCustomer = z.infer<typeof tCustomer>;
-export const tCustomer = zId.extend({name: z.string()});
+export const tCustomer = zId.extend({
+	name: z.string(),
+	npwp: z.string(),
+	alamat: z.string(),
+	no_telp: z.string(),
+});
 
 export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({

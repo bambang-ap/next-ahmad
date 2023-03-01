@@ -9,6 +9,9 @@ export const OrmCustomer: DefinedModel<TCustomer> = ORM.define(
 	CRUD_ENABLED.CUSTOMER,
 	{
 		name: {type: DataTypes.STRING},
+		alamat: {type: DataTypes.STRING},
+		no_telp: {type: DataTypes.STRING},
+		npwp: {type: DataTypes.STRING},
 	},
 	{
 		tableName: CRUD_ENABLED.CUSTOMER,

@@ -182,14 +182,19 @@ export const allowedPages: Record<string, AllowedPages> = {
 	'/app/customer': {
 		enumName: CRUD_ENABLED.CUSTOMER,
 		table: {
-			header: ['Name', 'Action'],
+			header: ['name', 'alamat', 'npwp', 'no_telp', 'Action'],
 			get body(): Body<TCustomer> {
-				return ['name'];
+				return ['name', 'alamat', 'npwp', 'no_telp'];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomer>[] {
-				return [{col: 'name'}];
+				return [
+					{col: 'name'},
+					{col: 'alamat'},
+					{col: 'npwp'},
+					{col: 'no_telp'},
+				];
 			},
 			get edit() {
 				return this.add;
