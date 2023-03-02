@@ -13,7 +13,7 @@ import {classNames} from '@utils';
 export type InputProps = {
 	className?: string;
 	placeholder?: string;
-	type?: 'text' | 'checkbox' | 'number' | 'password';
+	type?: 'text' | 'checkbox' | 'number' | 'password' | 'date';
 	label?: string;
 	disabled?: boolean;
 };
@@ -59,8 +59,12 @@ function InputComponent<F extends FieldValues>(
 	}
 
 	const onChangeEvent: ChangeEventHandler<HTMLInputElement> = function (event) {
-		if (type === 'number') return onChange(parseInt(event.target.value));
-		return onChange(event);
+		switch (type) {
+			case 'number':
+				return onChange(parseInt(event.target.value));
+			default:
+				return onChange(event);
+		}
 	};
 
 	return (

@@ -11,6 +11,8 @@ export const OrmCustomerPO: DefinedModel<TCustomerPO> = ORM.define(
 		name: {type: DataTypes.STRING},
 		id_customer: {type: DataTypes.STRING},
 		nomor_po: {type: DataTypes.STRING},
+		tgl_po: {type: DataTypes.STRING},
+		due_date: {type: DataTypes.STRING},
 	},
 	{
 		tableName: TABLES.CUSTOMER_PO,

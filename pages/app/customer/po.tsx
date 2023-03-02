@@ -81,15 +81,16 @@ export default function POCustomer() {
 
 				<Table
 					data={data ?? []}
-					header={['Name', 'Nomor PO', 'Customer', 'Action']}
+					header={['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Action']}
 					renderItem={({item, Cell}) => {
-						const {name, customer, nomor_po} = item;
+						const {customer, tgl_po, due_date, nomor_po} = item;
 
 						return (
 							<>
-								<Cell>{name}</Cell>
 								<Cell>{nomor_po}</Cell>
 								<Cell>{customer?.name}</Cell>
+								<Cell>{tgl_po}</Cell>
+								<Cell>{due_date}</Cell>
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('preview', item)}>
 										Preview
@@ -124,8 +125,8 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 		value: id,
 	}));
 
-	const submitItem = handleSubmit(({name, qty}) => {
-		onChangePoItem([{name, qty}].concat(poItem ?? []));
+	const submitItem = handleSubmit(item => {
+		onChangePoItem([item].concat(poItem ?? []));
 		reset({name: '', qty: undefined});
 	});
 
@@ -156,7 +157,18 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 				control={control}
 				fieldName="nomor_po"
 			/>
-			<Input disabled={isPreview} control={control} fieldName="name" />
+			<Input
+				type="date"
+				disabled={isPreview}
+				control={control}
+				fieldName="tgl_po"
+			/>
+			<Input
+				type="date"
+				disabled={isPreview}
+				control={control}
+				fieldName="due_date"
+			/>
 
 			{!isPreview && (
 				<>
@@ -173,8 +185,28 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 								className="flex-1"
 								disabled={isPreview}
 								control={poItemControl}
+								fieldName="kode_item"
+							/>
+							<Input
+								className="flex-1"
+								disabled={isPreview}
+								control={poItemControl}
 								type="number"
 								fieldName="qty"
+							/>
+							<Select
+								firstOption="- Pilih unit -"
+								control={poItemControl}
+								fieldName="unit"
+								data={
+									[
+										{value: 'pcs'},
+										{value: 'kg'},
+										{value: 'box'},
+										{value: 'set'},
+										{value: 'carton'},
+									] as SelectPropsData<TPOItem['unit']>[]
+								}
 							/>
 						</div>
 						<Button onClick={submitItem}>Add</Button>
@@ -185,13 +217,20 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 			{poItem && (
 				<Table
 					className="max-h-72 overflow-y-auto"
-					header={isPreview ? ['Name'] : ['Name', 'Action']}
+					header={
+						isPreview
+							? ['Name', 'Kode Item', 'Jumlah']
+							: ['Name', 'Kode Item', 'Jumlah', 'Action']
+					}
 					data={poItem}
 					renderItem={({Cell, item}, index) => {
 						return (
 							<>
 								<Cell>{item.name}</Cell>
-								<Cell>{item.qty}</Cell>
+								<Cell>{item.kode_item}</Cell>
+								<Cell>
+									{item.qty} {item.unit}
+								</Cell>
 								{!isPreview && (
 									<Button onClick={() => removeItem(index)}>Remove</Button>
 								)}

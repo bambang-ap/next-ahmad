@@ -39,18 +39,28 @@ export const tPOItem = zId.extend({
 	name: z.string(),
 	nomor_po: z.string(),
 	qty: z.number(),
+	kode_item: z.string(),
+	unit: z.union([
+		z.literal('pcs'),
+		z.literal('kg'),
+		z.literal('box'),
+		z.literal('set'),
+		z.literal('carton'),
+	]),
 });
 
 export type TCustomerPO = z.infer<typeof tCustomerPO>;
 export const tCustomerPO = zId.extend({
-	name: z.string(),
+	name: z.string().nullish(),
+	tgl_po: z.string(),
+	due_date: z.string().optional(),
 	id_customer: z.string(),
 	nomor_po: z.string(),
 });
 
 export type TCustomerPOExtended = z.infer<typeof tCustomerPOExtended>;
 export const tCustomerPOExtended = tCustomerPO.extend({
-	customer: tCustomer.nullish(),
+	customer: tCustomer.deepPartial().nullish(),
 	po_item: z.array(tPOItem).nullish(),
 });
 

@@ -35,7 +35,6 @@ export const authOptions: NextAuthOptions = {
 	},
 	callbacks: {
 		async session(params) {
-			console.log(params);
 			const session: TSession = {
 				...params.session,
 				// @ts-ignore

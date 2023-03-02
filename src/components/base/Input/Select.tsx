@@ -6,7 +6,10 @@ import {
 	withReactFormController,
 } from '@formController';
 
-export type SelectPropsData = {label?: string; value: string};
+export type SelectPropsData<T extends string = string> = {
+	label?: string;
+	value: T;
+};
 
 export type SelectProps = {
 	firstOption?: string;

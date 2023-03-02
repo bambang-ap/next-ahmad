@@ -60,15 +60,14 @@ export const allowedPages: Record<string, AllowedPages> = {
 	'/app/customer/customer_sppb_in': {
 		enumName: CRUD_ENABLED.CUSTOMER_SPPB_IN,
 		table: {
-			header: ['Name', 'Nomor PO', 'Action'],
+			header: ['Nomor PO', 'Name', 'Action'],
 			get body(): Body<TCustomerSPPBIn> {
-				return ['name', 'nomor_po'];
+				return ['nomor_po', 'name'];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomerSPPBIn>[] {
 				return [
-					{col: 'name'},
 					{
 						col: 'nomor_po',
 						type: 'select',
@@ -78,6 +77,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: TCustomerPO[]) =>
 							item?.map(({nomor_po}) => ({value: nomor_po})),
 					},
+					{col: 'name'},
 				];
 			},
 			get edit() {

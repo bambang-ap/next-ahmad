@@ -53,3 +53,10 @@
     - DO Suplier
 - Report master (Dashboard) (based on user role)
 
+
+
+NOTE: 
+  SPPB IN
+    name -> nomor surat jalan
+    add tgl_surat_jalan
+    after select po, show all items, user can edit qty

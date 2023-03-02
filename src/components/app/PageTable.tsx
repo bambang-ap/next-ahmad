@@ -6,6 +6,7 @@ import {Control, useForm, useWatch} from 'react-hook-form';
 import {ModalType} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
+import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
 
 export const PageTable = () => {
@@ -70,7 +71,9 @@ const RenderPage = ({path}: {path: string}) => {
 			<div className="overflow-x-auto w-full">
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
-				<Button onClick={() => showModal('add', {})}>Import</Button>
+				{target === CRUD_ENABLED.CUSTOMER && (
+					<Button onClick={() => showModal('add', {})}>Import</Button>
+				)}
 
 				<Table
 					data={data ?? []}
