@@ -21,6 +21,7 @@
     "@trpc/react-query": "^10.11.1",
     "@trpc/server": "^10.11.1",
     "axios": "^0.27.2",
+    "export-to-csv": "^0.2.1",
     "flowbite": "^1.5.5",
     "flowbite-react": "^0.3.7",
     "global-methods": "bambang-ap/global-methods#2.1.0",

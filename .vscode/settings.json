@@ -4,7 +4,8 @@
     "manajemen",
     "mesin",
     "Nomor",
-    "SPPB"
+    "SPPB",
+    "TRPC"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

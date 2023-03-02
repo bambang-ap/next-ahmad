@@ -1,5 +1,6 @@
 import {useRef} from 'react';
 
+import {ExportToCsv} from 'export-to-csv';
 import {useRouter} from 'next/router';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
@@ -8,6 +9,27 @@ import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
+
+function exportToCsv(data: Record<string, any>[], keepNull = false) {
+	const csvExporter = new ExportToCsv({
+		fieldSeparator: ',',
+		quoteStrings: '"',
+		decimalSeparator: '.',
+		useTextFile: false,
+		useBom: true,
+		useKeysAsHeaders: true,
+	});
+
+	if (keepNull) return csvExporter.generateCsv(data);
+
+	return csvExporter.generateCsv(
+		data.map(d => {
+			return Object.entries(d).reduce((ret, [key, val]) => {
+				return {...ret, [key]: val === null ? '' : val};
+			}, {});
+		}),
+	);
+}
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -72,7 +94,7 @@ const RenderPage = ({path}: {path: string}) => {
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
 				{target === CRUD_ENABLED.CUSTOMER && (
-					<Button onClick={() => showModal('add', {})}>Import</Button>
+					<Button onClick={() => exportToCsv(data)}>download</Button>
 				)}
 
 				<Table
