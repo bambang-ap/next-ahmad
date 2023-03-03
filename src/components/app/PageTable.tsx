@@ -1,7 +1,8 @@
-import {useRef} from 'react';
+import {useRef, useState} from 'react';
 
-import {ExportToCsv} from 'export-to-csv';
 import {useRouter} from 'next/router';
+import Papa from 'papaparse';
+import {CSVLink} from 'react-csv';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
@@ -9,27 +10,6 @@ import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {allowedPages, ColUnion} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
-
-function exportToCsv(data: Record<string, any>[], keepNull = false) {
-	const csvExporter = new ExportToCsv({
-		fieldSeparator: ',',
-		quoteStrings: '"',
-		decimalSeparator: '.',
-		useTextFile: false,
-		useBom: true,
-		useKeysAsHeaders: true,
-	});
-
-	if (keepNull) return csvExporter.generateCsv(data);
-
-	return csvExporter.generateCsv(
-		data.map(d => {
-			return Object.entries(d).reduce((ret, [key, val]) => {
-				return {...ret, [key]: val === null ? '' : val};
-			}, {});
-		}),
-	);
-}
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -48,8 +28,13 @@ const RenderPage = ({path}: {path: string}) => {
 		enumName: target,
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
+	const [inputFilesKey, setInputFilesKey] = useState(uuid());
 	const modalRef = useRef<ModalRef>(null);
-	const {mutate} = trpc.basic.mutate.useMutation();
+	const {mutate} = trpc.basic.mutate.useMutation({
+		onSuccess() {
+			refetch();
+		},
+	});
 
 	const {data, refetch} = trpc.basic.get.useQuery({target});
 	const {control, handleSubmit, watch, reset} = useForm();
@@ -83,6 +68,25 @@ const RenderPage = ({path}: {path: string}) => {
 		modalRef.current?.show();
 	}
 
+	function complete(results: Papa.ParseResult<string[]>) {
+		const bodyList = results.data
+			.slice(1)
+			.reduce<Record<string, any>[]>((ret, data) => {
+				const df = results.data[0]?.reduce<Record<string, any>>((a, key, i) => {
+					return {...a, [key]: data[i]};
+				}, {});
+
+				ret.push(df);
+				return ret;
+			}, []);
+
+		bodyList.forEach(body => {
+			mutate({target, type: 'add', body});
+		});
+
+		setInputFilesKey(uuid());
+	}
+
 	return (
 		<>
 			<Modal title={modalTitle} ref={modalRef}>
@@ -94,7 +98,26 @@ const RenderPage = ({path}: {path: string}) => {
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
 				{target === CRUD_ENABLED.CUSTOMER && (
-					<Button onClick={() => exportToCsv(data)}>download</Button>
+					<>
+						<CSVLink
+							filename="contoh-data-customer"
+							data={[
+								['name', 'alamat', 'no_telp', 'npwp'],
+								['Your Customer Name', 'Jl. Bekasi', '62857', '74123123'],
+							]}>
+							Download me
+						</CSVLink>
+
+						<input
+							key={inputFilesKey}
+							type="file"
+							accept=".csv"
+							onChange={({target: {files}}) => {
+								if (files && files[0])
+									Papa.parse<string[]>(files[0], {complete});
+							}}
+						/>
+					</>
 				)}
 
 				<Table
