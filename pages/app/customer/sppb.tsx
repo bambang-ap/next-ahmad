@@ -3,7 +3,7 @@ import {useEffect, useRef} from 'react';
 import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomerSPPBIn, USPPB} from '@appTypes/app.zod';
+import {ModalTypePreview, TCustomerSPPBIn, USPPB} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {getLayout} from '@hoc';
 import {classNames} from '@utils';
@@ -26,26 +26,10 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {control, handleSubmit, setValue, watch, reset} = useForm<FormType>();
-
-	const [modalType, nomor_po, id, items] = watch([
-		'type',
-		'nomor_po',
-		'id',
-		'items',
-	]);
-
-	const {data: listPo} = trpc.customer_po.get.useQuery({type: 'customer_po'});
 	const {data, refetch} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>({
 		target,
 	});
-	const {data: existingPo} = trpc.sppb.get.useQuery(
-		{
-			where: {nomor_po},
-		},
-		{enabled: !!nomor_po},
-	);
-
-	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation({
+	const {mutate} = trpc.sppb.upsert.useMutation({
 		onSuccess() {
 			refetch();
 		},
@@ -55,6 +39,27 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 			refetch();
 		},
 	});
+
+	const [modalType, nomor_po, id, items] = watch([
+		'type',
+		'nomor_po',
+		'id',
+		'items',
+	]);
+
+	const {data: existingSppb} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>(
+		{
+			target,
+			where: {nomor_po, id: {not: id}},
+		},
+		{enabled: !!nomor_po},
+	);
+
+	const {data: listPo} = trpc.customer_po.get.useQuery({type: 'customer_po'});
+	const {data: dataPo} = trpc.customer_po.get.useQuery(
+		{type: 'customer_po', nomor_po},
+		{enabled: !!nomor_po},
+	);
 
 	const isEdit = modalType === 'edit';
 	const isPreview = modalType === 'preview';
@@ -72,7 +77,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 		modalRef.current?.hide();
 		if (type == 'delete') return mutateDelete({target, id: rest.id});
 
-		return mutateUpsert({data: rest, target});
+		return mutate({data: rest, target});
 	});
 
 	function showModal(
@@ -85,9 +90,9 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 	useEffect(() => {
 		reset(prevValue => {
-			return {...prevValue, nomor_po, items: existingPo};
+			return {...prevValue, nomor_po, items: []};
 		});
-	}, [existingPo]);
+	}, [nomor_po]);
 
 	return (
 		<>
@@ -116,8 +121,22 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 				}}
 			/>
 
-			<Modal ref={modalRef} title={modalTitle}>
-				<form onSubmit={submit}>
+			<Modal
+				ref={modalRef}
+				title={modalTitle}
+				renderFooter={
+					!!nomor_po &&
+					!isPreview &&
+					(() => (
+						<Button
+							type="submit"
+							onClick={submit}
+							className={classNames('flex-1', {hidden: !nomor_po})}>
+							Submit
+						</Button>
+					))
+				}>
+				<form onSubmit={submit} className="flex flex-col gap-2">
 					<Select
 						disabled={isPreviewEdit}
 						control={control}
@@ -136,11 +155,16 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 						key={`${nomor_po}-${id}`}
 						className={classNames({hidden: !nomor_po})}
 						header={['Kode Item', 'Name', 'Jumlah']}
-						data={listPo?.[0]?.po_item}
+						data={dataPo?.[0]?.po_item}
 						renderItem={({Cell, item}, i) => {
 							if (items?.[i] && items[i]?.qty === undefined) return false;
 
-							if (existingPo?.[i]?.qty <= 0) return false;
+							const assignedQty = (existingSppb ?? []).reduce((f, e) => {
+								const sItem = e.items.find(u => u.id === item.id);
+								return f - (sItem?.qty ?? 0);
+							}, item.qty);
+
+							if (assignedQty <= 0) return false;
 
 							return (
 								<>
@@ -162,8 +186,8 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 											fieldName={`items.${i}.qty`}
 											rules={{
 												max: {
-													value: item.qty,
-													message: `max quantity is ${item.qty}`,
+													value: assignedQty,
+													message: `max quantity is ${assignedQty}`,
 												},
 											}}
 										/>
@@ -179,13 +203,6 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 							);
 						}}
 					/>
-
-					<Button
-						type="submit"
-						onClick={submit}
-						className={classNames('flex-1', {hidden: !nomor_po})}>
-						Submit
-					</Button>
 				</form>
 			</Modal>
 		</>

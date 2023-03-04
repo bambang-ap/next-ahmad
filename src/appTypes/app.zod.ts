@@ -78,20 +78,21 @@ export const uSPPB = z.union([
 	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_OUT),
 ]);
 
-const itemsSppb = tPOItem.pick({id: true, qty: true}).partial().array();
+export type ItemsSppb = z.infer<typeof itemsSppb>;
+export const itemsSppb = tPOItem.pick({id: true, qty: true}).partial().array();
 
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
 	name: z.string(),
 	nomor_po: z.string(),
-	items: itemsSppb,
+	items: itemsSppb.optional(),
 });
 
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	name: z.string(),
 	nomor_po: z.string(),
-	items: itemsSppb,
+	items: itemsSppb.optional(),
 });
 
 export type TInstruksiKanban = z.infer<typeof tInstruksiKanban>;
