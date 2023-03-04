@@ -1,4 +1,4 @@
-import {forwardRef, useImperativeHandle, useState} from 'react';
+import {forwardRef, ReactNode, useImperativeHandle, useState} from 'react';
 
 import {Modal as ModalFlowbite} from 'flowbite-react';
 
@@ -7,10 +7,10 @@ export type ModalRef = {
 	hide: (callback?: () => Promise<void>) => void;
 };
 export type ModalProps = {
-	children: JSX.Element;
+	children: ReactNode;
 	title?: string;
 	visible?: boolean;
-	renderFooter?: () => JSX.Element;
+	renderFooter?: false | (() => JSX.Element);
 };
 
 export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(

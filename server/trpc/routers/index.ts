@@ -9,6 +9,7 @@ import customer_poRouters from './customer_po';
 import kanbanRouters from './kanban';
 import menuRouters from './menu';
 import scanRouters from './scan';
+import sppbRouters from './sppb';
 
 export const appRouter = router({
 	now: procedure.query(() => {
@@ -26,6 +27,7 @@ export const appRouter = router({
 	customer_po: customer_poRouters,
 	kanban: kanbanRouters,
 	scan: scanRouters,
+	sppb: sppbRouters,
 });
 
 export type AppRouter = typeof appRouter;

@@ -8,7 +8,7 @@ type VV = {Cell: FC<TableCellProps>};
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
 
 export type TableProps<T, VV = {}> = {
-	data: T[];
+	data?: T[];
 	header?: string[];
 	className?: string;
 	renderItem?: TRenderItem<T, JSX.Element, VV>;
@@ -17,6 +17,8 @@ export type TableProps<T, VV = {}> = {
 
 export const Table = <T,>(props: TableProps<T, VV>) => {
 	const {data, header, className, renderItem, renderItemEach} = props;
+
+	if (!data) return null;
 
 	return (
 		<div className={classNames('w-full', className)}>

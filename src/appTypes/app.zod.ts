@@ -1,5 +1,7 @@
 import {z} from 'zod';
 
+import {CRUD_ENABLED} from '@enum';
+
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
 	z.literal('add'),
@@ -61,7 +63,7 @@ export const tCustomerPO = zId.extend({
 export type TCustomerPOExtended = z.infer<typeof tCustomerPOExtended>;
 export const tCustomerPOExtended = tCustomerPO.extend({
 	customer: tCustomer.deepPartial().nullish(),
-	po_item: z.array(tPOItem).nullish(),
+	po_item: z.array(tPOItem).optional(),
 });
 
 export type TMesin = z.infer<typeof tMesin>;
@@ -70,16 +72,26 @@ export const tMesin = zId.extend({
 	nomor_mesin: z.string(),
 });
 
+export type USPPB = z.infer<typeof uSPPB>;
+export const uSPPB = z.union([
+	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_IN),
+	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_OUT),
+]);
+
+const itemsSppb = tPOItem.pick({id: true, qty: true}).array();
+
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.extend({
 	name: z.string(),
 	nomor_po: z.string(),
+	items: itemsSppb,
 });
 
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	name: z.string(),
 	nomor_po: z.string(),
+	items: itemsSppb,
 });
 
 export type TInstruksiKanban = z.infer<typeof tInstruksiKanban>;

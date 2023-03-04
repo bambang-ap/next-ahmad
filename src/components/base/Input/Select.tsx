@@ -14,7 +14,7 @@ export type SelectPropsData<T extends string = string> = {
 export type SelectProps = {
 	firstOption?: string;
 	disabled?: boolean;
-	data: SelectPropsData[];
+	data?: SelectPropsData[];
 };
 
 export const Select = withReactFormController(SelectComponent);
@@ -30,7 +30,7 @@ export function selectMapper<T extends {}>(
 }
 
 function SelectComponent<F extends FieldValues>({
-	data,
+	data = [],
 	disabled,
 	controller,
 	firstOption,
@@ -46,7 +46,7 @@ function SelectComponent<F extends FieldValues>({
 					{firstOption}
 				</option>
 			)}
-			{data?.map(({label, value: val}) => (
+			{data.map(({label, value: val}) => (
 				<option key={val} value={val}>
 					{label || val}
 				</option>

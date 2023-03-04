@@ -20,6 +20,7 @@ export type {
 	TScanTarget,
 	TSession,
 	TUser,
+	USPPB,
 	ZId,
 } from './app.zod';
 

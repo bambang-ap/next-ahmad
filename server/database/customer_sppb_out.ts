@@ -9,6 +9,7 @@ export const OrmCustomerSPPBOut: DefinedModel<TCustomerSPPBOut> = ORM.define(
 	TABLES.CUSTOMER_SPPB_OUT,
 	{
 		name: {type: DataTypes.STRING},
+		items: DataTypes.JSONB,
 		nomor_po: {type: DataTypes.STRING},
 	},
 	{

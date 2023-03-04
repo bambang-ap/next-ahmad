@@ -74,7 +74,7 @@ function InputComponent<F extends FieldValues>(
 				type={type}
 				disabled={disabled}
 				placeholder={placeholder || field.name}
-				value={value}
+				value={value ?? ''}
 				onChange={onChangeEvent}
 				{...field}
 			/>
