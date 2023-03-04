@@ -1,23 +1,48 @@
 import {z} from 'zod';
 
 import {uModalType} from '@appTypes/app.zod';
-import {Z_CRUD_ENABLED} from '@enum';
+import {eOpKeys, Op, Z_CRUD_ENABLED} from '@enum';
 import {generateId, MAPPING_CRUD_ORM} from '@server';
 import {procedure, router} from '@trpc';
 
-export const basicWhere = z
-	.record(z.union([z.string(), z.number(), z.boolean()]))
-	.optional();
+const basicUnion = z.union([
+	z.string(),
+	z.number(),
+	z.boolean(),
+	z.array(z.any()),
+]);
+
+type BasicWherer = z.infer<typeof basicWherer>;
+const basicWherer = z.record(
+	basicUnion.or(z.record(eOpKeys, basicUnion)).optional(),
+);
+
+export const basicWhere = basicWherer.transform(obj => {
+	return Object.entries(obj).reduce<BasicWherer>((ret, [key, val]) => {
+		if (typeof val === 'object') {
+			return {
+				...ret,
+				[key]: Object.entries(val).reduce((r, [k, v]) => {
+					// @ts-ignore
+					return {...r, [Op[k]]: v};
+				}, {}),
+			};
+		}
+
+		return {...ret, [key]: val};
+	}, {});
+});
 
 const basicRouters = router({
 	get: procedure
 		.input(
 			z.object({
 				target: Z_CRUD_ENABLED,
-				where: basicWhere,
+				where: basicWhere.optional(),
 			}),
 		)
 		.query(async ({input: {target, where}}) => {
+			console.log({where});
 			const orm = MAPPING_CRUD_ORM[target];
 			const ormResult = await orm.findAll({where, order: [['id', 'asc']]});
 			return ormResult;
@@ -36,7 +61,7 @@ const basicRouters = router({
 			const {id, ...rest} = body;
 
 			const orm = MAPPING_CRUD_ORM[target];
-			console.log({...rest, id: generateId()});
+
 			switch (type) {
 				case 'delete':
 					return orm.destroy({where: {id}});

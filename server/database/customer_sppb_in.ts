@@ -15,6 +15,7 @@ export const OrmCustomerSPPBIn: DefinedModel<TCustomerSPPBIn> = ORM.define(
 	{
 		tableName: TABLES.CUSTOMER_SPPB_IN,
 		defaultScope: {
+			order: [['nomor_po', 'asc']],
 			attributes: {
 				exclude: defaultExcludeColumn,
 			},

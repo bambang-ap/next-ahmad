@@ -11,7 +11,7 @@ export type TableProps<T, VV = {}> = {
 	data?: T[];
 	header?: string[];
 	className?: string;
-	renderItem?: TRenderItem<T, JSX.Element, VV>;
+	renderItem?: TRenderItem<T, JSX.Element | false, VV>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, VV>;
 };
 
@@ -33,17 +33,18 @@ export const Table = <T,>(props: TableProps<T, VV>) => {
 				<TableFlowbite.Body>
 					{data.mmap((item, index) => {
 						const itemWithCell = {...item, Cell: TableFlowbite.Cell};
-						const isRenderEach = renderItemEach?.(itemWithCell, index);
+						const renderEach = renderItemEach?.(itemWithCell, index);
+						const renderItemRow = renderItem?.(itemWithCell, index);
 
 						return (
 							<Fragment key={index}>
-								<TableFlowbite.Row>
-									{renderItem?.(itemWithCell, index)}
+								<TableFlowbite.Row
+									className={classNames({hidden: !renderItemRow})}>
+									{renderItemRow}
 								</TableFlowbite.Row>
-								{isRenderEach && renderItemEach && (
-									<TableFlowbite.Row>
-										{renderItemEach(itemWithCell, index)}
-									</TableFlowbite.Row>
+
+								{renderEach && renderItemEach && (
+									<TableFlowbite.Row>{renderEach}</TableFlowbite.Row>
 								)}
 							</Fragment>
 						);

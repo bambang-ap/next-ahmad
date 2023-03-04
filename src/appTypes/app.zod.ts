@@ -78,10 +78,10 @@ export const uSPPB = z.union([
 	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_OUT),
 ]);
 
-const itemsSppb = tPOItem.pick({id: true, qty: true}).array();
+const itemsSppb = tPOItem.pick({id: true, qty: true}).partial().array();
 
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
-export const tCustomerSPPBIn = zId.extend({
+export const tCustomerSPPBIn = zId.partial().extend({
 	name: z.string(),
 	nomor_po: z.string(),
 	items: itemsSppb,

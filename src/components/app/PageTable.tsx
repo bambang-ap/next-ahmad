@@ -105,10 +105,13 @@ const RenderPage = ({path}: {path: string}) => {
 								['name', 'alamat', 'no_telp', 'npwp'],
 								['Your Customer Name', 'Jl. Bekasi', '62857', '74123123'],
 							]}>
-							Download me
+							Download format
 						</CSVLink>
 
+						<label htmlFor="asdf">Import</label>
 						<input
+							id="asdf"
+							className="hidden"
 							key={inputFilesKey}
 							type="file"
 							accept=".csv"

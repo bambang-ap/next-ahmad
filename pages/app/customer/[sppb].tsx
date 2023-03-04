@@ -1,4 +1,4 @@
-import {Fragment, useEffect, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 
 import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
@@ -25,17 +25,35 @@ export default function SPPBIN() {
 function RenderSPPBIN({target}: {target: USPPB}) {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {control, handleSubmit, watch, reset} = useForm<FormType>();
+	const {control, handleSubmit, setValue, watch, reset} = useForm<FormType>();
 	const {data, refetch} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>({
 		target,
 	});
-	const {mutate} = trpc.sppb.insert.useMutation({
+	const {mutate} = trpc.sppb.upsert.useMutation({
+		onSuccess() {
+			refetch();
+		},
+	});
+	const {mutate: mutateDelete} = trpc.sppb.delete.useMutation({
 		onSuccess() {
 			refetch();
 		},
 	});
 
-	const [modalType, nomor_po] = watch(['type', 'nomor_po']);
+	const [modalType, nomor_po, id, items] = watch([
+		'type',
+		'nomor_po',
+		'id',
+		'items',
+	]);
+
+	const {data: existingSppb} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>(
+		{
+			target,
+			where: {nomor_po, id: {not: id}},
+		},
+		{enabled: !!nomor_po},
+	);
 
 	const {data: listPo} = trpc.customer_po.get.useQuery({type: 'customer_po'});
 	const {data: dataPo} = trpc.customer_po.get.useQuery(
@@ -51,11 +69,15 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 			? `add ${target}`
 			: modalType === 'edit'
 			? `edit ${target}`
+			: modalType === 'preview'
+			? `preview ${target}`
 			: `delete ${target}`;
 
 	const submit = handleSubmit(({type, ...rest}) => {
-		mutate({data: rest, target});
 		modalRef.current?.hide();
+		if (type == 'delete') return mutateDelete({target, id: rest.id});
+
+		return mutate({data: rest, target});
 	});
 
 	function showModal(
@@ -80,7 +102,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 				data={data}
 				header={['Nomor PO', 'Nomor Surat Jalan', 'Action']}
 				renderItem={({Cell, item}) => {
-					const {nomor_po} = item;
+					const {id, nomor_po} = item;
 					return (
 						<>
 							<Cell>{item.nomor_po}</Cell>
@@ -90,7 +112,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 									Preview
 								</Button>
 								<Button onClick={() => showModal('edit', item)}>Edit</Button>
-								<Button onClick={() => showModal('delete', {nomor_po})}>
+								<Button onClick={() => showModal('delete', {id, nomor_po})}>
 									Delete
 								</Button>
 							</Cell>
@@ -122,15 +144,30 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 						firstOption="- Pilih PO -"
 						data={listPo?.map(i => ({value: i.nomor_po}))}
 					/>
-					<Input disabled={isPreview} control={control} fieldName="name" />
+					<Input
+						disabled={isPreview}
+						control={control}
+						fieldName="name"
+						placeholder="Nomor surat jalan"
+					/>
 
 					<Table
+						key={`${nomor_po}-${id}`}
 						className={classNames({hidden: !nomor_po})}
 						header={['Kode Item', 'Name', 'Jumlah']}
 						data={dataPo?.[0]?.po_item}
 						renderItem={({Cell, item}, i) => {
+							if (items?.[i] && items[i]?.qty === undefined) return false;
+
+							const assignedQty = (existingSppb ?? []).reduce((f, e) => {
+								const sItem = e.items.find(u => u.id === item.id);
+								return f - (sItem?.qty ?? 0);
+							}, item.qty);
+
+							if (assignedQty <= 0) return false;
+
 							return (
-								<Fragment key={item.id}>
+								<>
 									<Cell>{item.kode_item}</Cell>
 									<Cell>{item.name}</Cell>
 									<Cell className="flex items-center gap-2">
@@ -147,10 +184,22 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 											control={control}
 											defaultValue={item.qty}
 											fieldName={`items.${i}.qty`}
+											rules={{
+												max: {
+													value: assignedQty,
+													message: `max quantity is ${assignedQty}`,
+												},
+											}}
 										/>
 										<Text>{item.unit}</Text>
 									</Cell>
-								</Fragment>
+									<Cell>
+										<Button
+											onClick={() => setValue(`items.${i}.qty`, undefined)}>
+											Hapus
+										</Button>
+									</Cell>
+								</>
 							);
 						}}
 					/>

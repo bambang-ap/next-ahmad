@@ -13,9 +13,9 @@ import {classNames} from '@utils';
 export type InputProps = {
 	className?: string;
 	placeholder?: string;
-	type?: 'text' | 'checkbox' | 'number' | 'password' | 'date';
 	label?: string;
 	disabled?: boolean;
+	type?: 'number' | 'text' | 'checkbox' | 'password' | 'date';
 };
 
 export const Input = withReactFormController(InputComponent);
@@ -23,6 +23,7 @@ export const Input = withReactFormController(InputComponent);
 function InputComponent<F extends FieldValues>(
 	props: ControlledComponentProps<F, InputProps>,
 ) {
+	let restProps: MyObject<any> = {};
 	const {type, label, disabled, className, controller, placeholder} = props;
 
 	const {
@@ -76,6 +77,7 @@ function InputComponent<F extends FieldValues>(
 				placeholder={placeholder || field.name}
 				value={value ?? ''}
 				onChange={onChangeEvent}
+				{...restProps}
 				{...field}
 			/>
 			{errorMessage}

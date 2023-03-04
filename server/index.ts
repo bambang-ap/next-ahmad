@@ -56,7 +56,7 @@ export const getNow = () => {
 };
 
 export const generateId = () => {
-	return `${uuid()}-${moment(getNow()).unix()}`;
+	return `${moment(getNow()).unix()}-${uuid()}`;
 };
 
 export const checkCredential = async (

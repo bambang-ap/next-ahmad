@@ -29,3 +29,55 @@ export enum CRUD_ENABLED {
 }
 
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);
+
+export const OpKeys = [
+	'eq',
+	'ne',
+	'gte',
+	'gt',
+	'lte',
+	'lt',
+	'not',
+	'is',
+	'in',
+	'notIn',
+	'like',
+	'notLike',
+	'iLike',
+	'notILike',
+	'startsWith',
+	'endsWith',
+	'substring',
+	'regexp',
+	'notRegexp',
+	'iRegexp',
+	'notIRegexp',
+	'between',
+	'notBetween',
+	'overlap',
+	'contains',
+	'contained',
+	'adjacent',
+	'strictLeft',
+	'strictRight',
+	'noExtendRight',
+	'noExtendLeft',
+	'and',
+	'or',
+	'any',
+	'all',
+	'values',
+	'col',
+	'placeholder',
+	'join',
+	'match',
+] as const;
+
+export const Op = OpKeys.reduce<EOp>((ret, key) => {
+	return {...ret, [key]: Symbol.for(key)};
+}, {});
+
+export const eOpKeys = z.enum(OpKeys);
+
+export type EOp = z.infer<typeof eOp>;
+export const eOp = z.record(eOpKeys, z.symbol());
