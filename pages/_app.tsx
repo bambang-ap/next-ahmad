@@ -24,7 +24,7 @@ function App({
 	return (
 		<Flowbite
 			theme={{
-				dark: true,
+				// dark: true,
 				theme: themeClassName,
 			}}>
 			<QueryClientProvider client={queryClient}>

@@ -17,7 +17,7 @@ export default Sidebar;
 
 function SidebarComponent({children}: PropsWithChildren) {
 	return (
-		<aside className="h-full p-4">
+		<aside className="overflow-y-auto h-full p-4">
 			<ul>{children}</ul>
 		</aside>
 	);

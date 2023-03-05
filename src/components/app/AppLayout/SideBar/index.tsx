@@ -1,7 +1,8 @@
+import {signOut} from 'next-auth/react';
 import {useRouter} from 'next/router';
 
 import {TMenu} from '@appTypes/app.type';
-import {Icon} from '@components';
+import {Button, Icon} from '@components';
 import {trpc} from '@utils/trpc';
 
 import Sidebar from './component';
@@ -48,6 +49,9 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 					</Sidebar.Item>
 				);
 			})}
+			<Sidebar.Item>
+				<Button onClick={() => signOut({redirect: false})}>Logout</Button>
+			</Sidebar.Item>
 		</>
 	);
 };
