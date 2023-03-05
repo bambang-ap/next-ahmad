@@ -106,6 +106,8 @@ export const tKanban = zId.extend({
 	nomor_po: z.string(),
 	id_instruksi_kanban: z.string(),
 	id_mesin: z.string(),
+	id_sppb_in: z.string(),
+	items: itemsSppb,
 });
 
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;

@@ -11,6 +11,8 @@ export const OrmKanban: DefinedModel<TKanban> = ORM.define(
 		id_instruksi_kanban: {type: DataTypes.STRING},
 		id_mesin: {type: DataTypes.STRING},
 		nomor_po: {type: DataTypes.STRING},
+		id_sppb_in: DataTypes.STRING,
+		items: DataTypes.JSONB,
 	},
 	{
 		tableName: TABLES.KANBAN,

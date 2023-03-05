@@ -13,6 +13,10 @@ export const SideBar = () => {
 	return (
 		<Sidebar>
 			<RenderMenu data={data} />
+
+			<Sidebar.Item>
+				<Button onClick={() => signOut({redirect: false})}>Logout</Button>
+			</Sidebar.Item>
 		</Sidebar>
 	);
 };
@@ -49,9 +53,6 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 					</Sidebar.Item>
 				);
 			})}
-			<Sidebar.Item>
-				<Button onClick={() => signOut({redirect: false})}>Logout</Button>
-			</Sidebar.Item>
 		</>
 	);
 };

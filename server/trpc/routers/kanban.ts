@@ -21,7 +21,13 @@ const kanbanRouters = router({
 				type RetType = TKanbanExtended & {sppbin?: TCustomerSPPBIn[]};
 				return checkCredentialV2(req, res, async (): Promise<RetType[]> => {
 					const routerCaller = appRouter.createCaller({req, res});
-					const allPO = await OrmKanban.findAll({where});
+					const allPO = await OrmKanban.findAll({
+						where,
+						order: [
+							['createdAt', 'asc'],
+							['nomor_po', 'asc'],
+						],
+					});
 					// @ts-ignore
 					const joinedPOPromises = (allPO as TKanban[]).map<Promise<RetType>>(
 						async item => {
@@ -76,10 +82,11 @@ const kanbanRouters = router({
 		}),
 
 	delete: procedure
-		.input(tCustomerPO.pick({nomor_po: true}))
-		.mutation(async ({input: {nomor_po}, ctx: {req, res}}) => {
+		.input(tCustomerPO.pick({id: true}))
+		.mutation(async ({input: {id}, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				await OrmKanban.destroy({where: {nomor_po}});
+				await OrmScan.destroy({where: {id_kanban: id}});
+				await OrmKanban.destroy({where: {id}});
 				return {message: 'Success'};
 			});
 		}),
