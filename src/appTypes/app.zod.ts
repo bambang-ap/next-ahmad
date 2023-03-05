@@ -110,7 +110,7 @@ export const tKanban = zId.extend({
 
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;
 export const tKanbanExtended = tKanban.extend({
-	po: tCustomerPO.array().nullish(),
+	po: tCustomerPOExtended.array().nullish(),
 	mesin: tMesin.array().nullish(),
 	instruksi_kanban: tInstruksiKanban.array().nullish(),
 });

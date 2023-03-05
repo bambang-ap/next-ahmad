@@ -1,4 +1,5 @@
-import qr from 'qr-image';
+import bufferToDataUrl from 'buffer-to-data-url';
+import qr, {image_type} from 'qr-image';
 import {z} from 'zod';
 
 import {getNow} from '@server';
@@ -11,17 +12,46 @@ import menuRouters from './menu';
 import scanRouters from './scan';
 import sppbRouters from './sppb';
 
+const asd = z.string().or(z.string().array()).optional();
+
 export const appRouter = router({
 	now: procedure.query(() => {
 		const today = getNow();
 		return today;
 	}),
-	qr: procedure.input(z.string()).query(({input}) => {
-		const qr_svg = qr.imageSync(input, {
-			type: 'svg',
-		});
-		return `data:image/svg+xml;utf8,${qr_svg}`;
-	}),
+	qr: procedure
+		.input(
+			asd.or(
+				z.object({
+					type: z.enum(['png', 'svg', 'pdf', 'eps']).optional(),
+					input: asd,
+				}),
+			),
+		)
+		.query(({input}) => {
+			function generateQr(type: image_type, input?: string) {
+				if (!input) return null;
+
+				const qrImage = qr.imageSync(input, {type});
+
+				if (type === 'svg') return `data:image/svg+xml;utf8,${qrImage}`;
+
+				return bufferToDataUrl(`image/${type}`, qrImage);
+			}
+
+			function aghd(input?: string | string[], type: image_type = 'svg') {
+				if (Array.isArray(input))
+					return input.map(input => generateQr(type, input));
+
+				return generateQr(type, input);
+			}
+
+			if (!input) return null;
+
+			if (typeof input === 'string' || Array.isArray(input)) return aghd(input);
+
+			return aghd(input.input, input.type);
+		}),
 	menu: menuRouters,
 	basic: basicRouters,
 	customer_po: customer_poRouters,

@@ -1,5 +1,6 @@
 import {useRef} from 'react';
 
+import {jsPDF} from 'jspdf';
 import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalTypePreview, TKanban} from '@appTypes/app.type';
@@ -29,6 +30,12 @@ export default function POCustomer() {
 	const {data, refetch} = trpc.kanban.get.useQuery({
 		type: 'kanban',
 	});
+
+	const {data: qrImages} = trpc.qr.useQuery(
+		{input: data?.map(f => f.id), type: 'png'},
+		{enabled: !!data},
+	);
+
 	const {control, handleSubmit, watch, reset} = useForm<FormType>();
 
 	const modalType = watch('type');
@@ -77,31 +84,129 @@ export default function POCustomer() {
 				<Table
 					data={data ?? []}
 					header={[
-						'ID',
 						'Nomor PO',
 						'Nama Mesin',
 						'Instruksi Kanban',
 						'Customer',
 						'Action',
 					]}
+					renderItemEach={({Cell, item}, i) => {
+						const {id, po, instruksi_kanban, mesin, nomor_po, sppbin} = item;
+						const {customer, po_item} = po?.[0] ?? {};
+						const {name: nameMesin, nomor_mesin} = mesin?.[0] ?? {};
+						return (
+							// <Cell colSpan={6} className="-z-10 fixed">
+							<Cell colSpan={6} className="p-4 fixed -z-10">
+								<div className="p-4 w-[500px]" id={`data-${item.id}`}>
+									<div className="bg-black p-1 rounded gap-1 flex flex-col">
+										<div className="bg-white flex-1 text-center p-2">
+											Kartu Kanban
+										</div>
+										<div className="flex flex-row-reverse gap-1">
+											<div className="bg-white flex gap-1 flex-1 flex-col justify-center items-center">
+												<img
+													alt="qr_svg"
+													src={qrImages?.[i]}
+													className="h-32 w-32"
+												/>
+												<label className="text-center">{id}</label>
+											</div>
+											<div className="flex flex-col gap-1 flex-1">
+												<div className="gap-1 flex flex-1">
+													<div className="bg-white flex-1 p-1">Customer</div>
+													<div className="bg-white flex-1 p-1">
+														{customer?.name}
+													</div>
+												</div>
+												<div className="flex gap-1">
+													<div className="bg-white flex-1 p-1">instruksi</div>
+													<div className="bg-white flex-1 p-1">
+														{instruksi_kanban?.[0]?.name}
+													</div>
+												</div>
+												<div className="flex gap-1">
+													<div className="bg-white flex-1 p-1">nama mesin</div>
+													<div className="bg-white flex-1 p-1">{nameMesin}</div>
+												</div>
+												<div className="flex gap-1">
+													<div className="bg-white flex-1 p-1">nomor mesin</div>
+													<div className="bg-white flex-1 p-1">
+														{nomor_mesin}
+													</div>
+												</div>
+											</div>
+										</div>
+										<div className="bg-white flex-1 text-center p-2">
+											List Item
+										</div>
+										<div className="flex flex-1 gap-1">
+											<div className="bg-white p-1 w-2/12">
+												Nomor surat jalan
+											</div>
+											<div className="flex flex-1 gap-1">
+												<div className="bg-white flex-1 p-1">kode_item</div>
+												<div className="bg-white flex-1 p-1">name</div>
+												<div className="bg-white flex-1 p-1">qty</div>
+											</div>
+										</div>
+										{sppbin?.map(sppb => {
+											return (
+												<div key={sppb.id} className="flex flex-1 gap-1">
+													<div className="bg-white p-1 w-2/12">{sppb.name}</div>
+													<div className="flex flex-col flex-1 gap-1">
+														{sppb.items?.map(({id, qty}) => {
+															const poItem = po_item?.find(
+																itm => id === itm.id,
+															);
+															return (
+																<div key={id} className="flex gap-1">
+																	<div className="bg-white flex-1 p-1">
+																		{poItem?.kode_item}
+																	</div>
+																	<div className="bg-white flex-1 p-1">
+																		{poItem?.name}
+																	</div>
+																	<div className="bg-white flex-1 p-1">
+																		{qty} {poItem?.unit}
+																	</div>
+																</div>
+															);
+														})}
+													</div>
+												</div>
+											);
+										})}
+									</div>
+								</div>
+							</Cell>
+						);
+					}}
 					renderItem={({item, Cell}) => {
-						const {id, nomor_po, mesin, instruksi_kanban, po} = item;
+						const {nomor_po, mesin, instruksi_kanban, po} = item;
 
 						return (
 							<>
-								<Cell>{id}</Cell>
 								<Cell>{nomor_po}</Cell>
 								<Cell>{mesin?.[0]?.name}</Cell>
 								<Cell>{instruksi_kanban?.[0]?.name}</Cell>
 								<Cell>{po?.[0]?.customer?.name}</Cell>
 								<Cell className="flex gap-x-2">
-									<Button onClick={() => showModal('preview', item)}>
-										Preview
-									</Button>
-									<Button onClick={() => showModal('edit', item)}>Edit</Button>
-									<Button onClick={() => showModal('delete', {nomor_po})}>
-										Delete
-									</Button>
+									<Button
+										icon="faPrint"
+										onClick={() => generate(`data-${item.id}`)}
+									/>
+									<Button
+										icon="faMagnifyingGlass"
+										onClick={() => showModal('preview', item)}
+									/>
+									<Button
+										onClick={() => showModal('edit', item)}
+										icon="faEdit"
+									/>
+									<Button
+										onClick={() => showModal('delete', {nomor_po})}
+										icon="faTrash"
+									/>
 								</Cell>
 							</>
 						);
@@ -114,7 +219,7 @@ export default function POCustomer() {
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
 	const [modalType, id] = useWatch({control, name: ['type', 'id']});
-	const {data: qrImage} = trpc.qr.useQuery(id);
+	const {data: qrImage} = trpc.qr.useQuery<any, string>(id);
 	const {data: dataMesin} = trpc.basic.get.useQuery({
 		target: CRUD_ENABLED.MESIN,
 	});
@@ -174,3 +279,15 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 		</div>
 	);
 };
+
+function generate(id: string) {
+	// Default export is a4 paper, portrait, using millimeters for units
+	const doc = new jsPDF({unit: 'px', orientation: 'l'});
+
+	doc.html(document.getElementById(id) ?? '', {
+		windowWidth: 100,
+		callback(doc) {
+			doc.save('a4.pdf');
+		},
+	});
+}

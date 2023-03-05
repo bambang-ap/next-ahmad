@@ -62,3 +62,13 @@ NOTE:
     after select po, show all items, user can edit qty
 
 NOTE: hapus selection nomor po pada saat sudah close sppb in
+
+NOTE: buat printout kanban
+        Nama Customer
+        No PO
+        NO SPPB IN
+        item code
+        nama_item
+        qty
+        intruksi_kanban
+        data mesin

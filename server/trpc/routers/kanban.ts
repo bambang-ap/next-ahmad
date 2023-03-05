@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 import {TKanbanExtended} from '@appTypes/app.type';
-import {tCustomerPO, tKanban} from '@appTypes/app.zod';
+import {tCustomerPO, TCustomerSPPBIn, tKanban} from '@appTypes/app.zod';
 import {OrmKanban, OrmScan} from '@database';
 import {CRUD_ENABLED} from '@enum';
 import {checkCredentialV2, generateId} from '@server';
@@ -18,16 +18,13 @@ const kanbanRouters = router({
 				}),
 			)
 			.query(async ({input: {where}, ctx: {req, res}}) => {
-				return checkCredentialV2(
-					req,
-					res,
-					async (): Promise<TKanbanExtended[]> => {
-						const routerCaller = appRouter.createCaller({req, res});
-						const allPO = await OrmKanban.findAll({where});
-						// @ts-ignore
-						const joinedPOPromises = (allPO as TKanban[]).map<
-							Promise<TKanbanExtended>
-						>(async item => {
+				type RetType = TKanbanExtended & {sppbin?: TCustomerSPPBIn[]};
+				return checkCredentialV2(req, res, async (): Promise<RetType[]> => {
+					const routerCaller = appRouter.createCaller({req, res});
+					const allPO = await OrmKanban.findAll({where});
+					// @ts-ignore
+					const joinedPOPromises = (allPO as TKanban[]).map<Promise<RetType>>(
+						async item => {
 							const {nomor_po, id_instruksi_kanban, id_mesin} = item;
 							const po = await routerCaller.customer_po.get({
 								nomor_po,
@@ -41,15 +38,19 @@ const kanbanRouters = router({
 								where: {id: id_mesin},
 								target: CRUD_ENABLED.MESIN,
 							});
+							const sppbin = await routerCaller.basic.get({
+								where: {nomor_po},
+								target: CRUD_ENABLED.CUSTOMER_SPPB_IN,
+							});
 
-							return {...item, nomor_po, instruksi_kanban, mesin, po};
-						});
+							return {...item, nomor_po, instruksi_kanban, mesin, po, sppbin};
+						},
+					);
 
-						const joinedPO = await Promise.all(joinedPOPromises);
+					const joinedPO = await Promise.all(joinedPOPromises);
 
-						return joinedPO;
-					},
-				);
+					return joinedPO;
+				});
 			});
 	},
 
