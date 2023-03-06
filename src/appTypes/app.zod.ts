@@ -85,6 +85,7 @@ export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
 	name: z.string(),
 	nomor_po: z.string(),
+	tgl: z.string(),
 	items: itemsSppb.optional(),
 });
 

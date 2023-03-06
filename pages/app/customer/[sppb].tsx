@@ -97,13 +97,19 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 			<Table
 				data={data}
-				header={['Nomor PO', 'Nomor Surat Jalan', 'Action']}
+				header={[
+					'Nomor PO',
+					'Nomor Surat Jalan',
+					'Tanggal Surat Jalan',
+					'Action',
+				]}
 				renderItem={({Cell, item}) => {
 					const {id, nomor_po} = item;
 					return (
 						<>
 							<Cell>{item.nomor_po}</Cell>
 							<Cell>{item.name}</Cell>
+							<Cell>{item.tgl}</Cell>
 							<Cell className="flex gap-2">
 								<Button onClick={() => showModal('preview', item)}>
 									Preview
@@ -132,6 +138,13 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 						control={control}
 						fieldName="name"
 						placeholder="Nomor surat jalan"
+					/>
+					<Input
+						disabled={isPreview}
+						control={control}
+						fieldName="tgl"
+						type="date"
+						placeholder="Tanggal surat jalan"
 					/>
 
 					<Table

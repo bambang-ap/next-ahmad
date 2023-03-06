@@ -11,6 +11,7 @@ export const OrmCustomerSPPBIn: DefinedModel<TCustomerSPPBIn> = ORM.define(
 		name: {type: DataTypes.STRING},
 		nomor_po: {type: DataTypes.STRING},
 		items: DataTypes.JSONB,
+		tgl: DataTypes.STRING,
 	},
 	{
 		tableName: TABLES.CUSTOMER_SPPB_IN,
