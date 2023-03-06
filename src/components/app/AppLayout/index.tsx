@@ -3,6 +3,7 @@ import {PropsWithChildren, useEffect, useState} from 'react';
 import {useRecoilValue} from 'recoil';
 
 import {Icon, Text} from '@components';
+import {useSession} from '@hooks';
 import {atomSidebarOpen} from '@recoil/atoms';
 
 import Header from './Header';
@@ -13,6 +14,7 @@ const id = 'app-container';
 export default function AppLayout({children}: PropsWithChildren) {
 	const isSidebarOpen = useRecoilValue(atomSidebarOpen);
 	const [clientHeight, setClientHeight] = useState(0);
+	const {data} = useSession();
 
 	useEffect(() => {
 		setClientHeight(document.getElementById(id)?.clientHeight ?? 0);
@@ -27,7 +29,7 @@ export default function AppLayout({children}: PropsWithChildren) {
 						<div className="flex items-center gap-2">
 							<Icon name="faUserCircle" className="text-3xl" />
 
-							<Text>Admin</Text>
+							<Text>{data?.user?.name}</Text>
 						</div>
 					</div>
 					<SideBar />

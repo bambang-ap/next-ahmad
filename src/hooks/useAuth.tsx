@@ -17,7 +17,7 @@ export const useAuth = () => {
 };
 
 export const useSession = () => {
-	const {status, data} = useSessionNext();
+	const {status, data} = useSessionNext() ?? {};
 
 	return {status, data: data as TSession} as const;
 };
