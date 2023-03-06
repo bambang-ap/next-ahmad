@@ -4,6 +4,7 @@ import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
+	TCustomer,
 	TCustomerPO,
 	TCustomerPOExtended,
 	TPOItem,
@@ -47,8 +48,8 @@ export default function POCustomer() {
 		},
 	};
 
-	const submit: FormEventHandler<HTMLFormElement> = ({preventDefault}) => {
-		preventDefault();
+	const submit: FormEventHandler<HTMLFormElement> = e => {
+		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, id, ...rest}) => {
 			const onSuccess = () => {
@@ -117,7 +118,9 @@ export default function POCustomer() {
 const ModalChild = ({control}: {control: Control<FormType>}) => {
 	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
-	const {data} = trpc.basic.get.useQuery({target: CRUD_ENABLED.CUSTOMER});
+	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
+		target: CRUD_ENABLED.CUSTOMER,
+	});
 	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
 	const {
 		field: {onChange: onChangePoItem},

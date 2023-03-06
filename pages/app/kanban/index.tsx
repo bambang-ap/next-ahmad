@@ -57,8 +57,8 @@ export default function POCustomer() {
 		},
 	};
 
-	const submit: FormEventHandler<HTMLFormElement> = ({preventDefault}) => {
-		preventDefault();
+	const submit: FormEventHandler<HTMLFormElement> = e => {
+		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, id, ...rest}) => {
 			switch (type) {

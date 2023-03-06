@@ -82,8 +82,8 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 			? `preview ${target}`
 			: `delete ${target}`;
 
-	const submit: FormEventHandler<HTMLFormElement> = ({preventDefault}) => {
-		preventDefault();
+	const submit: FormEventHandler<HTMLFormElement> = e => {
+		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, ...rest}) => {
 			modalRef.current?.hide();
@@ -221,7 +221,6 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 					<Button
 						type="submit"
-						onClick={submit}
 						className={classNames('flex-1', {hidden: !nomor_po})}>
 						Submit
 					</Button>
