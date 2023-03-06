@@ -38,14 +38,25 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 	const {data, refetch} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>({
 		target,
 	});
+	const f = data?.reduce<Record<string, Record<string, number>>>(
+		(ret, {id, nomor_po, items}) => {
+			if (!ret[nomor_po]) ret[nomor_po] = {};
+
+			items?.forEach(o => {
+				ret[nomor_po][o.id] = (ret[nomor_po][o.id] ?? 0) + o.qty;
+			});
+
+			return ret;
+		},
+		{},
+	);
+
 	const {data: existingPo} = trpc.sppb.get.useQuery(
 		{
 			where: {nomor_po},
 		},
 		{enabled: !!nomor_po},
 	);
-
-	console.log(existingPo);
 
 	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation({
 		onSuccess() {
@@ -155,7 +166,15 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 						renderItem={({Cell, item}, i) => {
 							if (items?.[i] && items[i]?.qty === undefined) return false;
 
-							if (existingPo?.[i]?.qty <= 0) return false;
+							let assignedQty =
+								item?.qty - (f?.[item.nomor_po]?.[item.id] ?? 0);
+
+							if (isEdit) {
+								const ds = data?.find(j => j.id === id);
+								assignedQty += ds?.items?.find(j => j.id === item.id)?.qty ?? 0;
+							}
+
+							if (assignedQty <= 0) return false;
 
 							return (
 								<>
@@ -177,8 +196,8 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 											fieldName={`items.${i}.qty`}
 											rules={{
 												max: {
-													value: item.qty,
-													message: `max quantity is ${item.qty}`,
+													value: assignedQty,
+													message: `max quantity is ${assignedQty}`,
 												},
 											}}
 										/>
