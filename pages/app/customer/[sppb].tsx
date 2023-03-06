@@ -72,6 +72,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 	const isEdit = modalType === 'edit';
 	const isPreview = modalType === 'preview';
+	const isDelete = modalType === 'delete';
 	const isPreviewEdit = isEdit || isPreview;
 	const modalTitle =
 		modalType === 'add'
@@ -142,87 +143,92 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 			<Modal ref={modalRef} title={modalTitle}>
 				<form onSubmit={submit}>
-					<Select
-						disabled={isPreviewEdit}
-						control={control}
-						fieldName="nomor_po"
-						firstOption="- Pilih PO -"
-						data={listPo?.map(i => ({value: i.nomor_po}))}
-					/>
-					<Input
-						disabled={isPreview}
-						control={control}
-						fieldName="name"
-						placeholder="Nomor surat jalan"
-					/>
-					<Input
-						disabled={isPreview}
-						control={control}
-						fieldName="tgl"
-						type="date"
-						placeholder="Tanggal surat jalan"
-					/>
+					{!isDelete && (
+						<>
+							<Select
+								disabled={isPreviewEdit}
+								control={control}
+								fieldName="nomor_po"
+								firstOption="- Pilih PO -"
+								data={listPo?.map(i => ({value: i.nomor_po}))}
+							/>
+							<Input
+								disabled={isPreview}
+								control={control}
+								fieldName="name"
+								placeholder="Nomor surat jalan"
+							/>
+							<Input
+								disabled={isPreview}
+								control={control}
+								fieldName="tgl"
+								type="date"
+								placeholder="Tanggal surat jalan"
+							/>
 
-					<Table
-						key={`${nomor_po}-${id}`}
-						className={classNames({hidden: !nomor_po})}
-						header={['Kode Item', 'Name', 'Jumlah']}
-						data={listPo?.find(h => h.nomor_po === nomor_po)?.po_item}
-						renderItem={({Cell, item}, i) => {
-							if (items?.[i] && items[i]?.qty === undefined) return false;
+							<Table
+								key={`${nomor_po}-${id}`}
+								className={classNames({hidden: !nomor_po})}
+								header={['Kode Item', 'Name', 'Jumlah']}
+								data={listPo?.find(h => h.nomor_po === nomor_po)?.po_item}
+								renderItem={({Cell, item}, i) => {
+									if (items?.[i] && items[i]?.qty === undefined) return false;
 
-							let assignedQty =
-								item?.qty - (f?.[item.nomor_po]?.[item.id] ?? 0);
+									let assignedQty =
+										item?.qty - (f?.[item.nomor_po]?.[item.id] ?? 0);
 
-							if (isEdit) {
-								const ds = data?.find(j => j.id === id);
-								assignedQty += ds?.items?.find(j => j.id === item.id)?.qty ?? 0;
-							}
+									if (isEdit) {
+										const ds = data?.find(j => j.id === id);
+										assignedQty +=
+											ds?.items?.find(j => j.id === item.id)?.qty ?? 0;
+									}
 
-							if (assignedQty <= 0) return false;
+									if (assignedQty <= 0 && !isPreview) return false;
 
-							return (
-								<>
-									<Cell>{item.kode_item}</Cell>
-									<Cell>{item.name}</Cell>
-									<Cell className="flex items-center gap-2">
-										<Input
-											className="hidden"
-											defaultValue={item.id}
-											control={control}
-											fieldName={`items.${i}.id`}
-										/>
-										<Input
-											disabled={isPreview}
-											className="flex-1"
-											type="number"
-											control={control}
-											defaultValue={item.qty}
-											fieldName={`items.${i}.qty`}
-											rules={{
-												max: {
-													value: assignedQty,
-													message: `max quantity is ${assignedQty}`,
-												},
-											}}
-										/>
-										<Text>{item.unit}</Text>
-									</Cell>
-									<Cell>
-										<Button
-											onClick={() => setValue(`items.${i}.qty`, undefined)}>
-											Hapus
-										</Button>
-									</Cell>
-								</>
-							);
-						}}
-					/>
+									return (
+										<>
+											<Cell>{item.kode_item}</Cell>
+											<Cell>{item.name}</Cell>
+											<Cell className="flex items-center gap-2">
+												<Input
+													className="hidden"
+													defaultValue={item.id}
+													control={control}
+													fieldName={`items.${i}.id`}
+												/>
+												<Input
+													disabled={isPreview}
+													className="flex-1"
+													type="number"
+													control={control}
+													defaultValue={item.qty}
+													fieldName={`items.${i}.qty`}
+													rules={{
+														max: {
+															value: assignedQty,
+															message: `max quantity is ${assignedQty}`,
+														},
+													}}
+												/>
+												<Text>{item.unit}</Text>
+											</Cell>
+											<Cell>
+												<Button
+													onClick={() => setValue(`items.${i}.qty`, undefined)}>
+													Hapus
+												</Button>
+											</Cell>
+										</>
+									);
+								}}
+							/>
+						</>
+					)}
 
 					<Button
 						type="submit"
 						className={classNames('flex-1', {hidden: !nomor_po})}>
-						Submit
+						{isDelete ? 'Ya' : 'Submit'}
 					</Button>
 				</form>
 			</Modal>
