@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {FormEventHandler, useEffect, useRef} from 'react';
 
 import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
@@ -25,7 +25,8 @@ export default function SPPBIN() {
 function RenderSPPBIN({target}: {target: USPPB}) {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {control, handleSubmit, setValue, watch, reset} = useForm<FormType>();
+	const {control, handleSubmit, setValue, watch, reset, clearErrors} =
+		useForm<FormType>();
 
 	const [modalType, nomor_po, id, items] = watch([
 		'type',
@@ -81,12 +82,16 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 			? `preview ${target}`
 			: `delete ${target}`;
 
-	const submit = handleSubmit(({type, ...rest}) => {
-		modalRef.current?.hide();
-		if (type == 'delete') return mutateDelete({target, id: rest.id});
+	const submit: FormEventHandler<HTMLFormElement> = ({preventDefault}) => {
+		preventDefault();
+		clearErrors();
+		handleSubmit(({type, ...rest}) => {
+			modalRef.current?.hide();
+			if (type == 'delete') return mutateDelete({target, id: rest.id});
 
-		return mutateUpsert({data: rest, target});
-	});
+			return mutateUpsert({data: rest, target});
+		})();
+	};
 
 	function showModal(
 		type: ModalTypePreview,
