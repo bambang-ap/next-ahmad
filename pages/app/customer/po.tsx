@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {FormEventHandler, useRef} from 'react';
 
 import {Control, useController, useForm, useWatch} from 'react-hook-form';
 
@@ -34,7 +34,8 @@ export default function POCustomer() {
 	const deletePO = trpc.customer_po.delete.useMutation();
 
 	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer_po'});
-	const {control, handleSubmit, watch, reset} = useForm<FormType>();
+	const {control, handleSubmit, watch, reset, clearErrors} =
+		useForm<FormType>();
 
 	const modalType = watch('type');
 	const {modalTitle} = {
@@ -46,23 +47,27 @@ export default function POCustomer() {
 		},
 	};
 
-	const submit = handleSubmit(({type, id, ...rest}) => {
-		const onSuccess = () => {
-			modalRef.current?.hide();
-			refetch();
-		};
+	const submit: FormEventHandler<HTMLFormElement> = ({preventDefault}) => {
+		preventDefault();
+		clearErrors();
+		handleSubmit(({type, id, ...rest}) => {
+			const onSuccess = () => {
+				modalRef.current?.hide();
+				refetch();
+			};
 
-		switch (type) {
-			case 'add':
-				return insertPO.mutate(rest, {onSuccess});
-			case 'edit':
-				return updatePO.mutate({...rest, id}, {onSuccess});
-			case 'delete':
-				return deletePO.mutate({nomor_po: rest.nomor_po}, {onSuccess});
-		}
+			switch (type) {
+				case 'add':
+					return insertPO.mutate(rest, {onSuccess});
+				case 'edit':
+					return updatePO.mutate({...rest, id}, {onSuccess});
+				case 'delete':
+					return deletePO.mutate({nomor_po: rest.nomor_po}, {onSuccess});
+			}
 
-		return null;
-	});
+			return null;
+		})();
+	};
 
 	function showModal(type: ModalTypePreview, initValue: {}) {
 		reset({...initValue, type});
