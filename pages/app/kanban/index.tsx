@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {FormEventHandler, useEffect, useRef} from 'react';
 
 import {jsPDF} from 'jspdf';
 import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
@@ -39,14 +39,13 @@ export default function POCustomer() {
 		type: 'kanban',
 	});
 
-	console.log(data);
-
 	const {data: qrImages} = trpc.qr.useQuery(
 		{input: data?.map(f => f.id), type: 'png'},
 		{enabled: !!data},
 	);
 
-	const {control, handleSubmit, watch, reset} = useForm<FormType>();
+	const {control, handleSubmit, watch, reset, clearErrors} =
+		useForm<FormType>();
 
 	const modalType = watch('type');
 	const {modalTitle} = {
@@ -58,23 +57,27 @@ export default function POCustomer() {
 		},
 	};
 
-	const submit = handleSubmit(({type, id, ...rest}) => {
-		const onSuccess = () => {
+	const submit: FormEventHandler<HTMLFormElement> = ({preventDefault}) => {
+		preventDefault();
+		clearErrors();
+		handleSubmit(({type, id, ...rest}) => {
+			switch (type) {
+				case 'add':
+					return insertPO.mutate(rest, {onSuccess});
+				case 'edit':
+					return updatePO.mutate({...rest, id}, {onSuccess});
+				case 'delete':
+					return deletePO.mutate({id}, {onSuccess});
+			}
+
+			return null;
+		})();
+
+		function onSuccess() {
 			modalRef.current?.hide();
 			refetch();
-		};
-
-		switch (type) {
-			case 'add':
-				return insertPO.mutate(rest, {onSuccess});
-			case 'edit':
-				return updatePO.mutate({...rest, id}, {onSuccess});
-			case 'delete':
-				return deletePO.mutate({id}, {onSuccess});
 		}
-
-		return null;
-	});
+	};
 
 	function showModal(type: ModalTypePreview, initValue: {}) {
 		reset({...initValue, type});

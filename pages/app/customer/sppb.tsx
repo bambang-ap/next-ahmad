@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {FormEventHandler, useEffect, useRef} from 'react';
 
 import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
@@ -25,20 +25,13 @@ export default function SPPBIN() {
 function RenderSPPBIN({target}: {target: USPPB}) {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {control, handleSubmit, setValue, watch, reset} = useForm<FormType>();
+	const {control, handleSubmit, setValue, watch, reset, clearErrors} =
+		useForm<FormType>();
 	const {data, refetch} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>({
 		target,
 	});
-	const {mutate} = trpc.sppb.upsert.useMutation({
-		onSuccess() {
-			refetch();
-		},
-	});
-	const {mutate: mutateDelete} = trpc.sppb.delete.useMutation({
-		onSuccess() {
-			refetch();
-		},
-	});
+	const {mutate} = trpc.sppb.upsert.useMutation();
+	const {mutate: mutateDelete} = trpc.sppb.delete.useMutation();
 
 	const [modalType, nomor_po, id, items] = watch([
 		'type',
@@ -73,12 +66,20 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 			? `preview ${target}`
 			: `delete ${target}`;
 
-	const submit = handleSubmit(({type, ...rest}) => {
-		modalRef.current?.hide();
-		if (type == 'delete') return mutateDelete({target, id: rest.id});
+	const submit: FormEventHandler<HTMLFormElement> = () => {
+		clearErrors();
+		handleSubmit(({type, ...rest}) => {
+			if (type == 'delete')
+				return mutateDelete({target, id: rest.id}, {onSuccess});
 
-		return mutate({data: rest, target});
-	});
+			return mutate({data: rest, target}, {onSuccess});
+		})();
+
+		function onSuccess() {
+			refetch();
+			modalRef.current?.hide();
+		}
+	};
 
 	function showModal(
 		type: ModalTypePreview,
@@ -121,21 +122,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 				}}
 			/>
 
-			<Modal
-				ref={modalRef}
-				title={modalTitle}
-				renderFooter={
-					!!nomor_po &&
-					!isPreview &&
-					(() => (
-						<Button
-							type="submit"
-							onClick={submit}
-							className={classNames('flex-1', {hidden: !nomor_po})}>
-							Submit
-						</Button>
-					))
-				}>
+			<Modal ref={modalRef} title={modalTitle}>
 				<form onSubmit={submit} className="flex flex-col gap-2">
 					<Select
 						disabled={isPreviewEdit}
@@ -203,6 +190,14 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 							);
 						}}
 					/>
+
+					{!!nomor_po && !isPreview && (
+						<Button
+							type="submit"
+							className={classNames('flex-1', {hidden: !nomor_po})}>
+							Submit
+						</Button>
+					)}
 				</form>
 			</Modal>
 		</>
