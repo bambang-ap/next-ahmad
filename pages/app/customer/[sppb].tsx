@@ -45,6 +45,8 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 		{enabled: !!nomor_po},
 	);
 
+	console.log(existingPo);
+
 	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation({
 		onSuccess() {
 			refetch();
@@ -136,7 +138,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 						key={`${nomor_po}-${id}`}
 						className={classNames({hidden: !nomor_po})}
 						header={['Kode Item', 'Name', 'Jumlah']}
-						data={listPo?.[0]?.po_item}
+						data={listPo?.find(h => h.nomor_po === nomor_po)?.po_item}
 						renderItem={({Cell, item}, i) => {
 							if (items?.[i] && items[i]?.qty === undefined) return false;
 
