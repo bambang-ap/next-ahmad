@@ -341,24 +341,18 @@ const ModalChild = ({
 				renderItem={({Cell, item}, i) => {
 					if (items?.[i] && items[i]?.qty === undefined) return false;
 
-					const ii = f?.data?.[id]?.[item.id];
-					const assignedQty = ii
-						? item.qty - ii
-						: item.qty - f?.total?.[item.id];
-
 					const sItem = dataPo
 						?.find(e => e.id_customer === id_customer)
 						?.po_item?.find(u => u.id === item.id);
 
-					// const assignedQty = (dataKanban ?? [])
-					// 	.filter(j => j.id !== id)
-					// 	.reduce((f, e) => {
-					// 		const sItem = e.items.find(u => u.id === item.id);
+					const ii = f?.data?.[id]?.[item.id] ?? 0;
+					let assignedQty = ii
+						? item.qty - ii
+						: item.qty - (f?.total?.[item.id] ?? 0);
 
-					// 		return f - (sItem?.qty ?? 0);
-					// 	}, sItem?.qty ?? 0);
+					if (isEdit) assignedQty = item.qty - ii;
 
-					if (assignedQty <= 0) return false;
+					if (assignedQty <= 0 && !isEdit) return false;
 
 					return (
 						<>
