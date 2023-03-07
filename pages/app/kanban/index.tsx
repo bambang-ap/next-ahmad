@@ -195,7 +195,7 @@ export default function POCustomer() {
 					renderItem={({item, Cell}) => {
 						const {id, nomor_po, mesin, instruksi_kanban, po} = item;
 						const id_customer = po?.[0]?.customer?.id;
-
+						console.log('item', item);
 						return (
 							<>
 								<Cell>{id}</Cell>
@@ -289,6 +289,25 @@ const ModalChild = ({
 		);
 	}
 
+	const selectedSppbIn = dataSppbIn?.find(e => e.id === id_sppb_in);
+
+	const f = dataKanban?.reduce(
+		(ret, {id, items}) => {
+			if (!ret.data[id]) ret.data[id] = {};
+
+			items?.forEach(o => {
+				ret.data[id][o.id] = (ret.data[id][o.id] ?? 0) + o.qty;
+				ret.total[o.id] = (ret.total[o.id] ?? 0) + (o.qty ?? 0);
+			});
+
+			return ret;
+		},
+		{data: {}, total: {}},
+	);
+
+	window.a = f;
+	window.b = selectedSppbIn;
+
 	return (
 		<div className="gap-y-2 flex flex-col">
 			<Select
@@ -316,22 +335,28 @@ const ModalChild = ({
 				data={selectMapper(dataSppbIn ?? [], 'id', 'name')}
 				fieldName="id_sppb_in"
 			/>
+
 			<Table
-				data={dataSppbIn?.find(e => e.id === id_sppb_in)?.items}
+				data={selectedSppbIn?.items}
 				renderItem={({Cell, item}, i) => {
 					if (items?.[i] && items[i]?.qty === undefined) return false;
+
+					const ii = f?.data?.[id]?.[item.id];
+					const assignedQty = ii
+						? item.qty - ii
+						: item.qty - f?.total?.[item.id];
 
 					const sItem = dataPo
 						?.find(e => e.id_customer === id_customer)
 						?.po_item?.find(u => u.id === item.id);
 
-					const assignedQty = (dataKanban ?? [])
-						.filter(j => j.id !== id)
-						.reduce((f, e) => {
-							const sItem = e.items.find(u => u.id === item.id);
+					// const assignedQty = (dataKanban ?? [])
+					// 	.filter(j => j.id !== id)
+					// 	.reduce((f, e) => {
+					// 		const sItem = e.items.find(u => u.id === item.id);
 
-							return f - (sItem?.qty ?? 0);
-						}, sItem?.qty ?? 0);
+					// 		return f - (sItem?.qty ?? 0);
+					// 	}, sItem?.qty ?? 0);
 
 					if (assignedQty <= 0) return false;
 
