@@ -1,6 +1,7 @@
 import {forwardRef, ReactNode, useImperativeHandle, useState} from 'react';
 
 import {Modal as ModalFlowbite} from 'flowbite-react';
+import {FlowbiteSizes} from 'flowbite-react/lib/esm/components/Flowbite/FlowbiteTheme';
 
 export type ModalRef = {
 	show: (callback?: () => Promise<void>) => void;
@@ -11,13 +12,20 @@ export type ModalProps = {
 	title?: string;
 	visible?: boolean;
 	renderFooter?: false | (() => JSX.Element);
+	size?: keyof FlowbiteSizes;
 };
 
 export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	props,
 	ref,
 ) {
-	const {children, title, renderFooter, visible: initVisible = false} = props;
+	const {
+		children,
+		title,
+		renderFooter,
+		visible: initVisible = false,
+		size: modalSize,
+	} = props;
 	const [visible, setVisible] = useState(initVisible);
 
 	const {hide, show}: Pick<ModalRef, 'hide' | 'show'> = {
@@ -42,7 +50,7 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	if (!visible) return null;
 
 	return (
-		<ModalFlowbite show={visible} onClose={() => hide()}>
+		<ModalFlowbite size={modalSize} show={visible} onClose={() => hide()}>
 			<ModalFlowbite.Header className="items-center">
 				{title}
 			</ModalFlowbite.Header>

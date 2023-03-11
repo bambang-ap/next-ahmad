@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
+import {DataTypes, Model, NUMBER, Sequelize, STRING} from 'sequelize';
 
 import {TPOItem} from '@appTypes/app.type';
 import {defaultExcludeColumn} from '@constants';
@@ -10,10 +10,18 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 	OrmCustomerPOItem.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
+			id_po: {type: STRING},
 			name: {type: STRING},
-			nomor_po: {type: STRING},
-			qty: {type: STRING},
-			unit: STRING,
+			qty1: NUMBER,
+			unit1: STRING,
+			qty2: NUMBER,
+			unit2: STRING,
+			qty3: NUMBER,
+			unit3: STRING,
+			qty4: NUMBER,
+			unit4: STRING,
+			qty5: NUMBER,
+			unit5: STRING,
 			kode_item: STRING,
 		},
 		{

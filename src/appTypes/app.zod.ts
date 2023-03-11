@@ -37,24 +37,34 @@ export const tCustomer = zId.extend({
 	up: z.string().optional(),
 });
 
+export type TItemUnit = z.infer<typeof tItemUnit>;
+export const tItemUnit = z.union([
+	z.literal('pcs'),
+	z.literal('kg'),
+	z.literal('box'),
+	z.literal('set'),
+	z.literal('carton'),
+]);
+
 export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
+	id_po: z.string(),
 	name: z.string(),
-	nomor_po: z.string(),
-	qty: z.number(),
 	kode_item: z.string(),
-	unit: z.union([
-		z.literal('pcs'),
-		z.literal('kg'),
-		z.literal('box'),
-		z.literal('set'),
-		z.literal('carton'),
-	]),
+	qty1: z.number(),
+	unit1: tItemUnit,
+	qty2: z.number().nullish(),
+	unit2: tItemUnit.nullish(),
+	qty3: z.number().nullish(),
+	unit3: tItemUnit.nullish(),
+	qty4: z.number().nullish(),
+	unit4: tItemUnit.nullish(),
+	qty5: z.number().nullish(),
+	unit5: tItemUnit.nullish(),
 });
 
 export type TCustomerPO = z.infer<typeof tCustomerPO>;
 export const tCustomerPO = zId.extend({
-	name: z.string().nullish(),
 	tgl_po: z.string(),
 	due_date: z.string().optional(),
 	id_customer: z.string(),
@@ -80,7 +90,7 @@ export const uSPPB = z.union([
 ]);
 
 export type ItemsSppb = z.infer<typeof itemsSppb>;
-export const itemsSppb = tPOItem.pick({id: true, qty: true}).partial().array();
+export const itemsSppb = tPOItem.pick({id: true, qty1: true}).partial().array();
 
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({

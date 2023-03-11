@@ -9,7 +9,6 @@ import {
 	TCustomerPOExtended,
 	TPOItem,
 } from '@appTypes/app.type';
-import {TItemUnit} from '@appTypes/app.zod';
 import {
 	Button,
 	Input,
@@ -27,14 +26,6 @@ import {trpc} from '@utils/trpc';
 type FormType = TCustomerPO & {
 	type: ModalTypePreview;
 } & Pick<TCustomerPOExtended, 'po_item'>;
-
-const selectUnitData = [
-	{value: 'pcs'},
-	{value: 'kg'},
-	{value: 'box'},
-	{value: 'set'},
-	{value: 'carton'},
-] as SelectPropsData<TItemUnit>[];
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
@@ -70,9 +61,9 @@ export default function POCustomer() {
 				case 'add':
 					return insertPO.mutate(rest, {onSuccess});
 				case 'edit':
-					return updatePO.mutate({id, ...rest}, {onSuccess});
+					return updatePO.mutate({...rest, id}, {onSuccess});
 				case 'delete':
-					return deletePO.mutate(id, {onSuccess});
+					return deletePO.mutate({nomor_po: rest.nomor_po}, {onSuccess});
 			}
 
 			return null;
@@ -86,7 +77,7 @@ export default function POCustomer() {
 
 	return (
 		<>
-			<Modal size="7xl" title={modalTitle} ref={modalRef}>
+			<Modal title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild control={control} />
 				</form>
@@ -98,7 +89,7 @@ export default function POCustomer() {
 					data={data ?? []}
 					header={['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Action']}
 					renderItem={({item, Cell}) => {
-						const {id, customer, tgl_po, due_date, nomor_po} = item;
+						const {customer, tgl_po, due_date, nomor_po} = item;
 
 						return (
 							<>
@@ -111,7 +102,7 @@ export default function POCustomer() {
 										Preview
 									</Button>
 									<Button onClick={() => showModal('edit', item)}>Edit</Button>
-									<Button onClick={() => showModal('delete', {id})}>
+									<Button onClick={() => showModal('delete', {nomor_po})}>
 										Delete
 									</Button>
 								</Cell>
@@ -125,10 +116,7 @@ export default function POCustomer() {
 }
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
-	const [modalType, poItem, idPo] = useWatch({
-		control,
-		name: ['type', 'po_item', 'id'],
-	});
+	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
@@ -147,7 +135,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 
 	const submitItem = handleSubmit(item => {
 		onChangePoItem([item].concat(poItem ?? []));
-		reset({});
+		reset({name: '', qty: undefined});
 	});
 
 	function removeItem(index: number) {
@@ -172,7 +160,11 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 				data={mappedData}
 				fieldName="id_customer"
 			/>
-			<Input disabled={isPreview} control={control} fieldName="nomor_po" />
+			<Input
+				disabled={isPreview || isEdit}
+				control={control}
+				fieldName="nomor_po"
+			/>
 			<Input
 				type="date"
 				disabled={isPreview}
@@ -208,39 +200,21 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 								disabled={isPreview}
 								control={poItemControl}
 								type="number"
-								fieldName="qty1"
+								fieldName="qty"
 							/>
 							<Select
 								firstOption="- Pilih unit -"
 								control={poItemControl}
-								fieldName="unit1"
-								data={selectUnitData}
-							/>
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								type="number"
-								fieldName="qty2"
-							/>
-							<Select
-								firstOption="- Pilih unit -"
-								control={poItemControl}
-								fieldName="unit2"
-								data={selectUnitData}
-							/>
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								type="number"
-								fieldName="qty3"
-							/>
-							<Select
-								firstOption="- Pilih unit -"
-								control={poItemControl}
-								fieldName="unit3"
-								data={selectUnitData}
+								fieldName="unit"
+								data={
+									[
+										{value: 'pcs'},
+										{value: 'kg'},
+										{value: 'box'},
+										{value: 'set'},
+										{value: 'carton'},
+									] as SelectPropsData<TPOItem['unit']>[]
+								}
 							/>
 						</div>
 						<Button onClick={submitItem}>Add</Button>
@@ -253,91 +227,20 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 					className="max-h-72 overflow-y-auto"
 					header={
 						isPreview
-							? ['Name', 'Kode Item', 'Jumlah 1', 'Jumlah 2', 'Jumlah 3']
-							: [
-									'Name',
-									'Kode Item',
-									'Jumlah 1',
-									'Jumlah 2',
-									'Jumlah 3',
-									'Action',
-							  ]
+							? ['Name', 'Kode Item', 'Jumlah']
+							: ['Name', 'Kode Item', 'Jumlah', 'Action']
 					}
 					data={poItem}
 					renderItem={({Cell, item}, index) => {
 						return (
 							<>
+								<Cell>{item.name}</Cell>
+								<Cell>{item.kode_item}</Cell>
 								<Cell>
-									<Input
-										className="flex-1"
-										disabled={isPreview}
-										control={control}
-										fieldName={`po_item.${index}.name`}
-									/>
-								</Cell>
-								<Cell>
-									<Input
-										className="flex-1"
-										disabled={isPreview}
-										control={control}
-										fieldName={`po_item.${index}.kode_item`}
-									/>
-								</Cell>
-								<Cell>
-									<div className="flex gap-2">
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={control}
-											type="number"
-											fieldName={`po_item.${index}.qty1`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={control}
-											fieldName={`po_item.${index}.unit1`}
-											data={selectUnitData}
-										/>
-									</div>
-								</Cell>
-								<Cell>
-									<div className="flex gap-2">
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={control}
-											type="number"
-											fieldName={`po_item.${index}.qty2`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={control}
-											fieldName={`po_item.${index}.unit2`}
-											data={selectUnitData}
-										/>
-									</div>
-								</Cell>
-								<Cell>
-									<div className="flex gap-2">
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={control}
-											type="number"
-											fieldName={`po_item.${index}.qty3`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={control}
-											fieldName={`po_item.${index}.unit3`}
-											data={selectUnitData}
-										/>
-									</div>
+									{item.qty} {item.unit}
 								</Cell>
 								{!isPreview && (
-									<Cell>
-										<Button onClick={() => removeItem(index)}>Remove</Button>
-									</Cell>
+									<Button onClick={() => removeItem(index)}>Remove</Button>
 								)}
 							</>
 						);

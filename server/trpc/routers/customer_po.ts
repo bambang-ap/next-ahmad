@@ -1,18 +1,7 @@
 import {z} from 'zod';
 
-import {TCustomerPO} from '@appTypes/app.type';
-import {
-	tCustomerPO,
-	TCustomerPOExtended,
-	tCustomerPOExtended,
-} from '@appTypes/app.zod';
-import {
-	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerPOItem,
-	OrmCustomerSPPBIn,
-	OrmCustomerSPPBOut,
-} from '@database';
+import {tCustomerPO, tPOItem} from '@appTypes/app.zod';
+import {OrmCustomer, OrmCustomerPO, OrmCustomerPOItem} from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -20,8 +9,8 @@ const customer_poRouters = router({
 	get: procedure
 		.input(
 			tCustomerPO
-				.partial()
 				.pick({nomor_po: true})
+				.partial()
 				.extend({
 					type: z.literal('customer_po'),
 				}),
@@ -31,21 +20,19 @@ const customer_poRouters = router({
 				const allPO = await OrmCustomerPO.findAll(
 					nomor_po ? {where: {nomor_po}} : undefined,
 				);
-				const joinedPOPromises = // @ts-ignore
-					(allPO as TCustomerPO[])
-						// @ts-ignore
-						.map<TCustomerPOExtended>(
-							// @ts-ignore
-							async ({nomor_po, id_customer, ...rest}) => {
-								const po_item = await OrmCustomerPOItem.findAll({
-									where: {nomor_po},
-								});
-								const customer = await OrmCustomer.findOne({
-									where: {id: id_customer},
-								});
-								return {...rest, nomor_po, id_customer, customer, po_item};
-							},
-						);
+				const joinedPOPromises = allPO.map(async ({dataValues}) => {
+					const po_item = await OrmCustomerPOItem.findAll({
+						where: {id_po: dataValues.id},
+					});
+					const customer = await OrmCustomer.findOne({
+						where: {id: dataValues.id_customer},
+					});
+					return {
+						...dataValues,
+						po_item,
+						customer: customer?.dataValues,
+					};
+				});
 
 				const joinedPO = await Promise.all(joinedPOPromises);
 
@@ -54,13 +41,24 @@ const customer_poRouters = router({
 		}),
 
 	add: procedure
-		.input(tCustomerPOExtended.omit({id: true, customer: true}).deepPartial())
+		.input(
+			tCustomerPO
+				.omit({id: true})
+				.extend({po_item: tPOItem.omit({id_po: true, id: true}).array()}),
+		)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const {po_item, nomor_po, ...body} = input;
-				await OrmCustomerPO.create({...body, id: generateId(), nomor_po});
+				const {po_item, ...body} = input;
+				const {dataValues: createdPo} = await OrmCustomerPO.create({
+					...body,
+					id: generateId(),
+				});
 				const poItemPromises = po_item?.map(item =>
-					OrmCustomerPOItem.create({...item, id: generateId(), nomor_po}),
+					OrmCustomerPOItem.create({
+						...item,
+						id: generateId(),
+						id_po: createdPo.id,
+					}),
 				);
 				await Promise.all(poItemPromises ?? []);
 				return {message: 'Success'};
@@ -68,19 +66,20 @@ const customer_poRouters = router({
 		}),
 
 	update: procedure
-		.input(tCustomerPOExtended.omit({customer: true}).deepPartial())
+		.input(
+			tCustomerPO.extend({
+				po_item: tPOItem.or(tPOItem.omit({id_po: true, id: true})).array(),
+			}),
+		)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const {id, po_item, nomor_po, ...body} = input;
-				await OrmCustomerPO.update(
-					{...body, id: generateId(), nomor_po},
-					{where: {id}},
-				);
-				const poItemPromises = po_item?.map(item =>
+				const {id, po_item, ...body} = input;
+				await OrmCustomerPO.update(body, {where: {id}});
+				const poItemPromises = po_item?.map(({id, ...item}) =>
 					OrmCustomerPOItem.upsert({
 						...item,
-						id: item.id || generateId(),
-						nomor_po,
+						id: id || generateId(),
+						id_po: input.id,
 					}),
 				);
 				await Promise.all(poItemPromises ?? []);
@@ -89,14 +88,11 @@ const customer_poRouters = router({
 		}),
 
 	delete: procedure
-		.input(tCustomerPO.pick({nomor_po: true}))
-		.mutation(async ({input, ctx: {req, res}}) => {
+		.input(z.string())
+		.mutation(async ({input: id, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const {nomor_po} = input;
-				await OrmCustomerPOItem.destroy({where: {nomor_po}});
-				await OrmCustomerSPPBIn.destroy({where: {nomor_po}});
-				await OrmCustomerSPPBOut.destroy({where: {nomor_po}});
-				await OrmCustomerPO.destroy({where: {nomor_po}});
+				await OrmCustomerPOItem.destroy({where: {id_po: id}});
+				await OrmCustomerPO.destroy({where: {id}});
 				return {message: 'Success'};
 			});
 		}),

@@ -10,7 +10,6 @@ export default function initOrmCustomerPO(sequelize: Sequelize) {
 	OrmCustomerPO.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
-			name: {type: DataTypes.STRING},
 			id_customer: {type: DataTypes.STRING},
 			nomor_po: {type: DataTypes.STRING},
 			tgl_po: {type: DataTypes.STRING},
