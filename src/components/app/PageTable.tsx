@@ -7,7 +7,7 @@ import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {ModalType} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
-import {allowedPages, ColUnion} from '@constants';
+import {allowedPages, BodyArrayKey, ColUnion} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
 
@@ -131,11 +131,20 @@ const RenderPage = ({path}: {path: string}) => {
 
 						return (
 							<>
-								{table?.body?.map?.(key => (
-									<Cell key={key}>
-										<Text>{item[key]}</Text>
-									</Cell>
-								))}
+								{table?.body?.map?.(key => {
+									if (Array.isArray(key))
+										return (
+											<Cell>
+												<A item={item} keys={key} />
+											</Cell>
+										);
+
+									return (
+										<Cell key={key}>
+											<Text>{item[key]}</Text>
+										</Cell>
+									);
+								})}
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
@@ -151,6 +160,15 @@ const RenderPage = ({path}: {path: string}) => {
 			</div>
 		</>
 	);
+};
+
+const A = ({item, keys}: {item: any; keys: BodyArrayKey<any>}) => {
+	const [, useQuery, finder] = keys;
+
+	const {data} = useQuery();
+	const h = finder?.(item, data);
+
+	return <Text>{h}</Text>;
 };
 
 const ModalChild = ({control, path}: {control: Control; path: string}) => {
@@ -170,7 +188,7 @@ const ModalChild = ({control, path}: {control: Control; path: string}) => {
 	return (
 		<>
 			{(modalType === 'add' || modalType === 'edit') &&
-				modalField?.add?.map(item => (
+				modalField?.[modalType]?.map(item => (
 					<RenderField key={item.col} control={control} item={item} />
 				))}
 
@@ -191,7 +209,7 @@ const RenderField = (props: RenderFieldProps) => {
 		return (
 			<Select
 				control={control}
-				fieldName="nomor_po"
+				fieldName={col}
 				firstOption={item.firstOption}
 				data={item.dataMapping(query.data) ?? []}
 			/>

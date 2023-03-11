@@ -26,7 +26,7 @@ export type TSession = z.infer<typeof tSession>;
 export const tSession = z.object({expires: z.string(), user: tUser.nullish()});
 
 export type TRole = z.infer<typeof tRole>;
-export const tRole = z.object({id: z.number(), name: z.string()});
+export const tRole = z.object({id: z.string(), name: z.string()});
 
 export type TCustomer = z.infer<typeof tCustomer>;
 export const tCustomer = zId.extend({

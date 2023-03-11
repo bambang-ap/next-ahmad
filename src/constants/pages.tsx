@@ -18,7 +18,13 @@ import {trpc} from '@utils/trpc';
 
 type Action = 'add' | 'edit' | 'delete';
 
-type Body<T extends Record<string, any>> = (keyof T)[];
+export type BodyArrayKey<T extends Record<string, any>> = [
+	keyof T,
+	() => unknown,
+	(item: unknown, data: unknown[]) => string,
+];
+
+export type Body<T extends Record<string, any>> = (keyof T | BodyArrayKey<T>)[];
 
 export type AllowedPages = {
 	enumName: CRUD_ENABLED;
@@ -215,7 +221,16 @@ export const allowedPages: Record<string, AllowedPages> = {
 		table: {
 			header: ['Name', 'Email', 'Role', 'Action'],
 			get body(): Body<TUser> {
-				return ['name', 'email', 'role'];
+				return [
+					'name',
+					'email',
+					[
+						'role',
+						() => trpc.basic.get.useQuery({target: CRUD_ENABLED.ROLE}),
+						(item: TUser, data: TRole[]) =>
+							data?.find?.(e => e.id === item.role)?.name,
+					],
+				];
 			},
 		},
 		modalField: {
@@ -223,12 +238,22 @@ export const allowedPages: Record<string, AllowedPages> = {
 				return [
 					{col: 'name'},
 					{col: 'email'},
-					{col: 'role'},
+					{
+						col: 'role',
+						type: 'select',
+						firstOption: '- Pilih Role -',
+						dataQuery: () =>
+							trpc.basic.get.useQuery({target: CRUD_ENABLED.ROLE}),
+						dataMapping: (item: TRole[]) =>
+							item?.map(({id, name}) => ({value: id, label: name})),
+					},
 					{col: 'password'},
 				];
 			},
 			get edit(): FieldForm<TUser>[] {
-				return [{col: 'name'}, {col: 'email'}, {col: 'role'}];
+				const userAdd = this.add?.slice();
+				userAdd?.splice(-1);
+				return userAdd;
 			},
 		},
 		text: {
