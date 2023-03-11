@@ -1,8 +1,12 @@
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
+import {ORM} from 'server/database/_init';
 
 import {TSession, TUser} from '@appTypes/app.type';
-import {OrmUser} from '@database';
+import {ormUserAttributes} from '@database';
+
+const [attributes, options] = ormUserAttributes();
+const OrmUser = ORM.define('UserAuth', attributes, options);
 
 export const authOptions: NextAuthOptions = {
 	secret: process.env.AUTH_SECRET,
@@ -18,9 +22,7 @@ export const authOptions: NextAuthOptions = {
 				};
 
 				// @ts-ignore
-				const user = (await OrmUser.findOne({
-					where: {email, password},
-				})) as TUser;
+				const user: TUser = await OrmUser.findOne({where: {email, password}});
 
 				if (!user) throw new Error('invalid credentials');
 
@@ -34,20 +36,22 @@ export const authOptions: NextAuthOptions = {
 		signIn: '/auth/signin',
 	},
 	callbacks: {
+		// @ts-ignore
 		async session(params) {
 			const session: TSession = {
 				...params.session,
 				// @ts-ignore
-				user: (await OrmUser.findOne({
+				user: await OrmUser.findOne({
 					// @ts-ignore
 					where: {email: params.token.email},
-				})) as TUser,
+				}),
 			};
 			return session;
 		},
 		jwt(params) {
-			// update token
+			// @ts-ignore Update token
 			if (params.user?.role) {
+				// @ts-ignore
 				params.token.role = params.user.role;
 			}
 

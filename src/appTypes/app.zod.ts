@@ -99,7 +99,6 @@ export const tCustomerSPPBOut = zId.extend({
 export type TInstruksiKanban = z.infer<typeof tInstruksiKanban>;
 export const tInstruksiKanban = zId.extend({
 	name: z.string(),
-	nomor_po: z.string(),
 });
 
 export type TKanban = z.infer<typeof tKanban>;

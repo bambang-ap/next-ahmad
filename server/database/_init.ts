@@ -1,15 +1,25 @@
 import {ModelDefined, Optional, Sequelize} from 'sequelize';
 
+import initOrmCustomer from './models/customer';
+import initOrmCustomerPO from './models/customer_po';
+import initOrmCustomerPOItem from './models/customer_po_item';
+import initOrmCustomerSPPBIn from './models/customer_sppb_in';
+import initOrmCustomerSPPBOut from './models/customer_sppb_out';
+import initOrmKanban from './models/kanban';
+import initOrmKanbanInstruksi from './models/kanban_instruksi';
+import initOrmMenu from './models/menu';
+import initOrmMesin from './models/mesin';
+import initOrmRole from './models/role';
+import initOrmScan from './models/scan';
+import initOrmUser from './models/user';
+
 export type DefinedModel<
 	T extends {},
 	K extends keyof T = never,
 > = ModelDefined<T, Optional<T, K>>;
 
-export const defaultExcludeColumn = ['createdAt', 'updatedAt'];
-
 export const ORM = new Sequelize(
 	'manajemen',
-	// @ts-ignore
 	process.env.PGSQL_USER,
 	process.env.PGSQL_PASSWORD,
 	{
@@ -19,3 +29,16 @@ export const ORM = new Sequelize(
 		query: {raw: true},
 	},
 );
+
+initOrmCustomer(ORM);
+initOrmMenu(ORM);
+initOrmCustomerPO(ORM);
+initOrmCustomerPOItem(ORM);
+initOrmCustomerSPPBIn(ORM);
+initOrmCustomerSPPBOut(ORM);
+initOrmKanbanInstruksi(ORM);
+initOrmKanban(ORM);
+initOrmMesin(ORM);
+initOrmRole(ORM);
+initOrmScan(ORM);
+initOrmUser(ORM);

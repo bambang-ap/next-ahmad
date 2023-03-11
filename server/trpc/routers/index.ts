@@ -39,7 +39,10 @@ export const appRouter = router({
 				return bufferToDataUrl(`image/${type}`, qrImage);
 			}
 
-			function aghd(input?: string | string[], type: image_type = 'svg') {
+			function renderQrGenerated(
+				input?: string | string[],
+				type: image_type = 'svg',
+			) {
 				if (Array.isArray(input))
 					return input.map(input => generateQr(type, input));
 
@@ -48,9 +51,10 @@ export const appRouter = router({
 
 			if (!input) return null;
 
-			if (typeof input === 'string' || Array.isArray(input)) return aghd(input);
+			if (typeof input === 'string' || Array.isArray(input))
+				return renderQrGenerated(input);
 
-			return aghd(input.input, input.type);
+			return renderQrGenerated(input.input, input.type);
 		}),
 	menu: menuRouters,
 	basic: basicRouters,
