@@ -34,6 +34,7 @@ export const tCustomer = zId.extend({
 	npwp: z.string(),
 	alamat: z.string(),
 	no_telp: z.string(),
+	up: z.string().optional(),
 });
 
 export type TPOItem = z.infer<typeof tPOItem>;

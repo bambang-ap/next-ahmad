@@ -14,6 +14,7 @@ export default function initOrmCustomer(sequelize: Sequelize) {
 			alamat: {type: DataTypes.STRING},
 			no_telp: {type: DataTypes.STRING},
 			npwp: {type: DataTypes.STRING},
+			up: {type: DataTypes.STRING},
 		},
 		{
 			sequelize,

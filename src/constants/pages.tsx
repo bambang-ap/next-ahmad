@@ -182,9 +182,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 	'/app/customer': {
 		enumName: CRUD_ENABLED.CUSTOMER,
 		table: {
-			header: ['name', 'alamat', 'npwp', 'no_telp', 'Action'],
+			header: ['name', 'alamat', 'npwp', 'no_telp', 'Up', 'Action'],
 			get body(): Body<TCustomer> {
-				return ['name', 'alamat', 'npwp', 'no_telp'];
+				return ['name', 'alamat', 'npwp', 'no_telp', 'up'];
 			},
 		},
 		modalField: {
@@ -194,6 +194,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 					{col: 'alamat'},
 					{col: 'npwp'},
 					{col: 'no_telp'},
+					{col: 'up'},
 				];
 			},
 			get edit() {
