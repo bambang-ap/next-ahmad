@@ -10,16 +10,15 @@ export default function initOrmCustomerSPPBIn(sequelize: Sequelize) {
 	OrmCustomerSPPBIn.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
-			name: {type: DataTypes.STRING},
-			nomor_po: {type: DataTypes.STRING},
-			items: DataTypes.JSONB,
+			nomor_surat: {type: DataTypes.STRING},
 			tgl: DataTypes.STRING,
+			id_po: DataTypes.STRING,
 		},
 		{
 			sequelize,
 			tableName: TABLES.CUSTOMER_SPPB_IN,
 			defaultScope: {
-				order: [['nomor_po', 'asc']],
+				order: [['id_po', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

@@ -13,6 +13,7 @@ import {classNames} from '@utils';
 export type InputProps = {
 	placeholder?: string;
 	label?: string;
+	noLabel?: boolean;
 	disabled?: boolean;
 	type?: 'number' | 'text' | 'checkbox' | 'password' | 'date';
 };
@@ -23,12 +24,22 @@ function InputComponent<F extends FieldValues>(
 	props: ControlledComponentProps<F, InputProps>,
 ) {
 	let restProps: MyObject<any> = {};
-	const {type, label, disabled, className, controller, placeholder} = props;
+	const {
+		type,
+		label: labelProps,
+		disabled,
+		className,
+		controller,
+		placeholder,
+		noLabel,
+	} = props;
 
 	const {
 		fieldState,
 		field: {value, onChange, ...field},
 	} = controller;
+
+	const label = !noLabel && (labelProps || field.name);
 
 	const errorMessage = fieldState.error?.message && (
 		<Text className="text-app-secondary-03 flex items-center">
@@ -68,12 +79,12 @@ function InputComponent<F extends FieldValues>(
 	};
 
 	return (
-		<div className={className}>
+		<div className={classNames('flex flex-col', className)}>
 			{label && <Text className="mb-2">{label}</Text>}
 			<InputFlowbite
 				type={type}
 				disabled={disabled}
-				placeholder={placeholder || field.name}
+				placeholder={placeholder}
 				value={value ?? ''}
 				onChange={onChangeEvent}
 				{...restProps}

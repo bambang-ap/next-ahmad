@@ -20,12 +20,13 @@ const selectUnitData = [
 	{value: 'carton'},
 ] as SelectPropsData<TItemUnit>[];
 
+export const qtyList = [1, 2, 3] as const;
+
 export type FormType = TCustomerPO & {
 	type: ModalTypePreview;
 } & Pick<TCustomerPOExtended, 'po_item'>;
 
 export default function ModalChild({control}: {control: Control<FormType>}) {
-	const qtyList = [1, 2, 3] as const;
 	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -44,6 +45,7 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 			const tableHeader = [
 				'Name',
 				'Kode Item',
+				'Harga',
 				...qtyList.map(num => `Jumlah ${num}`),
 			];
 
@@ -115,6 +117,13 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 								control={poItemControl}
 								fieldName="kode_item"
 							/>
+							<Input
+								className="flex-1"
+								type="number"
+								disabled={isPreview}
+								control={poItemControl}
+								fieldName="harga"
+							/>
 
 							{qtyList.map(num => {
 								return (
@@ -163,6 +172,15 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 										disabled={isPreview}
 										control={control}
 										fieldName={`po_item.${index}.kode_item`}
+									/>
+								</Cell>
+								<Cell>
+									<Input
+										className="flex-1"
+										disabled={isPreview}
+										control={control}
+										type="number"
+										fieldName={`po_item.${index}.harga`}
 									/>
 								</Cell>
 								{qtyList.map(num => {

@@ -9,16 +9,16 @@ const customer_poRouters = router({
 	get: procedure
 		.input(
 			tCustomerPO
-				.pick({nomor_po: true})
+				.pick({id: true})
 				.partial()
 				.extend({
 					type: z.literal('customer_po'),
 				}),
 		)
-		.query(async ({ctx: {req, res}, input: {nomor_po}}) => {
+		.query(async ({ctx: {req, res}, input: {id: nomor_po}}) => {
 			return checkCredentialV2(req, res, async () => {
 				const allPO = await OrmCustomerPO.findAll(
-					nomor_po ? {where: {nomor_po}} : undefined,
+					nomor_po ? {where: {id: nomor_po}} : undefined,
 				);
 				const joinedPOPromises = allPO.map(async ({dataValues}) => {
 					const po_item = await OrmCustomerPOItem.findAll({
@@ -29,14 +29,12 @@ const customer_poRouters = router({
 					});
 					return {
 						...dataValues,
-						po_item,
 						customer: customer?.dataValues,
+						po_item: po_item.map(item => item.dataValues),
 					};
 				});
 
-				const joinedPO = await Promise.all(joinedPOPromises);
-
-				return joinedPO;
+				return Promise.all(joinedPOPromises);
 			});
 		}),
 

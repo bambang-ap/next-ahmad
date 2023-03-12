@@ -7,6 +7,7 @@ export * from './models/kanban';
 export * from './models/kanban_instruksi';
 export * from './models/menu';
 export * from './models/mesin';
+export * from './models/po_item_sppb_in';
 export * from './models/role';
 export * from './models/scan';
 export * from './models/user';

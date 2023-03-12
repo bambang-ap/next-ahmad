@@ -1,4 +1,4 @@
-import {Navbar} from 'flowbite-react';
+import {DarkThemeToggle, Navbar} from 'flowbite-react';
 import {useRouter} from 'next/router';
 import {useRecoilState} from 'recoil';
 
@@ -21,8 +21,10 @@ export default function Header() {
 				icon={isSidebarOpen ? 'faClose' : 'faBurger'}
 				onClick={() => setSidebarOpen(e => !e)}
 			/>
-			<Text>{title?.title}</Text>
-			{/* <DarkThemeToggle /> */}
+			<div className="flex flex-1 items-center">
+				<Text className="flex-1 text-center">{title?.title}</Text>
+				<DarkThemeToggle />
+			</div>
 		</Navbar>
 	);
 }

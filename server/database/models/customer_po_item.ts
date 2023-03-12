@@ -6,23 +6,28 @@ import {TABLES} from '@enum';
 
 export class OrmCustomerPOItem extends Model<TPOItem> {}
 
+export const unitQtyField = {
+	qty1: NUMBER,
+	qty2: NUMBER,
+	qty3: NUMBER,
+	qty4: NUMBER,
+	qty5: NUMBER,
+};
+
 export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 	OrmCustomerPOItem.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_po: {type: STRING},
 			name: {type: STRING},
-			qty1: NUMBER,
-			unit1: STRING,
-			qty2: NUMBER,
-			unit2: STRING,
-			qty3: NUMBER,
-			unit3: STRING,
-			qty4: NUMBER,
-			unit4: STRING,
-			qty5: NUMBER,
-			unit5: STRING,
 			kode_item: STRING,
+			harga: NUMBER,
+			unit1: STRING,
+			unit2: STRING,
+			unit3: STRING,
+			unit4: STRING,
+			unit5: STRING,
+			...unitQtyField,
 		},
 		{
 			sequelize,

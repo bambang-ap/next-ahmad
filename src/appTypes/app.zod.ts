@@ -46,21 +46,33 @@ export const tItemUnit = z.union([
 	z.literal('carton'),
 ]);
 
+const unitQty = {
+	qty1: z.number(),
+	qty2: z.number().nullish(),
+	qty3: z.number().nullish(),
+	qty4: z.number().nullish(),
+	qty5: z.number().nullish(),
+};
+
 export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
 	id_po: z.string(),
 	name: z.string(),
 	kode_item: z.string(),
-	qty1: z.number(),
+	harga: z.number(),
 	unit1: tItemUnit,
-	qty2: z.number().nullish(),
 	unit2: tItemUnit.nullish(),
-	qty3: z.number().nullish(),
 	unit3: tItemUnit.nullish(),
-	qty4: z.number().nullish(),
 	unit4: tItemUnit.nullish(),
-	qty5: z.number().nullish(),
 	unit5: tItemUnit.nullish(),
+	...unitQty,
+});
+
+export type TPOItemSppbIn = z.infer<typeof tPOItemSppbIn>;
+export const tPOItemSppbIn = zId.extend({
+	id_sppb_in: z.string(),
+	id_item: z.string(),
+	...unitQty,
 });
 
 export type TCustomerPO = z.infer<typeof tCustomerPO>;
@@ -94,11 +106,20 @@ export const itemsSppb = tPOItem.pick({id: true, qty1: true}).partial().array();
 
 export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
-	name: z.string(),
-	nomor_po: z.string(),
+	nomor_surat: z.string(),
+	id_po: z.string(),
 	tgl: z.string(),
-	items: itemsSppb.optional(),
 });
+
+const picker = {id: true, id_sppb_in: true} as const;
+const tPOItemSppbInNonId = tPOItemSppbIn.omit(picker);
+const tPOItemSppbInOnlyId = tPOItemSppbIn.pick(picker);
+
+export const tUpsertSppbIn = tCustomerSPPBIn.extend({
+	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
+});
+
+export type TUpsertSppbIn = z.infer<typeof tUpsertSppbIn>;
 
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({

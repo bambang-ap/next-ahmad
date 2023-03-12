@@ -125,7 +125,7 @@ export default function POCustomer() {
 									}}>
 									<div className="bg-black p-1 rounded gap-1 flex flex-col">
 										<div className="bg-white flex-1 text-center p-2">
-											{sppb?.name}
+											{sppb?.nomor_surat}
 										</div>
 										<div className="flex flex-row-reverse gap-1">
 											<div className="bg-white flex gap-1 flex-1 flex-col justify-center items-center">

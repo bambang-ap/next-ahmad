@@ -125,7 +125,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 					return (
 						<>
 							<Cell>{item.nomor_po}</Cell>
-							<Cell>{item.name}</Cell>
+							<Cell>{item.nomor_surat}</Cell>
 							<Cell>{item.tgl}</Cell>
 							<Cell className="flex gap-2">
 								<Button onClick={() => showModal('preview', item)}>
