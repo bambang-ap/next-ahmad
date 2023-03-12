@@ -48,6 +48,7 @@ export default function POCustomer() {
 		useForm<FormType>();
 
 	const modalType = watch('type');
+	const isDelete = modalType === 'delete';
 	const {modalTitle} = {
 		get modalTitle() {
 			if (modalType === 'add') return 'Tambah Customer PO';
@@ -73,9 +74,9 @@ export default function POCustomer() {
 					return updatePO.mutate({id, ...rest}, {onSuccess});
 				case 'delete':
 					return deletePO.mutate(id, {onSuccess});
+				default:
+					return null;
 			}
-
-			return null;
 		})();
 	};
 
@@ -86,7 +87,10 @@ export default function POCustomer() {
 
 	return (
 		<>
-			<Modal size="7xl" title={modalTitle} ref={modalRef}>
+			<Modal
+				ref={modalRef}
+				title={modalTitle}
+				size={isDelete ? undefined : '7xl'}>
 				<form onSubmit={submit}>
 					<ModalChild control={control} />
 				</form>
@@ -125,10 +129,8 @@ export default function POCustomer() {
 }
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
-	const [modalType, poItem, idPo] = useWatch({
-		control,
-		name: ['type', 'po_item', 'id'],
-	});
+	const asd = [1, 2, 3, 4, 5] as const;
+	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
@@ -138,15 +140,29 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 		field: {onChange: onChangePoItem},
 	} = useController({control, name: 'po_item'});
 
-	const isPreview = modalType === 'preview';
-	const isEdit = modalType === 'edit';
+	const {headerTable, isPreview} = {
+		get isPreview() {
+			return modalType === 'preview';
+		},
+		get headerTable() {
+			const tableHeader = [
+				'Name',
+				'Kode Item',
+				...asd.map(num => `Jumlah ${num}`),
+			];
+
+			if (this.isPreview) return tableHeader;
+			return [...tableHeader, 'Action'];
+		},
+	};
+
 	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
 		label: name,
 		value: id,
 	}));
 
 	const submitItem = handleSubmit(item => {
-		onChangePoItem([item].concat(poItem ?? []));
+		onChangePoItem([...poItem, item]);
 		reset({});
 	});
 
@@ -203,45 +219,26 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 								control={poItemControl}
 								fieldName="kode_item"
 							/>
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								type="number"
-								fieldName="qty1"
-							/>
-							<Select
-								firstOption="- Pilih unit -"
-								control={poItemControl}
-								fieldName="unit1"
-								data={selectUnitData}
-							/>
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								type="number"
-								fieldName="qty2"
-							/>
-							<Select
-								firstOption="- Pilih unit -"
-								control={poItemControl}
-								fieldName="unit2"
-								data={selectUnitData}
-							/>
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								type="number"
-								fieldName="qty3"
-							/>
-							<Select
-								firstOption="- Pilih unit -"
-								control={poItemControl}
-								fieldName="unit3"
-								data={selectUnitData}
-							/>
+
+							{asd.map(num => {
+								return (
+									<>
+										<Input
+											className="flex-1"
+											disabled={isPreview}
+											control={poItemControl}
+											type="number"
+											fieldName={`qty${num}`}
+										/>
+										<Select
+											firstOption="- Pilih unit -"
+											control={poItemControl}
+											fieldName={`unit${num}`}
+											data={selectUnitData}
+										/>
+									</>
+								);
+							})}
 						</div>
 						<Button onClick={submitItem}>Add</Button>
 					</div>
@@ -251,18 +248,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 			{poItem && (
 				<Table
 					className="max-h-72 overflow-y-auto"
-					header={
-						isPreview
-							? ['Name', 'Kode Item', 'Jumlah 1', 'Jumlah 2', 'Jumlah 3']
-							: [
-									'Name',
-									'Kode Item',
-									'Jumlah 1',
-									'Jumlah 2',
-									'Jumlah 3',
-									'Action',
-							  ]
-					}
+					header={headerTable}
 					data={poItem}
 					renderItem={({Cell, item}, index) => {
 						return (
@@ -283,57 +269,28 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 										fieldName={`po_item.${index}.kode_item`}
 									/>
 								</Cell>
-								<Cell>
-									<div className="flex gap-2">
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={control}
-											type="number"
-											fieldName={`po_item.${index}.qty1`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={control}
-											fieldName={`po_item.${index}.unit1`}
-											data={selectUnitData}
-										/>
-									</div>
-								</Cell>
-								<Cell>
-									<div className="flex gap-2">
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={control}
-											type="number"
-											fieldName={`po_item.${index}.qty2`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={control}
-											fieldName={`po_item.${index}.unit2`}
-											data={selectUnitData}
-										/>
-									</div>
-								</Cell>
-								<Cell>
-									<div className="flex gap-2">
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={control}
-											type="number"
-											fieldName={`po_item.${index}.qty3`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={control}
-											fieldName={`po_item.${index}.unit3`}
-											data={selectUnitData}
-										/>
-									</div>
-								</Cell>
+								{asd.map(num => {
+									return (
+										<Cell key={num}>
+											<div className="flex gap-2">
+												<Input
+													className="flex-1"
+													disabled={isPreview}
+													control={control}
+													type="number"
+													fieldName={`po_item.${index}.qty${num}`}
+												/>
+												<Select
+													className="w-1/2"
+													firstOption="- Pilih unit -"
+													control={control}
+													fieldName={`po_item.${index}.unit${num}`}
+													data={selectUnitData}
+												/>
+											</div>
+										</Cell>
+									);
+								})}
 								{!isPreview && (
 									<Cell>
 										<Button onClick={() => removeItem(index)}>Remove</Button>

@@ -11,7 +11,6 @@ import {
 import {classNames} from '@utils';
 
 export type InputProps = {
-	className?: string;
 	placeholder?: string;
 	label?: string;
 	disabled?: boolean;

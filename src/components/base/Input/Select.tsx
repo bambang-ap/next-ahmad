@@ -34,13 +34,18 @@ function SelectComponent<F extends FieldValues>({
 	disabled,
 	controller,
 	firstOption,
+	className,
 }: ControlledComponentProps<F, SelectProps>) {
 	const {
 		field: {value, onChange},
 	} = controller;
 
 	return (
-		<SelectFlowbite disabled={disabled} onChange={onChange} value={value}>
+		<SelectFlowbite
+			className={className}
+			disabled={disabled}
+			onChange={onChange}
+			value={value}>
 			{firstOption && (
 				<option disabled value="" selected={!value}>
 					{firstOption}

@@ -12,6 +12,7 @@ export type ControlledComponentProps<
 	T extends {} = {},
 > = {
 	controller: UseControllerReturn<F>;
+	className?: string;
 } & T;
 
 export const withReactFormController = <T extends {}, F extends FieldValues>(
