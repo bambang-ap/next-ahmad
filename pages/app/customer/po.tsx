@@ -129,7 +129,7 @@ export default function POCustomer() {
 }
 
 const ModalChild = ({control}: {control: Control<FormType>}) => {
-	const asd = [1, 2, 3, 4, 5] as const;
+	const qtyList = [1, 2, 3] as const;
 	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -148,7 +148,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 			const tableHeader = [
 				'Name',
 				'Kode Item',
-				...asd.map(num => `Jumlah ${num}`),
+				...qtyList.map(num => `Jumlah ${num}`),
 			];
 
 			if (this.isPreview) return tableHeader;
@@ -220,7 +220,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 								fieldName="kode_item"
 							/>
 
-							{asd.map(num => {
+							{qtyList.map(num => {
 								return (
 									<>
 										<Input
@@ -269,7 +269,7 @@ const ModalChild = ({control}: {control: Control<FormType>}) => {
 										fieldName={`po_item.${index}.kode_item`}
 									/>
 								</Cell>
-								{asd.map(num => {
+								{qtyList.map(num => {
 									return (
 										<Cell key={num}>
 											<div className="flex gap-2">
