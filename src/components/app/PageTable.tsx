@@ -98,9 +98,10 @@ const RenderPage = ({path}: {path: string}) => {
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
 				{target === CRUD_ENABLED.CUSTOMER && (
-					<>
+					<div className="flex gap-2">
 						<CSVLink
 							filename="contoh-data-customer"
+							className="p-4 border"
 							data={[
 								['name', 'alamat', 'no_telp', 'npwp'],
 								['Your Customer Name', 'Jl. Bekasi', '62857', '74123123'],
@@ -108,7 +109,10 @@ const RenderPage = ({path}: {path: string}) => {
 							Download format
 						</CSVLink>
 
-						<label htmlFor="asdf">Import</label>
+						<label htmlFor="asdf" className="p-4 border">
+							Import
+						</label>
+
 						<input
 							id="asdf"
 							className="hidden"
@@ -120,7 +124,7 @@ const RenderPage = ({path}: {path: string}) => {
 									Papa.parse<string[]>(files[0], {complete});
 							}}
 						/>
-					</>
+					</div>
 				)}
 
 				<Table

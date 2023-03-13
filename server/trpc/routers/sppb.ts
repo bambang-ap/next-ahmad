@@ -1,8 +1,8 @@
 import {z} from 'zod';
 
-import {tCustomerSPPBIn, tUpsertSppbIn, uSPPB} from '@appTypes/app.zod';
+import {tUpsertSppbIn, zId} from '@appTypes/app.zod';
 import {OrmCustomerPO, OrmCustomerSPPBIn, OrmPOItemSppbIn} from '@database';
-import {checkCredentialV2, generateId, MAPPING_CRUD_ORM} from '@server';
+import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 
 const sppbRouters = router({
@@ -58,15 +58,13 @@ const sppbRouters = router({
 			});
 		}),
 	delete: procedure
-		.input(
-			tCustomerSPPBIn.pick({id: true}).extend({
-				target: uSPPB,
-			}),
-		)
-		.mutation(({ctx: {req, res}, input: {id, target}}) => {
-			return checkCredentialV2(req, res, () => {
-				const orm = MAPPING_CRUD_ORM[target];
-				return orm.destroy({where: {id}});
+		.input(zId.partial())
+		.mutation(({ctx: {req, res}, input: {id}}) => {
+			return checkCredentialV2(req, res, async () => {
+				await OrmPOItemSppbIn.destroy({where: {id_sppb_in: id}});
+				await OrmCustomerSPPBIn.destroy({where: {id}});
+
+				return {message: 'Success'};
 			});
 		}),
 });

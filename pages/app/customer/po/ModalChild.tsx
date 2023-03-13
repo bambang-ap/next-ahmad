@@ -27,7 +27,10 @@ export type FormType = TCustomerPO & {
 } & Pick<TCustomerPOExtended, 'po_item'>;
 
 export default function ModalChild({control}: {control: Control<FormType>}) {
-	const [modalType, poItem] = useWatch({control, name: ['type', 'po_item']});
+	const [modalType, poItem = []] = useWatch({
+		control,
+		name: ['type', 'po_item'],
+	});
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,

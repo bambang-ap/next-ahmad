@@ -14,6 +14,7 @@ export type ButtonProps = TouchableProps & {
 	icon?: IconProps['name'];
 	iconClassName?: string;
 	children?: string;
+	disabled?: boolean;
 };
 
 export function Button(props: ButtonProps) {

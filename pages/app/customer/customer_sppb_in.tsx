@@ -18,8 +18,9 @@ export default function SPPBIN() {
 	const {control, handleSubmit, setValue, watch, reset, clearErrors} =
 		useForm<FormType>({defaultValues: {type: 'add'}});
 
-	const {data} = trpc.sppb.get.useQuery({type: 'sppb_in'});
+	const {data, refetch} = trpc.sppb.get.useQuery({type: 'sppb_in'});
 	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation();
+	const {mutate: mutateDelete} = trpc.sppb.delete.useMutation();
 
 	const modalType = watch('type');
 	const modalTitle =
@@ -35,8 +36,15 @@ export default function SPPBIN() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, ...rest}) => {
-			mutateUpsert(rest);
+			if (type === 'delete') return mutateDelete({id: rest.id}, {onSuccess});
+
+			mutateUpsert(rest, {onSuccess});
 		})();
+
+		function onSuccess() {
+			modalRef.current?.hide();
+			refetch();
+		}
 	};
 
 	function showModal(
@@ -136,11 +144,14 @@ function ModalChild({control}: {control: Control<FormType>}) {
 				renderItem={({Cell, item}, index) => {
 					const sppbItems =
 						selectedSppbIn?.map(sppb =>
-							sppb.items.find(item => item.id_item === item.id),
+							sppb.items.find(itemm => itemm.id_item === item.id),
 						) ?? [];
 					const selectedSppbItem = sppbItems.find(
-						item => item?.id_item === item?.id,
+						itemmm => itemmm?.id_item === item?.id,
 					);
+
+					console.log({selectedSppbItem});
+
 					const assignedQty = qtyList.reduce<Record<string, number>>(
 						(ret, num) => {
 							const key = `qty${num}` as const;
