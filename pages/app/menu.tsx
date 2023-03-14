@@ -24,6 +24,8 @@ export default function Menu() {
 		refetchMapped,
 		reftechUnMapped,
 	} = useMenu();
+
+	console.log(dataRole);
 	const {control, reset, watch, setValue, handleSubmit} = menuForm;
 	const iconKey = useRecoilValue(atomMenuIconKey);
 	// const changeOrder = useSetRecoilState(selectorMappedMenu);
@@ -61,7 +63,7 @@ export default function Menu() {
 				const roles = accepted_role.split(',');
 				const role =
 					dataRole?.reduce((acc, role) => {
-						return {...acc, [role.name]: roles.includes(role.name)};
+						return {...acc, [role.id]: roles.includes(role.id)};
 					}, {} as Record<string, boolean>) ?? {};
 
 				return {
@@ -173,7 +175,7 @@ const RenderMenu = (props: {
 										type="checkbox"
 										key={role.id}
 										control={control}
-										fieldName={`${id}.role.${role.name}`}
+										fieldName={`${id}.role.${role.id}`}
 										label={role.name}
 									/>
 								);

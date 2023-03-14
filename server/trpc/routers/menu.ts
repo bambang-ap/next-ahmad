@@ -1,3 +1,4 @@
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {TMenu, tMenu} from '@appTypes/app.zod';
@@ -9,21 +10,21 @@ const menuRouters = router({
 	get: procedure
 		.input(z.object({type: z.literal('menu'), sorted: z.boolean().optional()}))
 		.query(async ({ctx: {req, res}, input: {sorted}}) => {
-			// return checkCredentialV2(req, res, async session => {
-			// @ts-ignore
-			const allMenu = (await OrmMenu.findAll({
-				// where: {accepted_role: {[Op.substring]: session?.user?.role}},
-				order: [
-					['index', 'asc'],
-					['title', 'asc'],
-				],
-				raw: true,
-			})) as TMenu[];
+			return checkCredentialV2(req, res, async session => {
+				// @ts-ignore
+				const allMenu = (await OrmMenu.findAll({
+					where: {accepted_role: {[Op.substring]: session?.user?.role}},
+					order: [
+						['index', 'asc'],
+						['title', 'asc'],
+					],
+					raw: true,
+				})) as TMenu[];
 
-			if (sorted) return allMenu.nest('subMenu', 'id', 'parent_id');
+				if (sorted) return allMenu.nest('subMenu', 'id', 'parent_id');
 
-			return allMenu;
-			// });
+				return allMenu;
+			});
 		}),
 
 	mutate: procedure
