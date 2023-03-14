@@ -54,7 +54,7 @@ export default function Kanban() {
 	return (
 		<>
 			<Button onClick={() => modalRef.current?.show()}>Add</Button>
-			<Modal ref={modalRef}>
+			<Modal size="6xl" ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild reset={reset} control={control} />
 				</form>
@@ -121,6 +121,7 @@ function ModalChild({
 			</Button>
 
 			<Table
+				className="max-h-[400px] overflow-y-auto"
 				data={mesinIds}
 				header={['Mesin', 'Instruksi']}
 				renderItem={({Cell, item: idMesin}, i) => {
