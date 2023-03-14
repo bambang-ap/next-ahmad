@@ -36,6 +36,7 @@ export default function SPPBIN() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, ...rest}) => {
+			if (type === 'preview') return;
 			if (type === 'delete') return mutateDelete({id: rest.id}, {onSuccess});
 
 			mutateUpsert(rest, {onSuccess});
@@ -109,7 +110,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 	const isEdit = modalType === 'edit';
 	const isPreview = modalType === 'preview';
 	const isDelete = modalType === 'delete';
-	const isPreviewEdit = isEdit || isPreview;
+	const isEditPreview = isEdit || isPreview;
 
 	const selectedPo = listPo?.find(e => e.id === idPo);
 	const selectedSppbIn = dataSppbIn?.filter(e => e.id_po === idPo);
@@ -119,7 +120,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 	return (
 		<>
 			<Select
-				disabled={isPreviewEdit}
+				disabled={isEditPreview}
 				control={control}
 				fieldName="id_po"
 				firstOption="- Pilih PO -"
@@ -188,6 +189,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 									<Fragment key={num}>
 										<Cell>
 											<Input
+												disabled={isPreview}
 												rules={{
 													max: {
 														value: assignedQty[`qty${num}`],
@@ -197,7 +199,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 												type="number"
 												control={control}
 												defaultValue={
-													isEdit
+													isEditPreview
 														? selectedSppbItem?.[`qty${num}`]
 														: assignedQty[`qty${num}`]
 												}
@@ -213,7 +215,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 				}}
 			/>
 
-			<Button type="submit">Submit</Button>
+			{!isPreview && <Button type="submit">Submit</Button>}
 		</>
 	);
 }
