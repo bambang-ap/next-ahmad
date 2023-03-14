@@ -36,7 +36,6 @@ export default function SPPBIN() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, ...rest}) => {
-			if (type === 'preview') return;
 			if (type === 'delete') return mutateDelete({id: rest.id}, {onSuccess});
 
 			mutateUpsert(rest, {onSuccess});
@@ -110,17 +109,18 @@ function ModalChild({control}: {control: Control<FormType>}) {
 	const isEdit = modalType === 'edit';
 	const isPreview = modalType === 'preview';
 	const isDelete = modalType === 'delete';
-	const isEditPreview = isEdit || isPreview;
+	const isPreviewEdit = isEdit || isPreview;
 
 	const selectedPo = listPo?.find(e => e.id === idPo);
 	const selectedSppbIn = dataSppbIn?.filter(e => e.id_po === idPo);
+	const selectedSppbInn = dataSppbIn?.find(e => e.id === idSppbIn);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
 	return (
 		<>
 			<Select
-				disabled={isEditPreview}
+				disabled={isPreviewEdit}
 				control={control}
 				fieldName="id_po"
 				firstOption="- Pilih PO -"
@@ -147,11 +147,9 @@ function ModalChild({control}: {control: Control<FormType>}) {
 						selectedSppbIn?.map(sppb =>
 							sppb.items.find(itemm => itemm.id_item === item.id),
 						) ?? [];
-					const selectedSppbItem = sppbItems.find(
+					const selectedSppbItem = selectedSppbInn?.items.find(
 						itemmm => itemmm?.id_item === item?.id,
 					);
-
-					console.log({selectedSppbItem});
 
 					const assignedQty = qtyList.reduce<Record<string, number>>(
 						(ret, num) => {
@@ -199,7 +197,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 												type="number"
 												control={control}
 												defaultValue={
-													isEditPreview
+													isPreviewEdit
 														? selectedSppbItem?.[`qty${num}`]
 														: assignedQty[`qty${num}`]
 												}
@@ -215,7 +213,7 @@ function ModalChild({control}: {control: Control<FormType>}) {
 				}}
 			/>
 
-			{!isPreview && <Button type="submit">Submit</Button>}
+			<Button type="submit">Submit</Button>
 		</>
 	);
 }
