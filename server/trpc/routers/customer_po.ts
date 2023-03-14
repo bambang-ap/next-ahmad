@@ -1,7 +1,13 @@
 import {z} from 'zod';
 
 import {tCustomerPO, tPOItem} from '@appTypes/app.zod';
-import {OrmCustomer, OrmCustomerPO, OrmCustomerPOItem} from '@database';
+import {
+	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
+	OrmPOItemSppbIn,
+} from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -89,6 +95,15 @@ const customer_poRouters = router({
 		.input(z.string())
 		.mutation(async ({input: id, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
+				const dataSppb = await OrmCustomerSPPBIn.findAll({where: {id_po: id}});
+				await Promise.all(
+					dataSppb.map(async sppb => {
+						return OrmPOItemSppbIn.destroy({
+							where: {id_sppb_in: sppb.dataValues.id},
+						});
+					}),
+				);
+				await OrmCustomerSPPBIn.destroy({where: {id_po: id}});
 				await OrmCustomerPOItem.destroy({where: {id_po: id}});
 				await OrmCustomerPO.destroy({where: {id}});
 				return {message: 'Success'};

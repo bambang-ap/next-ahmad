@@ -172,8 +172,14 @@ function ModalChild({control}: {control: Control<FormType>}) {
 							<Input
 								className="hidden"
 								control={control}
-								defaultValue={item.id}
+								defaultValue={selectedSppbItem?.id_item}
 								fieldName={`po_item.${index}.id_item`}
+							/>
+							<Input
+								className="hidden"
+								control={control}
+								defaultValue={selectedSppbItem?.id}
+								fieldName={`po_item.${index}.id`}
 							/>
 							<Cell>{item.kode_item}</Cell>
 							<Cell>{item.name}</Cell>
