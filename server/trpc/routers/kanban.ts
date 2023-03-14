@@ -49,7 +49,14 @@ const kanbanRouters = router({
 								target: CRUD_ENABLED.CUSTOMER_SPPB_IN,
 							});
 
-							return {...item, nomor_po, instruksi_kanban, mesin, po, sppbin};
+							return {
+								...item,
+								id_po: nomor_po,
+								instruksi_kanban,
+								mesin,
+								po,
+								sppbin,
+							};
 						},
 					);
 
@@ -59,6 +66,31 @@ const kanbanRouters = router({
 				});
 			});
 	},
+
+	upsert: procedure
+		.input(
+			tKanban.transform(kanban => {
+				const {id, ...rest} = kanban;
+
+				if (id.length === 47) return {...rest, id};
+
+				return {...rest, id: undefined};
+			}),
+		)
+		.query(async ({input, ctx: {req, res}}) => {
+			return checkCredentialV2(req, res, async () => {
+				const {id, ...rest} = input;
+				const [createdKanban] = await OrmKanban.upsert({
+					...rest,
+					id: id ?? generateId(),
+				});
+				await OrmScan.create({
+					id_kanban: createdKanban.dataValues.id,
+					id: generateId(),
+				});
+				return {message: 'Success'};
+			});
+		}),
 
 	add: procedure
 		.input(tKanban.omit({id: true}))

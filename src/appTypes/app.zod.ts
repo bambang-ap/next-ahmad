@@ -135,11 +135,11 @@ export const tInstruksiKanban = zId.extend({
 
 export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
-	nomor_po: z.string(),
-	id_instruksi_kanban: z.string(),
-	id_mesin: z.string(),
+	id_po: z.string(),
 	id_sppb_in: z.string(),
-	items: itemsSppb,
+	id_mesin: z.string(),
+	mesin_id: z.string().array(),
+	instruksi_id: z.record(z.string().array()),
 });
 
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;

@@ -105,8 +105,15 @@ export default function POCustomer() {
 						'Action',
 					]}
 					renderItemEach={({Cell, item}, i) => {
-						const {id, po, instruksi_kanban, mesin, id_sppb_in, sppbin, items} =
-							item;
+						const {
+							id,
+							po,
+							instruksi_kanban,
+							mesin,
+							id_sppb_in,
+							sppbin,
+							instruksi_id: items,
+						} = item;
 						const {customer, po_item} = po?.[0] ?? {};
 						const {name: nameMesin, nomor_mesin} = mesin?.[0] ?? {};
 
@@ -193,7 +200,7 @@ export default function POCustomer() {
 						);
 					}}
 					renderItem={({item, Cell}) => {
-						const {id, nomor_po, mesin, instruksi_kanban, po} = item;
+						const {id, id_po: nomor_po, mesin, instruksi_kanban, po} = item;
 						const id_customer = po?.[0]?.customer?.id;
 						console.log('item', item);
 						return (
@@ -276,7 +283,7 @@ const ModalChild = ({
 
 	useEffect(() => {
 		reset(prevValue => {
-			return {...prevValue, items: []};
+			return {...prevValue, instruksi_id: []};
 		});
 	}, [id_sppb_in]);
 
@@ -292,7 +299,7 @@ const ModalChild = ({
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === id_sppb_in);
 
 	const f = dataKanban?.reduce(
-		(ret, {id, items}) => {
+		(ret, {id, instruksi_id: items}) => {
 			if (!ret.data[id]) ret.data[id] = {};
 
 			items?.forEach(o => {
@@ -304,9 +311,6 @@ const ModalChild = ({
 		},
 		{data: {}, total: {}},
 	);
-
-	window.a = f;
-	window.b = selectedSppbIn;
 
 	return (
 		<div className="gap-y-2 flex flex-col">
