@@ -8,6 +8,7 @@
     "mesin",
     "Nomor",
     "PGSQL",
+    "Pilih",
     "produksi",
     "SPPB",
     "TRPC"
@@ -32,7 +33,7 @@
   },
   "typescript.tsdk": "node_modules/typescript/lib",
   "typescript.enablePromptUseWorkspaceTsdk": true,
-  "codemetrics.nodeconfiguration.AnyKeyword": 100,
+  // "codemetrics.nodeconfiguration.AnyKeyword": 100,
   "editor.formatOnSave": true,
   "eslint.enable": true,
   "javascript.preferences.quoteStyle": "single",

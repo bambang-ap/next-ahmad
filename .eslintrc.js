@@ -34,7 +34,7 @@ module.exports = {
 			files: ['*.ts', '*.tsx'],
 			rules: {
 				'prettier/prettier': 0,
-				'max-len': [1, {code: 100}],
+				'max-len': [1, {code: 150}],
 				'no-return-await': 1,
 				'implicit-arrow-linebreak': 0,
 				'@next/next/no-img-element': 0,
@@ -107,7 +107,7 @@ module.exports = {
 					},
 				],
 
-				'@typescript-eslint/no-explicit-any': 1,
+				'@typescript-eslint/no-explicit-any': 0,
 				'@typescript-eslint/no-unused-vars': 1,
 				'no-unused-vars': 0,
 

@@ -1,17 +1,16 @@
-import {FormEventHandler, useEffect, useRef} from 'react';
+import {useEffect, useRef} from 'react';
 
-import {jsPDF} from 'jspdf';
 import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
 	TCustomer,
-	TCustomerSPPBIn,
+	TInstruksiKanban,
 	TKanban,
-} from '@appTypes/app.type';
+	TMesin,
+} from '@appTypes/app.zod';
 import {
 	Button,
-	Input,
 	Modal,
 	ModalRef,
 	Select,
@@ -20,411 +19,186 @@ import {
 } from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
-import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';
+
+Kanban.getLayout = getLayout;
 
 type FormType = TKanban & {
 	type: ModalTypePreview;
 	id_customer: string;
 };
 
-POCustomer.getLayout = getLayout;
-export default function POCustomer() {
+export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
-	const insertPO = trpc.kanban.add.useMutation();
-	const updatePO = trpc.kanban.update.useMutation();
-	const deletePO = trpc.kanban.delete.useMutation();
+	const {control, watch, reset, handleSubmit} = useForm<FormType>();
 
-	const {data, refetch} = trpc.kanban.get.useQuery({
-		type: 'kanban',
+	const [mesinId] = watch(['mesin_id']);
+
+	const submit = handleSubmit(values => {
+		console.log(values);
 	});
 
-	const {data: qrImages} = trpc.qr.useQuery(
-		{input: data?.map(f => f.id), type: 'png'},
-		{enabled: !!data},
-	);
-
-	const {control, handleSubmit, watch, reset, clearErrors} =
-		useForm<FormType>();
-
-	const modalType = watch('type');
-	const {modalTitle} = {
-		get modalTitle() {
-			if (modalType === 'add') return 'Tambah Kanban';
-			if (modalType === 'edit') return 'Edit Kanban';
-			if (modalType === 'delete') return 'Hapus Kanban';
-			return 'Kanban';
-		},
-	};
-
-	const submit: FormEventHandler<HTMLFormElement> = e => {
-		e.preventDefault();
-		clearErrors();
-		handleSubmit(({type, id, ...rest}) => {
-			switch (type) {
-				case 'add':
-					return insertPO.mutate(rest, {onSuccess});
-				case 'edit':
-					return updatePO.mutate({...rest, id}, {onSuccess});
-				case 'delete':
-					return deletePO.mutate({id}, {onSuccess});
-			}
-
-			return null;
-		})();
-
-		function onSuccess() {
-			modalRef.current?.hide();
-			refetch();
-		}
-	};
-
-	function showModal(type: ModalTypePreview, initValue: {}) {
-		reset({...initValue, type});
-		modalRef.current?.show();
-	}
+	useEffect(() => {
+		reset(({instruksi_id, ...prev}) => {
+			const idInstruksi = Object.entries(instruksi_id ?? {}).reduce<
+				typeof instruksi_id
+			>((ret, [idMesin, value]) => {
+				const hasValue = value?.filter(Boolean);
+				if (idMesin && hasValue?.length > 0) ret[idMesin] = value;
+				return ret;
+			}, {});
+			return {...prev, instruksi_id: idInstruksi};
+		});
+	}, [mesinId?.join?.('')]);
 
 	return (
 		<>
-			<Modal title={modalTitle} ref={modalRef}>
+			<Button onClick={() => modalRef.current?.show()}>Add</Button>
+			<Modal ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild reset={reset} control={control} />
 				</form>
 			</Modal>
-			<div className="overflow-x-auto w-full">
-				<Button onClick={() => showModal('add', {})}>Add</Button>
-
-				<Table
-					data={data ?? []}
-					header={[
-						'ID',
-						'Nomor PO',
-						'Nama Mesin',
-						'Instruksi Kanban',
-						'Customer',
-						'Action',
-					]}
-					renderItemEach={({Cell, item}, i) => {
-						const {
-							id,
-							po,
-							instruksi_kanban,
-							mesin,
-							id_sppb_in,
-							sppbin,
-							instruksi_id: items,
-						} = item;
-						const {customer, po_item} = po?.[0] ?? {};
-						const {name: nameMesin, nomor_mesin} = mesin?.[0] ?? {};
-
-						const sppb = sppbin?.find(hj => hj.id === id_sppb_in);
-
-						const partClassName = 'bg-white flex-1 p-1';
-
-						return (
-							<Cell colSpan={6} className="p-4 -z-10 fixed">
-								{/* <Cell colSpan={6} className="p-4"> */}
-								<div
-									id={`data-${item.id}`}
-									className="p-4 w-[500px]"
-									style={{
-										transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
-									}}>
-									<div className="bg-black p-1 rounded gap-1 flex flex-col">
-										<div className="bg-white flex-1 text-center p-2">
-											{sppb?.nomor_surat}
-										</div>
-										<div className="flex flex-row-reverse gap-1">
-											<div className="bg-white flex gap-1 flex-1 flex-col justify-center items-center">
-												<img
-													alt="qr_svg"
-													src={qrImages?.[i]}
-													className="h-32 w-32"
-												/>
-												<label className="text-center">{id}</label>
-											</div>
-											<div className="flex flex-col gap-1 flex-1">
-												<div className="gap-1 flex flex-1">
-													<div className={partClassName}>Customer</div>
-													<div className={partClassName}>{customer?.name}</div>
-												</div>
-												<div className="flex gap-1">
-													<div className={partClassName}>instruksi</div>
-													<div className={partClassName}>
-														{instruksi_kanban?.[0]?.name}
-													</div>
-												</div>
-												<div className="flex gap-1">
-													<div className={partClassName}>nama mesin</div>
-													<div className={partClassName}>{nameMesin}</div>
-												</div>
-												<div className="flex gap-1">
-													<div className={partClassName}>nomor mesin</div>
-													<div className={partClassName}>{nomor_mesin}</div>
-												</div>
-											</div>
-										</div>
-										<div className="bg-white flex-1 text-center p-2">
-											List Item
-										</div>
-										<div className="flex flex-1 gap-1">
-											<div className={classNames('text-center', partClassName)}>
-												kode_item
-											</div>
-											<div className={classNames('text-center', partClassName)}>
-												name
-											</div>
-											<div className={classNames('text-center', partClassName)}>
-												qty
-											</div>
-										</div>
-										<div className="flex flex-col flex-1 gap-1">
-											{items?.map(({id, qty}) => {
-												const poItem = po_item?.find(itm => id === itm.id);
-												return (
-													<div key={id} className="flex gap-1">
-														<div className={partClassName}>
-															{poItem?.kode_item}
-														</div>
-														<div className={partClassName}>{poItem?.name}</div>
-														<div className={partClassName}>
-															{qty} {poItem?.unit}
-														</div>
-													</div>
-												);
-											})}
-										</div>
-									</div>
-								</div>
-							</Cell>
-						);
-					}}
-					renderItem={({item, Cell}) => {
-						const {id, id_po: nomor_po, mesin, instruksi_kanban, po} = item;
-						const id_customer = po?.[0]?.customer?.id;
-						console.log('item', item);
-						return (
-							<>
-								<Cell>{id}</Cell>
-								<Cell>{nomor_po}</Cell>
-								<Cell>{mesin?.[0]?.name}</Cell>
-								<Cell>{instruksi_kanban?.[0]?.name}</Cell>
-								<Cell>{po?.[0]?.customer?.name}</Cell>
-								<Cell className="flex gap-x-2">
-									<Button
-										icon="faPrint"
-										onClick={() => generate(`data-${item.id}`)}
-									/>
-									<Button
-										icon="faMagnifyingGlass"
-										onClick={() => showModal('preview', {...item, id_customer})}
-									/>
-									<Button
-										onClick={() => showModal('edit', {...item, id_customer})}
-										icon="faEdit"
-									/>
-									<Button
-										onClick={() => showModal('delete', {id})}
-										icon="faTrash"
-									/>
-								</Cell>
-							</>
-						);
-					}}
-				/>
-			</div>
 		</>
 	);
 }
 
-const ModalChild = ({
+function ModalChild({
 	control,
 	reset,
 }: {
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
-}) => {
-	const [modalType, nomor_po, id, id_customer, id_sppb_in, items] = useWatch({
+}) {
+	const [mesinIds = [], idCustomer, instruksiIds] = useWatch({
 		control,
-		name: ['type', 'nomor_po', 'id', 'id_customer', 'id_sppb_in', 'items'],
+		name: ['mesin_id', 'id_customer', 'instruksi_id'],
 	});
-	const {data: qrImage} = trpc.qr.useQuery<any, string>(id);
-	const {data: dataMesin} = trpc.basic.get.useQuery({
-		target: CRUD_ENABLED.MESIN,
-	});
+
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
-	const {data: dataInstruksi} = trpc.basic.get.useQuery({
+	const {data: dataMesin} = trpc.basic.get.useQuery<any, TMesin[]>({
+		target: CRUD_ENABLED.MESIN,
+	});
+	const {data: dataInstruksi} = trpc.basic.get.useQuery<
+		any,
+		TInstruksiKanban[]
+	>({
 		target: CRUD_ENABLED.INSTRUKSI_KANBAN,
 	});
-	const {data: dataKanban} = trpc.kanban.get.useQuery(
-		{
-			type: 'kanban',
-			where: {id_sppb_in},
-		},
-		{enabled: !!id_sppb_in},
-	);
+
 	const {data: dataPo} = trpc.customer_po.get.useQuery({
 		type: 'customer_po',
 	});
 
-	const {data: dataSppbIn} = trpc.basic.get.useQuery<any, TCustomerSPPBIn[]>(
-		{
-			target: CRUD_ENABLED.CUSTOMER_SPPB_IN,
-			where: {nomor_po},
-		},
-		{enabled: !!nomor_po},
-	);
-
-	const isPreview = modalType === 'preview';
-	const isEdit = modalType === 'edit';
-	const isEditPreview = isEdit || isPreview;
-
-	useEffect(() => {
-		reset(prevValue => {
-			return {...prevValue, instruksi_id: []};
-		});
-	}, [id_sppb_in]);
-
-	if (modalType === 'delete') {
-		return (
-			<div>
-				<label>Hapus ?</label>
-				<Button type="submit">Ya</Button>
-			</div>
-		);
-	}
-
-	const selectedSppbIn = dataSppbIn?.find(e => e.id === id_sppb_in);
-
-	const f = dataKanban?.reduce(
-		(ret, {id, instruksi_id: items}) => {
-			if (!ret.data[id]) ret.data[id] = {};
-
-			items?.forEach(o => {
-				ret.data[id][o.id] = (ret.data[id][o.id] ?? 0) + o.qty;
-				ret.total[o.id] = (ret.total[o.id] ?? 0) + (o.qty ?? 0);
-			});
-
-			return ret;
-		},
-		{data: {}, total: {}},
-	);
-
 	return (
-		<div className="gap-y-2 flex flex-col">
+		<>
 			<Select
-				disabled={isPreview}
 				firstOption="- Pilih Customer -"
 				control={control}
 				data={selectMapper(dataCustomer ?? [], 'id', 'name')}
 				fieldName="id_customer"
 			/>
 			<Select
-				disabled={isPreview}
-				firstOption="- Pilih PO -"
 				control={control}
+				fieldName="id_po"
+				firstOption="- Pilih PO -"
 				data={selectMapper(
-					dataPo?.filter(e => e.id_customer === id_customer) ?? [],
+					dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
+					'id',
 					'nomor_po',
 				)}
-				fieldName="nomor_po"
 			/>
-
-			<Select
-				disabled={isPreview}
-				firstOption="- Pilih Surat Jalan -"
-				control={control}
-				data={selectMapper(dataSppbIn ?? [], 'id', 'name')}
-				fieldName="id_sppb_in"
-			/>
+			<Button
+				onClick={() => {
+					reset(({mesin_id = [], ...rest}) => {
+						mesin_id.push(undefined);
+						return {...rest, mesin_id};
+					});
+				}}>
+				Add Mesin
+			</Button>
 
 			<Table
-				data={selectedSppbIn?.items}
-				renderItem={({Cell, item}, i) => {
-					if (items?.[i] && items[i]?.qty === undefined) return false;
-
-					const sItem = dataPo
-						?.find(e => e.id_customer === id_customer)
-						?.po_item?.find(u => u.id === item.id);
-
-					const ii = f?.data?.[id]?.[item.id] ?? 0;
-					let assignedQty = ii
-						? item.qty - ii
-						: item.qty - (f?.total?.[item.id] ?? 0);
-
-					if (isEdit) assignedQty = item.qty - ii;
-
-					if (assignedQty <= 0 && !isEdit) return false;
-
+				data={mesinIds}
+				header={['Mesin', 'Instruksi']}
+				renderItem={({Cell, item: idMesin}, i) => {
+					const ids_instruksi = instruksiIds?.[idMesin] ?? [];
 					return (
 						<>
-							<Cell>{sItem?.kode_item}</Cell>
-							<Cell>
-								<Input
-									className="hidden"
-									defaultValue={item.id}
-									control={control}
-									fieldName={`items.${i}.id`}
-								/>
-								<Input
-									type="number"
-									control={control}
-									fieldName={`items.${i}.qty`}
-									defaultValue={isEditPreview ? item.qty : assignedQty}
-									rules={{
-										max: {message: `max is ${assignedQty}`, value: assignedQty},
-									}}
-								/>
+							<Cell className="w-1/2">
+								<div className="flex flex-col gap-2">
+									<Select
+										control={control}
+										fieldName={`mesin_id.${i}`}
+										firstOption={`- Pilih Mesin ${i + 1} -`}
+										data={selectMapper(
+											dataMesin?.filter(
+												mesin =>
+													mesin.id === idMesin || !mesinIds.includes(mesin.id),
+											) ?? [],
+											'id',
+											'nomor_mesin',
+										)}
+									/>
+									{idMesin && (
+										<Button
+											onClick={() =>
+												reset(({instruksi_id = {}, ...rest}) => {
+													instruksi_id[idMesin] = instruksi_id[idMesin] ?? [];
+													instruksi_id[idMesin]?.push(undefined);
+													return {...rest, instruksi_id};
+												})
+											}>
+											Add Instruksi
+										</Button>
+									)}
+									<Button
+										onClick={() => {
+											reset(({mesin_id = [], ...rest}) => {
+												return {...rest, mesin_id: mesin_id.remove(i)};
+											});
+										}}>{`Hapus Mesin ${i + 1}`}</Button>
+								</div>
 							</Cell>
 							<Cell>
-								<Button onClick={() => control.unregister(`items.${i}.qty`)}>
-									Delete
-								</Button>
+								<div className="flex flex-col gap-2">
+									{ids_instruksi.map((id_instruksi, ii) => {
+										return (
+											<div key={id_instruksi} className="flex gap-2">
+												<Select
+													control={control}
+													firstOption={`- Pilih Instruksi ${ii + 1} -`}
+													fieldName={`instruksi_id.${idMesin}.${ii}`}
+													data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
+												/>
+												<Button
+													icon="faTrash"
+													onClick={() => {
+														reset(({instruksi_id, ...rest}) => {
+															return {
+																...rest,
+																instruksi_id: {
+																	...instruksi_id,
+																	[idMesin]:
+																		instruksi_id[idMesin]?.remove(i) ?? [],
+																},
+															};
+														});
+													}}
+												/>
+											</div>
+										);
+									})}
+								</div>
 							</Cell>
 						</>
 					);
 				}}
 			/>
-			<Select
-				disabled={isPreview}
-				firstOption="- Pilih Mesin -"
-				control={control}
-				data={selectMapper(dataMesin ?? [], 'id', 'name')}
-				fieldName="id_mesin"
-			/>
-			<Select
-				disabled={isPreview}
-				firstOption="- Pilih Instruksi -"
-				control={control}
-				data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
-				fieldName="id_instruksi_kanban"
-			/>
 
-			{isPreview && qrImage && (
-				<div className="bg-white h-52 flex self-center mt-4">
-					<img alt="qr_svg" src={qrImage} className="h-full" />
-				</div>
-			)}
-
-			{!isPreview && (
-				<Button className="w-full" type="submit">
-					Submit
-				</Button>
-			)}
-		</div>
+			<Button type="submit">Submit</Button>
+		</>
 	);
-};
-
-function generate(id: string) {
-	// Default export is a4 paper, portrait, using millimeters for units
-	const doc = new jsPDF({unit: 'px', orientation: 'p'});
-
-	doc.html(document.getElementById(id) ?? '', {
-		windowWidth: 100,
-		callback(doc) {
-			doc.save('a4.pdf');
-		},
-	});
 }

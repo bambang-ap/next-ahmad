@@ -17,6 +17,7 @@ export default function initOrmMesin(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.MESIN,
 			defaultScope: {
+				order: [['nomor_mesin', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
