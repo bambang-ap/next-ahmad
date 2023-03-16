@@ -137,6 +137,7 @@ export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	id_po: z.string(),
 	id_sppb_in: z.string(),
+	name: z.string(),
 	mesin_id: z.string().array(),
 	instruksi_id: z.record(z.string().array()),
 });
@@ -153,7 +154,7 @@ export const tKanbanUpsert = tKanban.partial({id: true}).extend({
 	/** key property of items is id_item */
 	items: z.record(
 		tKanbanItem
-			.extend({id_sppb_in: z.string().optional()})
+			.extend({id_sppb_in: z.string().nullish()})
 			.partial({id: true, id_kanban: true}),
 	),
 });

@@ -1,5 +1,6 @@
 import {FormEventHandler, useEffect, useRef} from 'react';
 
+import jsPDF from 'jspdf';
 import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
 
 import {
@@ -39,8 +40,18 @@ export default function Kanban() {
 		useForm<FormType>();
 	const {data, refetch} = trpc.kanban.get.useQuery({type: 'kanban'});
 	const {mutate: mutateUpsert} = trpc.kanban.upsert.useMutation();
+	const {mutate: mutateDelete} = trpc.kanban.delete.useMutation();
 
-	const [mesinId] = watch(['mesin_id']);
+	const [mesinId, modalType] = watch(['mesin_id', 'type']);
+
+	const modalTitle =
+		modalType === 'add'
+			? `add Kanban`
+			: modalType === 'edit'
+			? `edit Kanban`
+			: modalType === 'preview'
+			? `preview Kanban`
+			: `delete Kanban`;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -50,6 +61,8 @@ export default function Kanban() {
 				case 'add':
 				case 'edit':
 					return mutateUpsert(rest, {onSuccess});
+				case 'delete':
+					return mutateDelete(rest.id, {onSuccess});
 				default:
 					return null;
 			}
@@ -87,15 +100,43 @@ export default function Kanban() {
 			<Button onClick={() => showModal('add', {})}>Add</Button>
 			<Table
 				data={data}
+				header={[
+					'Judul Kanban',
+					'Nomor PO',
+					'Nomor Surat Jalan',
+					'Customer',
+					'Action',
+				]}
 				renderItem={({Cell, item}) => {
+					// @ts-ignore
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
 					return (
 						<>
-							<Cell></Cell>
+							<Cell>{item.name}</Cell>
+							<Cell>{item.dataPo?.nomor_po}</Cell>
+							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
+							<Cell>{item.dataPo?.customer?.name}</Cell>
+							<Cell className="flex gap-x-2">
+								<Button
+									icon="faPrint"
+									onClick={() => generate(`data-${item.id}`)}
+								/>
+								<Button
+									icon="faMagnifyingGlass"
+									onClick={() => showModal('preview', rest)}
+								/>
+								<Button onClick={() => showModal('edit', rest)} icon="faEdit" />
+								<Button
+									onClick={() => showModal('delete', {id: item.id})}
+									icon="faTrash"
+								/>
+							</Cell>
 						</>
 					);
 				}}
 			/>
-			<Modal size="6xl" ref={modalRef}>
+			<Modal title={modalTitle} size="6xl" ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild reset={reset} control={control} />
 				</form>
@@ -119,6 +160,7 @@ function ModalChild({
 		tempIdItem,
 		kanbanItems = {},
 		id_po,
+		modalType,
 	] = useWatch({
 		control,
 		name: [
@@ -129,6 +171,7 @@ function ModalChild({
 			'temp_id_item',
 			'items',
 			'id_po',
+			'type',
 		],
 	});
 
@@ -171,52 +214,64 @@ function ModalChild({
 		}
 	}, [tempIdItem]);
 
+	if (modalType === 'delete') return <Button type="submit">Ya</Button>;
+
 	return (
-		<>
-			<Select
-				firstOption="- Pilih Customer -"
-				control={control}
-				data={selectMapper(dataCustomer ?? [], 'id', 'name')}
-				fieldName="id_customer"
-			/>
-			{idCustomer && (
-				<Select
-					control={control}
-					fieldName="id_po"
-					firstOption="- Pilih PO -"
-					data={selectMapper(
-						dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
-						'id',
-						'nomor_po',
-					)}
-				/>
-			)}
+		<div className="flex flex-col gap-2">
+			<Input control={control} fieldName="name" label="Judul Kanban" />
 
-			{id_po && (
+			<div className="flex gap-2">
 				<Select
+					className="flex-1"
+					firstOption="- Pilih Customer -"
 					control={control}
-					fieldName="id_sppb_in"
-					firstOption="- Pilih Surat Jalan -"
-					data={selectMapper(dataSppbIn ?? [], 'id', 'nomor_surat')}
+					data={selectMapper(dataCustomer ?? [], 'id', 'name')}
+					fieldName="id_customer"
 				/>
-			)}
+				{idCustomer && (
+					<Select
+						className="flex-1"
+						control={control}
+						fieldName="id_po"
+						firstOption="- Pilih PO -"
+						data={selectMapper(
+							dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
+							'id',
+							'nomor_po',
+						)}
+					/>
+				)}
 
-			{idSppbIn && (
-				<Select
-					control={control}
-					fieldName="temp_id_item"
-					firstOption="- Tambah Item -"
-					data={selectMapper(
-						selectedSppbIn?.items.filter(
-							e => !Object.keys(kanbanItems).includes(e.id),
-						) ?? [],
-						'id',
-						'itemDetail.kode_item',
-					)}
-				/>
-			)}
+				{id_po && (
+					<Select
+						className="flex-1"
+						control={control}
+						fieldName="id_sppb_in"
+						firstOption="- Pilih Surat Jalan -"
+						data={selectMapper(dataSppbIn ?? [], 'id', 'nomor_surat')}
+					/>
+				)}
+
+				{idSppbIn && (
+					<Select
+						className="flex-1"
+						control={control}
+						fieldName="temp_id_item"
+						firstOption="- Tambah Item -"
+						data={selectMapper(
+							selectedSppbIn?.items.filter(
+								e => !Object.keys(kanbanItems).includes(e.id),
+							) ?? [],
+							'id',
+							'itemDetail.kode_item',
+						)}
+					/>
+				)}
+			</div>
 
 			<Table
+				className="max-h-[250px] overflow-y-auto"
+				header={['Kode Item', 'Nama Item', 'Jumlah', 'Action']}
 				data={Object.entries(kanbanItems)}
 				renderItem={({Cell, item: [id_item, item]}, i) => {
 					if (item.id_sppb_in !== idSppbIn) return false;
@@ -227,30 +282,34 @@ function ModalChild({
 						<>
 							<Cell>{rowItem?.itemDetail?.kode_item}</Cell>
 							<Cell>{rowItem?.itemDetail?.name}</Cell>
-							{qtyList.map(num => {
-								const keyQty = `qty${num}` as const;
-								const keyUnit = `unit${num}` as const;
+							<Cell>
+								<div className="flex gap-2">
+									{qtyList.map(num => {
+										const keyQty = `qty${num}` as const;
+										const keyUnit = `unit${num}` as const;
 
-								if (!rowItem?.[keyQty]) return null;
+										if (!rowItem?.[keyQty]) return null;
 
-								return (
-									<Cell key={`${rowItem.id}${num}`}>
-										<Input
-											type="number"
-											control={control}
-											defaultValue={rowItem?.[keyQty]}
-											fieldName={`items.${id_item}.${keyQty}`}
-										/>
-										<Input
-											className="hidden"
-											control={control}
-											defaultValue={rowItem.id}
-											fieldName={`items.${id_item}.id_item`}
-										/>
-										{rowItem?.itemDetail?.[keyUnit]}
-									</Cell>
-								);
-							})}
+										return (
+											<div className="flex-1" key={`${rowItem.id}${num}`}>
+												<Input
+													type="number"
+													control={control}
+													defaultValue={rowItem?.[keyQty]}
+													fieldName={`items.${id_item}.${keyQty}`}
+												/>
+												<Input
+													className="hidden"
+													control={control}
+													defaultValue={rowItem.id}
+													fieldName={`items.${id_item}.id_item`}
+												/>
+												{rowItem?.itemDetail?.[keyUnit]}
+											</div>
+										);
+									})}
+								</div>
+							</Cell>
 							<Cell>
 								<Button
 									onClick={() =>
@@ -278,7 +337,7 @@ function ModalChild({
 			</Button>
 
 			<Table
-				className={classNames('max-h-[400px] overflow-y-auto', {
+				className={classNames('max-h-[250px] overflow-y-auto', {
 					hidden: !mesinIds || mesinIds?.length <= 0,
 				})}
 				data={mesinIds}
@@ -359,6 +418,19 @@ function ModalChild({
 			/>
 
 			<Button type="submit">Submit</Button>
-		</>
+		</div>
 	);
+}
+
+function generate(id: string) {
+	return null;
+
+	const doc = new jsPDF({unit: 'px', orientation: 'p'});
+
+	doc.html(document.getElementById(id) ?? '', {
+		windowWidth: 100,
+		callback(doc) {
+			doc.save('a4.pdf');
+		},
+	});
 }

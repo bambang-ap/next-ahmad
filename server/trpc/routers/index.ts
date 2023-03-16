@@ -4,6 +4,7 @@ import {z} from 'zod';
 
 import {getNow} from '@server';
 import {procedure, router} from '@trpc';
+import {inferRouterInputs, inferRouterOutputs} from '@trpc/server';
 
 import basicRouters from './basic';
 import customer_poRouters from './customer_po';
@@ -65,3 +66,5 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+export type RouterInput = inferRouterInputs<AppRouter>;
+export type RouterOutput = inferRouterOutputs<AppRouter>;
