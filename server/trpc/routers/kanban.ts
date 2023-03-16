@@ -1,3 +1,4 @@
+import {OrmKanbanItem} from 'server/database/models/kanban_item';
 import {z} from 'zod';
 
 import {TKanbanExtended} from '@appTypes/app.type';
@@ -74,9 +75,9 @@ const kanbanRouters = router({
 
 	upsert: procedure
 		.input(tKanbanUpsert)
-		.query(async ({input, ctx: {req, res}}) => {
+		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const {id, kanban_items, ...rest} = input;
+				const {id, items: kanban_items, ...rest} = input;
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
 					id: id ?? generateId(),
@@ -85,7 +86,14 @@ const kanbanRouters = router({
 					id_kanban: createdKanban.dataValues.id,
 					id: generateId(),
 				});
-				const itemPromises = kanban_items.map(item => {});
+				const itemPromises = kanban_items.map(
+					({id: idItemKanban, ...restItemKanban}) => {
+						return OrmKanbanItem.upsert({
+							...restItemKanban,
+							id: idItemKanban ?? generateId(),
+						});
+					},
+				);
 				await Promise.all(itemPromises);
 				return {message: 'Success'};
 			});

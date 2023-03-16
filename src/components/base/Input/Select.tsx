@@ -1,5 +1,5 @@
 import {Select as SelectFlowbite} from 'flowbite-react';
-import {FieldValues} from 'react-hook-form';
+import {FieldPath, FieldValues} from 'react-hook-form';
 
 import {
 	ControlledComponentProps,
@@ -26,11 +26,18 @@ export const Select = withReactFormController(SelectComponent);
 
 export function selectMapper<T extends {}>(
 	data: T[],
-	value: keyof T,
-	label?: keyof T,
+	value: FieldPath<T>,
+	label?: FieldPath<T>,
 ) {
+	// @ts-ignore
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	return data?.map<SelectPropsData>(item => {
-		return {value: item[value], label: label ? item[label] : undefined};
+		function finder(path?: string) {
+			if (!path) return undefined;
+
+			return eval(`item?.${path.replace(/\./g, '?.')}`);
+		}
+		return {value: finder(value), label: label ? finder(label) : undefined};
 	});
 }
 

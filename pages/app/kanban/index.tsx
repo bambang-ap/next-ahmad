@@ -1,4 +1,4 @@
-import {useEffect, useRef} from 'react';
+import {FormEventHandler, useEffect, useRef} from 'react';
 
 import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
 
@@ -6,11 +6,12 @@ import {
 	ModalTypePreview,
 	TCustomer,
 	TInstruksiKanban,
-	TKanban,
+	TKanbanUpsert,
 	TMesin,
 } from '@appTypes/app.zod';
 import {
 	Button,
+	Input,
 	Modal,
 	ModalRef,
 	Select,
@@ -21,22 +22,46 @@ import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
 
+import {qtyList} from '../customer/po/ModalChild';
+
 Kanban.getLayout = getLayout;
 
-type FormType = TKanban & {
+type FormType = TKanbanUpsert & {
 	type: ModalTypePreview;
 	id_customer: string;
 };
 
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
-	const {control, watch, reset, handleSubmit} = useForm<FormType>();
+	const {control, watch, reset, clearErrors, handleSubmit} =
+		useForm<FormType>();
+	const {mutate: mutateUpsert} = trpc.kanban.upsert.useMutation();
 
 	const [mesinId] = watch(['mesin_id']);
 
-	const submit = handleSubmit(values => {
-		console.log(values);
-	});
+	const submit: FormEventHandler<HTMLFormElement> = e => {
+		e.preventDefault();
+		clearErrors();
+		handleSubmit(({type, id_customer, ...rest}) => {
+			switch (type) {
+				case 'add':
+				case 'edit':
+					return mutateUpsert(rest, {onSuccess});
+				default:
+					return null;
+			}
+		})();
+
+		function onSuccess() {}
+	};
+
+	function showModal(
+		type: ModalTypePreview,
+		initValue?: Partial<Omit<FormType, 'type'>>,
+	) {
+		reset({...initValue, type});
+		modalRef.current?.show();
+	}
 
 	useEffect(() => {
 		reset(({instruksi_id, ...prev}) => {
@@ -53,7 +78,7 @@ export default function Kanban() {
 
 	return (
 		<>
-			<Button onClick={() => modalRef.current?.show()}>Add</Button>
+			<Button onClick={() => showModal('add', {})}>Add</Button>
 			<Modal size="6xl" ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild reset={reset} control={control} />
@@ -70,9 +95,9 @@ function ModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const [mesinIds = [], idCustomer, instruksiIds] = useWatch({
+	const [mesinIds = [], idCustomer, instruksiIds, idSppbIn] = useWatch({
 		control,
-		name: ['mesin_id', 'id_customer', 'instruksi_id'],
+		name: ['mesin_id', 'id_customer', 'instruksi_id', 'id_sppb_in'],
 	});
 
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -81,6 +106,7 @@ function ModalChild({
 	const {data: dataMesin} = trpc.basic.get.useQuery<any, TMesin[]>({
 		target: CRUD_ENABLED.MESIN,
 	});
+	const {data: dataSppbIn} = trpc.sppb.get.useQuery({type: 'sppb_in'});
 	const {data: dataInstruksi} = trpc.basic.get.useQuery<
 		any,
 		TInstruksiKanban[]
@@ -91,6 +117,8 @@ function ModalChild({
 	const {data: dataPo} = trpc.customer_po.get.useQuery({
 		type: 'customer_po',
 	});
+
+	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
 
 	return (
 		<>
@@ -110,6 +138,40 @@ function ModalChild({
 					'nomor_po',
 				)}
 			/>
+			<Select
+				control={control}
+				fieldName="id_sppb_in"
+				firstOption="- Pilih Surat Jalan -"
+				data={selectMapper(dataSppbIn ?? [], 'id', 'nomor_surat')}
+			/>
+
+			<Table
+				data={selectedSppbIn?.items}
+				renderItem={({Cell, item}, i) => {
+					return (
+						<>
+							<Cell>{item.itemDetail?.kode_item}</Cell>
+							<Cell>{item.itemDetail?.name}</Cell>
+							{qtyList.map(num => {
+								if (!item[`qty${num}`]) return null;
+
+								return (
+									<Cell key={`${i}${num}`}>
+										<Input
+											type="number"
+											control={control}
+											defaultValue={item[`qty${num}`]}
+											fieldName={`items.${item.id_item}.qty${num}`}
+										/>
+										{item.itemDetail?.[`unit${num}`]}
+									</Cell>
+								);
+							})}
+						</>
+					);
+				}}
+			/>
+
 			<Button
 				onClick={() => {
 					reset(({mesin_id = [], ...rest}) => {

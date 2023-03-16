@@ -1,17 +1,29 @@
 {
   "cSpell.words": [
+    "alamat",
     "barang",
     "Flowbite",
+    "Hapus",
+    "harga",
     "Instruksi",
+    "Jalan",
     "Kanban",
+    "kode",
     "manajemen",
     "mesin",
     "Nomor",
+    "npwp",
     "PGSQL",
     "Pilih",
     "produksi",
     "SPPB",
-    "TRPC"
+    "SPPBIN",
+    "Tambah",
+    "Tanggal",
+    "telp",
+    "TRPC",
+    "Upsert",
+    "USPPB"
   ],
   "[javascript]": {
     "editor.defaultFormatter": "esbenp.prettier-vscode"

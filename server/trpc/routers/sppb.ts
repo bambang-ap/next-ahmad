@@ -1,7 +1,12 @@
 import {z} from 'zod';
 
 import {tUpsertSppbIn, zId} from '@appTypes/app.zod';
-import {OrmCustomerPO, OrmCustomerSPPBIn, OrmPOItemSppbIn} from '@database';
+import {
+	OrmCustomerPO,
+	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
+	OrmPOItemSppbIn,
+} from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -24,10 +29,18 @@ const sppbRouters = router({
 						where: {id_sppb_in: data.dataValues.id},
 					});
 
+					const promiseItemDetails = items.map(async item => {
+						const itemDetail = await OrmCustomerPOItem.findOne({
+							where: {id: item.dataValues.id_item},
+						});
+
+						return {...item.dataValues, itemDetail: itemDetail?.dataValues};
+					});
+
 					return {
 						...data.dataValues,
 						detailPo: detailPo?.dataValues,
-						items: items.map(item => item.dataValues),
+						items: await Promise.all(promiseItemDetails),
 					};
 				});
 

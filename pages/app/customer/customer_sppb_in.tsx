@@ -15,8 +15,9 @@ SPPBIN.getLayout = getLayout;
 
 export default function SPPBIN() {
 	const modalRef = useRef<ModalRef>(null);
-	const {control, handleSubmit, setValue, watch, reset, clearErrors} =
-		useForm<FormType>({defaultValues: {type: 'add'}});
+	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
+		defaultValues: {type: 'add'},
+	});
 
 	const {data, refetch} = trpc.sppb.get.useQuery({type: 'sppb_in'});
 	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation();
