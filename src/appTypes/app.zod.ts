@@ -141,6 +141,18 @@ export const tKanban = zId.extend({
 	instruksi_id: z.record(z.string().array()),
 });
 
+export type TKanbanItem = z.infer<typeof tKanbanItem>;
+export const tKanbanItem = zId.extend({
+	id_kanban: z.string(),
+	id_item: z.string(),
+	...unitQty,
+});
+
+export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
+export const tKanbanUpsert = tKanban.partial({id: true}).extend({
+	kanban_items: tKanbanItem.partial({id: true}).array(),
+});
+
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;
 export const tKanbanExtended = tKanban.extend({
 	po: tCustomerPOExtended.array().nullish(),

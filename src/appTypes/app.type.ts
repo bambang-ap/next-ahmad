@@ -14,6 +14,8 @@ export type {
 	TItemUnit,
 	TKanban,
 	TKanbanExtended,
+	TKanbanItem,
+	TKanbanUpsert,
 	TMenu,
 	TMesin,
 	TPOItem,

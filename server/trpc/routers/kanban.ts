@@ -1,7 +1,12 @@
 import {z} from 'zod';
 
 import {TKanbanExtended} from '@appTypes/app.type';
-import {tCustomerPO, TCustomerSPPBIn, tKanban} from '@appTypes/app.zod';
+import {
+	tCustomerPO,
+	TCustomerSPPBIn,
+	tKanban,
+	tKanbanUpsert,
+} from '@appTypes/app.zod';
 import {OrmKanban, OrmScan} from '@database';
 import {CRUD_ENABLED} from '@enum';
 import {checkCredentialV2, generateId} from '@server';
@@ -68,18 +73,10 @@ const kanbanRouters = router({
 	},
 
 	upsert: procedure
-		.input(
-			tKanban.transform(kanban => {
-				const {id, ...rest} = kanban;
-
-				if (id.length === 47) return {...rest, id};
-
-				return {...rest, id: undefined};
-			}),
-		)
+		.input(tKanbanUpsert)
 		.query(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const {id, ...rest} = input;
+				const {id, kanban_items, ...rest} = input;
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
 					id: id ?? generateId(),
@@ -88,6 +85,8 @@ const kanbanRouters = router({
 					id_kanban: createdKanban.dataValues.id,
 					id: generateId(),
 				});
+				const itemPromises = kanban_items.map(item => {});
+				await Promise.all(itemPromises);
 				return {message: 'Success'};
 			});
 		}),
