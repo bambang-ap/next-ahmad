@@ -1,6 +1,6 @@
 import {z} from 'zod';
 
-import {tUpsertSppbIn, zId} from '@appTypes/app.zod';
+import {tCustomerSPPBIn, tUpsertSppbIn, zId} from '@appTypes/app.zod';
 import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -15,11 +15,12 @@ const sppbRouters = router({
 		.input(
 			z.object({
 				type: z.literal('sppb_in'),
+				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)
-		.query(({ctx: {req, res}}) => {
+		.query(({ctx: {req, res}, input: {where}}) => {
 			return checkCredentialV2(req, res, async () => {
-				const dataSppb = await OrmCustomerSPPBIn.findAll();
+				const dataSppb = await OrmCustomerSPPBIn.findAll({where});
 				const promises = dataSppb.map(async data => {
 					const detailPo = await OrmCustomerPO.findOne({
 						where: {id: data.dataValues.id_po},

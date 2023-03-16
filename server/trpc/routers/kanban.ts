@@ -1,77 +1,48 @@
-import {OrmKanbanItem} from 'server/database/models/kanban_item';
 import {z} from 'zod';
 
-import {TKanbanExtended} from '@appTypes/app.type';
+import {tCustomerPO, tKanbanUpsert} from '@appTypes/app.zod';
 import {
-	tCustomerPO,
-	TCustomerSPPBIn,
-	tKanban,
-	tKanbanUpsert,
-} from '@appTypes/app.zod';
-import {OrmKanban, OrmScan} from '@database';
-import {CRUD_ENABLED} from '@enum';
+	OrmKanban,
+	OrmKanbanInstruksi,
+	OrmKanbanItem,
+	OrmMesin,
+	OrmScan,
+} from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
-import {appRouter} from '@trpc/routers';
 
 const kanbanRouters = router({
-	get get() {
-		return procedure
-			.input(
-				z.object({
-					type: z.literal('kanban'),
-					where: tKanban.deepPartial().optional(),
-				}),
-			)
-			.query(async ({input: {where}, ctx: {req, res}}) => {
-				type RetType = TKanbanExtended & {sppbin?: TCustomerSPPBIn[]};
-				return checkCredentialV2(req, res, async (): Promise<RetType[]> => {
-					const routerCaller = appRouter.createCaller({req, res});
-					const allPO = await OrmKanban.findAll({
-						where,
-						order: [
-							['createdAt', 'asc'],
-							['nomor_po', 'asc'],
-						],
-					});
-					// @ts-ignore
-					const joinedPOPromises = (allPO as TKanban[]).map<Promise<RetType>>(
-						async item => {
-							const {nomor_po, id_instruksi_kanban, id_mesin} = item;
-							const po = await routerCaller.customer_po.get({
-								nomor_po,
-								type: 'customer_po',
-							});
-							const instruksi_kanban = await routerCaller.basic.get({
-								where: {id: id_instruksi_kanban},
-								target: CRUD_ENABLED.INSTRUKSI_KANBAN,
-							});
-							const mesin = await routerCaller.basic.get({
-								where: {id: id_mesin},
-								target: CRUD_ENABLED.MESIN,
-							});
-							const sppbin = await routerCaller.basic.get({
-								where: {nomor_po},
-								target: CRUD_ENABLED.CUSTOMER_SPPB_IN,
-							});
+	get: procedure
+		.input(z.object({type: z.literal('kanban')}))
+		.query(({ctx: {req, res}}) => {
+			return checkCredentialV2(req, res, async () => {
+				const dataKanban = await OrmKanban.findAll();
+				const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
+					const {mesin_id, instruksi_id} = dataValues;
+					const dataMesin = await OrmMesin.findAll({where: {id: mesin_id}});
 
+					const dataMesinPromises = dataMesin.map(
+						async ({dataValues: mesin}) => {
+							const id_instruksi = instruksi_id[mesin.id] ?? [];
+							const dataInstruksi = await OrmKanbanInstruksi.findAll({
+								where: {id: id_instruksi},
+							});
 							return {
-								...item,
-								id_po: nomor_po,
-								instruksi_kanban,
-								mesin,
-								po,
-								sppbin,
+								...mesin,
+								dataInstruksi: dataInstruksi.map(e => e.dataValues),
 							};
 						},
 					);
 
-					const joinedPO = await Promise.all(joinedPOPromises);
-
-					return joinedPO;
+					return {
+						...dataValues,
+						dataMesin: await Promise.all(dataMesinPromises),
+					};
 				});
+
+				return Promise.all(kanbanDetailPromses);
 			});
-	},
+		}),
 
 	upsert: procedure
 		.input(tKanbanUpsert)
@@ -80,42 +51,26 @@ const kanbanRouters = router({
 				const {id, items: kanban_items, ...rest} = input;
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
-					id: id ?? generateId(),
+					id: id || generateId(),
 				});
+
 				await OrmScan.create({
 					id_kanban: createdKanban.dataValues.id,
 					id: generateId(),
 				});
-				const itemPromises = kanban_items.map(
-					({id: idItemKanban, ...restItemKanban}) => {
+				const itemPromises = Object.entries(kanban_items)?.map(
+					([id_item, {id: idItemKanban, id_sppb_in, ...restItemKanban}]) => {
+						if (id_sppb_in !== rest.id_sppb_in) return null;
+
 						return OrmKanbanItem.upsert({
 							...restItemKanban,
+							id_item,
 							id: idItemKanban ?? generateId(),
+							id_kanban: createdKanban.dataValues.id,
 						});
 					},
 				);
 				await Promise.all(itemPromises);
-				return {message: 'Success'};
-			});
-		}),
-
-	add: procedure
-		.input(tKanban.omit({id: true}))
-		.mutation(async ({input, ctx: {req, res}}) => {
-			return checkCredentialV2(req, res, async () => {
-				const id_kanban = generateId();
-				await OrmKanban.create({...input, id: id_kanban});
-				await OrmScan.create({id_kanban, id: generateId()});
-				return {message: 'Success'};
-			});
-		}),
-
-	update: procedure
-		.input(tKanban)
-		.mutation(async ({input, ctx: {req, res}}) => {
-			return checkCredentialV2(req, res, async () => {
-				const {id, ...rest} = input;
-				await OrmKanban.update(rest, {where: {id}});
 				return {message: 'Success'};
 			});
 		}),

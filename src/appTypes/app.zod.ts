@@ -151,7 +151,11 @@ export const tKanbanItem = zId.extend({
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban.partial({id: true}).extend({
 	/** key property of items is id_item */
-	items: z.record(tKanbanItem.partial({id: true})),
+	items: z.record(
+		tKanbanItem
+			.extend({id_sppb_in: z.string().optional()})
+			.partial({id: true, id_kanban: true}),
+	),
 });
 
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;

@@ -20,6 +20,7 @@ import {
 } from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
+import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {qtyList} from '../customer/po/ModalChild';
@@ -29,12 +30,14 @@ Kanban.getLayout = getLayout;
 type FormType = TKanbanUpsert & {
 	type: ModalTypePreview;
 	id_customer: string;
+	temp_id_item: string;
 };
 
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
+	const {data, refetch} = trpc.kanban.get.useQuery({type: 'kanban'});
 	const {mutate: mutateUpsert} = trpc.kanban.upsert.useMutation();
 
 	const [mesinId] = watch(['mesin_id']);
@@ -42,7 +45,7 @@ export default function Kanban() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, id_customer, ...rest}) => {
+		handleSubmit(({type, ...rest}) => {
 			switch (type) {
 				case 'add':
 				case 'edit':
@@ -52,7 +55,10 @@ export default function Kanban() {
 			}
 		})();
 
-		function onSuccess() {}
+		function onSuccess() {
+			modalRef.current?.hide();
+			refetch();
+		}
 	};
 
 	function showModal(
@@ -79,6 +85,16 @@ export default function Kanban() {
 	return (
 		<>
 			<Button onClick={() => showModal('add', {})}>Add</Button>
+			<Table
+				data={data}
+				renderItem={({Cell, item}) => {
+					return (
+						<>
+							<Cell></Cell>
+						</>
+					);
+				}}
+			/>
 			<Modal size="6xl" ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild reset={reset} control={control} />
@@ -95,9 +111,25 @@ function ModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const [mesinIds = [], idCustomer, instruksiIds, idSppbIn] = useWatch({
+	const [
+		mesinIds = [],
+		idCustomer,
+		instruksiIds,
+		idSppbIn,
+		tempIdItem,
+		kanbanItems = {},
+		id_po,
+	] = useWatch({
 		control,
-		name: ['mesin_id', 'id_customer', 'instruksi_id', 'id_sppb_in'],
+		name: [
+			'mesin_id',
+			'id_customer',
+			'instruksi_id',
+			'id_sppb_in',
+			'temp_id_item',
+			'items',
+			'id_po',
+		],
 	});
 
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -106,7 +138,13 @@ function ModalChild({
 	const {data: dataMesin} = trpc.basic.get.useQuery<any, TMesin[]>({
 		target: CRUD_ENABLED.MESIN,
 	});
-	const {data: dataSppbIn} = trpc.sppb.get.useQuery({type: 'sppb_in'});
+	const {data: dataSppbIn} = trpc.sppb.get.useQuery(
+		{
+			type: 'sppb_in',
+			where: {id_po},
+		},
+		{enabled: !!id_po},
+	);
 	const {data: dataInstruksi} = trpc.basic.get.useQuery<
 		any,
 		TInstruksiKanban[]
@@ -120,6 +158,19 @@ function ModalChild({
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
 
+	useEffect(() => {
+		if (tempIdItem) {
+			reset(({items, id_sppb_in, ...prevValue}) => {
+				return {
+					...prevValue,
+					temp_id_item: '',
+					id_sppb_in,
+					items: {...items, [tempIdItem]: {id_sppb_in}} as typeof items,
+				};
+			});
+		}
+	}, [tempIdItem]);
+
 	return (
 		<>
 			<Select
@@ -128,45 +179,89 @@ function ModalChild({
 				data={selectMapper(dataCustomer ?? [], 'id', 'name')}
 				fieldName="id_customer"
 			/>
-			<Select
-				control={control}
-				fieldName="id_po"
-				firstOption="- Pilih PO -"
-				data={selectMapper(
-					dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
-					'id',
-					'nomor_po',
-				)}
-			/>
-			<Select
-				control={control}
-				fieldName="id_sppb_in"
-				firstOption="- Pilih Surat Jalan -"
-				data={selectMapper(dataSppbIn ?? [], 'id', 'nomor_surat')}
-			/>
+			{idCustomer && (
+				<Select
+					control={control}
+					fieldName="id_po"
+					firstOption="- Pilih PO -"
+					data={selectMapper(
+						dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
+						'id',
+						'nomor_po',
+					)}
+				/>
+			)}
+
+			{id_po && (
+				<Select
+					control={control}
+					fieldName="id_sppb_in"
+					firstOption="- Pilih Surat Jalan -"
+					data={selectMapper(dataSppbIn ?? [], 'id', 'nomor_surat')}
+				/>
+			)}
+
+			{idSppbIn && (
+				<Select
+					control={control}
+					fieldName="temp_id_item"
+					firstOption="- Tambah Item -"
+					data={selectMapper(
+						selectedSppbIn?.items.filter(
+							e => !Object.keys(kanbanItems).includes(e.id),
+						) ?? [],
+						'id',
+						'itemDetail.kode_item',
+					)}
+				/>
+			)}
 
 			<Table
-				data={selectedSppbIn?.items}
-				renderItem={({Cell, item}, i) => {
+				data={Object.entries(kanbanItems)}
+				renderItem={({Cell, item: [id_item, item]}, i) => {
+					if (item.id_sppb_in !== idSppbIn) return false;
+
+					const rowItem = selectedSppbIn?.items.find(e => e.id === id_item);
+
 					return (
 						<>
-							<Cell>{item.itemDetail?.kode_item}</Cell>
-							<Cell>{item.itemDetail?.name}</Cell>
+							<Cell>{rowItem?.itemDetail?.kode_item}</Cell>
+							<Cell>{rowItem?.itemDetail?.name}</Cell>
 							{qtyList.map(num => {
-								if (!item[`qty${num}`]) return null;
+								const keyQty = `qty${num}` as const;
+								const keyUnit = `unit${num}` as const;
+
+								if (!rowItem?.[keyQty]) return null;
 
 								return (
-									<Cell key={`${i}${num}`}>
+									<Cell key={`${rowItem.id}${num}`}>
 										<Input
 											type="number"
 											control={control}
-											defaultValue={item[`qty${num}`]}
-											fieldName={`items.${item.id_item}.qty${num}`}
+											defaultValue={rowItem?.[keyQty]}
+											fieldName={`items.${id_item}.${keyQty}`}
 										/>
-										{item.itemDetail?.[`unit${num}`]}
+										<Input
+											className="hidden"
+											control={control}
+											defaultValue={rowItem.id}
+											fieldName={`items.${id_item}.id_item`}
+										/>
+										{rowItem?.itemDetail?.[keyUnit]}
 									</Cell>
 								);
 							})}
+							<Cell>
+								<Button
+									onClick={() =>
+										reset(({items, ...prevValue}) => {
+											delete items[id_item];
+											return {...prevValue, items};
+										})
+									}>
+									Delete
+								</Button>
+							</Cell>
 						</>
 					);
 				}}
@@ -183,7 +278,9 @@ function ModalChild({
 			</Button>
 
 			<Table
-				className="max-h-[400px] overflow-y-auto"
+				className={classNames('max-h-[400px] overflow-y-auto', {
+					hidden: !mesinIds || mesinIds?.length <= 0,
+				})}
 				data={mesinIds}
 				header={['Mesin', 'Instruksi']}
 				renderItem={({Cell, item: idMesin}, i) => {

@@ -10,9 +10,9 @@ export default function initOrmKanban(sequelize: Sequelize) {
 	OrmKanban.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
-			mesin_id: {type: DataTypes.STRING},
 			id_po: {type: DataTypes.STRING},
-			id_sppb_in: DataTypes.JSONB,
+			id_sppb_in: DataTypes.STRING,
+			mesin_id: DataTypes.JSONB,
 			instruksi_id: DataTypes.JSONB,
 		},
 		{

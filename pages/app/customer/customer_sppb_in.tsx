@@ -160,7 +160,9 @@ function ModalChild({control}: {control: Control<FormType>}) {
 							if (!ret[key]) ret[key] = qty;
 
 							sppbItems.forEach(item => {
-								if (item?.id_sppb_in !== idSppbIn) ret[key] -= item[key];
+								if (item?.id_sppb_in !== idSppbIn && item?.[key]) {
+									ret[key] -= item[key];
+								}
 							});
 
 							return ret;

@@ -18,7 +18,7 @@ export default function initOrmKanbanItem(sequelize: Sequelize) {
 		},
 		{
 			sequelize,
-			tableName: TABLES.PO_ITEM_SPPB_IN,
+			tableName: TABLES.KANBAN_ITEM,
 			defaultScope: {
 				attributes: {
 					exclude: defaultExcludeColumn,

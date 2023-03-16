@@ -14,6 +14,7 @@ export enum TABLES {
 	INSTRUKSI_KANBAN = 'instruksi_kanban',
 	SCAN = 'scan',
 	PO_ITEM_SPPB_IN = 'po_item_sppb_in',
+	KANBAN_ITEM = 'kanban_item',
 }
 
 export const Z_TABLES = z.nativeEnum(TABLES);
