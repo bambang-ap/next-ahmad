@@ -53,8 +53,6 @@ function InputComponent<F extends FieldValues>(
 		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
 	}, [value, defaultValue]);
 
-	console.log({defaultValue, label, value});
-
 	if (type === 'checkbox') {
 		function onCheck() {
 			onChange(!value);

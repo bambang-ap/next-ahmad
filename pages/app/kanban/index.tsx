@@ -32,6 +32,7 @@ type FormType = TKanbanUpsert & {
 	type: ModalTypePreview;
 	id_customer: string;
 	temp_id_item: string;
+	callbacks?: Array<() => void>;
 };
 
 export default function Kanban() {
@@ -56,7 +57,10 @@ export default function Kanban() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, ...rest}) => {
+		handleSubmit(async ({type, callbacks, ...rest}) => {
+			// return console.log(callbacks);
+			if (callbacks) callbacks.forEach(callback => callback());
+
 			switch (type) {
 				case 'add':
 				case 'edit':
@@ -179,6 +183,7 @@ function ModalChild({
 		],
 	});
 
+	const {mutate: mutateItem} = trpc.kanban.deleteItem.useMutation();
 	const {data: dataKanban} = trpc.kanban.get.useQuery({type: 'kanban'});
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
@@ -227,8 +232,6 @@ function ModalChild({
 			},
 			{},
 		);
-
-	console.log(itemsInSelectedKanban);
 
 	useEffect(() => {
 		if (tempIdItem) {
@@ -328,13 +331,6 @@ function ModalChild({
 											? maxValue - calculatedQty + currentQty
 											: maxValue - calculatedQty;
 
-										console.log({
-											defaultValue,
-											maxValue,
-											calculatedQty,
-											currentQty,
-										});
-
 										return (
 											<div className="flex-1" key={`${rowItem.id}${num}`}>
 												<Input
@@ -364,12 +360,16 @@ function ModalChild({
 							<Cell>
 								{!isPreview && (
 									<Button
-										onClick={() =>
-											reset(({items, ...prevValue}) => {
+										onClick={() => {
+											reset(({items, callbacks = [], ...prevValue}) => {
 												delete items[id_item];
-												return {...prevValue, items};
-											})
-										}>
+												return {
+													...prevValue,
+													items,
+													callbacks: [...callbacks, () => mutateItem(item.id)],
+												};
+											});
+										}}>
 										Delete
 									</Button>
 								)}
