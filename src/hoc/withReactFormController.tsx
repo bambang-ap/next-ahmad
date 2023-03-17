@@ -13,6 +13,7 @@ export type ControlledComponentProps<
 > = {
 	controller: UseControllerReturn<F>;
 	className?: string;
+	defaultValue?: unknown;
 } & T;
 
 export const withReactFormController = <T extends {}, F extends FieldValues>(
@@ -42,6 +43,7 @@ export const withReactFormController = <T extends {}, F extends FieldValues>(
 				defaultValue={defaultValue}
 				render={controllerProps => (
 					<Component
+						defaultValue={defaultValue}
 						controller={controllerProps}
 						{...(props as unknown as T)}
 					/>

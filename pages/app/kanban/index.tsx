@@ -153,6 +153,7 @@ function ModalChild({
 	reset: UseFormReset<FormType>;
 }) {
 	const [
+		idKanban,
 		mesinIds = [],
 		idCustomer,
 		instruksiIds,
@@ -164,6 +165,7 @@ function ModalChild({
 	] = useWatch({
 		control,
 		name: [
+			'id',
 			'mesin_id',
 			'id_customer',
 			'instruksi_id',
@@ -175,6 +177,7 @@ function ModalChild({
 		],
 	});
 
+	const {data: dataKanban} = trpc.kanban.get.useQuery({type: 'kanban'});
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
@@ -199,7 +202,31 @@ function ModalChild({
 		type: 'customer_po',
 	});
 
+	const isEdit = modalType === 'edit';
+	const isPreview = modalType === 'preview';
+	const isDelete = modalType === 'delete';
+	const isPreviewEdit = isEdit || isPreview;
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
+	const selectedKanban = dataKanban?.find(e => e.id === idKanban);
+
+	const itemsInSelectedKanban = dataKanban
+		?.filter(e => e.id_sppb_in === idSppbIn)
+		.reduce<Record<string, Record<`qty${typeof qtyList[number]}`, number>>>(
+			(ret, e) => {
+				qtyList.forEach(num => {
+					const keyQty = `qty${num}` as const;
+					Object.entries(e.items).forEach(([key, val]) => {
+						if (!ret[key]) ret[key] = {};
+						if (!ret[key][keyQty]) ret[key][keyQty] = 0;
+						ret[key][keyQty] += val[keyQty];
+					});
+				});
+				return ret;
+			},
+			{},
+		);
+
+	console.log(itemsInSelectedKanban);
 
 	useEffect(() => {
 		if (tempIdItem) {
@@ -214,7 +241,7 @@ function ModalChild({
 		}
 	}, [tempIdItem]);
 
-	if (modalType === 'delete') return <Button type="submit">Ya</Button>;
+	if (isDelete) return <Button type="submit">Ya</Button>;
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -273,10 +300,11 @@ function ModalChild({
 				className="max-h-[250px] overflow-y-auto"
 				header={['Kode Item', 'Nama Item', 'Jumlah', 'Action']}
 				data={Object.entries(kanbanItems)}
-				renderItem={({Cell, item: [id_item, item]}, i) => {
+				renderItem={({Cell, item: [id_item, item]}) => {
 					if (item.id_sppb_in !== idSppbIn) return false;
 
 					const rowItem = selectedSppbIn?.items.find(e => e.id === id_item);
+					const selectedItem = selectedKanban?.items[id_item];
 
 					return (
 						<>
@@ -290,13 +318,34 @@ function ModalChild({
 
 										if (!rowItem?.[keyQty]) return null;
 
+										const maxValue = rowItem?.[keyQty];
+										const currentQty = selectedItem?.[keyQty] ?? 0;
+										const calculatedQty =
+											itemsInSelectedKanban?.[id_item]?.[keyQty] ?? 0;
+										const defaultValue = isPreviewEdit
+											? maxValue - calculatedQty + currentQty
+											: maxValue - calculatedQty;
+
+										console.log({
+											defaultValue,
+											maxValue,
+											calculatedQty,
+											currentQty,
+										});
+
 										return (
 											<div className="flex-1" key={`${rowItem.id}${num}`}>
 												<Input
 													type="number"
 													control={control}
-													defaultValue={rowItem?.[keyQty]}
+													defaultValue={defaultValue}
 													fieldName={`items.${id_item}.${keyQty}`}
+													rules={{
+														max: {
+															value: defaultValue,
+															message: `max is ${defaultValue}`,
+														},
+													}}
 												/>
 												<Input
 													className="hidden"

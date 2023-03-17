@@ -1,4 +1,4 @@
-import {ChangeEventHandler} from 'react';
+import {ChangeEventHandler, useEffect} from 'react';
 
 import {TextInput as InputFlowbite} from 'flowbite-react';
 import {FieldValues} from 'react-hook-form';
@@ -32,6 +32,7 @@ function InputComponent<F extends FieldValues>(
 		controller,
 		placeholder,
 		noLabel,
+		defaultValue,
 	} = props;
 
 	const {
@@ -47,6 +48,12 @@ function InputComponent<F extends FieldValues>(
 			{fieldState.error?.message}
 		</Text>
 	);
+
+	useEffect(() => {
+		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
+	}, [value, defaultValue]);
+
+	console.log({defaultValue, label, value});
 
 	if (type === 'checkbox') {
 		function onCheck() {
