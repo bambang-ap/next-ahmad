@@ -138,7 +138,9 @@ export default function Kanban() {
 			/>
 			<Modal title={modalTitle} size="6xl" ref={modalRef}>
 				<form onSubmit={submit}>
-					<ModalChild reset={reset} control={control} />
+					<fieldset disabled={modalType === 'preview'}>
+						<ModalChild reset={reset} control={control} />
+					</fieldset>
 				</form>
 			</Modal>
 		</>
@@ -360,30 +362,34 @@ function ModalChild({
 								</div>
 							</Cell>
 							<Cell>
-								<Button
-									onClick={() =>
-										reset(({items, ...prevValue}) => {
-											delete items[id_item];
-											return {...prevValue, items};
-										})
-									}>
-									Delete
-								</Button>
+								{!isPreview && (
+									<Button
+										onClick={() =>
+											reset(({items, ...prevValue}) => {
+												delete items[id_item];
+												return {...prevValue, items};
+											})
+										}>
+										Delete
+									</Button>
+								)}
 							</Cell>
 						</>
 					);
 				}}
 			/>
 
-			<Button
-				onClick={() => {
-					reset(({mesin_id = [], ...rest}) => {
-						mesin_id.push(undefined);
-						return {...rest, mesin_id};
-					});
-				}}>
-				Add Mesin
-			</Button>
+			{!isPreview && (
+				<Button
+					onClick={() => {
+						reset(({mesin_id = [], ...rest}) => {
+							mesin_id.push(undefined);
+							return {...rest, mesin_id};
+						});
+					}}>
+					Add Mesin
+				</Button>
+			)}
 
 			<Table
 				className={classNames('max-h-[250px] overflow-y-auto', {
@@ -410,7 +416,7 @@ function ModalChild({
 											'nomor_mesin',
 										)}
 									/>
-									{idMesin && (
+									{idMesin && !isPreview && (
 										<Button
 											onClick={() =>
 												reset(({instruksi_id = {}, ...rest}) => {
@@ -422,12 +428,19 @@ function ModalChild({
 											Add Instruksi
 										</Button>
 									)}
-									<Button
-										onClick={() => {
-											reset(({mesin_id = [], ...rest}) => {
-												return {...rest, mesin_id: mesin_id.remove(i)};
-											});
-										}}>{`Hapus Mesin ${i + 1}`}</Button>
+									{!isPreview && (
+										<Button
+											onClick={() => {
+												reset(({mesin_id = [], instruksi_id = {}, ...rest}) => {
+													if (mesin_id[i]) delete instruksi_id?.[mesin_id[i]];
+													return {
+														...rest,
+														mesin_id: mesin_id.remove(i),
+														instruksi_id,
+													};
+												});
+											}}>{`Hapus Mesin ${i + 1}`}</Button>
+									)}
 								</div>
 							</Cell>
 							<Cell>
@@ -441,21 +454,23 @@ function ModalChild({
 													fieldName={`instruksi_id.${idMesin}.${ii}`}
 													data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
 												/>
-												<Button
-													icon="faTrash"
-													onClick={() => {
-														reset(({instruksi_id, ...rest}) => {
-															return {
-																...rest,
-																instruksi_id: {
-																	...instruksi_id,
-																	[idMesin]:
-																		instruksi_id[idMesin]?.remove(i) ?? [],
-																},
-															};
-														});
-													}}
-												/>
+												{!isPreview && (
+													<Button
+														icon="faTrash"
+														onClick={() => {
+															reset(({instruksi_id, ...rest}) => {
+																return {
+																	...rest,
+																	instruksi_id: {
+																		...instruksi_id,
+																		[idMesin]:
+																			instruksi_id[idMesin]?.remove(i) ?? [],
+																	},
+																};
+															});
+														}}
+													/>
+												)}
 											</div>
 										);
 									})}
@@ -466,7 +481,7 @@ function ModalChild({
 				}}
 			/>
 
-			<Button type="submit">Submit</Button>
+			{!isPreview && <Button type="submit">Submit</Button>}
 		</div>
 	);
 }
