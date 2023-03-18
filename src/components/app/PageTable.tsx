@@ -187,14 +187,25 @@ const RenderField = (props: RenderFieldProps) => {
 };
 
 function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
+	const modalRef = useRef<ModalRef>(null);
 	const [jsonData, setJsonData] = useState<TCustomer[]>();
 	const [file, setFile] = useState<File>();
 
 	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
 	const {mutate} = trpc.basic.mutate.useMutation();
 
-	async function mutateInsert() {
+	async function mutateInsert(force?: boolean): void {
 		if (!jsonData) return;
+
+		if (!force) {
+			const confirmation = confirm(
+				'Data dibawah akan di import, apakah anda yakin?',
+			);
+			if (!confirmation) return;
+
+			modalRef.current?.hide();
+			return mutateInsert(true);
+		}
 
 		const bodyPromises = jsonData.map(customer => createPromise(customer));
 		await Promise.all(bodyPromises);
@@ -240,20 +251,47 @@ function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	}
 
 	useEffect(convertToJson, [file]);
+	useEffect(() => {
+		if (!modalRef.current?.visible) setJsonData(undefined);
+	}, [modalRef.current?.visible]);
 
 	return (
-		<div className="flex">
-			<Button onClick={downloadExampleData}>Download</Button>
-			<input
-				type="file"
-				accept=".xls,.xlsx"
-				onChange={e => {
-					const selectedFile = e.target.files?.[0];
-					if (!selectedFile) return;
-					setFile(selectedFile);
-				}}
-			/>
-			<Button onClick={mutateInsert}>Export</Button>
-		</div>
+		<>
+			<Button onClick={() => modalRef.current?.show()}>Import</Button>
+			<Modal title="Import Customer" ref={modalRef}>
+				<div className="flex flex-col gap-2">
+					<input
+						type="file"
+						accept=".xls,.xlsx"
+						onChange={e => {
+							const selectedFile = e.target.files?.[0];
+							if (!selectedFile) return;
+							setFile(selectedFile);
+						}}
+					/>
+
+					<Table
+						data={jsonData}
+						className="max-h-64 overflow-y-auto"
+						header={Object.keys(exampleData?.[0] ?? {})}
+						renderItem={({item, Cell}) => {
+							return Object.values(item).map(value => {
+								return <Cell>{value}</Cell>;
+							});
+						}}
+					/>
+					<div className="flex gap-2">
+						<Button className="flex-1" onClick={downloadExampleData}>
+							Download Contoh Data
+						</Button>
+						{jsonData && (
+							<Button className="flex-1" onClick={() => mutateInsert()}>
+								Import
+							</Button>
+						)}
+					</div>
+				</div>
+			</Modal>
+		</>
 	);
 }
