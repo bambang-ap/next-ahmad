@@ -1,11 +1,10 @@
-import {useRef, useState} from 'react';
+import {Suspense, useEffect, useRef, useState} from 'react';
 
 import {useRouter} from 'next/router';
-import Papa from 'papaparse';
-import {CSVLink} from 'react-csv';
 import {Control, useForm, useWatch} from 'react-hook-form';
+import * as XLSX from 'xlsx';
 
-import {ModalType} from '@appTypes/app.type';
+import {ModalType, TCustomer} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {allowedPages, BodyArrayKey, ColUnion} from '@constants';
 import {CRUD_ENABLED} from '@enum';
@@ -28,7 +27,6 @@ const RenderPage = ({path}: {path: string}) => {
 		enumName: target,
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
-	const [inputFilesKey, setInputFilesKey] = useState(uuid());
 	const modalRef = useRef<ModalRef>(null);
 	const {mutate} = trpc.basic.mutate.useMutation({
 		onSuccess() {
@@ -36,7 +34,7 @@ const RenderPage = ({path}: {path: string}) => {
 		},
 	});
 
-	const {data, refetch} = trpc.basic.get.useQuery({target});
+	const {data: dataTable, refetch} = trpc.basic.get.useQuery({target});
 	const {control, handleSubmit, watch, reset} = useForm();
 
 	const modalType = watch('type');
@@ -68,25 +66,6 @@ const RenderPage = ({path}: {path: string}) => {
 		modalRef.current?.show();
 	}
 
-	function complete(results: Papa.ParseResult<string[]>) {
-		const bodyList = results.data
-			.slice(1)
-			.reduce<Record<string, any>[]>((ret, data) => {
-				const df = results.data[0]?.reduce<Record<string, any>>((a, key, i) => {
-					return {...a, [key]: data[i]};
-				}, {});
-
-				ret.push(df);
-				return ret;
-			}, []);
-
-		bodyList.forEach(body => {
-			mutate({target, type: 'add', body});
-		});
-
-		setInputFilesKey(uuid());
-	}
-
 	return (
 		<>
 			<Modal title={modalTitle} ref={modalRef}>
@@ -98,37 +77,13 @@ const RenderPage = ({path}: {path: string}) => {
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
 				{target === CRUD_ENABLED.CUSTOMER && (
-					<div className="flex gap-2">
-						<CSVLink
-							filename="contoh-data-customer"
-							className="p-4 border"
-							data={[
-								['name', 'alamat', 'no_telp', 'npwp'],
-								['Your Customer Name', 'Jl. Bekasi', '62857', '74123123'],
-							]}>
-							Download format
-						</CSVLink>
-
-						<label htmlFor="asdf" className="p-4 border">
-							Import
-						</label>
-
-						<input
-							id="asdf"
-							className="hidden"
-							key={inputFilesKey}
-							type="file"
-							accept=".csv"
-							onChange={({target: {files}}) => {
-								if (files && files[0])
-									Papa.parse<string[]>(files[0], {complete});
-							}}
-						/>
-					</div>
+					<Suspense>
+						<RenderImportCustomer refetch={refetch} />
+					</Suspense>
 				)}
 
 				<Table
-					data={data ?? []}
+					data={dataTable ?? []}
 					header={table?.header}
 					renderItem={({item, Cell}) => {
 						const {id, ...rest} = item;
@@ -230,3 +185,75 @@ const RenderField = (props: RenderFieldProps) => {
 		/>
 	);
 };
+
+function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
+	const [jsonData, setJsonData] = useState<TCustomer[]>();
+	const [file, setFile] = useState<File>();
+
+	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
+	const {mutate} = trpc.basic.mutate.useMutation();
+
+	async function mutateInsert() {
+		if (!jsonData) return;
+
+		const bodyPromises = jsonData.map(customer => createPromise(customer));
+		await Promise.all(bodyPromises);
+
+		function createPromise(body: TCustomer) {
+			return new Promise(() => {
+				mutate(
+					{target: CRUD_ENABLED.CUSTOMER, type: 'add', body},
+					{onSuccess: refetch},
+				);
+			});
+		}
+	}
+
+	function downloadExampleData() {
+		if (!exampleData) return;
+
+		const sheetName = 'Sheet 1';
+		const workbook = XLSX.utils.book_new();
+		workbook.SheetNames.push(sheetName);
+		workbook.Sheets[sheetName] = XLSX.utils.json_to_sheet(exampleData);
+		XLSX.writeFile(workbook, `example-customer.xlsx`);
+	}
+
+	function convertToJson() {
+		if (!file) return;
+
+		const fileReader = new FileReader();
+		fileReader.onload = event => {
+			const data = event.target?.result;
+
+			const workbook = XLSX.read(data, {type: 'binary'});
+
+			Object.values(workbook.Sheets).forEach((sheet, i) => {
+				if (i > 0) return;
+
+				const rowObject = XLSX.utils.sheet_to_json(sheet);
+				setJsonData(rowObject as TCustomer[]);
+			});
+		};
+
+		fileReader.readAsBinaryString(file);
+	}
+
+	useEffect(convertToJson, [file]);
+
+	return (
+		<div className="flex">
+			<Button onClick={downloadExampleData}>Download</Button>
+			<input
+				type="file"
+				accept=".xls,.xlsx"
+				onChange={e => {
+					const selectedFile = e.target.files?.[0];
+					if (!selectedFile) return;
+					setFile(selectedFile);
+				}}
+			/>
+			<Button onClick={mutateInsert}>Export</Button>
+		</div>
+	);
+}
