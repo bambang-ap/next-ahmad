@@ -186,7 +186,6 @@ function ModalChild({control}: {control: Control<FormType>}) {
 							/>
 							<Cell>{item.kode_item}</Cell>
 							<Cell>{item.name}</Cell>
-							<Cell>{item.harga}</Cell>
 							{qtyList.map(num => {
 								const unit = item[`unit${num}`];
 

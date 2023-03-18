@@ -275,9 +275,9 @@ function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 						className="max-h-64 overflow-y-auto"
 						header={Object.keys(exampleData?.[0] ?? {})}
 						renderItem={({item, Cell}) => {
-							return Object.values(item).map(value => {
-								return <Cell>{value}</Cell>;
-							});
+							return Object.values(item).map((value, i) => (
+								<Cell key={i}>{value}</Cell>
+							));
 						}}
 					/>
 					<div className="flex gap-2">

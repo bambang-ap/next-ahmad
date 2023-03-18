@@ -11,7 +11,7 @@ export type TableProps<T, VV = {}> = {
 	data?: T[];
 	header?: string[];
 	className?: string;
-	renderItem?: TRenderItem<T, JSX.Element | false, VV>;
+	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, VV>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, VV>;
 };
 
