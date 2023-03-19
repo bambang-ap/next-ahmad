@@ -20,6 +20,10 @@ function getBaseUrl() {
 }
 
 export const trpc = createTRPCNext<AppRouter>({
+	/**
+	 * @link https://trpc.io/docs/ssr
+	 **/
+	ssr: false,
 	config() {
 		return {
 			links: [
@@ -31,14 +35,6 @@ export const trpc = createTRPCNext<AppRouter>({
 					url: `${getBaseUrl()}/api`,
 				}),
 			],
-			/**
-			 * @link https://tanstack.com/query/v4/docs/reference/QueryClient
-			 **/
-			// queryClientConfig: { defaultOptions: { queries: { staleTime: 60 } } },
 		};
 	},
-	/**
-	 * @link https://trpc.io/docs/ssr
-	 **/
-	ssr: false,
 });

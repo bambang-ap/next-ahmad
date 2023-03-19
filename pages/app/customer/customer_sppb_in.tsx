@@ -1,10 +1,13 @@
-import {FormEventHandler, Fragment, useRef} from 'react';
+import {FormEventHandler, Fragment, useEffect, useRef} from 'react';
 
 import {Control, useForm, useWatch} from 'react-hook-form';
+import {useRecoilState} from 'recoil';
 
 import {ModalTypePreview, TUpsertSppbIn} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table} from '@components';
+import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
+import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
 import {qtyList} from './po/ModalChild';
@@ -20,8 +23,10 @@ export default function SPPBIN() {
 	});
 
 	const {data, refetch} = trpc.sppb.get.useQuery({type: 'sppb_in'});
-	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation();
-	const {mutate: mutateDelete} = trpc.sppb.delete.useMutation();
+	const {mutate: mutateUpsert} =
+		trpc.sppb.upsert.useMutation(defaultErrorMutation);
+	const {mutate: mutateDelete} =
+		trpc.sppb.delete.useMutation(defaultErrorMutation);
 
 	const modalType = watch('type');
 	const modalTitle =
@@ -36,10 +41,10 @@ export default function SPPBIN() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, ...rest}) => {
+		handleSubmit(({type, po_item, ...rest}) => {
 			if (type === 'delete') return mutateDelete({id: rest.id}, {onSuccess});
 
-			mutateUpsert(rest, {onSuccess});
+			mutateUpsert({...rest, po_item: po_item.filter(Boolean)}, {onSuccess});
 		})();
 
 		function onSuccess() {
@@ -99,6 +104,8 @@ export default function SPPBIN() {
 }
 
 function ModalChild({control}: {control: Control<FormType>}) {
+	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
+	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
 	const [modalType, idSppbIn, idPo] = useWatch({
 		control,
 		name: ['type', 'id', 'id_po'],
@@ -112,11 +119,34 @@ function ModalChild({control}: {control: Control<FormType>}) {
 	const isDelete = modalType === 'delete';
 	const isPreviewEdit = isEdit || isPreview;
 
+	useEffect(() => {
+		return () => {
+			setExcludedItem([]);
+			setIncludedItem([]);
+		};
+	}, []);
+
+	if (isDelete) return <Button type="submit">Ya</Button>;
+
 	const selectedPo = listPo?.find(e => e.id === idPo);
 	const selectedSppbIn = dataSppbIn?.filter(e => e.id_po === idPo);
 	const selectedSppbInn = dataSppbIn?.find(e => e.id === idSppbIn);
 
-	if (isDelete) return <Button type="submit">Ya</Button>;
+	function excludeItem(id: string) {
+		setExcludedItem(prev => [...prev, id]);
+	}
+
+	function includeItem(id: string) {
+		setExcludedItem(prev => prev.filter(item => item !== id));
+	}
+
+	function excludeItemEdit(id: string) {
+		setIncludedItem(prev => prev.filter(item => item !== id));
+	}
+
+	function includeItemEdit(id: string) {
+		setIncludedItem(prev => [...prev, id]);
+	}
 
 	return (
 		<>
@@ -152,6 +182,23 @@ function ModalChild({control}: {control: Control<FormType>}) {
 						itemmm => itemmm?.id_item === item?.id,
 					);
 
+					const isOnEditModal = !selectedSppbItem && isEdit;
+
+					if (excludedItem.includes(item.id))
+						return (
+							<RenderReAddItem Cell={Cell} onClick={() => includeItem(item.id)}>
+								{item.kode_item}
+							</RenderReAddItem>
+						);
+					if (isOnEditModal && !includedItem.includes(item.id))
+						return (
+							<RenderReAddItem
+								Cell={Cell}
+								onClick={() => includeItemEdit(item.id)}>
+								{item.kode_item}
+							</RenderReAddItem>
+						);
+
 					const assignedQty = qtyList.reduce<Record<string, number>>(
 						(ret, num) => {
 							const key = `qty${num}` as const;
@@ -175,12 +222,14 @@ function ModalChild({control}: {control: Control<FormType>}) {
 							<Input
 								className="hidden"
 								control={control}
+								shouldUnregister
 								defaultValue={item.id}
 								fieldName={`po_item.${index}.id_item`}
 							/>
 							<Input
 								className="hidden"
 								control={control}
+								shouldUnregister
 								defaultValue={selectedSppbItem?.id}
 								fieldName={`po_item.${index}.id`}
 							/>
@@ -204,9 +253,11 @@ function ModalChild({control}: {control: Control<FormType>}) {
 												}}
 												type="number"
 												control={control}
+												shouldUnregister
 												defaultValue={
 													isPreviewEdit
-														? selectedSppbItem?.[`qty${num}`]
+														? selectedSppbItem?.[`qty${num}`] ||
+														  assignedQty[`qty${num}`]
 														: assignedQty[`qty${num}`]
 												}
 												fieldName={`po_item.${index}.qty${num}`}
@@ -216,12 +267,33 @@ function ModalChild({control}: {control: Control<FormType>}) {
 									</Fragment>
 								);
 							})}
+							<Cell>
+								<Button
+									onClick={() =>
+										isOnEditModal
+											? excludeItemEdit(item.id)
+											: excludeItem(item.id)
+									}>
+									Delete
+								</Button>
+							</Cell>
 						</>
 					);
 				}}
 			/>
 
 			<Button type="submit">Submit</Button>
+		</>
+	);
+}
+
+function RenderReAddItem({Cell, onClick, children}) {
+	return (
+		<>
+			<Cell colSpan={qtyList.length + 2}>{children}</Cell>
+			<Cell>
+				<Button onClick={onClick}>Add</Button>
+			</Cell>
 		</>
 	);
 }

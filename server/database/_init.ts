@@ -29,6 +29,7 @@ export const ORM = new Sequelize(
 		port: process.env.PGSQL_PORT,
 		host: process.env.PGSQL_HOST,
 		// query: {raw: true},
+		logging: false,
 	},
 );
 

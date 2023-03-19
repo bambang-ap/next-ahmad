@@ -59,14 +59,27 @@ const sppbRouters = router({
 					id: id || generateId(),
 				});
 
-				po_item.forEach(item => {
-					const {id: idItem, id_item, id_sppb_in} = item;
+				const existingPoItemPromises = (
+					await OrmPOItemSppbIn.findAll({
+						where: {id_sppb_in: createdSppb.id},
+					})
+				).map(({dataValues}) => {
+					const itemFounded = po_item.find(item => item.id === dataValues.id);
+					if (!itemFounded) {
+						return OrmPOItemSppbIn.destroy({where: {id: dataValues.id}});
+					}
+				});
 
-					OrmPOItemSppbIn.upsert({
-						...item,
-						id_item,
-						id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
-						id: idItem || generateId(),
+				await Promise.all(existingPoItemPromises).then(() => {
+					po_item.forEach(item => {
+						const {id: idItem, id_item, id_sppb_in} = item;
+
+						OrmPOItemSppbIn.upsert({
+							...item,
+							id_item,
+							id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
+							id: idItem || generateId(),
+						});
 					});
 				});
 			});
@@ -75,10 +88,9 @@ const sppbRouters = router({
 		.input(zId.partial())
 		.mutation(({ctx: {req, res}, input: {id}}) => {
 			return checkCredentialV2(req, res, async () => {
-				await OrmPOItemSppbIn.destroy({where: {id_sppb_in: id}});
-				await OrmCustomerSPPBIn.destroy({where: {id}});
-
-				return {message: 'Success'};
+				return OrmPOItemSppbIn.destroy({where: {id_sppb_in: id}}).then(() =>
+					OrmCustomerSPPBIn.destroy({where: {id}}),
+				);
 			});
 		}),
 });

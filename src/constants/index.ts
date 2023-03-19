@@ -1,3 +1,6 @@
+import {TRPCClientError} from '@trpc/client';
+import {AppRouter} from '@trpc/routers';
+
 export * from './colors';
 export * from './pages';
 export * from './sizes';
@@ -8,3 +11,9 @@ export const focusInputClassName =
 export const inputClassName = 'px-2 py-1 rounded bg-white';
 
 export const defaultExcludeColumn = ['createdAt', 'updatedAt'];
+
+export const defaultErrorMutation = {
+	onError(err: TRPCClientError<AppRouter>) {
+		alert(err?.message);
+	},
+} as const;

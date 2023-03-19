@@ -16,3 +16,13 @@ export const atomMappedMenu = atom<TMenu[]>({
 	key: 'atomMappedMenu',
 	default: [],
 });
+
+export const atomExcludedItem = atom<string[]>({
+	key: 'atomExcludedItem',
+	default: [],
+});
+
+export const atomIncludedItem = atom<string[]>({
+	key: 'atomIncludedItem',
+	default: [],
+});
