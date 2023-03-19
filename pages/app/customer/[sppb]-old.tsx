@@ -5,6 +5,7 @@ import {useForm} from 'react-hook-form';
 
 import {ModalTypePreview, TCustomerSPPBIn, USPPB} from '@appTypes/app.zod';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
+import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -60,11 +61,13 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 	);
 
 	const {mutate: mutateUpsert} = trpc.sppb.upsert.useMutation({
+		...defaultErrorMutation,
 		onSuccess() {
 			refetch();
 		},
 	});
 	const {mutate: mutateDelete} = trpc.sppb.delete.useMutation({
+		...defaultErrorMutation,
 		onSuccess() {
 			refetch();
 		},

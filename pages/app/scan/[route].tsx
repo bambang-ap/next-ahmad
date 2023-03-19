@@ -4,6 +4,7 @@ import {useForm} from 'react-hook-form';
 import {TDataScan} from '@appTypes/app.type';
 import {TScanTarget} from '@appTypes/app.zod';
 import {Button, Input} from '@components';
+import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
 
@@ -28,7 +29,10 @@ function RenderScanPage() {
 	const id = watch('id');
 
 	const {data, refetch} = trpc.scan.get.useQuery({id}, {enabled: false});
-	const {mutate} = trpc.scan.update.useMutation({onSuccess: () => refetch()});
+	const {mutate} = trpc.scan.update.useMutation({
+		...defaultErrorMutation,
+		onSuccess: () => refetch(),
+	});
 
 	const searchKanban = handleSubmit(() => {
 		refetch();

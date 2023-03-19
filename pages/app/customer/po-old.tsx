@@ -19,6 +19,7 @@ import {
 	Table,
 	Text,
 } from '@components';
+import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
@@ -30,9 +31,9 @@ type FormType = TCustomerPO & {
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
-	const insertPO = trpc.customer_po.add.useMutation();
-	const updatePO = trpc.customer_po.update.useMutation();
-	const deletePO = trpc.customer_po.delete.useMutation();
+	const insertPO = trpc.customer_po.add.useMutation(defaultErrorMutation);
+	const updatePO = trpc.customer_po.update.useMutation(defaultErrorMutation);
+	const deletePO = trpc.customer_po.delete.useMutation(defaultErrorMutation);
 
 	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer_po'});
 	const {control, handleSubmit, watch, reset, clearErrors} =

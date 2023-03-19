@@ -12,8 +12,8 @@ export const inputClassName = 'px-2 py-1 rounded bg-white';
 
 export const defaultExcludeColumn = ['createdAt', 'updatedAt'];
 
-export const defaultErrorMutation = {
-	onError(err: TRPCClientError<AppRouter>) {
+export const defaultErrorMutation: {onError: any} = {
+	onError: (err: TRPCClientError<AppRouter>) => {
 		alert(err?.message);
 	},
-} as const;
+};

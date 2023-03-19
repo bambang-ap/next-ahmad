@@ -19,6 +19,7 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
+import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {classNames} from '@utils';
@@ -40,8 +41,10 @@ export default function Kanban() {
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
 	const {data, refetch} = trpc.kanban.get.useQuery({type: 'kanban'});
-	const {mutate: mutateUpsert} = trpc.kanban.upsert.useMutation();
-	const {mutate: mutateDelete} = trpc.kanban.delete.useMutation();
+	const {mutate: mutateUpsert} =
+		trpc.kanban.upsert.useMutation(defaultErrorMutation);
+	const {mutate: mutateDelete} =
+		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
 	const [mesinId, modalType] = watch(['mesin_id', 'type']);
 
@@ -183,7 +186,8 @@ function ModalChild({
 		],
 	});
 
-	const {mutate: mutateItem} = trpc.kanban.deleteItem.useMutation();
+	const {mutate: mutateItem} =
+		trpc.kanban.deleteItem.useMutation(defaultErrorMutation);
 	const {data: dataKanban} = trpc.kanban.get.useQuery({type: 'kanban'});
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,

@@ -53,6 +53,7 @@ export default function Menu() {
 			onSuccess: () => {
 				refetchMapped();
 				reftechUnMapped();
+				alert('Success');
 			},
 		});
 	});

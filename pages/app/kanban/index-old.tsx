@@ -18,6 +18,7 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
+import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {classNames} from '@utils';
@@ -31,9 +32,9 @@ type FormType = TKanban & {
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
-	const insertPO = trpc.kanban.add.useMutation();
-	const updatePO = trpc.kanban.update.useMutation();
-	const deletePO = trpc.kanban.delete.useMutation();
+	const insertPO = trpc.kanban.add.useMutation(defaultErrorMutation);
+	const updatePO = trpc.kanban.update.useMutation(defaultErrorMutation);
+	const deletePO = trpc.kanban.delete.useMutation(defaultErrorMutation);
 
 	const {data, refetch} = trpc.kanban.get.useQuery({
 		type: 'kanban',

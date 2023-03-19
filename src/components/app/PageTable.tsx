@@ -6,7 +6,12 @@ import * as XLSX from 'xlsx';
 
 import {ModalType, TCustomer} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
-import {allowedPages, BodyArrayKey, ColUnion} from '@constants';
+import {
+	allowedPages,
+	BodyArrayKey,
+	ColUnion,
+	defaultErrorMutation,
+} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
 
@@ -29,6 +34,7 @@ const RenderPage = ({path}: {path: string}) => {
 
 	const modalRef = useRef<ModalRef>(null);
 	const {mutate} = trpc.basic.mutate.useMutation({
+		...defaultErrorMutation,
 		onSuccess() {
 			refetch();
 		},
@@ -192,7 +198,7 @@ function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const [file, setFile] = useState<File>();
 
 	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
-	const {mutate} = trpc.basic.mutate.useMutation();
+	const {mutate} = trpc.basic.mutate.useMutation(defaultErrorMutation);
 
 	async function mutateInsert(force?: boolean): void {
 		if (!jsonData) return;
