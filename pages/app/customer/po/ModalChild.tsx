@@ -198,6 +198,7 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 													fieldName={`po_item.${index}.qty${num}`}
 												/>
 												<Select
+													disabled={isPreview}
 													className="w-1/2"
 													firstOption="- Pilih unit -"
 													control={control}

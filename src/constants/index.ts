@@ -14,6 +14,13 @@ export const defaultExcludeColumn = ['createdAt', 'updatedAt'];
 
 export const defaultErrorMutation: {onError: any} = {
 	onError: (err: TRPCClientError<AppRouter>) => {
-		alert(err?.message);
+		try {
+			JSON.parse(err?.message);
+			alert(
+				'Mohon periksa kembali data yang Anda isi atau kolom yang belum terisi',
+			);
+		} catch (e) {
+			alert(err?.message);
+		}
 	},
 };

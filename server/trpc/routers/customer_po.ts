@@ -72,21 +72,43 @@ const customer_poRouters = router({
 	update: procedure
 		.input(
 			tCustomerPO.extend({
-				po_item: tPOItem.or(tPOItem.omit({id_po: true, id: true})).array(),
+				po_item: tPOItem
+					.or(tPOItem.partial({id: true}).omit({id_po: true}))
+					.array(),
 			}),
 		)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(req, res, async () => {
 				const {id, po_item, ...body} = input;
-				await OrmCustomerPO.update(body, {where: {id}});
-				const poItemPromises = po_item?.map(({id, ...item}) =>
-					OrmCustomerPOItem.upsert({
+
+				await OrmCustomerPO.upsert({...body, id});
+
+				const poItemPromises = po_item?.map(({id: itemId, ...item}) => {
+					const isExist = po_item.find(e => e.id === itemId);
+
+					if (!isExist) OrmCustomerPOItem.destroy({where: {id: itemId}});
+
+					return OrmCustomerPOItem.upsert({
 						...item,
-						id: id || generateId(),
+						id: itemId || generateId(),
 						id_po: input.id,
-					}),
+					});
+				});
+
+				const existingPoItems = await OrmCustomerPOItem.findAll({
+					where: {id_po: id},
+				});
+
+				const excludeItem = existingPoItems.filter(
+					({dataValues: {id: itemId}}) => {
+						const item = po_item.find(e => e.id === itemId);
+						return !item;
+					},
 				);
-				await Promise.all(poItemPromises ?? []);
+
+				await Promise.all(poItemPromises);
+				await Promise.all(excludeItem.map(e => e.destroy()));
+
 				return {message: 'Success'};
 			});
 		}),

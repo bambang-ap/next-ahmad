@@ -42,7 +42,6 @@ const basicRouters = router({
 			}),
 		)
 		.query(async ({input: {target, where}}) => {
-			console.log({where});
 			const orm = MAPPING_CRUD_ORM[target];
 			const ormResult = await orm.findAll({where, order: [['id', 'asc']]});
 			return ormResult;
