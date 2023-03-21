@@ -1,3 +1,4 @@
+import {qtyList, UQtyList} from 'pages/app/customer/po/ModalChild';
 import {z} from 'zod';
 
 import {tCustomerPO, tPOItem} from '@appTypes/app.zod';
@@ -27,16 +28,49 @@ const customer_poRouters = router({
 					nomor_po ? {where: {id: nomor_po}} : undefined,
 				);
 				const joinedPOPromises = allPO.map(async ({dataValues}) => {
-					const po_item = await OrmCustomerPOItem.findAll({
+					const poItem = await OrmCustomerPOItem.findAll({
 						where: {id_po: dataValues.id},
 					});
+
 					const customer = await OrmCustomer.findOne({
 						where: {id: dataValues.id_customer},
 					});
+
+					const itemInSppbIn = poItem.map(async ({dataValues: item}) => {
+						type ItemRet = {
+							qty: Record<UQtyList, number>;
+							closed: Record<UQtyList, boolean>;
+						};
+
+						const itemSppb = await OrmPOItemSppbIn.findAll({
+							where: {id_item: item.id},
+						});
+
+						const {closed} = itemSppb.reduce<ItemRet>(
+							(ret, {dataValues: ii}) => {
+								qtyList.forEach(num => {
+									const qtyKey = `qty${num}` as const;
+									if (!ret.qty[qtyKey]) ret.qty[qtyKey] = 0;
+									ret.qty[qtyKey] += ii[qtyKey] ?? 0;
+
+									ret.closed[qtyKey] = (item[qtyKey] ?? 0) === ret.qty[qtyKey];
+								});
+
+								return ret;
+							},
+							{qty: {}, closed: {qty1: false}} as any,
+						);
+
+						return {...item, isClosed: !Object.values(closed).includes(false)};
+					});
+
+					const po_item = await Promise.all(itemInSppbIn);
+
 					return {
 						...dataValues,
+						po_item,
 						customer: customer?.dataValues,
-						po_item: po_item.map(item => item.dataValues),
+						isClosed: !po_item.find(e => e.isClosed === false),
 					};
 				});
 

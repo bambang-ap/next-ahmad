@@ -3,7 +3,7 @@ import {Fragment, PropsWithChildren, useEffect} from 'react';
 import {Control, useWatch} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
-import {Button, Cells, Input, Select, Table} from '@components';
+import {Button, Cells, Input, Select, selectMapper, Table} from '@components';
 import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
@@ -19,7 +19,9 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 	});
 
 	const {data: dataSppbIn} = trpc.sppb.get.useQuery({type: 'sppb_in'});
-	const {data: listPo} = trpc.customer_po.get.useQuery({type: 'customer_po'});
+	const {data: listPo = []} = trpc.customer_po.get.useQuery({
+		type: 'customer_po',
+	});
 
 	const isEdit = modalType === 'edit';
 	const isPreview = modalType === 'preview';
@@ -62,7 +64,11 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 				control={control}
 				fieldName="id_po"
 				firstOption="- Pilih PO -"
-				data={listPo?.map(i => ({value: i.id, label: i.nomor_po}))}
+				data={selectMapper(
+					isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),
+					'id',
+					'nomor_po',
+				)}
 			/>
 			<Input
 				disabled={isPreview}

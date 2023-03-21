@@ -20,6 +20,7 @@ const selectUnitData = [
 	{value: 'carton'},
 ] as SelectPropsData<TItemUnit>[];
 
+export type UQtyList = `qty${typeof qtyList[number]}`;
 export const qtyList = [1, 2, 3] as const;
 
 export type FormType = TCustomerPO & {

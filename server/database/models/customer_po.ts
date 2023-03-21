@@ -19,6 +19,10 @@ export default function initOrmCustomerPO(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.CUSTOMER_PO,
 			defaultScope: {
+				order: [
+					['tgl_po', 'asc'],
+					['nomor_po', 'asc'],
+				],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

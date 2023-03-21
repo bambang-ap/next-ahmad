@@ -18,7 +18,10 @@ export default function initOrmCustomerSPPBIn(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.CUSTOMER_SPPB_IN,
 			defaultScope: {
-				order: [['id_po', 'asc']],
+				order: [
+					['tgl', 'asc'],
+					['nomor_surat', 'asc'],
+				],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
