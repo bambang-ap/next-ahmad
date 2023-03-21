@@ -56,6 +56,24 @@ function SelectComponent<F extends FieldValues>({
 
 	const label = !noLabel && (labelProps || name);
 
+	// const selectedValue = data.find(e => e.value === value);
+
+	// return (
+	// 	<Autocomplete
+	// 		disablePortal
+	// 		options={data}
+	// 		disabled={disabled}
+	// 		className={className}
+	// 		defaultValue={selectedValue}
+	// 		getOptionDisabled={({value}) => !value}
+	// 		onChange={(_, option) => onChange(option?.value)}
+	// 		getOptionLabel={({value, label}) => label || value}
+	// 		renderInput={params => (
+	// 			<TextField {...params} placeholder={firstOption} label={label} />
+	// 		)}
+	// 	/>
+	// );
+
 	return (
 		<div className={classNames('flex flex-col', className)}>
 			{label && <Text className="mb-2">{label}</Text>}
