@@ -1,13 +1,11 @@
-import {Select as SelectFlowbite} from 'flowbite-react';
+import {Autocomplete, TextField} from '@mui/material';
 import {FieldPath, FieldValues} from 'react-hook-form';
 
+import {defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
 } from '@formController';
-import {classNames} from '@utils';
-
-import {Text} from '../Text';
 
 export type SelectPropsData<T extends string = string> = {
 	label?: string;
@@ -56,39 +54,26 @@ function SelectComponent<F extends FieldValues>({
 
 	const label = !noLabel && (labelProps || name);
 
-	// const selectedValue = data.find(e => e.value === value);
-
-	// return (
-	// 	<Autocomplete
-	// 		disablePortal
-	// 		options={data}
-	// 		disabled={disabled}
-	// 		className={className}
-	// 		defaultValue={selectedValue}
-	// 		getOptionDisabled={({value}) => !value}
-	// 		onChange={(_, option) => onChange(option?.value)}
-	// 		getOptionLabel={({value, label}) => label || value}
-	// 		renderInput={params => (
-	// 			<TextField {...params} placeholder={firstOption} label={label} />
-	// 		)}
-	// 	/>
-	// );
+	const selectedValue = data.find(e => e.value === value);
 
 	return (
-		<div className={classNames('flex flex-col', className)}>
-			{label && <Text className="mb-2">{label}</Text>}
-			<SelectFlowbite disabled={disabled} onChange={onChange} value={value}>
-				{firstOption && (
-					<option disabled value="" selected={!value}>
-						{firstOption}
-					</option>
-				)}
-				{data.map(({label, value: val}) => (
-					<option key={val} value={val}>
-						{label || val}
-					</option>
-				))}
-			</SelectFlowbite>
-		</div>
+		<Autocomplete
+			disablePortal
+			options={data}
+			disabled={disabled}
+			className={className}
+			defaultValue={selectedValue}
+			getOptionDisabled={({value}) => !value}
+			onChange={(_, option) => onChange(option?.value)}
+			getOptionLabel={({value, label}) => label || value}
+			renderInput={params => (
+				<TextField
+					{...params}
+					{...defaultTextFieldProps}
+					label={label}
+					placeholder={firstOption}
+				/>
+			)}
+		/>
 	);
 }

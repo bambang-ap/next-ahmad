@@ -1,9 +1,10 @@
 import {ChangeEventHandler, useEffect} from 'react';
 
-import {TextInput as InputFlowbite} from 'flowbite-react';
+import {TextField} from '@mui/material';
 import {FieldValues} from 'react-hook-form';
 
 import {Icon, Text} from '@components';
+import {defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
@@ -83,29 +84,13 @@ function InputComponent<F extends FieldValues>(
 		}
 	};
 
-	// return (
-	// 	<>
-	// 		<TextField
-	// 			error={!!errorMessage}
-	// 			className={className}
-	// 			label={label}
-	// 			type={type}
-	// 			disabled={disabled}
-	// 			placeholder={placeholder}
-	// 			value={value ?? ''}
-	// 			variant="outlined"
-	// 			onChange={onChangeEvent}
-	// 			{...restProps}
-	// 			{...field}
-	// 		/>
-	// 		{errorMessage}
-	// 	</>
-	// );
-
 	return (
-		<div className={classNames('flex flex-col', className)}>
-			{label && <Text className="mb-2">{label}</Text>}
-			<InputFlowbite
+		<>
+			<TextField
+				{...defaultTextFieldProps}
+				error={!!errorMessage}
+				className={className}
+				label={label}
 				type={type}
 				disabled={disabled}
 				placeholder={placeholder}
@@ -115,6 +100,6 @@ function InputComponent<F extends FieldValues>(
 				{...field}
 			/>
 			{errorMessage}
-		</div>
+		</>
 	);
 }

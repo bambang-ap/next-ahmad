@@ -1,3 +1,5 @@
+import {TextFieldProps} from '@mui/material';
+
 import {TRPCClientError} from '@trpc/client';
 import {AppRouter} from '@trpc/routers';
 
@@ -23,4 +25,9 @@ export const defaultErrorMutation: {onError: any} = {
 			alert(err?.message);
 		}
 	},
+};
+
+export const defaultTextFieldProps: TextFieldProps = {
+	InputLabelProps: {shrink: true},
+	variant: 'filled',
 };
