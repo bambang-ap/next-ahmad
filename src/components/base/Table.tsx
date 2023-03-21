@@ -1,56 +1,65 @@
 import {FC, Fragment} from 'react';
 
-import {Table as TableFlowbite, TableCellProps} from 'flowbite-react';
+import {Table as TableFb, TableCellProps} from 'flowbite-react';
 
 import {classNames} from '@utils';
 
-type VV = {Cell: FC<TableCellProps>};
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
 
-export type TableProps<T, VV = {}> = {
+export type Cells = {Cell: FC<TableCellProps>};
+
+export type TableProps<T, Cell = {}> = {
 	data?: T[];
-	header?: string[];
+	header?: (string | false | [title: string, colSpan: number])[];
 	className?: string;
-	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, VV>;
-	renderItemEach?: TRenderItem<T, JSX.Element | false, VV>;
+	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
+	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
 };
 
-export const Table = <T,>(props: TableProps<T, VV>) => {
+export const Table = <T,>(props: TableProps<T, Cells>) => {
 	const {data, header, className, renderItem, renderItemEach} = props;
 
 	if (!data) return null;
 
 	return (
 		<div className={classNames('w-full', className)}>
-			<TableFlowbite striped>
+			<TableFb striped>
 				{header && (
-					<TableFlowbite.Head>
-						{header.map(head => (
-							<TableFlowbite.HeadCell key={head}>{head}</TableFlowbite.HeadCell>
-						))}
-					</TableFlowbite.Head>
+					<TableFb.Head>
+						{header.map(head => {
+							if (!head) return null;
+							if (typeof head === 'string')
+								return <TableFb.HeadCell key={head}>{head}</TableFb.HeadCell>;
+
+							const [title, colSpan] = head;
+							return (
+								<TableFb.HeadCell colSpan={colSpan} key={title}>
+									{title}
+								</TableFb.HeadCell>
+							);
+						})}
+					</TableFb.Head>
 				)}
-				<TableFlowbite.Body>
+				<TableFb.Body>
 					{data.mmap((item, index) => {
-						const itemWithCell = {...item, Cell: TableFlowbite.Cell};
+						const itemWithCell = {...item, Cell: TableFb.Cell};
 						const renderEach = renderItemEach?.(itemWithCell, index);
 						const renderItemRow = renderItem?.(itemWithCell, index);
 
 						return (
 							<Fragment key={index}>
-								<TableFlowbite.Row
-									className={classNames({hidden: !renderItemRow})}>
+								<TableFb.Row className={classNames({hidden: !renderItemRow})}>
 									{renderItemRow}
-								</TableFlowbite.Row>
+								</TableFb.Row>
 
 								{renderEach && renderItemEach && (
-									<TableFlowbite.Row>{renderEach}</TableFlowbite.Row>
+									<TableFb.Row>{renderEach}</TableFb.Row>
 								)}
 							</Fragment>
 						);
 					})}
-				</TableFlowbite.Body>
-			</TableFlowbite>
+				</TableFb.Body>
+			</TableFb>
 		</div>
 	);
 };
