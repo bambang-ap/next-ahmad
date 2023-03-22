@@ -112,7 +112,9 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 					const isOnEditModal = !selectedSppbItem && isEdit;
 					const isOnPreviewModal = !selectedSppbItem && isPreview;
 
-					if (isOnPreviewModal) return false;
+					if (isOnPreviewModal || (item.isClosed && !isPreviewEdit)) {
+						return false;
+					}
 
 					if (excludedItem.includes(item.id)) {
 						return (
@@ -123,6 +125,8 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 					}
 
 					if (isOnEditModal && !includedItem.includes(item.id)) {
+						if (item.isClosed) return false;
+
 						return (
 							<RenderReAddItem
 								Cell={Cell}
