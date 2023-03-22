@@ -36,6 +36,8 @@ function InputComponent<F extends FieldValues>(
 		defaultValue,
 	} = props;
 
+	console.log(props);
+
 	const {
 		fieldState,
 		field: {value, onChange, ...field},
@@ -89,13 +91,14 @@ function InputComponent<F extends FieldValues>(
 			<TextField
 				{...defaultTextFieldProps}
 				error={!!errorMessage}
-				className={className}
+				classes={{root: className}}
 				label={label}
 				type={type}
 				disabled={disabled}
 				placeholder={placeholder}
 				value={value ?? ''}
 				onChange={onChangeEvent}
+				InputProps={{}}
 				{...restProps}
 				{...field}
 			/>

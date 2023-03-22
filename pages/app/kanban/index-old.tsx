@@ -364,7 +364,7 @@ const ModalChild = ({
 							<Cell>{sItem?.kode_item}</Cell>
 							<Cell>
 								<Input
-									className="hidden"
+									className="!hidden"
 									defaultValue={item.id}
 									control={control}
 									fieldName={`items.${i}.id`}

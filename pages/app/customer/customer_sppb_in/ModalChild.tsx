@@ -145,14 +145,14 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 					return (
 						<>
 							<Input
-								className="hidden"
+								className="!hidden"
 								control={control}
 								shouldUnregister
 								defaultValue={item.id}
 								fieldName={`po_item.${index}.id_item`}
 							/>
 							<Input
-								className="hidden"
+								className="!hidden"
 								control={control}
 								shouldUnregister
 								defaultValue={selectedSppbItem?.id}

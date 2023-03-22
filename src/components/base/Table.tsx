@@ -48,7 +48,8 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 
 						return (
 							<Fragment key={index}>
-								<TableFb.Row className={classNames({hidden: !renderItemRow})}>
+								<TableFb.Row
+									className={classNames({['!hidden']: !renderItemRow})}>
 									{renderItemRow}
 								</TableFb.Row>
 

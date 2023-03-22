@@ -61,7 +61,7 @@ function SelectComponent<F extends FieldValues>({
 			disablePortal
 			options={data}
 			disabled={disabled}
-			className={className}
+			classes={{root: className}}
 			defaultValue={selectedValue}
 			getOptionDisabled={({value}) => !value}
 			onChange={(_, option) => onChange(option?.value)}

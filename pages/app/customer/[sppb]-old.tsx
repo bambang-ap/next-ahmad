@@ -171,7 +171,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 							<Table
 								key={`${nomor_po}-${id}`}
-								className={classNames({hidden: !nomor_po})}
+								className={classNames({['!hidden']: !nomor_po})}
 								header={['Kode Item', 'Name', 'Jumlah']}
 								data={listPo?.find(h => h.nomor_po === nomor_po)?.po_item}
 								renderItem={({Cell, item}, i) => {
@@ -194,7 +194,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 											<Cell>{item.name}</Cell>
 											<Cell className="flex items-center gap-2">
 												<Input
-													className="hidden"
+													className="!hidden"
 													defaultValue={item.id}
 													control={control}
 													fieldName={`items.${i}.id`}
@@ -230,7 +230,7 @@ function RenderSPPBIN({target}: {target: USPPB}) {
 
 					<Button
 						type="submit"
-						className={classNames('flex-1', {hidden: !nomor_po})}>
+						className={classNames('flex-1', {['!hidden']: !nomor_po})}>
 						{isDelete ? 'Ya' : 'Submit'}
 					</Button>
 				</form>
