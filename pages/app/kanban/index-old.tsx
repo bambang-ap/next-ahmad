@@ -211,7 +211,7 @@ export default function POCustomer() {
 								<Cell>{mesin?.[0]?.name}</Cell>
 								<Cell>{instruksi_kanban?.[0]?.name}</Cell>
 								<Cell>{po?.[0]?.customer?.name}</Cell>
-								<Cell className="flex gap-x-2">
+								<Cell className="!flex gap-x-2">
 									<Button
 										icon="faPrint"
 										onClick={() => generate(`data-${item.id}`)}

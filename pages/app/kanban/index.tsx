@@ -18,6 +18,7 @@ import {
 	Select,
 	selectMapper,
 	Table,
+	Text,
 } from '@components';
 import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
@@ -124,7 +125,7 @@ export default function Kanban() {
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
-							<Cell className="flex gap-x-2">
+							<Cell className="!flex gap-x-2">
 								<Button
 									icon="faPrint"
 									onClick={() => generate(`data-${item.id}`)}
@@ -354,8 +355,10 @@ function ModalChild({
 													control={control}
 													defaultValue={rowItem.id}
 													fieldName={`items.${id_item}.id_item`}
+													rightAcc={
+														<Text>{rowItem?.itemDetail?.[keyUnit]}</Text>
+													}
 												/>
-												{rowItem?.itemDetail?.[keyUnit]}
 											</div>
 										);
 									})}
@@ -448,37 +451,37 @@ function ModalChild({
 								</div>
 							</Cell>
 							<Cell>
-								<div className="flex flex-col gap-2">
-									{ids_instruksi.map((id_instruksi, ii) => {
-										return (
-											<div key={id_instruksi} className="flex gap-2">
-												<Select
-													control={control}
-													firstOption={`- Pilih Instruksi ${ii + 1} -`}
-													fieldName={`instruksi_id.${idMesin}.${ii}`}
-													data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
+								{' '}
+								{ids_instruksi.map((id_instruksi, ii) => {
+									return (
+										<div key={id_instruksi} className="flex gap-2">
+											<Select
+												className="flex-1"
+												control={control}
+												firstOption={`- Pilih Instruksi ${ii + 1} -`}
+												fieldName={`instruksi_id.${idMesin}.${ii}`}
+												data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
+											/>
+											{!isPreview && (
+												<Button
+													icon="faTrash"
+													onClick={() => {
+														reset(({instruksi_id, ...rest}) => {
+															return {
+																...rest,
+																instruksi_id: {
+																	...instruksi_id,
+																	[idMesin]:
+																		instruksi_id[idMesin]?.remove(i) ?? [],
+																},
+															};
+														});
+													}}
 												/>
-												{!isPreview && (
-													<Button
-														icon="faTrash"
-														onClick={() => {
-															reset(({instruksi_id, ...rest}) => {
-																return {
-																	...rest,
-																	instruksi_id: {
-																		...instruksi_id,
-																		[idMesin]:
-																			instruksi_id[idMesin]?.remove(i) ?? [],
-																	},
-																};
-															});
-														}}
-													/>
-												)}
-											</div>
-										);
-									})}
-								</div>
+											)}
+										</div>
+									);
+								})}
 							</Cell>
 						</>
 					);

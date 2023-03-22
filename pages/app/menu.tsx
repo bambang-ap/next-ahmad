@@ -25,7 +25,6 @@ export default function Menu() {
 		reftechUnMapped,
 	} = useMenu();
 
-	console.log(dataRole);
 	const {control, reset, watch, setValue, handleSubmit} = menuForm;
 	const iconKey = useRecoilValue(atomMenuIconKey);
 	// const changeOrder = useSetRecoilState(selectorMappedMenu);
@@ -81,15 +80,17 @@ export default function Menu() {
 	return (
 		<>
 			<Modal ref={modalRef} title="Select Icon">
-				<AllIcon
-					// @ts-ignore
-					selected={iconModalSelectedValue}
-					onSelect={icon => {
+				<div className="max-h-[300px] overflow-y-auto">
+					<AllIcon
 						// @ts-ignore
-						setValue(iconKey, icon);
-						modalRef.current?.hide();
-					}}
-				/>
+						selected={iconModalSelectedValue}
+						onSelect={icon => {
+							// @ts-ignore
+							setValue(iconKey, icon);
+							modalRef.current?.hide();
+						}}
+					/>
+				</div>
 			</Modal>
 
 			<form onSubmit={submit}>
@@ -154,6 +155,7 @@ const RenderMenu = (props: {
 								className="flex-1"
 								control={control}
 								fieldName={`${id}.title`}
+								label="Title"
 							/>
 						</Cell>
 						<Cell>
@@ -166,7 +168,7 @@ const RenderMenu = (props: {
 								}}
 							/>
 						</Cell>
-						<Cell className="flex">
+						<Cell className="!flex gap-2">
 							{dataRole?.map(role => {
 								if (role.name === 'admin') return null;
 

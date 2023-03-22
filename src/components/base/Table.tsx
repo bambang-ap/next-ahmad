@@ -2,6 +2,7 @@ import {FC, Fragment} from 'react';
 
 import {
 	Paper,
+	styled,
 	Table as TableMUI,
 	TableBody,
 	TableCell,
@@ -14,6 +15,10 @@ import {
 import {classNames} from '@utils';
 
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
+
+const StyledTableCell = styled(TableCell)({
+	padding: 8,
+});
 
 export type Cells = {Cell: FC<TableCellProps>};
 
@@ -40,13 +45,13 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 								{header.map(head => {
 									if (!head) return null;
 									if (typeof head === 'string')
-										return <TableCell key={head}>{head}</TableCell>;
+										return <StyledTableCell key={head}>{head}</StyledTableCell>;
 
 									const [title, colSpan] = head;
 									return (
-										<TableCell colSpan={colSpan} key={title}>
+										<StyledTableCell colSpan={colSpan} key={title}>
 											{title}
-										</TableCell>
+										</StyledTableCell>
 									);
 								})}
 							</TableRow>
@@ -54,7 +59,7 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 					)}
 					<TableBody>
 						{data.mmap((item, index) => {
-							const itemWithCell = {...item, Cell: TableCell};
+							const itemWithCell = {...item, Cell: StyledTableCell};
 							const renderEach = renderItemEach?.(itemWithCell, index);
 							const renderItemRow = renderItem?.(itemWithCell, index);
 

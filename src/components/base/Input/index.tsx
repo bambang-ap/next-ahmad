@@ -92,6 +92,7 @@ function InputComponent<F extends FieldValues>(
 				{...defaultTextFieldProps}
 				error={!!errorMessage}
 				classes={{root: className}}
+				fullWidth
 				label={label}
 				type={type}
 				disabled={disabled}

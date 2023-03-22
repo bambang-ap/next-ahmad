@@ -98,7 +98,7 @@ export default function POCustomer() {
 								<Cell>{customer?.name}</Cell>
 								<Cell>{tgl_po}</Cell>
 								<Cell>{due_date}</Cell>
-								<Cell className="flex gap-x-2">
+								<Cell className="!flex gap-x-2">
 									<Button onClick={() => showModal('preview', item)}>
 										Preview
 									</Button>
