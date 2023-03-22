@@ -34,9 +34,9 @@ function InputComponent<F extends FieldValues>(
 		placeholder,
 		noLabel,
 		defaultValue,
+		rightAcc: endAdornment,
+		leftAcc: startAdornment,
 	} = props;
-
-	console.log(props);
 
 	const {
 		fieldState,
@@ -98,7 +98,7 @@ function InputComponent<F extends FieldValues>(
 				placeholder={placeholder}
 				value={value ?? ''}
 				onChange={onChangeEvent}
-				InputProps={{}}
+				InputProps={{endAdornment, startAdornment}}
 				{...restProps}
 				{...field}
 			/>

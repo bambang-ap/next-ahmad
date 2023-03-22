@@ -3,7 +3,15 @@ import {Fragment, PropsWithChildren, useEffect} from 'react';
 import {Control, useWatch} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
-import {Button, Cells, Input, Select, selectMapper, Table} from '@components';
+import {
+	Button,
+	Cells,
+	Input,
+	Select,
+	selectMapper,
+	Table,
+	Text,
+} from '@components';
 import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
@@ -58,7 +66,7 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 	}
 
 	return (
-		<>
+		<div className="flex flex-col gap-2">
 			<Select
 				disabled={isPreviewEdit}
 				control={control}
@@ -186,8 +194,8 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 														: assignedQty[`qty${num}`]
 												}
 												fieldName={`po_item.${index}.qty${num}`}
+												rightAcc={<Text>{unit}</Text>}
 											/>
-											{unit}
 										</Cell>
 									</Fragment>
 								);
@@ -210,7 +218,7 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 			/>
 
 			{!isPreview && <Button type="submit">Submit</Button>}
-		</>
+		</div>
 	);
 }
 

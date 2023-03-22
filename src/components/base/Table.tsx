@@ -1,6 +1,15 @@
 import {FC, Fragment} from 'react';
 
-import {Table as TableFb, TableCellProps} from 'flowbite-react';
+import {
+	Paper,
+	Table as TableMUI,
+	TableBody,
+	TableCell,
+	TableCellProps,
+	TableContainer,
+	TableHead,
+	TableRow,
+} from '@mui/material';
 
 import {classNames} from '@utils';
 
@@ -23,44 +32,48 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 
 	return (
 		<div className={classNames('w-full', className)}>
-			<TableFb striped>
-				{header && (
-					<TableFb.Head>
-						{header.map(head => {
-							if (!head) return null;
-							if (typeof head === 'string')
-								return <TableFb.HeadCell key={head}>{head}</TableFb.HeadCell>;
+			<TableContainer component={Paper}>
+				<TableMUI>
+					{header && (
+						<TableHead>
+							<TableRow>
+								{header.map(head => {
+									if (!head) return null;
+									if (typeof head === 'string')
+										return <TableCell key={head}>{head}</TableCell>;
 
-							const [title, colSpan] = head;
+									const [title, colSpan] = head;
+									return (
+										<TableCell colSpan={colSpan} key={title}>
+											{title}
+										</TableCell>
+									);
+								})}
+							</TableRow>
+						</TableHead>
+					)}
+					<TableBody>
+						{data.mmap((item, index) => {
+							const itemWithCell = {...item, Cell: TableCell};
+							const renderEach = renderItemEach?.(itemWithCell, index);
+							const renderItemRow = renderItem?.(itemWithCell, index);
+
 							return (
-								<TableFb.HeadCell colSpan={colSpan} key={title}>
-									{title}
-								</TableFb.HeadCell>
+								<Fragment key={index}>
+									<TableRow
+										className={classNames({['!hidden']: !renderItemRow})}>
+										{renderItemRow}
+									</TableRow>
+
+									{renderEach && renderItemEach && (
+										<TableRow>{renderEach}</TableRow>
+									)}
+								</Fragment>
 							);
 						})}
-					</TableFb.Head>
-				)}
-				<TableFb.Body>
-					{data.mmap((item, index) => {
-						const itemWithCell = {...item, Cell: TableFb.Cell};
-						const renderEach = renderItemEach?.(itemWithCell, index);
-						const renderItemRow = renderItem?.(itemWithCell, index);
-
-						return (
-							<Fragment key={index}>
-								<TableFb.Row
-									className={classNames({['!hidden']: !renderItemRow})}>
-									{renderItemRow}
-								</TableFb.Row>
-
-								{renderEach && renderItemEach && (
-									<TableFb.Row>{renderEach}</TableFb.Row>
-								)}
-							</Fragment>
-						);
-					})}
-				</TableFb.Body>
-			</TableFb>
+					</TableBody>
+				</TableMUI>
+			</TableContainer>
 		</div>
 	);
 };
