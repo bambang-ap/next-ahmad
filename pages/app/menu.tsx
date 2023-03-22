@@ -155,7 +155,7 @@ const RenderMenu = (props: {
 								className="flex-1"
 								control={control}
 								fieldName={`${id}.title`}
-								label="Title"
+								noLabel
 							/>
 						</Cell>
 						<Cell>
