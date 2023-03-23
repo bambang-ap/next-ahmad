@@ -16,9 +16,10 @@ import {classNames} from '@utils';
 
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
 
-const StyledTableCell = styled(TableCell)({
+const StyledTableCell = styled(TableCell)(({valign}) => ({
 	padding: 8,
-});
+	verticalAlign: valign,
+}));
 
 const StyledCell = ({
 	children,
