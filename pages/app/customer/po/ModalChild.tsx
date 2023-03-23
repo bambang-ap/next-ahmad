@@ -1,14 +1,13 @@
-import {Control, useController, useForm, useWatch} from 'react-hook-form';
+import {Control, useController, UseFormReset, useWatch} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
 	TCustomer,
 	TCustomerPO,
 	TCustomerPOExtended,
-	TPOItem,
 } from '@appTypes/app.type';
 import {TItemUnit} from '@appTypes/app.zod';
-import {Button, Input, Select, SelectPropsData, Table, Text} from '@components';
+import {Button, Input, Select, SelectPropsData, Table} from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
 
@@ -27,7 +26,13 @@ export type FormType = TCustomerPO & {
 	type: ModalTypePreview;
 } & Pick<TCustomerPOExtended, 'po_item'>;
 
-export default function ModalChild({control}: {control: Control<FormType>}) {
+export default function ModalChild({
+	control,
+	reset: resetForm,
+}: {
+	control: Control<FormType>;
+	reset: UseFormReset<FormType>;
+}) {
 	const [modalType, poItem = []] = useWatch({
 		control,
 		name: ['type', 'po_item'],
@@ -36,7 +41,7 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
-	const {reset, handleSubmit, control: poItemControl} = useForm<TPOItem>();
+
 	const {
 		field: {onChange: onChangePoItem},
 	} = useController({control, name: 'po_item'});
@@ -63,13 +68,17 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 		value: id,
 	}));
 
-	const submitItem = handleSubmit(item => {
-		onChangePoItem([...poItem, item]);
-		reset({});
-	});
-
 	function removeItem(index: number) {
 		onChangePoItem(poItem?.remove(index));
+	}
+
+	function addItem() {
+		resetForm(({po_item = [], ...prev}) => {
+			return {
+				...prev,
+				po_item: [...po_item, {} as typeof poItem[number]],
+			};
+		});
 	}
 
 	if (modalType === 'delete') {
@@ -83,83 +92,43 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 
 	return (
 		<div className="gap-y-2 flex flex-col">
-			<Select
-				disabled={isPreview}
-				firstOption="- Pilih customer -"
-				control={control}
-				data={mappedData}
-				fieldName="id_customer"
-			/>
-			<Input disabled={isPreview} control={control} fieldName="nomor_po" />
-			<Input
-				type="date"
-				disabled={isPreview}
-				control={control}
-				fieldName="tgl_po"
-			/>
-			<Input
-				type="date"
-				disabled={isPreview}
-				control={control}
-				fieldName="due_date"
-			/>
+			<div className="flex gap-2">
+				<Select
+					className="flex-1"
+					disabled={isPreview}
+					firstOption="- Pilih customer -"
+					control={control}
+					data={mappedData}
+					fieldName="id_customer"
+				/>
+				<Input
+					className="flex-1"
+					disabled={isPreview}
+					control={control}
+					fieldName="nomor_po"
+				/>
+				<Input
+					className="flex-1"
+					type="date"
+					disabled={isPreview}
+					control={control}
+					fieldName="tgl_po"
+				/>
+				<Input
+					className="flex-1"
+					type="date"
+					disabled={isPreview}
+					control={control}
+					fieldName="due_date"
+				/>
+			</div>
 
-			{!isPreview && (
-				<>
-					<Text className="flex self-center">PO Items</Text>
-					<div className="gap-x-2 flex">
-						<div className="flex flex-1 gap-x-2">
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								fieldName="name"
-							/>
-							<Input
-								className="flex-1"
-								disabled={isPreview}
-								control={poItemControl}
-								fieldName="kode_item"
-							/>
-							<Input
-								className="flex-1"
-								type="number"
-								disabled={isPreview}
-								control={poItemControl}
-								fieldName="harga"
-							/>
-
-							{qtyList.map(num => {
-								return (
-									<>
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											control={poItemControl}
-											type="number"
-											fieldName={`qty${num}`}
-										/>
-										<Select
-											firstOption="- Pilih unit -"
-											control={poItemControl}
-											fieldName={`unit${num}`}
-											data={selectUnitData}
-										/>
-									</>
-								);
-							})}
-						</div>
-						<Button onClick={submitItem}>Add</Button>
-					</div>
-				</>
-			)}
-
-			{poItem && (
+			{poItem && poItem.length > 0 && (
 				<Table
 					className="max-h-72 overflow-y-auto"
 					header={headerTable}
 					data={poItem}
-					renderItem={({Cell, item}, index) => {
+					renderItem={({Cell}, index) => {
 						return (
 							<>
 								<Cell>
@@ -189,24 +158,22 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 								</Cell>
 								{qtyList.map(num => {
 									return (
-										<Cell key={num}>
-											<div className="flex gap-2">
-												<Input
-													className="flex-1"
-													disabled={isPreview}
-													control={control}
-													type="number"
-													fieldName={`po_item.${index}.qty${num}`}
-												/>
-												<Select
-													disabled={isPreview}
-													className="w-1/2"
-													firstOption="- Pilih unit -"
-													control={control}
-													fieldName={`po_item.${index}.unit${num}`}
-													data={selectUnitData}
-												/>
-											</div>
+										<Cell key={num} className="gap-2">
+											<Input
+												className="flex-1"
+												disabled={isPreview}
+												control={control}
+												type="number"
+												fieldName={`po_item.${index}.qty${num}`}
+											/>
+											<Select
+												disabled={isPreview}
+												className="flex-1"
+												firstOption="- Pilih unit -"
+												control={control}
+												fieldName={`po_item.${index}.unit${num}`}
+												data={selectUnitData}
+											/>
 										</Cell>
 									);
 								})}
@@ -222,9 +189,15 @@ export default function ModalChild({control}: {control: Control<FormType>}) {
 			)}
 
 			{!isPreview && (
-				<Button className="w-full" type="submit">
-					Submit
-				</Button>
+				<div className="flex gap-2">
+					<Button className="flex-1" onClick={addItem}>
+						Add Item
+					</Button>
+
+					<Button className="flex-1" type="submit">
+						Submit
+					</Button>
+				</div>
 			)}
 		</div>
 	);

@@ -57,23 +57,24 @@ function SelectComponent<F extends FieldValues>({
 	const selectedValue = data.find(e => e.value === value);
 
 	return (
-		<Autocomplete
-			disablePortal
-			options={data}
-			disabled={disabled}
-			classes={{root: className}}
-			defaultValue={selectedValue}
-			getOptionDisabled={({value}) => !value}
-			onChange={(_, option) => onChange(option?.value)}
-			getOptionLabel={({value, label}) => label || value}
-			renderInput={params => (
-				<TextField
-					{...params}
-					{...defaultTextFieldProps}
-					label={label}
-					placeholder={firstOption}
-				/>
-			)}
-		/>
+		<div className={className}>
+			<Autocomplete
+				disablePortal
+				options={data}
+				disabled={disabled}
+				defaultValue={selectedValue}
+				getOptionDisabled={({value}) => !value}
+				onChange={(_, option) => onChange(option?.value)}
+				getOptionLabel={({value, label}) => label || value}
+				renderInput={params => (
+					<TextField
+						{...params}
+						{...defaultTextFieldProps}
+						label={label}
+						placeholder={firstOption}
+					/>
+				)}
+			/>
+		</div>
 	);
 }

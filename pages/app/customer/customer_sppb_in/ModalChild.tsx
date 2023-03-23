@@ -1,4 +1,4 @@
-import {Fragment, PropsWithChildren, useEffect} from 'react';
+import {PropsWithChildren, useEffect} from 'react';
 
 import {Control, useWatch} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
@@ -67,30 +67,35 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 
 	return (
 		<div className="flex flex-col gap-2">
-			<Select
-				disabled={isPreviewEdit}
-				control={control}
-				fieldName="id_po"
-				firstOption="- Pilih PO -"
-				data={selectMapper(
-					isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),
-					'id',
-					'nomor_po',
-				)}
-			/>
-			<Input
-				disabled={isPreview}
-				control={control}
-				fieldName="nomor_surat"
-				placeholder="Nomor surat jalan"
-			/>
-			<Input
-				disabled={isPreview}
-				control={control}
-				fieldName="tgl"
-				type="date"
-				placeholder="Tanggal surat jalan"
-			/>
+			<div className="flex gap-2">
+				<Select
+					className="flex-1"
+					disabled={isPreviewEdit}
+					control={control}
+					fieldName="id_po"
+					firstOption="- Pilih PO -"
+					data={selectMapper(
+						isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),
+						'id',
+						'nomor_po',
+					)}
+				/>
+				<Input
+					className="flex-1"
+					disabled={isPreview}
+					control={control}
+					fieldName="nomor_surat"
+					placeholder="Nomor surat jalan"
+				/>
+				<Input
+					className="flex-1"
+					disabled={isPreview}
+					control={control}
+					fieldName="tgl"
+					type="date"
+					placeholder="Tanggal surat jalan"
+				/>
+			</div>
 
 			<Table
 				header={[
@@ -172,38 +177,39 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 							/>
 							<Cell>{item.kode_item}</Cell>
 							<Cell>{item.name}</Cell>
+
 							{qtyList.map(num => {
 								const unit = item[`unit${num}`];
 
 								if (!unit) return <Cell key={num} />;
 
 								return (
-									<Fragment key={num}>
-										<Cell>
-											<Input
-												disabled={isPreview}
-												rules={{
-													max: {
-														value: assignedQty[`qty${num}`],
-														message: `max is ${assignedQty[`qty${num}`]}`,
-													},
-												}}
-												type="number"
-												control={control}
-												shouldUnregister
-												defaultValue={
-													isPreviewEdit
-														? selectedSppbItem?.[`qty${num}`] ||
-														  assignedQty[`qty${num}`]
-														: assignedQty[`qty${num}`]
-												}
-												fieldName={`po_item.${index}.qty${num}`}
-												rightAcc={<Text>{unit}</Text>}
-											/>
-										</Cell>
-									</Fragment>
+									<Cell key={num}>
+										<Input
+											className="flex-1"
+											disabled={isPreview}
+											type="number"
+											control={control}
+											shouldUnregister
+											fieldName={`po_item.${index}.qty${num}`}
+											rightAcc={<Text>{unit}</Text>}
+											rules={{
+												max: {
+													value: assignedQty[`qty${num}`],
+													message: `max is ${assignedQty[`qty${num}`]}`,
+												},
+											}}
+											defaultValue={
+												isPreviewEdit
+													? selectedSppbItem?.[`qty${num}`] ||
+													  assignedQty[`qty${num}`]
+													: assignedQty[`qty${num}`]
+											}
+										/>
+									</Cell>
 								);
 							})}
+
 							{!isPreview && (
 								<Cell>
 									<Button

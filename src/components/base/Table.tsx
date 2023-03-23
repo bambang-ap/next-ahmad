@@ -20,6 +20,18 @@ const StyledTableCell = styled(TableCell)({
 	padding: 8,
 });
 
+const StyledCell = ({
+	children,
+	className,
+	...rest
+}: GetProps<typeof StyledTableCell>) => {
+	return (
+		<StyledTableCell {...rest}>
+			<div className={classNames('flex', className)}>{children}</div>
+		</StyledTableCell>
+	);
+};
+
 export type Cells = {Cell: FC<TableCellProps>};
 
 export type TableProps<T, Cell = {}> = {
@@ -45,13 +57,13 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 								{header.map(head => {
 									if (!head) return null;
 									if (typeof head === 'string')
-										return <StyledTableCell key={head}>{head}</StyledTableCell>;
+										return <StyledCell key={head}>{head}</StyledCell>;
 
 									const [title, colSpan] = head;
 									return (
-										<StyledTableCell colSpan={colSpan} key={title}>
+										<StyledCell colSpan={colSpan} key={title}>
 											{title}
-										</StyledTableCell>
+										</StyledCell>
 									);
 								})}
 							</TableRow>
@@ -59,7 +71,7 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 					)}
 					<TableBody>
 						{data.mmap((item, index) => {
-							const itemWithCell = {...item, Cell: StyledTableCell};
+							const itemWithCell = {...item, Cell: StyledCell};
 							const renderEach = renderItemEach?.(itemWithCell, index);
 							const renderItemRow = renderItem?.(itemWithCell, index);
 

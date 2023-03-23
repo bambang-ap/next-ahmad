@@ -87,11 +87,10 @@ function InputComponent<F extends FieldValues>(
 	};
 
 	return (
-		<>
+		<div className={className}>
 			<TextField
 				{...defaultTextFieldProps}
 				error={!!errorMessage}
-				classes={{root: className}}
 				fullWidth
 				label={label}
 				type={type}
@@ -104,6 +103,6 @@ function InputComponent<F extends FieldValues>(
 				{...field}
 			/>
 			{errorMessage}
-		</>
+		</div>
 	);
 }

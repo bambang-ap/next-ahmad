@@ -78,7 +78,7 @@ export default function SPPBIN() {
 							<Cell>{item.detailPo?.nomor_po}</Cell>
 							<Cell>{item.nomor_surat}</Cell>
 							<Cell>{item.tgl}</Cell>
-							<Cell className="!flex gap-2">
+							<Cell className="flex gap-2">
 								<Button onClick={() => showModal('preview', item)}>
 									Preview
 								</Button>
@@ -92,7 +92,7 @@ export default function SPPBIN() {
 				}}
 			/>
 
-			<Modal title={modalTitle} ref={modalRef}>
+			<Modal size="6xl" title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit}>
 					<ModalChild control={control} />
 				</form>

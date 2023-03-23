@@ -18,8 +18,9 @@ export default function POCustomer() {
 	const deletePO = trpc.customer_po.delete.useMutation(defaultErrorMutation);
 
 	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer_po'});
-	const {control, handleSubmit, watch, reset, clearErrors} =
-		useForm<FormType>();
+	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
+		// resolver: zodResolver(validationSchema),
+	});
 
 	const modalType = watch('type');
 	const isDelete = modalType === 'delete';
@@ -66,7 +67,7 @@ export default function POCustomer() {
 				title={modalTitle}
 				size={isDelete ? undefined : '7xl'}>
 				<form onSubmit={submit}>
-					<ModalChild control={control} />
+					<ModalChild reset={reset} control={control} />
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
