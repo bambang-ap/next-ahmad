@@ -168,7 +168,7 @@ const RenderMenu = (props: {
 								}}
 							/>
 						</Cell>
-						<Cell className="!flex gap-2">
+						<Cell className="flex gap-2">
 							{dataRole?.map(role => {
 								if (role.name === 'admin') return null;
 

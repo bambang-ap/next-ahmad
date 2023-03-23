@@ -77,8 +77,7 @@ export const Table = <T,>(props: TableProps<T, Cells>) => {
 
 							return (
 								<Fragment key={index}>
-									<TableRow
-										className={classNames({['!hidden']: !renderItemRow})}>
+									<TableRow className={classNames({hidden: !renderItemRow})}>
 										{renderItemRow}
 									</TableRow>
 

@@ -125,7 +125,7 @@ export default function Kanban() {
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
-							<Cell className="!flex gap-x-2">
+							<Cell className="flex gap-x-2">
 								<Button
 									icon="faPrint"
 									onClick={() => generate(`data-${item.id}`)}
@@ -351,7 +351,7 @@ function ModalChild({
 													}}
 												/>
 												<Input
-													className="!hidden"
+													className="hidden"
 													control={control}
 													defaultValue={rowItem.id}
 													fieldName={`items.${id_item}.id_item`}
@@ -400,7 +400,7 @@ function ModalChild({
 
 			<Table
 				className={classNames('max-h-[250px] overflow-y-auto', {
-					['!hidden']: !mesinIds || mesinIds?.length <= 0,
+					hidden: !mesinIds || mesinIds?.length <= 0,
 				})}
 				data={mesinIds}
 				header={['Mesin', 'Instruksi']}
