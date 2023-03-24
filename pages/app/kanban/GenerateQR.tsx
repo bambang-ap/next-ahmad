@@ -1,0 +1,145 @@
+import jsPDF from 'jspdf';
+
+import {RouterOutput} from '@appTypes/app.type';
+import {Button, RootTable as Table} from '@components';
+import {trpc} from '@utils/trpc';
+
+import {qtyList} from '../customer/po/ModalChild';
+
+export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
+	const tagId = `data-${kanban.id}`;
+
+	const {id, name, dataPo, dataMesin, items, dataSppbIn} = kanban;
+
+	const {data: qrImage} = trpc.qr.useQuery<any, string>(
+		{input: id},
+		{enabled: !!id},
+	);
+
+	return (
+		<>
+			<Button icon="faPrint" onClick={() => generate(tagId)} />
+
+			<div
+				id={tagId}
+				// className="p-4 w-[500px]"
+				className="p-4 w-[500px] -z-10 fixed"
+				style={{
+					transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
+				}}>
+				<Table>
+					<Table.Tr>
+						<Table.Td className="w-full justify-center" colSpan={4}>
+							{name}
+						</Table.Td>
+					</Table.Tr>
+					<Table.Tr>
+						<Table.Td>Customer</Table.Td>
+						<Table.Td>{dataPo?.customer?.name}</Table.Td>
+						<Table.Td className="justify-center" colSpan={2} rowSpan={3}>
+							<div className="w-[200px] h-[200px]">
+								<img alt="" src={qrImage} />
+							</div>
+						</Table.Td>
+					</Table.Tr>
+					<Table.Tr>
+						<Table.Td>Nomor PO</Table.Td>
+						<Table.Td>{dataPo?.nomor_po}</Table.Td>
+					</Table.Tr>
+					<Table.Tr>
+						<Table.Td>Nomor Surat</Table.Td>
+						<Table.Td>{dataSppbIn?.nomor_surat}</Table.Td>
+					</Table.Tr>
+					<Table.Tr>
+						<Table.Td className="justify-center w-full" colSpan={2}>
+							Data Mesin
+						</Table.Td>
+						<Table.Td className="justify-center w-full" colSpan={2}>
+							Data Item
+						</Table.Td>
+					</Table.Tr>
+					<Table.Tr>
+						<Table.Td colSpan={2}>
+							<Table>
+								{dataMesin.map(mesin => {
+									const {dataInstruksi, name: nameMesin, nomor_mesin} = mesin;
+									return (
+										<>
+											<Table.Tr>
+												<Table.Td>{nameMesin}</Table.Td>
+												<Table.Td>{nomor_mesin}</Table.Td>
+											</Table.Tr>
+											<Table.Tr>
+												<Table.Td colSpan={2}>
+													<Table>
+														{dataInstruksi.map(instruksi => {
+															const {name: nameInstruksi, id: idInstruksi} =
+																instruksi;
+															return (
+																<Table.Tr key={idInstruksi}>
+																	<Table.Td>{nameInstruksi}</Table.Td>
+																</Table.Tr>
+															);
+														})}
+													</Table>
+												</Table.Td>
+											</Table.Tr>
+										</>
+									);
+								})}
+							</Table>
+						</Table.Td>
+						<Table.Td colSpan={2}>
+							<Table>
+								<Table.THead>
+									<Table.Tr>
+										<Table.Td>Kode Item</Table.Td>
+										<Table.Td>Nama Item</Table.Td>
+										<Table.Td colSpan={qtyList.length}>Jumlah</Table.Td>
+									</Table.Tr>
+								</Table.THead>
+								{Object.entries(items).map(([, item]) => {
+									const {id: idItem, id_item} = item;
+									const itemDetail = dataSppbIn?.items.find(
+										e => e.id === id_item,
+									)?.itemDetail;
+
+									return (
+										<Table.Tr key={idItem}>
+											<Table.Td>{itemDetail?.kode_item}</Table.Td>
+											<Table.Td>{itemDetail?.name}</Table.Td>
+											{qtyList.map(num => {
+												const qtyKey = `qty${num}` as const;
+												const unitKey = `unit${num}` as const;
+												const qty = item[qtyKey];
+
+												if (!qty) return null;
+
+												return (
+													<Table.Td key={num}>
+														{qty} {itemDetail?.[unitKey]}
+													</Table.Td>
+												);
+											})}
+										</Table.Tr>
+									);
+								})}
+							</Table>
+						</Table.Td>
+					</Table.Tr>
+				</Table>
+			</div>
+		</>
+	);
+}
+
+function generate(id: string) {
+	const doc = new jsPDF({unit: 'px', orientation: 'p'});
+
+	doc.html(document.getElementById(id) ?? '', {
+		windowWidth: 100,
+		callback(document) {
+			document.save('a4.pdf');
+		},
+	});
+}

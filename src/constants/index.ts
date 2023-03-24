@@ -1,7 +1,7 @@
 import {TextFieldProps} from '@mui/material';
 
+import {AppRouter} from '@appTypes/app.type';
 import {TRPCClientError} from '@trpc/client';
-import {AppRouter} from '@trpc/routers';
 
 export * from './colors';
 export * from './pages';

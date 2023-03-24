@@ -1,6 +1,5 @@
 import {FormEventHandler, useEffect, useRef} from 'react';
 
-import jsPDF from 'jspdf';
 import {useForm} from 'react-hook-form';
 
 import {ModalTypePreview, TKanbanUpsert} from '@appTypes/app.zod';
@@ -9,6 +8,7 @@ import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
 
+import {GenerateQR} from './GenerateQR';
 import {ModalChild} from './ModalChild';
 
 Kanban.getLayout = getLayout;
@@ -109,10 +109,7 @@ export default function Kanban() {
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
 							<Cell className="flex gap-x-2">
-								<Button
-									icon="faPrint"
-									onClick={() => generate(`data-${item.id}`)}
-								/>
+								<GenerateQR {...item} />
 								<Button
 									icon="faMagnifyingGlass"
 									onClick={() => showModal('preview', rest)}
@@ -136,17 +133,4 @@ export default function Kanban() {
 			</Modal>
 		</>
 	);
-}
-
-function generate(id: string) {
-	return null;
-
-	const doc = new jsPDF({unit: 'px', orientation: 'p'});
-
-	doc.html(document.getElementById(id) ?? '', {
-		windowWidth: 100,
-		callback(doc) {
-			doc.save('a4.pdf');
-		},
-	});
 }

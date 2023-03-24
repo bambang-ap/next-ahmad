@@ -1,5 +1,6 @@
 import type {TKanbanExtended, TScan} from './app.zod';
 
+export type {AppRouter, RouterInput, RouterOutput} from '@trpc/routers';
 export type {
 	BaseMenu,
 	ItemsSppb,
