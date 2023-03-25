@@ -13,3 +13,4 @@ export * from './models/role';
 export * from './models/scan';
 export * from './models/user';
 export * from './models/user_login';
+export * from './_init';

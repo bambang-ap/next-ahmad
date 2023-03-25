@@ -19,8 +19,13 @@ export const tUser = zId.extend({
 	email: z.string().email(),
 	name: z.string(),
 	role: z.string(),
-	password: z.string().nullish(),
+	password: z.string().optional(),
 });
+
+export type TUserSignIn = z.infer<typeof tUserSignIn>;
+export const tUserSignIn = tUser
+	.pick({email: true, password: true})
+	.extend({token: z.string()});
 
 export type TUserLogin = z.infer<typeof tUserLogin>;
 export const tUserLogin = zId.extend({

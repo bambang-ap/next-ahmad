@@ -1,12 +1,19 @@
+import moment from 'moment';
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import {ORM} from 'server/database/_init';
+import {Op} from 'sequelize';
 
-import {TSession, TUser} from '@appTypes/app.type';
-import {ormUserAttributes} from '@database';
+import {TSession, TUserSignIn} from '@appTypes/app.type';
+import {
+	ORM,
+	OrmUser as UserOrm,
+	ormUserAttributes,
+	ormUserLoginAttributes,
+} from '@database';
+import {TRPCError} from '@trpc/server';
 
-const [attributes, options] = ormUserAttributes();
-const OrmUser = ORM.define('UserAuth', attributes, options);
+const OrmUser = ORM.define('UserAuth', ...ormUserAttributes());
+const OrmUserLogin = ORM.define('UseLoginrAuth', ...ormUserLoginAttributes());
 
 export const authOptions: NextAuthOptions = {
 	secret: process.env.AUTH_SECRET,
@@ -15,20 +22,50 @@ export const authOptions: NextAuthOptions = {
 		CredentialsProvider({
 			type: 'credentials',
 			credentials: {},
-			async authorize(credentials) {
-				const {email, password} = credentials as {
-					email: string;
-					password: string;
-				};
+			async authorize(credential = {}) {
+				let userData: UserOrm | null;
 
-				// @ts-ignore
-				const user: TUser = await OrmUser.findOne({where: {email, password}});
+				const {email, token, password} = Object.entries(credential).reduce(
+					(ret, [key, value]) => {
+						// @ts-ignore
+						if (value !== 'undefined') ret[key] = value;
+						return ret;
+					},
+					{} as TUserSignIn,
+				);
 
-				if (!user) throw new Error('invalid credentials');
+				findUser: {
+					if (token) break findUser;
 
-				const {role, id, name} = user;
+					userData = await OrmUser.findOne({where: {password, email}});
+				}
 
-				return {id, name, email, role};
+				tokenChecker: {
+					if (!token) break tokenChecker;
+
+					const hasToken = await OrmUserLogin.findOne({
+						where: {
+							id: token,
+							expiredAt: {[Op.gte]: moment().toDate()},
+						},
+					});
+
+					if (!hasToken) {
+						throw new TRPCError({
+							code: 'NOT_FOUND',
+							message: 'Token not found',
+						});
+					}
+
+					userData = await OrmUser.findOne({
+						where: {id: hasToken.dataValues.id_user},
+					});
+				}
+
+				if (!userData!)
+					throw new TRPCError({code: 'NOT_FOUND', message: 'User not found'});
+
+				return userData.dataValues;
 			},
 		}),
 	],
@@ -38,22 +75,20 @@ export const authOptions: NextAuthOptions = {
 	callbacks: {
 		// @ts-ignore
 		async session(params) {
+			const user = await OrmUser.findOne({
+				where: {email: params.token.email!},
+			});
+
 			const session: TSession = {
 				...params.session,
-				// @ts-ignore
-				user: await OrmUser.findOne({
-					// @ts-ignore
-					where: {email: params.token.email},
-				}),
+				user: user?.dataValues,
 			};
+
 			return session;
 		},
 		jwt(params) {
-			// @ts-ignore Update token
-			if (params.user?.role) {
-				// @ts-ignore
-				params.token.role = params.user.role;
-			}
+			// @ts-ignore update token add role to token
+			if (params.user?.role) params.token.role = params.user?.role;
 
 			// return final_token
 			return params.token;

@@ -27,6 +27,8 @@ export type {
 	TSession,
 	TUpsertSppbIn,
 	TUser,
+	TUserLogin,
+	TUserSignIn,
 	USPPB,
 	ZId,
 } from './app.zod';
