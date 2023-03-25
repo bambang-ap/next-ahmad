@@ -14,6 +14,7 @@ import initOrmPOItemSppbIn from './models/po_item_sppb_in';
 import initOrmRole from './models/role';
 import initOrmScan from './models/scan';
 import initOrmUser from './models/user';
+import initOrmCustomerLogin from './models/user_login';
 
 export type DefinedModel<
 	T extends {},
@@ -29,11 +30,12 @@ export const ORM = new Sequelize(
 		port: process.env.PGSQL_PORT,
 		host: process.env.PGSQL_HOST,
 		// query: {raw: true},
-		logging: false,
+		// logging: false,
 	},
 );
 
 initOrmCustomer(ORM);
+initOrmCustomerLogin(ORM);
 initOrmMenu(ORM);
 initOrmCustomerPO(ORM);
 initOrmCustomerPOItem(ORM);

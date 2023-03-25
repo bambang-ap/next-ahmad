@@ -22,6 +22,12 @@ export const tUser = zId.extend({
 	password: z.string().nullish(),
 });
 
+export type TUserLogin = z.infer<typeof tUserLogin>;
+export const tUserLogin = zId.extend({
+	id_user: z.string(),
+	expiredAt: z.date(),
+});
+
 export type TSession = z.infer<typeof tSession>;
 export const tSession = z.object({expires: z.string(), user: tUser.nullish()});
 

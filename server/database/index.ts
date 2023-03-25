@@ -12,3 +12,4 @@ export * from './models/po_item_sppb_in';
 export * from './models/role';
 export * from './models/scan';
 export * from './models/user';
+export * from './models/user_login';

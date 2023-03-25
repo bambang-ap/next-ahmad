@@ -4,7 +4,7 @@ import {useRouter} from 'next/router';
 import {Control, useForm, useWatch} from 'react-hook-form';
 import * as XLSX from 'xlsx';
 
-import {ModalType, TCustomer} from '@appTypes/app.type';
+import {ModalType, TCustomer, TUser} from '@appTypes/app.type';
 import {Button, Input, Modal, ModalRef, Select, Table, Text} from '@components';
 import {
 	allowedPages,
@@ -42,6 +42,9 @@ const RenderPage = ({path}: {path: string}) => {
 
 	const {data: dataTable, refetch} = trpc.basic.get.useQuery({target});
 	const {control, handleSubmit, watch, reset} = useForm();
+
+	const isOnCustomer = target === CRUD_ENABLED.CUSTOMER;
+	const isOnUser = target === CRUD_ENABLED.USER;
 
 	const modalType = watch('type');
 	const modalTitle =
@@ -82,7 +85,7 @@ const RenderPage = ({path}: {path: string}) => {
 			<div className="overflow-x-auto w-full">
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
-				{target === CRUD_ENABLED.CUSTOMER && (
+				{isOnCustomer && (
 					<Suspense>
 						<RenderImportCustomer refetch={refetch} />
 					</Suspense>
@@ -111,6 +114,7 @@ const RenderPage = ({path}: {path: string}) => {
 									);
 								})}
 								<Cell className="flex gap-x-2">
+									{isOnUser && <QRUserLogin {...(item as TUser)} />}
 									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
 									</Button>
@@ -200,7 +204,7 @@ function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
 	const {mutate} = trpc.basic.mutate.useMutation(defaultErrorMutation);
 
-	async function mutateInsert(force?: boolean): void {
+	async function mutateInsert(force?: boolean): Promise<void> {
 		if (!jsonData) return;
 
 		if (!force) {
@@ -297,6 +301,30 @@ function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 						)}
 					</div>
 				</div>
+			</Modal>
+		</>
+	);
+}
+
+function QRUserLogin(item: TUser) {
+	const modalRef = useRef<ModalRef>(null);
+	const {data} = trpc.qr.useQuery<any, string>(item.id);
+	const {mutate} = trpc.user_login.generate.useMutation(defaultErrorMutation);
+
+	if (!data) return null;
+
+	function generate() {
+		modalRef.current?.show();
+		mutate(item.id, {
+			onSuccess: () => alert('Berhasil'),
+		});
+	}
+
+	return (
+		<>
+			<Button onClick={generate}>Generate</Button>
+			<Modal title="QR Cutomer Login" ref={modalRef}>
+				<img alt="" src={data} />
 			</Modal>
 		</>
 	);

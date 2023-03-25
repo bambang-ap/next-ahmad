@@ -2,6 +2,7 @@ import {z} from 'zod';
 
 export enum TABLES {
 	CUSTOMER = 'customer',
+	USER_LOGIN = 'user_login',
 	CUSTOMER_PO = 'po',
 	CUSTOMER_PO_ITEM = 'po_itemm',
 	CUSTOMER_SPPB_IN = 'customer_sppb_in',

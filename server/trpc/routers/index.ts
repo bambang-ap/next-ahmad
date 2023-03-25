@@ -8,12 +8,14 @@ import menuRouters from './menu';
 import miscRouter from './misc';
 import scanRouters from './scan';
 import sppbRouters from './sppb';
+import user_loginRouters from './user_login';
 
 export const appRouter = router({
 	...miscRouter,
 	menu: menuRouters,
 	basic: basicRouters,
 	customer_po: customer_poRouters,
+	user_login: user_loginRouters,
 	kanban: kanbanRouters,
 	scan: scanRouters,
 	sppb: sppbRouters,
