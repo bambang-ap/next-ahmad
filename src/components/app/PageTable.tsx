@@ -13,6 +13,7 @@ import {
 	defaultErrorMutation,
 } from '@constants';
 import {CRUD_ENABLED} from '@enum';
+import {copyToClipboard} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export const PageTable = () => {
@@ -114,7 +115,12 @@ const RenderPage = ({path}: {path: string}) => {
 									);
 								})}
 								<Cell className="flex gap-x-2">
-									{isOnUser && <QRUserLogin {...(item as TUser)} />}
+									{isOnUser && (
+										<>
+											<UserTokenCopy {...(item as TUser)} />
+											<QRUserLogin {...(item as TUser)} />
+										</>
+									)}
 									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
 									</Button>
@@ -306,17 +312,34 @@ function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	);
 }
 
-function QRUserLogin(item: TUser) {
+function UserTokenCopy(user: TUser) {
+	const {data: dataToken} = trpc.user_login.getToken.useQuery<any, string>(
+		user.id,
+	);
+
+	if (!dataToken) return null;
+
+	return <Button onClick={() => copyToClipboard(dataToken)}>Copy token</Button>;
+}
+
+function QRUserLogin(user: TUser) {
 	const modalRef = useRef<ModalRef>(null);
-	const {data} = trpc.qr.useQuery<any, string>(item.id);
 	const {mutate} = trpc.user_login.generate.useMutation(defaultErrorMutation);
+	const {data} = trpc.qr.useQuery<any, string>(user.id);
+	const {data: dataToken, refetch} = trpc.user_login.getToken.useQuery<
+		any,
+		string
+	>(user.id);
 
 	if (!data) return null;
 
 	function generate() {
 		modalRef.current?.show();
-		mutate(item.id, {
-			onSuccess: () => alert('Berhasil'),
+		mutate(user.id, {
+			onSuccess: () => {
+				refetch();
+				alert('Berhasil');
+			},
 		});
 	}
 
@@ -325,6 +348,9 @@ function QRUserLogin(item: TUser) {
 			<Button onClick={generate}>Generate</Button>
 			<Modal title="QR Cutomer Login" ref={modalRef}>
 				<img alt="" src={data} />
+				{dataToken && (
+					<Button onClick={() => copyToClipboard(dataToken)}>Copy token</Button>
+				)}
 			</Modal>
 		</>
 	);
