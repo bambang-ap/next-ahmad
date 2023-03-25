@@ -1,7 +1,6 @@
-import jsPDF from 'jspdf';
-
 import {RouterOutput} from '@appTypes/app.type';
 import {Button, RootTable as Table} from '@components';
+import {generatePDF} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {qtyList} from '../customer/po/ModalChild';
@@ -18,7 +17,7 @@ export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
 
 	return (
 		<>
-			<Button icon="faPrint" onClick={() => generate(tagId)} />
+			<Button icon="faPrint" onClick={() => generatePDF(tagId)} />
 
 			<div
 				id={tagId}
@@ -131,15 +130,4 @@ export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
 			</div>
 		</>
 	);
-}
-
-function generate(id: string) {
-	const doc = new jsPDF({unit: 'px', orientation: 'p'});
-
-	doc.html(document.getElementById(id) ?? '', {
-		windowWidth: 100,
-		callback(document) {
-			document.save('a4.pdf');
-		},
-	});
 }

@@ -13,7 +13,7 @@ import {
 	defaultErrorMutation,
 } from '@constants';
 import {CRUD_ENABLED} from '@enum';
-import {copyToClipboard} from '@utils';
+import {copyToClipboard, generatePDF} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export const PageTable = () => {
@@ -323,6 +323,7 @@ function UserTokenCopy(user: TUser) {
 }
 
 function QRUserLogin(user: TUser) {
+	const tagId = `qr-user-${user.id}`;
 	const modalRef = useRef<ModalRef>(null);
 	const {mutate} = trpc.user_login.generate.useMutation(defaultErrorMutation);
 	const {data} = trpc.qr.useQuery<any, string>(user.id);
@@ -347,9 +348,20 @@ function QRUserLogin(user: TUser) {
 		<>
 			<Button onClick={generate}>Generate</Button>
 			<Modal title="QR Cutomer Login" ref={modalRef}>
-				<img alt="" src={data} />
+				<div id={tagId}>
+					<img alt="" src={data} />
+				</div>
 				{dataToken && (
-					<Button onClick={() => copyToClipboard(dataToken)}>Copy token</Button>
+					<div className="flex gap-2">
+						<Button className="flex-1" onClick={() => generatePDF(tagId)}>
+							Print
+						</Button>
+						<Button
+							className="flex-1"
+							onClick={() => copyToClipboard(dataToken)}>
+							Copy token
+						</Button>
+					</div>
 				)}
 			</Modal>
 		</>
