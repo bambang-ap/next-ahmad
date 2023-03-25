@@ -88,3 +88,12 @@ export const checkCredentialV2 = async <T>(
 
 	return callback(session);
 };
+
+export function pagingResult<T extends unknown>(
+	count: number,
+	page: number,
+	limit: number,
+	rows: T[],
+) {
+	return {count, page, limit, rows};
+}

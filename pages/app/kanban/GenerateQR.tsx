@@ -1,3 +1,5 @@
+import {Fragment} from 'react';
+
 import {RouterOutput} from '@appTypes/app.type';
 import {Button, RootTable as Table} from '@components';
 import {generatePDF} from '@utils';
@@ -61,9 +63,14 @@ export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
 						<Table.Td colSpan={2}>
 							<Table>
 								{dataMesin.map(mesin => {
-									const {dataInstruksi, name: nameMesin, nomor_mesin} = mesin;
+									const {
+										dataInstruksi,
+										id,
+										name: nameMesin,
+										nomor_mesin,
+									} = mesin;
 									return (
-										<>
+										<Fragment key={id}>
 											<Table.Tr>
 												<Table.Td>{nameMesin}</Table.Td>
 												<Table.Td>{nomor_mesin}</Table.Td>
@@ -83,7 +90,7 @@ export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
 													</Table>
 												</Table.Td>
 											</Table.Tr>
-										</>
+										</Fragment>
 									);
 								})}
 							</Table>

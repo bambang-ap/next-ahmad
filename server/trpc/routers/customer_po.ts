@@ -1,7 +1,14 @@
 import {qtyList, UQtyList} from 'pages/app/customer/po/ModalChild';
 import {z} from 'zod';
 
-import {tCustomerPO, tPOItem} from '@appTypes/app.zod';
+import {
+	TCustomer,
+	TCustomerPO,
+	tCustomerPO,
+	TPOItem,
+	tPOItem,
+} from '@appTypes/app.zod';
+import {defaultLimit} from '@constants';
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -9,10 +16,98 @@ import {
 	OrmCustomerSPPBIn,
 	OrmPOItemSppbIn,
 } from '@database';
-import {checkCredentialV2, generateId} from '@server';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
+import {appRouter} from '.';
+
+type UU = TCustomerPO & {
+	customer?: TCustomer;
+	isClosed?: boolean;
+	po_item: (TPOItem & {isClosed?: boolean})[];
+};
+
+type HH = {rows: UU[]; count: number; page: number; limit: number};
+
 const customer_poRouters = router({
+	getPage: procedure
+		.input(
+			tCustomerPO
+				.pick({id: true})
+				.partial()
+				.extend({
+					limit: z.number().optional(),
+					page: z.number().optional(),
+					type: z.literal('customer_po'),
+				}),
+		)
+		.query(async ({ctx: {req, res}, input}) => {
+			const {id: nomor_po, limit = defaultLimit, page = 1} = input;
+
+			return checkCredentialV2(req, res, async (): Promise<HH> => {
+				const limitation = {offset: (page - 1) * limit, limit};
+
+				const {count, rows: allPO} = await OrmCustomerPO.findAndCountAll(
+					nomor_po ? {where: {id: nomor_po}, ...limitation} : limitation,
+				);
+				const joinedPOPromises = allPO.map<Promise<HH['rows'][number]>>(
+					async ({dataValues}) => {
+						const poItem = await OrmCustomerPOItem.findAll({
+							where: {id_po: dataValues.id},
+						});
+
+						const customer = await OrmCustomer.findOne({
+							where: {id: dataValues.id_customer},
+						});
+
+						const itemInSppbIn = poItem.map(async ({dataValues: item}) => {
+							type ItemRet = {
+								qty: Record<UQtyList, number>;
+								closed: Record<UQtyList, boolean>;
+							};
+
+							const itemSppb = await OrmPOItemSppbIn.findAll({
+								where: {id_item: item.id},
+							});
+
+							const {closed} = itemSppb.reduce<ItemRet>(
+								(ret, {dataValues: ii}) => {
+									qtyList.forEach(num => {
+										const qtyKey = `qty${num}` as const;
+										if (!ret.qty[qtyKey]) ret.qty[qtyKey] = 0;
+										ret.qty[qtyKey] += ii[qtyKey] ?? 0;
+
+										ret.closed[qtyKey] =
+											(item[qtyKey] ?? 0) === ret.qty[qtyKey];
+									});
+
+									return ret;
+								},
+								{qty: {}, closed: {qty1: false}} as any,
+							);
+
+							return {
+								...item,
+								isClosed: !Object.values(closed).includes(false),
+							};
+						});
+
+						const po_item = await Promise.all(itemInSppbIn);
+
+						return {
+							...dataValues,
+							po_item,
+							customer: customer?.dataValues,
+							isClosed: !po_item.find(e => e.isClosed === false),
+						};
+					},
+				);
+
+				const allDataPO = await Promise.all(joinedPOPromises);
+
+				return pagingResult(count, page, limit, allDataPO);
+			});
+		}),
 	get: procedure
 		.input(
 			tCustomerPO
@@ -22,62 +117,16 @@ const customer_poRouters = router({
 					type: z.literal('customer_po'),
 				}),
 		)
-		.query(async ({ctx: {req, res}, input: {id: nomor_po}}) => {
-			return checkCredentialV2(req, res, async () => {
-				const allPO = await OrmCustomerPO.findAll(
-					nomor_po ? {where: {id: nomor_po}} : undefined,
-				);
-				const joinedPOPromises = allPO.map(async ({dataValues}) => {
-					const poItem = await OrmCustomerPOItem.findAll({
-						where: {id_po: dataValues.id},
-					});
+		.query(async ({ctx, input}): Promise<HH['rows']> => {
+			const routerCaller = appRouter.createCaller(ctx);
 
-					const customer = await OrmCustomer.findOne({
-						where: {id: dataValues.id_customer},
-					});
-
-					const itemInSppbIn = poItem.map(async ({dataValues: item}) => {
-						type ItemRet = {
-							qty: Record<UQtyList, number>;
-							closed: Record<UQtyList, boolean>;
-						};
-
-						const itemSppb = await OrmPOItemSppbIn.findAll({
-							where: {id_item: item.id},
-						});
-
-						const {closed} = itemSppb.reduce<ItemRet>(
-							(ret, {dataValues: ii}) => {
-								qtyList.forEach(num => {
-									const qtyKey = `qty${num}` as const;
-									if (!ret.qty[qtyKey]) ret.qty[qtyKey] = 0;
-									ret.qty[qtyKey] += ii[qtyKey] ?? 0;
-
-									ret.closed[qtyKey] = (item[qtyKey] ?? 0) === ret.qty[qtyKey];
-								});
-
-								return ret;
-							},
-							{qty: {}, closed: {qty1: false}} as any,
-						);
-
-						return {...item, isClosed: !Object.values(closed).includes(false)};
-					});
-
-					const po_item = await Promise.all(itemInSppbIn);
-
-					return {
-						...dataValues,
-						po_item,
-						customer: customer?.dataValues,
-						isClosed: !po_item.find(e => e.isClosed === false),
-					};
-				});
-
-				return Promise.all(joinedPOPromises);
+			const {rows} = await routerCaller.customer_po.getPage({
+				...input,
+				limit: 99999999,
 			});
-		}),
 
+			return rows;
+		}),
 	add: procedure
 		.input(
 			tCustomerPO

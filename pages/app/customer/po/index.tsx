@@ -17,7 +17,10 @@ export default function POCustomer() {
 	const updatePO = trpc.customer_po.update.useMutation(defaultErrorMutation);
 	const deletePO = trpc.customer_po.delete.useMutation(defaultErrorMutation);
 
-	const {data, refetch} = trpc.customer_po.get.useQuery({type: 'customer_po'});
+	const {data, refetch} = trpc.customer_po.get.useQuery({
+		type: 'customer_po',
+	});
+
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		// resolver: zodResolver(validationSchema),
 	});
