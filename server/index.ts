@@ -95,5 +95,8 @@ export function pagingResult<T extends unknown>(
 	limit: number,
 	rows: T[],
 ) {
-	return {count, page, limit, rows};
+	const mod = count % limit;
+	const totalPage = (count - mod) / limit + (mod > 0 ? 1 : 0);
+
+	return {count, page, limit, totalPage, rows};
 }

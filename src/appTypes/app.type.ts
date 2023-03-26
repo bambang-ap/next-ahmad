@@ -6,6 +6,7 @@ export type {
 	ItemsSppb,
 	ModalType,
 	ModalTypePreview,
+	TableFormValue,
 	TCustomer,
 	TCustomerPO,
 	TCustomerPOExtended,

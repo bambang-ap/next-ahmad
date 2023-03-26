@@ -2,6 +2,7 @@ import {qtyList, UQtyList} from 'pages/app/customer/po/ModalChild';
 import {z} from 'zod';
 
 import {
+	tableFormValue,
 	TCustomer,
 	TCustomerPO,
 	tCustomerPO,
@@ -27,19 +28,21 @@ type UU = TCustomerPO & {
 	po_item: (TPOItem & {isClosed?: boolean})[];
 };
 
-type HH = {rows: UU[]; count: number; page: number; limit: number};
+type HH = {
+	rows: UU[];
+	count: number;
+	page: number;
+	totalPage: number;
+	limit: number;
+};
 
 const customer_poRouters = router({
 	getPage: procedure
 		.input(
-			tCustomerPO
-				.pick({id: true})
+			tableFormValue
 				.partial()
-				.extend({
-					limit: z.number().optional(),
-					page: z.number().optional(),
-					type: z.literal('customer_po'),
-				}),
+				.extend({type: z.literal('customer_po')})
+				.and(tCustomerPO.pick({id: true}).partial()),
 		)
 		.query(async ({ctx: {req, res}, input}) => {
 			const {id: nomor_po, limit = defaultLimit, page = 1} = input;

@@ -16,6 +16,11 @@ export const inputClassName = 'px-2 py-1 rounded bg-white';
 
 export const defaultExcludeColumn = ['createdAt', 'updatedAt'];
 
+export const defaultTextFieldProps: TextFieldProps = {
+	InputLabelProps: {shrink: true},
+	variant: 'filled',
+};
+
 export const defaultErrorMutation: {onError: any} = {
 	onError: (err: TRPCClientError<AppRouter>) => {
 		try {
@@ -27,9 +32,4 @@ export const defaultErrorMutation: {onError: any} = {
 			alert(err?.message);
 		}
 	},
-};
-
-export const defaultTextFieldProps: TextFieldProps = {
-	InputLabelProps: {shrink: true},
-	variant: 'filled',
 };

@@ -3,9 +3,10 @@ import {FormEventHandler, useRef} from 'react';
 import {useForm} from 'react-hook-form';
 
 import {ModalTypePreview} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Table} from '@components';
+import {Button, Modal, ModalRef, TableFilter} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
+import {useTable} from '@hooks';
 import {trpc} from '@utils/trpc';
 
 import ModalChild, {FormType} from './ModalChild';
@@ -13,16 +14,22 @@ import ModalChild, {FormType} from './ModalChild';
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
+
 	const insertPO = trpc.customer_po.add.useMutation(defaultErrorMutation);
 	const updatePO = trpc.customer_po.update.useMutation(defaultErrorMutation);
 	const deletePO = trpc.customer_po.delete.useMutation(defaultErrorMutation);
-
-	const {data, refetch} = trpc.customer_po.get.useQuery({
-		type: 'customer_po',
-	});
+	const {hookForm, formValue} = useTable();
 
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		// resolver: zodResolver(validationSchema),
+	});
+
+	const {refetch: refetchH} = trpc.customer_po.get.useQuery({
+		type: 'customer_po',
+	});
+	const {data, refetch} = trpc.customer_po.getPage.useQuery({
+		type: 'customer_po',
+		...formValue,
 	});
 
 	const modalType = watch('type');
@@ -43,6 +50,7 @@ export default function POCustomer() {
 			const onSuccess = () => {
 				modalRef.current?.hide();
 				refetch();
+				refetchH();
 			};
 
 			switch (type) {
@@ -76,8 +84,10 @@ export default function POCustomer() {
 			<div className="overflow-x-auto w-full">
 				<Button onClick={() => showModal('add', {})}>Add</Button>
 
-				<Table
-					data={data ?? []}
+				<TableFilter
+					form={hookForm}
+					data={data?.rows}
+					pageCount={data?.totalPage}
 					header={['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Action']}
 					renderItem={({item, Cell}) => {
 						const {id, customer, tgl_po, due_date, nomor_po} = item;
