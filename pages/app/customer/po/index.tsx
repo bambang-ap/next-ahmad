@@ -82,13 +82,14 @@ export default function POCustomer() {
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
-				<Button onClick={() => showModal('add', {})}>Add</Button>
-
 				<TableFilter
 					form={hookForm}
 					data={data?.rows}
 					pageCount={data?.totalPage}
 					header={['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Action']}
+					topComponent={
+						<Button onClick={() => showModal('add', {})}>Add</Button>
+					}
 					renderItem={({item, Cell}) => {
 						const {id, customer, tgl_po, due_date, nomor_po} = item;
 

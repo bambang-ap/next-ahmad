@@ -26,7 +26,7 @@ export type TableProps<T, Cell = {}> = {
 
 export type TableFilterProps<T> = Omit<
 	TableProps<T, Cells>,
-	'topComponent' | 'bottomComponent'
+	'bottomComponent'
 > & {
 	form: UseFormReturn<TableFormValue>;
 	pageCount?: number;
@@ -36,6 +36,8 @@ export {RootTable};
 
 export function TableFilter<T>({
 	form,
+	className,
+	topComponent,
 	pageCount = 1,
 	...props
 }: TableFilterProps<T>) {
@@ -71,19 +73,33 @@ export function TableFilter<T>({
 	return (
 		<Table
 			{...props}
+			className={classNames('flex flex-col gap-2', className)}
 			topComponent={
-				<div className="flex justify-between">
-					<Select data={selectData} control={control} fieldName="limit" />
-					<form onSubmit={doSearch} className="w-1/2">
-						<Input control={searchControl} fieldName="search" />
+				<div className="px-2 flex justify-between">
+					<div className="flex items-center">{topComponent}</div>
+					<form onSubmit={doSearch} className="flex gap-2 w-1/2">
+						<Select
+							label="Data per halaman"
+							data={selectData}
+							control={control}
+							fieldName="limit"
+						/>
+						<Input
+							label="Pencarian"
+							className="flex-1"
+							fieldName="search"
+							control={searchControl}
+						/>
 					</form>
 				</div>
 			}
 			bottomComponent={
-				<Pagination
-					onChange={(_, v) => setValue('page', v)}
-					count={Number(formValue?.pageTotal ?? 1)}
-				/>
+				<div className="px-2 flex justify-center">
+					<Pagination
+						onChange={(_, v) => setValue('page', v)}
+						count={Number(formValue?.pageTotal ?? 1)}
+					/>
+				</div>
 			}
 		/>
 	);

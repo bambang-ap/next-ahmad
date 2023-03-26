@@ -1,4 +1,5 @@
 import {qtyList, UQtyList} from 'pages/app/customer/po/ModalChild';
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {
@@ -45,13 +46,21 @@ const customer_poRouters = router({
 				.and(tCustomerPO.pick({id: true}).partial()),
 		)
 		.query(async ({ctx: {req, res}, input}) => {
-			const {id: nomor_po, limit = defaultLimit, page = 1} = input;
+			const {id: idPo, limit = defaultLimit, page = 1, search} = input;
 
 			return checkCredentialV2(req, res, async (): Promise<HH> => {
-				const limitation = {offset: (page - 1) * limit, limit};
+				const limitation = {
+					offset: (page - 1) * limit,
+					limit,
+					where: {
+						nomor_po: {
+							[Op.iLike]: `%${search}%`,
+						},
+					},
+				};
 
 				const {count, rows: allPO} = await OrmCustomerPO.findAndCountAll(
-					nomor_po ? {where: {id: nomor_po}, ...limitation} : limitation,
+					idPo ? {where: {id: idPo}} : limitation,
 				);
 				const joinedPOPromises = allPO.map<Promise<HH['rows'][number]>>(
 					async ({dataValues}) => {
