@@ -3,7 +3,7 @@ import {NextApiRequest, NextApiResponse} from 'next';
 import {getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
 
-import {TSession} from '@appTypes/app.type';
+import {PagingResult, TSession} from '@appTypes/app.type';
 import {CRUD_ENABLED, TABLES} from '@enum';
 import {TRPCError} from '@trpc/server';
 
@@ -94,7 +94,7 @@ export function pagingResult<T extends unknown>(
 	page: number,
 	limit: number,
 	rows: T[],
-) {
+): PagingResult<T> {
 	const mod = count % limit;
 	const totalPage = (count - mod) / limit + (mod > 0 ? 1 : 0);
 

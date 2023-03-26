@@ -35,3 +35,11 @@ export type {
 } from './app.zod';
 
 export type TDataScan = {dataKanban: TKanbanExtended[]} & TScan;
+
+export type PagingResult<T> = {
+	rows: T[];
+	count: number;
+	page: number;
+	totalPage: number;
+	limit: number;
+};

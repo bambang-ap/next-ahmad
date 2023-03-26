@@ -1,14 +1,36 @@
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
-import {tCustomerSPPBIn, tUpsertSppbIn, zId} from '@appTypes/app.zod';
+import {
+	PagingResult,
+	TCustomerPO,
+	TCustomerSPPBIn,
+	TPOItem,
+	TPOItemSppbIn,
+} from '@appTypes/app.type';
+import {
+	tableFormValue,
+	tCustomerSPPBIn,
+	tUpsertSppbIn,
+	zId,
+} from '@appTypes/app.zod';
+import {defaultLimit} from '@constants';
 import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmPOItemSppbIn,
 } from '@database';
-import {checkCredentialV2, generateId} from '@server';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+
+import {appRouter} from '.';
+
+type GetPage = PagingResult<GetPageRows>;
+type GetPageRows = TCustomerSPPBIn & {
+	detailPo?: TCustomerPO;
+	items?: (TPOItemSppbIn & {itemDetail?: TPOItem})[];
+};
 
 const sppbRouters = router({
 	get: procedure
@@ -18,9 +40,40 @@ const sppbRouters = router({
 				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)
-		.query(({ctx: {req, res}, input: {where}}) => {
-			return checkCredentialV2(req, res, async () => {
-				const dataSppb = await OrmCustomerSPPBIn.findAll({where});
+		.query(async ({ctx, input}): Promise<GetPage['rows']> => {
+			const routerCaller = appRouter.createCaller(ctx);
+
+			const {rows} = await routerCaller.sppb.getPage({
+				...input,
+				limit: 99999999,
+			});
+
+			return rows;
+		}),
+	getPage: procedure
+		.input(
+			tableFormValue.partial().extend({
+				type: z.literal('sppb_in'),
+				where: tCustomerSPPBIn.partial().optional(),
+			}),
+		)
+		.query(({ctx: {req, res}, input}) => {
+			const {where, limit = defaultLimit, page = 1, search} = input;
+
+			const limitation = {
+				limit,
+				offset: (page - 1) * limit,
+				where: {
+					nomor_surat: {
+						[Op.iLike]: `%${search}%`,
+					},
+				},
+			};
+
+			return checkCredentialV2(req, res, async (): Promise<GetPage> => {
+				const {count, rows: dataSppb} = await OrmCustomerSPPBIn.findAndCountAll(
+					where ? {where} : limitation,
+				);
 				const promises = dataSppb.map(async data => {
 					const detailPo = await OrmCustomerPO.findOne({
 						where: {id: data.dataValues.id_po},
@@ -45,7 +98,9 @@ const sppbRouters = router({
 					};
 				});
 
-				return Promise.all(promises);
+				const allDataSppbIn = await Promise.all(promises);
+
+				return pagingResult(count, page, limit, allDataSppbIn);
 			});
 		}),
 	upsert: procedure
@@ -68,6 +123,7 @@ const sppbRouters = router({
 					if (!itemFounded) {
 						return OrmPOItemSppbIn.destroy({where: {id: dataValues.id}});
 					}
+					return null;
 				});
 
 				await Promise.all(existingPoItemPromises).then(() => {

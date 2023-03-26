@@ -2,6 +2,7 @@ import {qtyList, UQtyList} from 'pages/app/customer/po/ModalChild';
 import {Op} from 'sequelize';
 import {z} from 'zod';
 
+import {PagingResult} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	TCustomer,
@@ -23,21 +24,33 @@ import {procedure, router} from '@trpc';
 
 import {appRouter} from '.';
 
-type UU = TCustomerPO & {
+type GetPage = PagingResult<GetPageRows>;
+type GetPageRows = TCustomerPO & {
 	customer?: TCustomer;
 	isClosed?: boolean;
 	po_item: (TPOItem & {isClosed?: boolean})[];
 };
 
-type HH = {
-	rows: UU[];
-	count: number;
-	page: number;
-	totalPage: number;
-	limit: number;
-};
-
 const customer_poRouters = router({
+	get: procedure
+		.input(
+			tCustomerPO
+				.pick({id: true})
+				.partial()
+				.extend({
+					type: z.literal('customer_po'),
+				}),
+		)
+		.query(async ({ctx, input}): Promise<GetPage['rows']> => {
+			const routerCaller = appRouter.createCaller(ctx);
+
+			const {rows} = await routerCaller.customer_po.getPage({
+				...input,
+				limit: 99999999,
+			});
+
+			return rows;
+		}),
 	getPage: procedure
 		.input(
 			tableFormValue
@@ -48,7 +61,7 @@ const customer_poRouters = router({
 		.query(async ({ctx: {req, res}, input}) => {
 			const {id: idPo, limit = defaultLimit, page = 1, search} = input;
 
-			return checkCredentialV2(req, res, async (): Promise<HH> => {
+			return checkCredentialV2(req, res, async (): Promise<GetPage> => {
 				const limitation = {
 					limit,
 					offset: (page - 1) * limit,
@@ -62,7 +75,7 @@ const customer_poRouters = router({
 				const {count, rows: allPO} = await OrmCustomerPO.findAndCountAll(
 					idPo ? {where: {id: idPo}} : limitation,
 				);
-				const joinedPOPromises = allPO.map<Promise<HH['rows'][number]>>(
+				const joinedPOPromises = allPO.map<Promise<GetPage['rows'][number]>>(
 					async ({dataValues}) => {
 						const poItem = await OrmCustomerPOItem.findAll({
 							where: {id_po: dataValues.id},
@@ -119,25 +132,6 @@ const customer_poRouters = router({
 
 				return pagingResult(count, page, limit, allDataPO);
 			});
-		}),
-	get: procedure
-		.input(
-			tCustomerPO
-				.pick({id: true})
-				.partial()
-				.extend({
-					type: z.literal('customer_po'),
-				}),
-		)
-		.query(async ({ctx, input}): Promise<HH['rows']> => {
-			const routerCaller = appRouter.createCaller(ctx);
-
-			const {rows} = await routerCaller.customer_po.getPage({
-				...input,
-				limit: 99999999,
-			});
-
-			return rows;
 		}),
 	add: procedure
 		.input(
