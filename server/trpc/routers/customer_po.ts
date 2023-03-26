@@ -50,8 +50,8 @@ const customer_poRouters = router({
 
 			return checkCredentialV2(req, res, async (): Promise<HH> => {
 				const limitation = {
-					offset: (page - 1) * limit,
 					limit,
+					offset: (page - 1) * limit,
 					where: {
 						nomor_po: {
 							[Op.iLike]: `%${search}%`,

@@ -16,7 +16,7 @@ export type InputProps = {
 	label?: string;
 	noLabel?: boolean;
 	disabled?: boolean;
-	type?: 'number' | 'text' | 'checkbox' | 'password' | 'date';
+	type?: 'number' | 'text' | 'search' | 'checkbox' | 'password' | 'date';
 };
 
 export const Input = withReactFormController(InputComponent);
@@ -98,7 +98,11 @@ function InputComponent<F extends FieldValues>(
 				placeholder={placeholder}
 				value={value ?? ''}
 				onChange={onChangeEvent}
-				InputProps={{endAdornment, startAdornment}}
+				InputProps={{
+					endAdornment,
+					startAdornment,
+					classes: {input: 'focus:bg-yellow'},
+				}}
 				{...restProps}
 				{...field}
 			/>

@@ -17,6 +17,9 @@ module.exports = {
 			fontFamily: {
 				'noto-sans': ['Noto Sans', 'Noto Sans_bold'],
 			},
+			outlineWidth: {
+				5: '5px',
+			},
 		},
 	},
 };

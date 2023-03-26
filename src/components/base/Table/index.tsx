@@ -4,7 +4,7 @@ import {Pagination, TableCellProps} from '@mui/material';
 import {useForm, UseFormReturn} from 'react-hook-form';
 
 import {TableFormValue} from '@appTypes/app.type';
-import {Input, Select, SelectPropsData} from '@components';
+import {Button, Input, Select, SelectPropsData} from '@components';
 import {defaultLimit} from '@constants';
 import {classNames} from '@utils';
 
@@ -76,21 +76,24 @@ export function TableFilter<T>({
 			className={classNames('flex flex-col gap-2', className)}
 			topComponent={
 				<div className="px-2 flex justify-between">
-					<div className="flex items-center">{topComponent}</div>
-					<form onSubmit={doSearch} className="flex gap-2 w-1/2">
+					<div className="flex items-center gap-2">{topComponent}</div>
+					<div className="flex gap-2 w-1/2">
 						<Select
 							label="Data per halaman"
 							data={selectData}
 							control={control}
 							fieldName="limit"
 						/>
-						<Input
-							label="Pencarian"
-							className="flex-1"
-							fieldName="search"
-							control={searchControl}
-						/>
-					</form>
+						<form onSubmit={doSearch} className="flex-1">
+							<Input
+								type="search"
+								label="Pencarian"
+								fieldName="search"
+								control={searchControl}
+								rightAcc={<Button icon="faSearch" onClick={doSearch} />}
+							/>
+						</form>
+					</div>
 				</div>
 			}
 			bottomComponent={

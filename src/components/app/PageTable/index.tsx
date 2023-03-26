@@ -4,9 +4,10 @@ import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
 import {ModalType, TUser} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Table, Text} from '@components';
+import {Button, Modal, ModalRef, TableFilter, Text} from '@components';
 import {allowedPages, defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
+import {useTableFilter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
 import {QRUserLogin, RenderTableCell, UserTokenCopy} from './component';
@@ -28,6 +29,7 @@ const RenderPage = ({path}: {path: string}) => {
 		text,
 		table,
 		enumName: target,
+		searchKey,
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalRef = useRef<ModalRef>(null);
@@ -38,8 +40,14 @@ const RenderPage = ({path}: {path: string}) => {
 		},
 	});
 
-	const {data: dataTable, refetch} = trpc.basic.get.useQuery({target});
+	const {formValue, hookForm} = useTableFilter();
 	const {control, handleSubmit, watch, reset} = useForm();
+
+	const {data: dataTable, refetch} = trpc.basic.getPage.useQuery({
+		target,
+		searchKey,
+		...formValue,
+	});
 
 	const isOnCustomer = target === CRUD_ENABLED.CUSTOMER;
 	const isOnUser = target === CRUD_ENABLED.USER;
@@ -81,17 +89,22 @@ const RenderPage = ({path}: {path: string}) => {
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
-				<Button onClick={() => showModal('add', {})}>Add</Button>
-				{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
-				{isOnCustomer && (
-					<Suspense>
-						<RenderImportCustomer refetch={refetch} />
-					</Suspense>
-				)}
-
-				<Table
-					data={dataTable ?? []}
+				<TableFilter
+					form={hookForm}
 					header={table?.header}
+					data={dataTable?.rows ?? []}
+					pageCount={dataTable?.totalPage}
+					topComponent={
+						<>
+							<Button onClick={() => showModal('add', {})}>Add</Button>
+							{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
+							{isOnCustomer && (
+								<Suspense>
+									<RenderImportCustomer refetch={refetch} />
+								</Suspense>
+							)}
+						</>
+					}
 					renderItem={({item, Cell}) => {
 						const {id, ...rest} = item;
 

@@ -3,7 +3,7 @@ import {useForm} from 'react-hook-form';
 import {TableFormValue} from '@appTypes/app.type';
 import {defaultLimit} from '@constants';
 
-export function useTable() {
+export function useTableFilter() {
 	const hookForm = useForm<TableFormValue>({
 		defaultValues: {
 			limit: defaultLimit,
@@ -12,6 +12,7 @@ export function useTable() {
 			search: '',
 		},
 	});
+
 	const formValue = hookForm.watch();
 
 	return {hookForm, formValue};

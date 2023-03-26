@@ -6,7 +6,7 @@ import {ModalTypePreview} from '@appTypes/app.type';
 import {Button, Modal, ModalRef, TableFilter} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
-import {useTable} from '@hooks';
+import {useTableFilter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
 import ModalChild, {FormType} from './ModalChild';
@@ -18,7 +18,7 @@ export default function POCustomer() {
 	const insertPO = trpc.customer_po.add.useMutation(defaultErrorMutation);
 	const updatePO = trpc.customer_po.update.useMutation(defaultErrorMutation);
 	const deletePO = trpc.customer_po.delete.useMutation(defaultErrorMutation);
-	const {hookForm, formValue} = useTable();
+	const {hookForm, formValue} = useTableFilter();
 
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		// resolver: zodResolver(validationSchema),

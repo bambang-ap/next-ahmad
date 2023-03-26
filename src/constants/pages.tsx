@@ -28,6 +28,7 @@ export type Body<T extends Record<string, any>> = (keyof T | BodyArrayKey<T>)[];
 
 export type AllowedPages = {
 	enumName: CRUD_ENABLED;
+	searchKey: string;
 	table: {header: string[]; body: Body<any>};
 	modalField: Partial<Record<Action, ColUnion[]>>;
 	text: {
@@ -65,6 +66,7 @@ export type FieldForm<T extends {}> = {
 export const allowedPages: Record<string, AllowedPages> = {
 	'/app/mesin': {
 		enumName: CRUD_ENABLED.MESIN,
+		searchKey: 'nomor_mesin',
 		table: {
 			header: ['Name', 'Nomor Mesin', 'Action'],
 			get body(): Body<TMesin> {
@@ -90,6 +92,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 
 	'/app/kanban/instruksi': {
 		enumName: CRUD_ENABLED.INSTRUKSI_KANBAN,
+		searchKey: 'name',
 		table: {
 			header: ['Name', 'Action'],
 			get body(): Body<TInstruksiKanban> {
@@ -115,6 +118,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 
 	'/app/customer': {
 		enumName: CRUD_ENABLED.CUSTOMER,
+		searchKey: 'name',
 		table: {
 			header: ['name', 'alamat', 'npwp', 'no_telp', 'Up', 'Action'],
 			get body(): Body<TCustomer> {
@@ -146,6 +150,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 
 	'/app/user': {
 		enumName: CRUD_ENABLED.USER,
+		searchKey: 'name',
 		table: {
 			header: ['Name', 'Email', 'Role', 'Action'],
 			get body(): Body<TUser> {
@@ -195,6 +200,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 
 	'/app/user/role': {
 		enumName: CRUD_ENABLED.ROLE,
+		searchKey: 'name',
 		table: {
 			header: ['Role', 'Action'],
 			get body(): Body<TRole> {

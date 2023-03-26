@@ -7,7 +7,7 @@ export * from './colors';
 export * from './pages';
 export * from './sizes';
 
-export const defaultLimit = 5;
+export const defaultLimit = 1;
 
 export const focusInputClassName =
 	'border-2 border-transparent focus-within:border-app-secondary-03';

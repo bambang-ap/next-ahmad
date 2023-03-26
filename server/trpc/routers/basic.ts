@@ -1,8 +1,10 @@
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
-import {uModalType} from '@appTypes/app.zod';
-import {eOpKeys, Op, Z_CRUD_ENABLED} from '@enum';
-import {generateId, MAPPING_CRUD_ORM} from '@server';
+import {tableFormValue, uModalType} from '@appTypes/app.zod';
+import {defaultLimit} from '@constants';
+import {eOpKeys, Z_CRUD_ENABLED} from '@enum';
+import {generateId, MAPPING_CRUD_ORM, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
 const basicUnion = z.union([
@@ -34,6 +36,43 @@ export const basicWhere = basicWherer.transform(obj => {
 });
 
 const basicRouters = router({
+	getPage: procedure
+		.input(
+			tableFormValue.partial().extend({
+				target: Z_CRUD_ENABLED,
+				where: basicWhere.optional(),
+				searchKey: z.string().optional(),
+			}),
+		)
+		.query(async ({input}) => {
+			const {
+				target,
+				where,
+				limit = defaultLimit,
+				page = 1,
+				search,
+				searchKey,
+			} = input;
+			const limitation = {
+				limit,
+				order: [['id', 'asc']],
+				offset: (page - 1) * limit,
+				where: searchKey
+					? {
+							[searchKey]: {
+								[Op.iLike]: `%${search}%`,
+							},
+					  }
+					: undefined,
+			};
+
+			const orm = MAPPING_CRUD_ORM[target];
+			const {count, rows} = await orm.findAndCountAll(
+				where ? {where} : limitation,
+			);
+
+			return pagingResult(count, page, limit, rows);
+		}),
 	get: procedure
 		.input(
 			z.object({
