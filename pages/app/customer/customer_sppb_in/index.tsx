@@ -3,9 +3,10 @@ import {FormEventHandler, useRef} from 'react';
 import {useForm} from 'react-hook-form';
 
 import {ModalTypePreview, TUpsertSppbIn} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Table} from '@components';
+import {Button, Modal, ModalRef, TableFilter} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
+import {useTableFilter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
 import {ModalChild} from './ModalChild';
@@ -20,7 +21,12 @@ export default function SPPBIN() {
 		defaultValues: {type: 'add'},
 	});
 
-	const {data, refetch} = trpc.sppb.get.useQuery({type: 'sppb_in'});
+	const {formValue, hookForm} = useTableFilter();
+
+	const {data, refetch} = trpc.sppb.getPage.useQuery({
+		type: 'sppb_in',
+		...formValue,
+	});
 	const {mutate: mutateUpsert} =
 		trpc.sppb.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =
@@ -61,10 +67,11 @@ export default function SPPBIN() {
 
 	return (
 		<>
-			<Button onClick={() => showModal('add', {})}>Add</Button>
-
-			<Table
-				data={data}
+			<TableFilter
+				form={hookForm}
+				data={data?.rows}
+				pageCount={data?.totalPage}
+				topComponent={<Button onClick={() => showModal('add', {})}>Add</Button>}
 				header={[
 					'Nomor PO',
 					'Nomor Surat Jalan',

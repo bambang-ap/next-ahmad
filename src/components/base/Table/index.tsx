@@ -86,7 +86,7 @@ export function TableFilter<T>({
 						/>
 						<form onSubmit={doSearch} className="flex-1">
 							<Input
-								type="search"
+								// type="search"
 								label="Pencarian"
 								fieldName="search"
 								control={searchControl}
