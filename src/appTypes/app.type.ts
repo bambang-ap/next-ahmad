@@ -1,4 +1,6 @@
-import type {TKanbanExtended, TScan} from './app.zod';
+import type {RouterOutput} from '@trpc/routers';
+
+import type {TScan} from './app.zod';
 
 export type {AppRouter, RouterInput, RouterOutput} from '@trpc/routers';
 export type {
@@ -36,7 +38,8 @@ export type {
 	ZId,
 } from './app.zod';
 
-export type TDataScan = {dataKanban: TKanbanExtended[]} & TScan;
+export type TDataScan = {dataKanban: RouterOutput['kanban']['get']} & TScan;
+// export type TDataScan = TScan | undefined;
 
 export type PagingResult<T> = {
 	rows: T[];

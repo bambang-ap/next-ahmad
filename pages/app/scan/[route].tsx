@@ -1,10 +1,12 @@
+import {useRef} from 'react';
+
+import {Scanner} from '@componentBlocks';
 import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
 import {TDataScan} from '@appTypes/app.type';
-import {TScanTarget} from '@appTypes/app.zod';
-import {Button, Input} from '@components';
-import {Scanner} from '@components/blocks';
+import {TScanTarget, ZId} from '@appTypes/app.zod';
+import {Button, Input, ModalRef} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
@@ -22,10 +24,11 @@ export default function Scan() {
 }
 
 function RenderScanPage() {
+	const qrcodeRef = useRef<ModalRef>(null);
 	const router = useRouter();
 
 	const {route} = router.query as Route;
-	const {control, watch, handleSubmit} = useForm();
+	const {control, watch, handleSubmit, setValue} = useForm<ZId>();
 
 	const id = watch('id');
 
@@ -43,10 +46,17 @@ function RenderScanPage() {
 		mutate({id, target: route});
 	}
 
+	function onRead(result: string) {
+		setValue('id', result);
+	}
+
 	return (
 		<form onSubmit={searchKanban}>
-			<Input control={control} fieldName="id" />
-			<Scanner />
+			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
+			<div className="flex gap-2 items-center">
+				<Input className="flex-1" control={control} fieldName="id" />
+				<Button onClick={() => qrcodeRef.current?.show()}>Scan</Button>
+			</div>
 			{data && (
 				<RenderDataKanban {...data} updateStatus={updateStatus} route={route} />
 			)}

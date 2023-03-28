@@ -2,6 +2,7 @@ import {z} from 'zod';
 
 import {
 	TInstruksiKanban,
+	tKanban,
 	TKanban,
 	TKanbanUpsert,
 	tKanbanUpsert,
@@ -21,7 +22,12 @@ import {TRPCError} from '@trpc/server';
 
 const kanbanRouters = router({
 	get: procedure
-		.input(z.object({type: z.literal('kanban')}))
+		.input(
+			z.object({
+				type: z.literal('kanban'),
+				where: tKanban.partial().optional(),
+			}),
+		)
 		.query(({ctx: {req, res}}) => {
 			type TType = TKanban & {
 				id_customer?: string;

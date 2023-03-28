@@ -215,10 +215,10 @@ export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
 export type TScan = z.infer<typeof tScan>;
 export const tScan = zId.extend({
 	id_kanban: z.string(),
-	status_produksi: z.boolean().nullable(),
-	status_qc: z.boolean().nullable(),
-	status_finish_good: z.boolean().nullable(),
-	status_out_barang: z.boolean().nullable(),
+	status_produksi: z.boolean().nullish(),
+	status_qc: z.boolean().nullish(),
+	status_finish_good: z.boolean().nullish(),
+	status_out_barang: z.boolean().nullish(),
 });
 
 export type TScanTarget = z.infer<typeof tScanTarget>;

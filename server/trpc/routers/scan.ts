@@ -1,5 +1,5 @@
 import {TDataScan} from '@appTypes/app.type';
-import {TScan, tScanTarget, zId} from '@appTypes/app.zod';
+import {tScanTarget, zId} from '@appTypes/app.zod';
 import {OrmScan} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -11,21 +11,25 @@ const scanRouters = router({
 		return procedure
 			.input(zId)
 			.query(async ({input: {id}, ctx: {req, res}}) => {
-				return checkCredentialV2(req, res, async (): Promise<TDataScan> => {
-					const routerCaller = appRouter.createCaller({req, res});
-					const dataKanban = await routerCaller.kanban.get({
-						type: 'kanban',
-						where: {id},
-					});
+				return checkCredentialV2(
+					req,
+					res,
+					async (): Promise<TDataScan | null> => {
+						const routerCaller = appRouter.createCaller({req, res});
+						const dataKanban = await routerCaller.kanban.get({
+							type: 'kanban',
+							where: {id},
+						});
 
-					// @ts-ignore
-					const dataScan = (await OrmScan.findOne({
-						where: {id_kanban: id},
-					})) as TScan;
+						const dataScan = await OrmScan.findOne({
+							where: {id_kanban: id},
+						});
 
-					// @ts-ignore
-					return {dataKanban, ...dataScan};
-				});
+						if (dataScan) return {...dataScan?.dataValues, dataKanban};
+
+						return null;
+					},
+				);
 			});
 	},
 
@@ -53,11 +57,11 @@ const scanRouters = router({
 					function enabled() {
 						switch (target) {
 							case 'qc':
-								return dataScan.status_produksi;
+								return dataScan?.status_produksi;
 							case 'finish_good':
-								return dataScan.status_qc;
+								return dataScan?.status_qc;
 							case 'out_barang':
-								return dataScan.status_finish_good;
+								return dataScan?.status_finish_good;
 							default:
 								return true;
 						}

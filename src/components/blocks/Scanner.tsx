@@ -1,27 +1,39 @@
-import QRScanner from 'react-webcam-qr-scanner';
+import {forwardRef, Ref, useImperativeHandle, useRef} from 'react';
 
-export type ScannerProps = {};
+import QrReader, {QRResult} from 'react-qr-scanner';
 
-export function Scanner() {
-	const handleDecode = result => {
-		console.log(result);
-	};
+import {Modal, ModalProps, ModalRef} from '@components';
 
-	const handleScannerLoad = mode => {
-		console.log(mode);
-	};
+export type ScannerProps = {
+	onRead?: (text: string) => void;
+} & Omit<ModalProps, 'children'>;
+
+export const Scanner = forwardRef(ScannerComponent);
+
+function ScannerComponent(
+	{onRead, ...props}: ScannerProps,
+	ref: Ref<ModalRef | null>,
+) {
+	const modalRef = useRef<ModalRef>(null);
+
+	function handleScannerLoad(result: QRResult) {
+		if (result?.text) {
+			modalRef.current?.hide();
+			onRead?.(result.text);
+		}
+	}
+
+	useImperativeHandle(ref, () => modalRef.current);
 
 	return (
-		<QRScanner
-			onDecode={handleDecode}
-			onScannerLoad={handleScannerLoad}
-			captureSize={{width: 1280, height: 720}}
-			constraints={{
-				audio: false,
-				video: {
-					facingMode: 'environment',
-				},
-			}}
-		/>
+		<Modal ref={modalRef} {...props}>
+			<div className="flex justify-center">
+				<QrReader
+					delay={1000}
+					style={{height: 350, width: 350}}
+					onScan={handleScannerLoad}
+				/>
+			</div>
+		</Modal>
 	);
 }

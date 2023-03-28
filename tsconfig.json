@@ -61,8 +61,8 @@
       "@components": [
         "./src/components"
       ],
-      "@components/*": [
-        "./src/components/*"
+      "@componentBlocks": [
+        "./src/components/blocks"
       ],
       "@appComponent/*": [
         "./src/components/app/*"
