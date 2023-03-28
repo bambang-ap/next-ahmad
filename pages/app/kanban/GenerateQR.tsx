@@ -7,10 +7,27 @@ import {trpc} from '@utils/trpc';
 
 import {qtyList} from '../customer/po/ModalChild';
 
-export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
+export function GenerateQR(
+	kanban: RouterOutput['kanban']['get'][number] & {
+		className?: string;
+		transform?: boolean;
+		withButton?: boolean;
+	},
+) {
 	const tagId = `data-${kanban.id}`;
 
-	const {id, name, dataPo, dataMesin, items, dataSppbIn} = kanban;
+	const {
+		className = 'p-4 w-[500px] -z-10 fixed',
+		// className = 'p-4 w-[500px]',
+		transform = true,
+		withButton = true,
+		id,
+		name,
+		dataPo,
+		dataMesin,
+		items,
+		dataSppbIn,
+	} = kanban;
 
 	const {data: qrImage} = trpc.qr.useQuery<any, string>(
 		{input: id},
@@ -19,14 +36,17 @@ export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
 
 	return (
 		<>
-			<Button icon="faPrint" onClick={() => generatePDF(tagId)} />
+			{withButton && (
+				<Button icon="faPrint" onClick={() => generatePDF(tagId)} />
+			)}
 
 			<div
 				id={tagId}
-				// className="p-4 w-[500px]"
-				className="p-4 w-[500px] -z-10 fixed"
+				className={className}
 				style={{
-					transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
+					...(transform && {
+						transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
+					}),
 				}}>
 				<Table>
 					<Table.Tr>
@@ -106,7 +126,7 @@ export function GenerateQR(kanban: RouterOutput['kanban']['get'][number]) {
 								</Table.THead>
 								{Object.entries(items).map(([, item]) => {
 									const {id: idItem, id_item} = item;
-									const itemDetail = dataSppbIn?.items.find(
+									const itemDetail = dataSppbIn?.items?.find(
 										e => e.id === id_item,
 									)?.itemDetail;
 

@@ -6,7 +6,7 @@ import {tCustomer} from '@appTypes/app.zod';
 import {getNow} from '@server';
 import {procedure, router} from '@trpc';
 
-const asd = z.string().or(z.string().array()).optional();
+const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
 	now: procedure.query(() => {
@@ -15,10 +15,10 @@ const miscRouter = {
 	}),
 	qr: procedure
 		.input(
-			asd.or(
+			qrInput.or(
 				z.object({
 					type: z.enum(['png', 'svg', 'pdf', 'eps']).optional(),
-					input: asd,
+					input: qrInput,
 				}),
 			),
 		)
@@ -35,7 +35,7 @@ const miscRouter = {
 
 			function renderQrGenerated(
 				input?: string | string[],
-				type: image_type = 'svg',
+				type: image_type = 'png',
 			) {
 				if (Array.isArray(input))
 					return input.map(input => generateQr(type, input));

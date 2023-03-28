@@ -64,9 +64,11 @@ const sppbRouters = router({
 				limit,
 				offset: (page - 1) * limit,
 				where: {
-					nomor_surat: {
-						[Op.iLike]: `%${search}%`,
-					},
+					...(search && {
+						nomor_surat: {
+							[Op.iLike]: `%${search}%`,
+						},
+					}),
 				},
 			};
 
