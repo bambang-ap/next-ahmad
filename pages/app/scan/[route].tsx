@@ -4,6 +4,7 @@ import {useForm} from 'react-hook-form';
 import {TDataScan} from '@appTypes/app.type';
 import {TScanTarget} from '@appTypes/app.zod';
 import {Button, Input} from '@components';
+import {Scanner} from '@components/blocks';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {trpc} from '@utils/trpc';
@@ -45,6 +46,7 @@ function RenderScanPage() {
 	return (
 		<form onSubmit={searchKanban}>
 			<Input control={control} fieldName="id" />
+			<Scanner />
 			{data && (
 				<RenderDataKanban {...data} updateStatus={updateStatus} route={route} />
 			)}

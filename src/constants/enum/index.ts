@@ -16,6 +16,8 @@ export enum TABLES {
 	SCAN = 'scan',
 	PO_ITEM_SPPB_IN = 'po_item_sppb_in',
 	KANBAN_ITEM = 'kanban_item',
+	MATERIAL = 'material',
+	MATERIAL_KATEGORI = 'material_kategori',
 }
 
 export const Z_TABLES = z.nativeEnum(TABLES);
@@ -29,6 +31,8 @@ export enum CRUD_ENABLED {
 	CUSTOMER_SPPB_IN = 'customer_sppb_in',
 	CUSTOMER_SPPB_OUT = 'customer_sppb_out',
 	SCAN = 'scan',
+	MATERIAL = 'material',
+	MATERIAL_KATEGORI = 'material_kategori',
 }
 
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

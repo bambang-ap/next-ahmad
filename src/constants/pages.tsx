@@ -4,6 +4,8 @@ import {
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 	TInstruksiKanban,
+	TMaterial,
+	TMaterialKategori,
 	TMesin,
 	TRole,
 	TUser,
@@ -43,6 +45,8 @@ export type Types =
 	| TCustomerSPPBOut
 	| TMesin
 	| TRole
+	| TMaterial
+	| TMaterialKategori
 	| TUser;
 
 export type ColUnion = FieldForm<UnionToIntersection<Types>>;
@@ -64,6 +68,78 @@ export type FieldForm<T extends {}> = {
 );
 
 export const allowedPages: Record<string, AllowedPages> = {
+	'/app/material': {
+		enumName: CRUD_ENABLED.MATERIAL,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Kategori', 'Action'],
+			get body(): Body<TMaterial> {
+				return [
+					'name',
+					[
+						'id_kategori',
+						() =>
+							trpc.basic.get.useQuery({target: CRUD_ENABLED.MATERIAL_KATEGORI}),
+						(item: TMaterial, data: TMaterialKategori[]) =>
+							data?.find?.(e => e.id === item.id_kategori)?.name,
+					],
+				];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TMaterial>[] {
+				return [
+					{col: 'name'},
+					{
+						col: 'id_kategori',
+						type: 'select',
+						firstOption: '- Pilih Kategori -',
+						dataQuery: () =>
+							trpc.basic.get.useQuery({target: CRUD_ENABLED.MATERIAL_KATEGORI}),
+						dataMapping: (item: TMaterialKategori[]) =>
+							item?.map(({id, name}) => ({value: id, label: name})),
+					},
+				];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah material',
+				edit: 'Ubah material',
+				delete: 'Hapus material',
+			},
+		},
+	},
+
+	'/app/material/kategori': {
+		enumName: CRUD_ENABLED.MATERIAL_KATEGORI,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Action'],
+			get body(): Body<TMaterialKategori> {
+				return ['name'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TMaterialKategori>[] {
+				return [{col: 'name'}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah material kategori',
+				edit: 'Ubah material kategori',
+				delete: 'Hapus material kategori',
+			},
+		},
+	},
+
 	'/app/mesin': {
 		enumName: CRUD_ENABLED.MESIN,
 		searchKey: 'nomor_mesin',

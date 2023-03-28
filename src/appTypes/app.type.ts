@@ -18,6 +18,8 @@ export type {
 	TKanbanExtended,
 	TKanbanItem,
 	TKanbanUpsert,
+	TMaterial,
+	TMaterialKategori,
 	TMenu,
 	TMesin,
 	TPOItem,

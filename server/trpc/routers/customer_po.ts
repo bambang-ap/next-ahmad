@@ -44,12 +44,11 @@ const customer_poRouters = router({
 		.query(async ({ctx, input}): Promise<GetPage['rows']> => {
 			const routerCaller = appRouter.createCaller(ctx);
 
-			const {rows} = await routerCaller.customer_po.getPage({
+			const data = await routerCaller.customer_po.getPage({
 				...input,
-				limit: 99999999,
 			});
 
-			return rows;
+			return data.rows;
 		}),
 	getPage: procedure
 		.input(
@@ -66,9 +65,11 @@ const customer_poRouters = router({
 					limit,
 					offset: (page - 1) * limit,
 					where: {
-						nomor_po: {
-							[Op.iLike]: `%${search}%`,
-						},
+						...(search && {
+							nomor_po: {
+								[Op.iLike]: `%${search}%`,
+							},
+						}),
 					},
 				};
 

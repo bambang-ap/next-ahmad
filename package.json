@@ -49,6 +49,7 @@
     "react-draggable-list": "^4.1.0",
     "react-hook-form": "^7.42.1",
     "react-icons": "^4.7.1",
+    "react-webcam-qr-scanner": "^1.0.8",
     "recoil": "^0.7.4",
     "sequelize": "^6.28.0",
     "xlsx": "^0.18.5",

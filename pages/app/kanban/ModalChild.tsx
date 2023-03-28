@@ -153,7 +153,7 @@ export function ModalChild({
 						fieldName="temp_id_item"
 						firstOption="- Tambah Item -"
 						data={selectMapper(
-							selectedSppbIn?.items.filter(
+							selectedSppbIn?.items?.filter(
 								e => !Object.keys(kanbanItems).includes(e.id),
 							) ?? [],
 							'id',
@@ -170,7 +170,7 @@ export function ModalChild({
 				renderItem={({Cell, item: [id_item, item]}) => {
 					if (item.id_sppb_in !== idSppbIn) return false;
 
-					const rowItem = selectedSppbIn?.items.find(e => e.id === id_item);
+					const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
 					const selectedItem = selectedKanban?.items[id_item];
 
 					return (

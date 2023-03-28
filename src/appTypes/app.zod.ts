@@ -152,6 +152,17 @@ export const tInstruksiKanban = zId.extend({
 	name: z.string(),
 });
 
+export type TMaterial = z.infer<typeof tMaterial>;
+export const tMaterial = zId.extend({
+	id_kategori: z.string(),
+	name: z.string(),
+});
+
+export type TMaterialKategori = z.infer<typeof tMaterialKategori>;
+export const tMaterialKategori = zId.extend({
+	name: z.string(),
+});
+
 export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	id_po: z.string(),
