@@ -107,14 +107,22 @@ export function GenerateQRScan(
 													if (!qty) return null;
 
 													return (
-														<>
-															<Table.Td className="text-lg" key={num}>
-																{qty} {itemDetail?.[unitKey]}
-															</Table.Td>
-															<Table.Td className="text-lg" key={num}>
-																{status ? qty : 0} {itemDetail?.[unitKey]}
-															</Table.Td>
-														</>
+														<Table.Td key={num} className="text-lg">
+															{qty} {itemDetail?.[unitKey]}
+														</Table.Td>
+													);
+												})}
+												{qtyList.map(num => {
+													const qtyKey = `qty${num}` as const;
+													const unitKey = `unit${num}` as const;
+													const qty = item[qtyKey];
+
+													if (!qty) return null;
+
+													return (
+														<Table.Td key={num} className="text-lg">
+															{status ? qty : 0} {itemDetail?.[unitKey]}
+														</Table.Td>
 													);
 												})}
 											</Table.Tr>

@@ -57,7 +57,7 @@ function RenderScanPage({id: uId}: ZId) {
 
 	const {data, refetch} = trpc.scan.get.useQuery(
 		{id, target: route},
-		{enabled: !!id},
+		{enabled: !!id, ...defaultErrorMutation},
 	);
 	const {mutate} = trpc.scan.update.useMutation({
 		...defaultErrorMutation,

@@ -28,7 +28,7 @@ const kanbanRouters = router({
 				where: tKanban.partial().optional(),
 			}),
 		)
-		.query(({ctx: {req, res}}) => {
+		.query(({ctx: {req, res}, input: {where}}) => {
 			type TType = TKanban & {
 				id_customer?: string;
 				items: TKanbanUpsert['items'];
@@ -38,7 +38,7 @@ const kanbanRouters = router({
 			};
 			const routerCaller = appRouter.createCaller({req, res});
 			return checkCredentialV2(req, res, async (): Promise<TType[]> => {
-				const dataKanban = await OrmKanban.findAll();
+				const dataKanban = await OrmKanban.findAll({where});
 				const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
 					const {mesin_id, instruksi_id, id_po, id_sppb_in} = dataValues;
 					const dataItems = await OrmKanbanItem.findAll({

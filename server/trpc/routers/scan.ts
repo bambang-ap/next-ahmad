@@ -35,6 +35,8 @@ const scanRouters = router({
 						where: {id},
 					});
 
+					console.log(dataKanban);
+
 					const dataScan = await OrmScan.findOne({
 						where: {id_kanban: id},
 					});
