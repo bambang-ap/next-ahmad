@@ -6,7 +6,7 @@
     "build": "next build",
     "format": "prettier --check --ignore-path .gitignore --write .",
     "start": "next start",
-    "dev": "next dev --port 1234",
+    "dev": "next dev --port 80",
     "next-lint": "next lint",
     "lint": "eslint --ext=jsx,ts,tsx"
   },
