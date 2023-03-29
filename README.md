@@ -11,15 +11,17 @@
 ## Running on Server
 
 1. `cd ~/snap/project/next-ahmad/`
-1. `yarn build`
-1. `yarn start`
-1. if shown error `EADDRINUSE`, do this step
+2. `yarn install`
+3. `nvm use 16`
+4. `yarn build`
+5. `yarn start`
+6. if shown error `EADDRINUSE`, do this step
 	1. exec `lsof -i:80`
-	1. copy number PID of the process
-	1. `kill {PID}`. example `kill 1234`
-	1. `yarn start`
+	2. copy number PID of the process
+	3. `kill {PID}`. example `kill 1234`
+	4. `yarn start`
 
 
 ## Restart server
 
-- Follow the step on `Running on Server` part 3.1 - 3.4
+- Follow the step on `Running on Server` part 6.1 - 6.4
