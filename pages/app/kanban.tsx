@@ -6,10 +6,9 @@ import {ModalTypePreview, TKanbanUpsert} from '@appTypes/app.zod';
 import {Button, Modal, ModalRef, Table} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
+import {KanbanGenerateQR} from '@pageComponent/kanban_GenerateQR';
+import {KanbanModalChild} from '@pageComponent/kanban_ModalChild';
 import {trpc} from '@utils/trpc';
-
-import {GenerateQR} from './GenerateQR';
-import {ModalChild} from './ModalChild';
 
 Kanban.getLayout = getLayout;
 
@@ -109,7 +108,7 @@ export default function Kanban() {
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
 							<Cell className="flex gap-x-2">
-								<GenerateQR {...item} />
+								<KanbanGenerateQR {...item} />
 								<Button
 									icon="faMagnifyingGlass"
 									onClick={() => showModal('preview', rest)}
@@ -127,7 +126,7 @@ export default function Kanban() {
 			<Modal title={modalTitle} size="6xl" ref={modalRef}>
 				<form onSubmit={submit}>
 					<fieldset disabled={modalType === 'preview'}>
-						<ModalChild reset={reset} control={control} />
+						<KanbanModalChild reset={reset} control={control} />
 					</fieldset>
 				</form>
 			</Modal>

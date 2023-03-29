@@ -3,7 +3,7 @@ import {useEffect} from 'react';
 import {useForm} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
-import {TRole} from '@appTypes/app.type';
+import {TMenu, TRole} from '@appTypes/app.type';
 import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {atomMappedMenu} from '@recoil/atoms';
@@ -11,19 +11,20 @@ import {trpc} from '@utils/trpc';
 
 export type FormMenu = Record<
 	string,
-	Record<'title' | 'icon', string> & {
+	{
+		title: string;
+		icon?: string;
 		index: number;
 		role: Record<string, boolean>;
 	}
 >;
 
-export const useMenu = () => {
+export function useMenu() {
 	const {mutate: mutateMenu} =
 		trpc.menu.mutate.useMutation(defaultErrorMutation);
 	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
 		{type: 'menu'},
 	);
-
 	const {data: mappedMenu, refetch: refetchMapped} = trpc.menu.get.useQuery({
 		type: 'menu',
 		sorted: true,
@@ -44,9 +45,9 @@ export const useMenu = () => {
 		dataRole,
 		menuForm,
 		mappedMenu: m,
-		unMappedMenu,
-		reftechUnMapped,
-		refetchMapped,
+		unMappedMenu: unMappedMenu as TMenu[] | undefined,
+		reftechUnMapped: reftechUnMapped as NoopVoid,
+		refetchMapped: refetchMapped as NoopVoid,
 		mutateMenu,
 	};
-};
+}

@@ -7,9 +7,8 @@ import {Button, Modal, ModalRef, TableFilter} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilter} from '@hooks';
+import {SppbInModalChild} from '@pageComponent/ModalChild_customer_sppb_in';
 import {trpc} from '@utils/trpc';
-
-import {ModalChild} from './ModalChild';
 
 export type FormType = {type: ModalTypePreview} & TUpsertSppbIn;
 
@@ -101,7 +100,7 @@ export default function SPPBIN() {
 
 			<Modal size="6xl" title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit}>
-					<ModalChild control={control} />
+					<SppbInModalChild control={control} />
 				</form>
 			</Modal>
 		</>

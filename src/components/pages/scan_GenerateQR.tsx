@@ -3,7 +3,7 @@ import {Fragment} from 'react';
 import {RouterOutput, TScanTarget} from '@appTypes/app.type';
 import {RootTable as Table} from '@components';
 
-import {qtyList} from '../customer/po/ModalChild';
+import {qtyList} from './ModalChild_po';
 
 function jumlahTitleMapper(target: TScanTarget) {
 	switch (target) {
@@ -18,7 +18,7 @@ function jumlahTitleMapper(target: TScanTarget) {
 	}
 }
 
-export function GenerateQRScan(
+export function ScanDetailKanban(
 	kanban: RouterOutput['kanban']['get'][number] & {
 		route: TScanTarget;
 		status?: boolean;

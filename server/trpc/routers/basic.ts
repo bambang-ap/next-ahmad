@@ -6,6 +6,7 @@ import {defaultLimit} from '@constants';
 import {eOpKeys, Z_CRUD_ENABLED} from '@enum';
 import {generateId, MAPPING_CRUD_ORM, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
 const basicUnion = z.union([
 	z.string(),
@@ -39,7 +40,7 @@ const basicRouters = router({
 	getPage: procedure
 		.input(
 			tableFormValue.partial().extend({
-				target: Z_CRUD_ENABLED,
+				target: Z_CRUD_ENABLED.optional(),
 				where: basicWhere.optional(),
 				searchKey: z.string().optional(),
 			}),
@@ -53,6 +54,9 @@ const basicRouters = router({
 				search,
 				searchKey,
 			} = input;
+
+			if (!target) throw new TRPCError({code: 'BAD_REQUEST'});
+
 			const limitation = {
 				limit,
 				order: [['id', 'asc']],
@@ -66,6 +70,7 @@ const basicRouters = router({
 					: undefined,
 			};
 
+			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
 			const {count, rows} = await orm.findAndCountAll(
 				where ? {where} : limitation,
@@ -81,6 +86,7 @@ const basicRouters = router({
 			}),
 		)
 		.query(async ({input: {target, where}}) => {
+			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
 			const ormResult = await orm.findAll({where, order: [['id', 'asc']]});
 			return ormResult;
@@ -89,7 +95,7 @@ const basicRouters = router({
 	mutate: procedure
 		.input(
 			z.object({
-				target: Z_CRUD_ENABLED,
+				target: Z_CRUD_ENABLED.optional(),
 				type: uModalType,
 				body: z.any(),
 			}),
@@ -98,6 +104,7 @@ const basicRouters = router({
 			const {body, target, type} = input;
 			const {id, ...rest} = body;
 
+			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
 
 			switch (type) {

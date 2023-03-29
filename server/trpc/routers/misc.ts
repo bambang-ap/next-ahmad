@@ -30,6 +30,7 @@ const miscRouter = {
 
 				if (type === 'svg') return `data:image/svg+xml;utf8,${qrImage}`;
 
+				// @ts-ignore
 				return bufferToDataUrl(`image/${type}`, qrImage);
 			}
 

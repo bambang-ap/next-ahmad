@@ -26,7 +26,7 @@ export type FormType = TCustomerPO & {
 	type: ModalTypePreview;
 } & Pick<TCustomerPOExtended, 'po_item'>;
 
-export default function ModalChild({
+export default function PoModalChild({
 	control,
 	reset: resetForm,
 }: {

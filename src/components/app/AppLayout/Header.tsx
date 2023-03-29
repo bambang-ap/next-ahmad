@@ -8,12 +8,13 @@ import {atomSidebarOpen} from '@recoil/atoms';
 
 export default function Header() {
 	useAuth();
+
 	const {asPath} = useRouter();
 	const {unMappedMenu} = useMenu();
 
-	const title = unMappedMenu?.find(e => e.path === asPath);
-
 	const [isSidebarOpen, setSidebarOpen] = useRecoilState(atomSidebarOpen);
+
+	const title = unMappedMenu?.find(e => e.path === asPath);
 
 	return (
 		<Navbar fluid>

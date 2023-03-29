@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {useEffect} from 'react';
 
 import {Control, UseFormReset, useWatch} from 'react-hook-form';
@@ -10,9 +12,9 @@ import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {FormType} from '.';
-import {qtyList} from '../customer/po/ModalChild';
+import {qtyList} from './ModalChild_po';
 
-export function ModalChild({
+export function KanbanModalChild({
 	control,
 	reset,
 }: {

@@ -62,8 +62,8 @@ export default function Menu() {
 			(ret, {id, title, icon, accepted_role, index}) => {
 				const roles = accepted_role.split(',');
 				const role =
-					dataRole?.reduce((acc, role) => {
-						return {...acc, [role.id]: roles.includes(role.id)};
+					dataRole?.reduce((acc, roleObject) => {
+						return {...acc, [roleObject.id]: roles.includes(roleObject.id)};
 					}, {} as Record<string, boolean>) ?? {};
 
 				return {

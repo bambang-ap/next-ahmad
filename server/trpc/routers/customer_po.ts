@@ -1,4 +1,4 @@
-import {qtyList, UQtyList} from 'pages/app/customer/po/ModalChild';
+import {qtyList, UQtyList} from '@pageComponent/ModalChild_po';
 import {Op} from 'sequelize';
 import {z} from 'zod';
 

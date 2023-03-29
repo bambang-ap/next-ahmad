@@ -31,7 +31,7 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 			{data?.map(({id, title, icon, path, subMenu}) => {
 				const isSelected = path === asPath;
 
-				if (subMenu?.length > 0) {
+				if (subMenu && subMenu.length > 0) {
 					return (
 						<Sidebar.Collapse
 							key={id}

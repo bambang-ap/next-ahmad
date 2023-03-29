@@ -10,7 +10,7 @@ import {
 type IconName = Exclude<keyof typeof svgIcon, 'prefix' | 'fas'>;
 
 export type IconProps = {
-	name: LiteralUnion<IconName>;
+	name?: LiteralUnion<IconName>;
 	className?: string;
 	onClick?: NoopVoid;
 };

@@ -16,7 +16,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
 	const {mutate} = trpc.basic.mutate.useMutation(defaultErrorMutation);
 
-	async function mutateInsert(force?: boolean): Promise<void> {
+	async function mutateInsert(force?: boolean): Promise<any> {
 		if (!jsonData) return;
 
 		if (!force) {

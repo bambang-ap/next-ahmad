@@ -1,5 +1,6 @@
 import {PropsWithChildren, useEffect} from 'react';
 
+import {FormType} from 'pages/app/customer/customer_sppb_in';
 import {Control, useWatch} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
@@ -15,10 +16,9 @@ import {
 import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
-import {FormType} from '.';
-import {qtyList} from '../po/ModalChild';
+import {qtyList} from './ModalChild_po';
 
-export function ModalChild({control}: {control: Control<FormType>}) {
+export function SppbInModalChild({control}: {control: Control<FormType>}) {
 	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
 	const [modalType, idSppbIn, idPo] = useWatch({
@@ -108,9 +108,9 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 				renderItem={({Cell, item}, index) => {
 					const sppbItems =
 						selectedSppbIn?.map(sppb =>
-							sppb.items.find(itemm => itemm.id_item === item.id),
+							sppb.items?.find(itemm => itemm.id_item === item.id),
 						) ?? [];
-					const selectedSppbItem = selectedSppbInn?.items.find(
+					const selectedSppbItem = selectedSppbInn?.items?.find(
 						itemmm => itemmm?.id_item === item?.id,
 					);
 
@@ -148,9 +148,9 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 
 							if (!ret[key]) ret[key] = qty;
 
-							sppbItems.forEach(item => {
-								if (item?.id_sppb_in !== idSppbIn && item?.[key]) {
-									ret[key] -= item[key];
+							sppbItems.forEach(itemSppb => {
+								if (itemSppb?.id_sppb_in !== idSppbIn && itemSppb?.[key]) {
+									ret[key] -= itemSppb[key] ?? 0;
 								}
 							});
 
@@ -195,6 +195,7 @@ export function ModalChild({control}: {control: Control<FormType>}) {
 											rightAcc={<Text>{unit}</Text>}
 											rules={{
 												max: {
+													// @ts-ignore
 													value: assignedQty[`qty${num}`],
 													message: `max is ${assignedQty[`qty${num}`]}`,
 												},

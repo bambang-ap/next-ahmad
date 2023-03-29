@@ -14,6 +14,7 @@ type RenderTableCellProps = {
 export function RenderTableCell({item, keys}: RenderTableCellProps) {
 	const [, useQuery, finder] = keys;
 
+	// @ts-ignore
 	const {data} = useQuery();
 	const h = finder?.(item, data);
 

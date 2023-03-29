@@ -7,9 +7,8 @@ import {Button, Modal, ModalRef, TableFilter} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilter} from '@hooks';
+import PoModalChild, {FormType} from '@pageComponent/ModalChild_po';
 import {trpc} from '@utils/trpc';
-
-import ModalChild, {FormType} from './ModalChild';
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
@@ -46,7 +45,7 @@ export default function POCustomer() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, id, ...rest}) => {
+		handleSubmit(({type, id, po_item = [], ...rest}) => {
 			const onSuccess = () => {
 				modalRef.current?.hide();
 				refetch();
@@ -55,9 +54,9 @@ export default function POCustomer() {
 
 			switch (type) {
 				case 'add':
-					return insertPO.mutate(rest, {onSuccess});
+					return insertPO.mutate({...rest, po_item}, {onSuccess});
 				case 'edit':
-					return updatePO.mutate({id, ...rest}, {onSuccess});
+					return updatePO.mutate({id, po_item, ...rest}, {onSuccess});
 				case 'delete':
 					return deletePO.mutate(id, {onSuccess});
 				default:
@@ -78,7 +77,7 @@ export default function POCustomer() {
 				title={modalTitle}
 				size={isDelete ? undefined : '7xl'}>
 				<form onSubmit={submit}>
-					<ModalChild reset={reset} control={control} />
+					<PoModalChild reset={reset} control={control} />
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">

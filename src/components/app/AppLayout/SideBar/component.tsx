@@ -1,6 +1,6 @@
 import {PropsWithChildren, useState} from 'react';
 
-import Link, {LinkProps} from 'next/link';
+import {LinkProps} from 'next/link';
 import {useRouter} from 'next/router';
 
 import {Icon} from '@components';
@@ -52,9 +52,9 @@ function SidebarItem({children, className, icon, href}: ItemProps) {
 
 	return (
 		<li>
-			<Link href={href} className={classNames(itemClassName, className)}>
+			<BtnMenu className={className} href={href}>
 				{renderItem()}
-			</Link>
+			</BtnMenu>
 		</li>
 	);
 }
@@ -75,7 +75,7 @@ function SidebarCollapse({
 				className={classNames(itemClassName, className)}
 				onClick={() => {
 					setVisible(e => !e);
-					if (href) push(href);
+					if (href) push(href, undefined, {shallow: true});
 				}}>
 				{icon}
 				<label className="flex-1 cursor-pointer	flex text-left">{label}</label>
@@ -85,3 +85,17 @@ function SidebarCollapse({
 		</li>
 	);
 }
+
+const BtnMenu = ({className, href, children}: Omit<ItemProps, 'icon'>) => {
+	const {push} = useRouter();
+
+	return (
+		<button
+			className={classNames(itemClassName, className)}
+			onClick={() => {
+				if (href) push(href, undefined, {shallow: true});
+			}}>
+			{children}
+		</button>
+	);
+};

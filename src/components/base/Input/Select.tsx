@@ -63,9 +63,11 @@ function SelectComponent<F extends FieldValues>({
 				options={data}
 				disabled={disabled}
 				defaultValue={selectedValue}
-				getOptionDisabled={({value}) => !value}
 				onChange={(_, option) => onChange(option?.value)}
-				getOptionLabel={({value, label}) => label || value}
+				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}
+				getOptionLabel={({value: optionValue, label: optionLabel}) =>
+					optionLabel || optionValue
+				}
 				renderInput={params => (
 					<TextField
 						{...params}

@@ -1,19 +1,18 @@
 import {useEffect, useRef} from 'react';
 
-import {Scanner} from '@componentBlocks';
 import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
 import {TDataScan} from '@appTypes/app.type';
 import {TScanTarget, ZId} from '@appTypes/app.zod';
+import {Scanner} from '@componentBlocks';
 import {Button, Input, ModalRef} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
+import {ScanDetailKanban} from '@pageComponent/scan_GenerateQR';
 import {atomUidScan} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
-
-import {GenerateQRScan} from './GenerateQR';
 
 Scan.getLayout = getLayout;
 
@@ -111,7 +110,7 @@ function RenderDataKanban(kanban: TDataScan & Route) {
 	return (
 		<>
 			{currentStatus}
-			<GenerateQRScan route={route} status={currentStatus} {...kanbans} />
+			<ScanDetailKanban route={route} status={currentStatus} {...kanbans} />
 		</>
 	);
 }

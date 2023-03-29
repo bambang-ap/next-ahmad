@@ -7,6 +7,12 @@ declare namespace NodeJS {
 		PGSQL_HOST: string;
 		PGSQL_PORT: number;
 		PGSQL_DATABASE: string;
+
+		VERCEL_URL?: string;
+		VERCEL_URL?: string;
+		RENDER_INTERNAL_HOSTNAME?: string;
+		RENDER_INTERNAL_HOSTNAME?: string;
+		PORT?: string;
 	}
 }
 

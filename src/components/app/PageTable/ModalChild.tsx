@@ -1,5 +1,6 @@
 import {Control, useWatch} from 'react-hook-form';
 
+import {ModalType} from '@appTypes/app.type';
 import {Button, Text} from '@components';
 import {allowedPages} from '@constants';
 
@@ -8,7 +9,7 @@ import {RenderField} from './RenderField';
 export function ModalChild({control, path}: {control: Control; path: string}) {
 	const {modalField} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
-	const modalType = useWatch({control, name: 'type'});
+	const modalType: ModalType = useWatch({control, name: 'type'});
 
 	if (modalType === 'delete') {
 		return (

@@ -200,10 +200,10 @@ export type BaseMenu = z.infer<typeof baseTMenu>;
 export const baseTMenu = z.object({
 	id: z.string(),
 	title: z.string(),
-	icon: z.string().nullish(),
-	path: z.string().nullish(),
+	icon: z.string().optional(),
+	path: z.string().optional(),
 	accepted_role: z.string(),
-	parent_id: z.string().nullish(),
+	parent_id: z.string().optional(),
 	index: z.number(),
 });
 

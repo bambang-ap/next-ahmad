@@ -79,7 +79,7 @@ export const checkCredentialV2 = async <T>(
 	req: NextApiRequest,
 	res: NextApiResponse,
 	callback: ((session: TSession) => Promise<T>) | ((session: TSession) => T),
-	allowed?: string,
+	// allowedRole?: string,
 ) => {
 	const {hasSession, session} = await getSession(req, res);
 

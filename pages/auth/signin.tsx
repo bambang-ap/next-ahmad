@@ -12,7 +12,7 @@ export default function SignIn() {
 	const {status} = useSession();
 	const {replace} = useRouter();
 
-	const {control, handleSubmit, reset} = useForm<TUserSignIn>();
+	const {control, handleSubmit} = useForm<TUserSignIn>();
 
 	const [usingQr, setUsingQr] = useState(false);
 

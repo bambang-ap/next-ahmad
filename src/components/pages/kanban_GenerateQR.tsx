@@ -5,9 +5,9 @@ import {Button, RootTable as Table} from '@components';
 import {generatePDF} from '@utils';
 import {trpc} from '@utils/trpc';
 
-import {qtyList} from '../customer/po/ModalChild';
+import {qtyList} from './ModalChild_po';
 
-export function GenerateQR(
+export function KanbanGenerateQR(
 	kanban: RouterOutput['kanban']['get'][number] & {
 		className?: string;
 		transform?: boolean;
@@ -85,12 +85,12 @@ export function GenerateQR(
 								{dataMesin.map(mesin => {
 									const {
 										dataInstruksi,
-										id,
+										id: idMesin,
 										name: nameMesin,
 										nomor_mesin,
 									} = mesin;
 									return (
-										<Fragment key={id}>
+										<Fragment key={idMesin}>
 											<Table.Tr>
 												<Table.Td>{nameMesin}</Table.Td>
 												<Table.Td>{nomor_mesin}</Table.Td>

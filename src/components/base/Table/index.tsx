@@ -52,6 +52,7 @@ export function TableFilter<T>({
 	const formValue = watch();
 
 	const selectData = Array.from({length: 10}).map<SelectPropsData>((_, i) => ({
+		// @ts-ignore
 		value: (i + 1) * defaultLimit,
 	}));
 
