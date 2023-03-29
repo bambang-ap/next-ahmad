@@ -2,11 +2,18 @@ type TNextApi = (req: NextApiRequest, res: NextApiResponse) => void;
 declare namespace NodeJS {
 	interface ProcessEnv {
 		AUTH_SECRET: string;
-		PGSQL_USER: string;
-		PGSQL_PASSWORD: string;
-		PGSQL_HOST: string;
-		PGSQL_PORT: number;
+
 		PGSQL_DATABASE: string;
+
+		PROD_PGSQL_USER: string;
+		PROD_PGSQL_PASSWORD: string;
+		PROD_PGSQL_HOST: string;
+		PROD_PGSQL_PORT: number;
+
+		DEV_PGSQL_USER: string;
+		DEV_PGSQL_PASSWORD: string;
+		DEV_PGSQL_HOST: string;
+		DEV_PGSQL_PORT: number;
 
 		VERCEL_URL?: string;
 		VERCEL_URL?: string;
