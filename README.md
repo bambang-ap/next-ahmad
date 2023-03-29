@@ -10,6 +10,7 @@
 
 ## Running on Server
 
+1. `cd ~/snap/project/next-ahmad/`
 1. `yarn build`
 1. `yarn start`
 1. if shown error `EADDRINUSE`, do this step
