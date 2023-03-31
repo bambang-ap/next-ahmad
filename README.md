@@ -25,3 +25,9 @@
 ## Restart server
 
 - Follow the step on `Running on Server` part 6.1 - 6.4
+
+
+pm2 startup
+pm2 save
+
+pm2 unstartup
