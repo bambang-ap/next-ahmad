@@ -3,9 +3,9 @@
   "version": "0.1.0",
   "license": "MIT",
   "scripts": {
-    "deploy": "yarn build; yarn start",
+    "deploy": "pm2 start \"npm run start\" --watch --name \"IMI Inventory\"",
     "build": "next lint --fix; next build",
-    "start": "next start --port 80 &",
+    "start": "next start --port 80",
     "dev": "next dev --port 1234",
     "next-lint": "next lint",
     "format": "prettier --check --ignore-path .gitignore --write .",
