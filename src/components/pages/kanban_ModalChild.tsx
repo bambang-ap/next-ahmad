@@ -5,7 +5,16 @@ import {useEffect} from 'react';
 import {FormType} from 'pages/app/kanban';
 import {Control, UseFormReset, useWatch} from 'react-hook-form';
 
-import {Button, Input, Select, selectMapper, Table, Text} from '@components';
+import {
+	Button,
+	ImageFormWithPreview,
+	Input,
+	InputFile,
+	Select,
+	selectMapper,
+	Table,
+	Text,
+} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {useKanban} from '@hooks';
 import {classNames} from '@utils';
@@ -108,7 +117,31 @@ export function KanbanModalChild({
 
 	return (
 		<div className="flex flex-col gap-2">
-			<Input control={control} fieldName="keterangan" label="Keterangan" />
+			{isPreview && (
+				<ImageFormWithPreview
+					className="w-1/3 self-center"
+					control={control}
+					fieldName="image"
+				/>
+			)}
+			<div className="flex gap-2">
+				<Input
+					className="flex-1"
+					control={control}
+					fieldName="keterangan"
+					label="Keterangan"
+				/>
+
+				{!isPreview && (
+					<InputFile
+						label="Upload Image"
+						accept="image/*"
+						control={control}
+						fieldName="image"
+					/>
+				)}
+			</div>
+
 			<div className="flex gap-2">
 				<Select
 					control={control}

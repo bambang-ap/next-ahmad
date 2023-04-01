@@ -24,6 +24,25 @@ export function copyToClipboard(str: string) {
 	alert('Token copied');
 }
 
+export function toBase64(
+	file: File,
+	callback: (result: string | null) => void,
+) {
+	const reader = new FileReader();
+
+	reader.readAsDataURL(file);
+	reader.onload = function () {
+		if (typeof reader?.result === 'string') callback(reader.result);
+
+		callback(null);
+	};
+
+	reader.onerror = function (error) {
+		console.log('Error: ', error);
+		callback(null);
+	};
+}
+
 export function generatePDF(id: string, filename = 'a4.pdf') {
 	const doc = new jsPDF({unit: 'px', orientation: 'p'});
 

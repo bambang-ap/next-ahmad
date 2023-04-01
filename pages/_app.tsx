@@ -1,4 +1,5 @@
 'use client';
+import '@total-typescript/ts-reset';
 
 import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';

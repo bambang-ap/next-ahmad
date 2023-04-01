@@ -1,5 +1,7 @@
 export * from './base/Icon';
+export * from './base/ImageWithPreview';
 export * from './base/Input';
+export * from './base/Input/InputFile';
 export * from './base/Input/Select';
 export * from './base/Modal';
 export * from './base/Table';

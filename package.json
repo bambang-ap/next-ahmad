@@ -23,6 +23,7 @@
     "@mui/material": "^5.11.13",
     "@tanstack/react-query": "^4.20.4",
     "@tanstack/react-query-devtools": "^4.20.9",
+    "@total-typescript/ts-reset": "^0.4.2",
     "@trpc/client": "^10.11.1",
     "@trpc/next": "^10.11.1",
     "@trpc/react-query": "^10.11.1",
