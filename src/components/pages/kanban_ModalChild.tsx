@@ -53,6 +53,7 @@ export function KanbanModalChild({
 		dataPo,
 		hardnessData,
 		parameterData,
+		materialData,
 	} = useKanban();
 
 	const {mutate: mutateItem} =
@@ -108,18 +109,29 @@ export function KanbanModalChild({
 	return (
 		<div className="flex flex-col gap-2">
 			<Input control={control} fieldName="keterangan" label="Keterangan" />
-			<Select
-				control={control}
-				fieldName="hardnessId"
-				label="Hardness"
-				data={selectMapper(hardnessData ?? [], 'id', 'name')}
-			/>
-			<Select
-				control={control}
-				fieldName="parameterId"
-				label="Parameter"
-				data={selectMapper(parameterData ?? [], 'id', 'name')}
-			/>
+			<div className="flex gap-2">
+				<Select
+					control={control}
+					fieldName="hardnessId"
+					label="Hardness"
+					className="flex-1"
+					data={selectMapper(hardnessData ?? [], 'id', 'name')}
+				/>
+				<Select
+					control={control}
+					fieldName="parameterId"
+					label="Parameter"
+					className="flex-1"
+					data={selectMapper(parameterData ?? [], 'id', 'name')}
+				/>
+				<Select
+					control={control}
+					fieldName="materialId"
+					label="Material"
+					className="flex-1"
+					data={selectMapper(materialData ?? [], 'id', 'name')}
+				/>
+			</div>
 
 			<div className="flex gap-2">
 				<Select

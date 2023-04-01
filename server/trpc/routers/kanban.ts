@@ -7,6 +7,7 @@ import {
 	TKanban,
 	TKanbanUpsert,
 	tKanbanUpsert,
+	TMaterial,
 	TMesin,
 	TParameter,
 	TUser,
@@ -16,6 +17,7 @@ import {
 	OrmKanban,
 	OrmKanbanInstruksi,
 	OrmKanbanItem,
+	OrmMaterial,
 	OrmMesin,
 	OrmParameter,
 	OrmScan,
@@ -41,6 +43,7 @@ const kanbanRouters = router({
 				dataMesin: (TMesin & {dataInstruksi: TInstruksiKanban[]})[];
 				dataSppbIn?: RouterOutput['sppb']['get'][number];
 				dataPo?: RouterOutput['customer_po']['get'][number];
+				dataMaterial?: TMaterial;
 				dataHardness?: THardness;
 				dataParameter?: TParameter;
 				dataCreatedBy?: TUser;
@@ -59,15 +62,18 @@ const kanbanRouters = router({
 						parameterId,
 						createdBy,
 						updatedBy,
+						materialId,
 					} = dataValues;
 
-					const [dataHardness, dataParameter, dataCreatedBy, dataUpdatedBy]: [
-						THardness,
-						TParameter,
-						TUser,
-						TUser,
-					] = (
+					const [
+						dataMaterial,
+						dataHardness,
+						dataParameter,
+						dataCreatedBy,
+						dataUpdatedBy,
+					]: [TMaterial, THardness, TParameter, TUser, TUser] = (
 						await Promise.all([
+							OrmMaterial.findOne({where: {id: materialId}}),
 							OrmHardness.findOne({where: {id: hardnessId}}),
 							OrmParameter.findOne({where: {id: parameterId}}),
 							OrmUser.findOne({where: {id: createdBy}}),
@@ -106,6 +112,7 @@ const kanbanRouters = router({
 						dataParameter,
 						dataCreatedBy,
 						dataUpdatedBy,
+						dataMaterial,
 						dataMesin: await Promise.all(dataMesinPromises),
 						dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
 						dataPo: dataPo.find(e => e.id === id_po),

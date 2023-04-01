@@ -6,6 +6,7 @@ import {ModalTypePreview, TKanbanUpsert} from '@appTypes/app.zod';
 import {Button, Modal, ModalRef, Table} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
+import {useKanban} from '@hooks';
 import {KanbanGenerateQR} from '@pageComponent/kanban_GenerateQR';
 import {KanbanModalChild} from '@pageComponent/kanban_ModalChild';
 import {dateUtils} from '@utils';
@@ -21,6 +22,8 @@ export type FormType = TKanbanUpsert & {
 };
 
 export default function Kanban() {
+	useKanban();
+
 	const modalRef = useRef<ModalRef>(null);
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
@@ -96,6 +99,7 @@ export default function Kanban() {
 					'Nomor PO',
 					'Nomor Surat Jalan',
 					'Customer',
+					'Material',
 					'Hardness',
 					'Parameter',
 					'Created By',
@@ -104,7 +108,7 @@ export default function Kanban() {
 				renderItem={({Cell, item}) => {
 					// @ts-ignore
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					const {dataMesin, dataPo, dataSppbIn} = item;
+					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
 					return (
 						<>
 							<Cell>{dateUtils.full(item.createdAt)}</Cell>
@@ -112,6 +116,7 @@ export default function Kanban() {
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
+							<Cell>{item.dataMaterial?.name}</Cell>
 							<Cell>{item.dataHardness?.name}</Cell>
 							<Cell>{item.dataParameter?.name}</Cell>
 							<Cell>{item.dataCreatedBy?.name}</Cell>

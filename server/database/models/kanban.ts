@@ -19,6 +19,7 @@ export default function initOrmKanban(sequelize: Sequelize) {
 			updatedBy: DataTypes.STRING,
 			hardnessId: DataTypes.STRING,
 			parameterId: DataTypes.STRING,
+			materialId: DataTypes.STRING,
 		},
 		{
 			sequelize,

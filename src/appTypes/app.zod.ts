@@ -191,6 +191,7 @@ export const tKanban = zId.extend({
 	id_sppb_in: z.string(),
 	keterangan: z.string(),
 	hardnessId: z.string(),
+	materialId: z.string(),
 	parameterId: z.string(),
 	mesin_id: z.string().array(),
 	instruksi_id: z.record(z.string().array()),

@@ -28,6 +28,9 @@ export function useKanban() {
 	const {data: hardnessData} = trpc.basic.get.useQuery<any, THardness[]>({
 		target: CRUD_ENABLED.HARDNESS,
 	});
+	const {data: materialData} = trpc.basic.get.useQuery<any, TParameter[]>({
+		target: CRUD_ENABLED.MATERIAL,
+	});
 	const {data: parameterData} = trpc.basic.get.useQuery<any, TParameter[]>({
 		target: CRUD_ENABLED.PARAMETER,
 	});
@@ -40,5 +43,6 @@ export function useKanban() {
 		dataPo,
 		hardnessData,
 		parameterData,
+		materialData,
 	};
 }
