@@ -163,6 +163,17 @@ export const tMaterialKategori = zId.extend({
 	name: z.string(),
 });
 
+export type THardness = z.infer<typeof tHardness>;
+export const tHardness = zId.extend({
+	id_kategori: z.string(),
+	name: z.string(),
+});
+
+export type THardnessKategori = z.infer<typeof tHardnessKategori>;
+export const tHardnessKategori = zId.extend({
+	name: z.string(),
+});
+
 export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	id_po: z.string(),

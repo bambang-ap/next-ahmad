@@ -5,6 +5,8 @@ import {
 	TCustomerPO,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	THardness,
+	THardnessKategori,
 	TInstruksiKanban,
 	TMaterial,
 	TMaterialKategori,
@@ -70,6 +72,77 @@ export type FieldForm<T extends {}> = {
 );
 
 export const allowedPages: Record<string, AllowedPages> = {
+	'/app/hardness': {
+		enumName: CRUD_ENABLED.HARDNESS,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Kategori', 'Action'],
+			get body(): Body<THardness> {
+				return [
+					'name',
+					[
+						'id_kategori',
+						() =>
+							trpc.basic.get.useQuery({target: CRUD_ENABLED.HARDNESS_KATEGORI}),
+						(item: THardness, data: THardnessKategori[]) =>
+							data?.find?.(e => e.id === item.id_kategori)?.name,
+					],
+				];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<THardness>[] {
+				return [
+					{col: 'name'},
+					{
+						col: 'id_kategori',
+						type: 'select',
+						firstOption: '- Pilih Kategori -',
+						dataQuery: () =>
+							trpc.basic.get.useQuery({target: CRUD_ENABLED.HARDNESS_KATEGORI}),
+						dataMapping: (item: THardnessKategori[]) =>
+							item?.map(({id, name}) => ({value: id, label: name})),
+					},
+				];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah Hardness',
+				edit: 'Ubah Hardness',
+				delete: 'Hapus Hardness',
+			},
+		},
+	},
+
+	'/app/hardness/kategori': {
+		enumName: CRUD_ENABLED.HARDNESS_KATEGORI,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Action'],
+			get body(): Body<THardnessKategori> {
+				return ['name'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<THardnessKategori>[] {
+				return [{col: 'name'}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah Hardness kategori',
+				edit: 'Ubah Hardness kategori',
+				delete: 'Hapus Hardness kategori',
+			},
+		},
+	},
 	'/app/material': {
 		enumName: CRUD_ENABLED.MATERIAL,
 		searchKey: 'name',

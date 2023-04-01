@@ -14,6 +14,8 @@ export type {
 	TCustomerPOExtended,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	THardness,
+	THardnessKategori,
 	TInstruksiKanban,
 	TItemUnit,
 	TKanban,

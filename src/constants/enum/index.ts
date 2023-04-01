@@ -18,6 +18,8 @@ export enum TABLES {
 	KANBAN_ITEM = 'kanban_item',
 	MATERIAL = 'material',
 	MATERIAL_KATEGORI = 'material_kategori',
+	HARDNESS = 'hardness',
+	HARDNESS_KATEGORI = 'hardness_kategori',
 }
 
 export const Z_TABLES = z.nativeEnum(TABLES);
@@ -33,6 +35,8 @@ export enum CRUD_ENABLED {
 	SCAN = 'scan',
 	MATERIAL = 'material',
 	MATERIAL_KATEGORI = 'material_kategori',
+	HARDNESS = 'hardness',
+	HARDNESS_KATEGORI = 'hardness_kategori',
 }
 
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

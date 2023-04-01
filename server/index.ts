@@ -11,6 +11,8 @@ import {
 	OrmCustomer,
 	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
+	OrmHardness,
+	OrmHardnessKategori,
 	OrmKanbanInstruksi,
 	OrmMaterial,
 	OrmMaterialKategori,
@@ -29,6 +31,8 @@ export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.INSTRUKSI_KANBAN]: OrmKanbanInstruksi,
 	[CRUD_ENABLED.MATERIAL]: OrmMaterial,
 	[CRUD_ENABLED.MATERIAL_KATEGORI]: OrmMaterialKategori,
+	[CRUD_ENABLED.HARDNESS]: OrmHardness,
+	[CRUD_ENABLED.HARDNESS_KATEGORI]: OrmHardnessKategori,
 };
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
