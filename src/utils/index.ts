@@ -1,7 +1,15 @@
 import classnames from 'classnames';
 import jsPDF from 'jspdf';
+import moment from 'moment';
+
+import {formatDate, formatFull, formatHour} from '@constants';
 
 export const classNames = classnames;
+export const dateUtils = {
+	full: convertFull,
+	hour: convertHour,
+	date: convertDate,
+};
 
 export function copyToClipboard(str: string) {
 	const el = document.createElement('textarea');
@@ -25,4 +33,22 @@ export function generatePDF(id: string, filename = 'a4.pdf') {
 			document.save(filename);
 		},
 	});
+}
+
+function convertDate(date?: string) {
+	if (!date) return null;
+
+	return moment(date).format(formatDate);
+}
+
+function convertHour(date?: string) {
+	if (!date) return null;
+
+	return moment(date).format(formatHour);
+}
+
+function convertFull(date?: string) {
+	if (!date) return null;
+
+	return moment(date).format(formatFull);
 }

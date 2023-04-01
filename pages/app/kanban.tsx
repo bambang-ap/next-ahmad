@@ -8,6 +8,7 @@ import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {KanbanGenerateQR} from '@pageComponent/kanban_GenerateQR';
 import {KanbanModalChild} from '@pageComponent/kanban_ModalChild';
+import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
 Kanban.getLayout = getLayout;
@@ -90,22 +91,30 @@ export default function Kanban() {
 			<Table
 				data={data}
 				header={[
+					'Tanggal',
 					'Keterangan',
 					'Nomor PO',
 					'Nomor Surat Jalan',
 					'Customer',
+					'Hardness',
+					'Parameter',
+					'Created By',
 					'Action',
 				]}
 				renderItem={({Cell, item}) => {
 					// @ts-ignore
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
+					const {dataMesin, dataPo, dataSppbIn} = item;
 					return (
 						<>
+							<Cell>{dateUtils.full(item.createdAt)}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
+							<Cell>{item.dataHardness?.name}</Cell>
+							<Cell>{item.dataParameter?.name}</Cell>
+							<Cell>{item.dataCreatedBy?.name}</Cell>
 							<Cell className="flex gap-x-2">
 								<KanbanGenerateQR {...item} />
 								<Button

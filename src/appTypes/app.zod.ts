@@ -196,6 +196,8 @@ export const tKanban = zId.extend({
 	instruksi_id: z.record(z.string().array()),
 	createdBy: z.string(),
 	updatedBy: z.string(),
+	createdAt: z.date().optional(),
+	updatedAt: z.date().optional(),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;
