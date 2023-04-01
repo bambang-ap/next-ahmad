@@ -3,16 +3,15 @@ import qr, {image_type} from 'qr-image';
 import {z} from 'zod';
 
 import {tCustomer} from '@appTypes/app.zod';
-import {getNow} from '@server';
+import {generateId, getNow} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
 const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
-	now: procedure.query(() => {
-		const today = getNow();
-		return today;
-	}),
+	now: procedure.query(getNow),
+	generateId: procedure.query(generateId),
 	qr: procedure
 		.input(
 			qrInput.or(
@@ -56,6 +55,8 @@ const miscRouter = {
 			switch (input) {
 				case 'customer':
 					return generateShape(tCustomer);
+				default:
+					throw new TRPCError({code: 'BAD_REQUEST'});
 			}
 
 			function generateShape<T extends z.ZodRawShape>(schema: z.ZodObject<T>) {
