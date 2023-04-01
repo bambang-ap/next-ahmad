@@ -1,17 +1,16 @@
-// @ts-nocheck
+// @ts-nocheckk
 
 import {useEffect} from 'react';
 
+import {FormType} from 'pages/app/kanban';
 import {Control, UseFormReset, useWatch} from 'react-hook-form';
 
-import {TCustomer, TInstruksiKanban, TMesin} from '@appTypes/app.zod';
 import {Button, Input, Select, selectMapper, Table, Text} from '@components';
 import {defaultErrorMutation} from '@constants';
-import {CRUD_ENABLED} from '@enum';
+import {useKanban} from '@hooks';
 import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';
 
-import {FormType} from '.';
 import {qtyList} from './ModalChild_po';
 
 export function KanbanModalChild({
@@ -46,15 +45,19 @@ export function KanbanModalChild({
 		],
 	});
 
+	const {
+		dataCustomer,
+		dataInstruksi,
+		dataKanban,
+		dataMesin,
+		dataPo,
+		hardnessData,
+		parameterData,
+	} = useKanban();
+
 	const {mutate: mutateItem} =
 		trpc.kanban.deleteItem.useMutation(defaultErrorMutation);
-	const {data: dataKanban} = trpc.kanban.get.useQuery({type: 'kanban'});
-	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
-		target: CRUD_ENABLED.CUSTOMER,
-	});
-	const {data: dataMesin} = trpc.basic.get.useQuery<any, TMesin[]>({
-		target: CRUD_ENABLED.MESIN,
-	});
+
 	const {data: dataSppbIn} = trpc.sppb.get.useQuery(
 		{
 			type: 'sppb_in',
@@ -62,16 +65,6 @@ export function KanbanModalChild({
 		},
 		{enabled: !!id_po},
 	);
-	const {data: dataInstruksi} = trpc.basic.get.useQuery<
-		any,
-		TInstruksiKanban[]
-	>({
-		target: CRUD_ENABLED.INSTRUKSI_KANBAN,
-	});
-
-	const {data: dataPo} = trpc.customer_po.get.useQuery({
-		type: 'customer_po',
-	});
 
 	const isEdit = modalType === 'edit';
 	const isPreview = modalType === 'preview';
@@ -114,7 +107,19 @@ export function KanbanModalChild({
 
 	return (
 		<div className="flex flex-col gap-2">
-			<Input control={control} fieldName="name" label="Judul Kanban" />
+			<Input control={control} fieldName="keterangan" label="Keterangan" />
+			<Select
+				control={control}
+				fieldName="hardnessId"
+				label="Hardness"
+				data={selectMapper(hardnessData ?? [], 'id', 'name')}
+			/>
+			<Select
+				control={control}
+				fieldName="parameterId"
+				label="Parameter"
+				data={selectMapper(parameterData ?? [], 'id', 'name')}
+			/>
 
 			<div className="flex gap-2">
 				<Select
@@ -200,7 +205,7 @@ export function KanbanModalChild({
 												<Input
 													type="number"
 													control={control}
-													defaultValue={defaultValue}
+													defaultValue={defaultValue as string}
 													fieldName={`items.${id_item}.${keyQty}`}
 													rules={{
 														max: {

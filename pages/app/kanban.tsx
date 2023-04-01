@@ -44,7 +44,6 @@ export default function Kanban() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(async ({type, callbacks, ...rest}) => {
-			// return console.log(callbacks);
 			if (callbacks) callbacks.forEach(callback => callback());
 
 			switch (type) {
@@ -91,7 +90,7 @@ export default function Kanban() {
 			<Table
 				data={data}
 				header={[
-					'Judul Kanban',
+					'Keterangan',
 					'Nomor PO',
 					'Nomor Surat Jalan',
 					'Customer',
@@ -103,7 +102,7 @@ export default function Kanban() {
 					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
 					return (
 						<>
-							<Cell>{item.name}</Cell>
+							<Cell>{item.keterangan}</Cell>
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>

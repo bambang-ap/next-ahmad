@@ -1,19 +1,25 @@
 import {z} from 'zod';
 
 import {
+	THardness,
 	TInstruksiKanban,
 	tKanban,
 	TKanban,
 	TKanbanUpsert,
 	tKanbanUpsert,
 	TMesin,
+	TParameter,
+	TUser,
 } from '@appTypes/app.zod';
 import {
+	OrmHardness,
 	OrmKanban,
 	OrmKanbanInstruksi,
 	OrmKanbanItem,
 	OrmMesin,
+	OrmParameter,
 	OrmScan,
+	OrmUser,
 } from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
@@ -35,12 +41,40 @@ const kanbanRouters = router({
 				dataMesin: (TMesin & {dataInstruksi: TInstruksiKanban[]})[];
 				dataSppbIn?: RouterOutput['sppb']['get'][number];
 				dataPo?: RouterOutput['customer_po']['get'][number];
+				dataHardness?: THardness;
+				dataParameter?: TParameter;
+				dataCreatedBy?: TUser;
+				dataUpdatedBy?: TUser;
 			};
 			const routerCaller = appRouter.createCaller({req, res});
 			return checkCredentialV2(req, res, async (): Promise<TType[]> => {
 				const dataKanban = await OrmKanban.findAll({where});
 				const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
-					const {mesin_id, instruksi_id, id_po, id_sppb_in} = dataValues;
+					const {
+						mesin_id,
+						instruksi_id,
+						id_po,
+						id_sppb_in,
+						hardnessId,
+						parameterId,
+						createdBy,
+						updatedBy,
+					} = dataValues;
+
+					const [dataHardness, dataParameter, dataCreatedBy, dataUpdatedBy]: [
+						THardness,
+						TParameter,
+						TUser,
+						TUser,
+					] = (
+						await Promise.all([
+							OrmHardness.findOne({where: {id: hardnessId}}),
+							OrmParameter.findOne({where: {id: parameterId}}),
+							OrmUser.findOne({where: {id: createdBy}}),
+							OrmUser.findOne({where: {id: updatedBy}}),
+						])
+					).map(e => e?.dataValues);
+
 					const dataItems = await OrmKanbanItem.findAll({
 						where: {id_kanban: dataValues.id},
 					});
@@ -68,6 +102,10 @@ const kanbanRouters = router({
 
 					const objectData: TType = {
 						...dataValues,
+						dataHardness,
+						dataParameter,
+						dataCreatedBy,
+						dataUpdatedBy,
 						dataMesin: await Promise.all(dataMesinPromises),
 						dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
 						dataPo: dataPo.find(e => e.id === id_po),
@@ -95,10 +133,12 @@ const kanbanRouters = router({
 	upsert: procedure
 		.input(tKanbanUpsert)
 		.mutation(async ({input, ctx: {req, res}}) => {
-			return checkCredentialV2(req, res, async () => {
-				const {id, items: kanban_items, ...rest} = input;
+			return checkCredentialV2(req, res, async session => {
+				const {id, items: kanban_items, createdBy, ...rest} = input;
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
+					createdBy: createdBy ?? session.user?.id!,
+					updatedBy: session.user?.id!,
 					id: id || generateId(),
 				});
 

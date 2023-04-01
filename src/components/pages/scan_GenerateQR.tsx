@@ -24,7 +24,15 @@ export function ScanDetailKanban(
 		status?: boolean;
 	},
 ) {
-	const {name, dataPo, dataMesin, items, dataSppbIn, route, status} = kanban;
+	const {
+		keterangan: name,
+		dataPo,
+		dataMesin,
+		items,
+		dataSppbIn,
+		route,
+		status,
+	} = kanban;
 
 	return (
 		<Table>

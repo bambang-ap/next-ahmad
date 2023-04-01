@@ -189,11 +189,13 @@ export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	id_po: z.string(),
 	id_sppb_in: z.string(),
-	name: z.string(),
+	keterangan: z.string(),
+	hardnessId: z.string(),
+	parameterId: z.string(),
 	mesin_id: z.string().array(),
 	instruksi_id: z.record(z.string().array()),
-	createdBy: z.string().optional(),
-	updatedBy: z.string().optional(),
+	createdBy: z.string(),
+	updatedBy: z.string(),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;
@@ -204,14 +206,16 @@ export const tKanbanItem = zId.extend({
 });
 
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
-export const tKanbanUpsert = tKanban.partial({id: true}).extend({
-	/** key property of items is id_item */
-	items: z.record(
-		tKanbanItem
-			.extend({id_sppb_in: z.string().nullish()})
-			.partial({id: true, id_kanban: true}),
-	),
-});
+export const tKanbanUpsert = tKanban
+	.partial({id: true, createdBy: true, updatedBy: true})
+	.extend({
+		/** key property of items is id_item */
+		items: z.record(
+			tKanbanItem
+				.extend({id_sppb_in: z.string().nullish()})
+				.partial({id: true, id_kanban: true}),
+		),
+	});
 
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;
 export const tKanbanExtended = tKanban.extend({

@@ -22,7 +22,7 @@ export function KanbanGenerateQR(
 		transform = true,
 		withButton = true,
 		id,
-		name,
+		keterangan: name,
 		dataPo,
 		dataMesin,
 		items,
