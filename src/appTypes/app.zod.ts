@@ -174,6 +174,17 @@ export const tHardnessKategori = zId.extend({
 	name: z.string(),
 });
 
+export type TParameter = z.infer<typeof tParameter>;
+export const tParameter = zId.extend({
+	id_kategori: z.string(),
+	name: z.string(),
+});
+
+export type TParameterKategori = z.infer<typeof tParameterKategori>;
+export const tParameterKategori = zId.extend({
+	name: z.string(),
+});
+
 export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	id_po: z.string(),

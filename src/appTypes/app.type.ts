@@ -26,6 +26,8 @@ export type {
 	TMaterialKategori,
 	TMenu,
 	TMesin,
+	TParameter,
+	TParameterKategori,
 	TPOItem,
 	TPOItemSppbIn,
 	TRole,

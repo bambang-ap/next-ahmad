@@ -12,6 +12,8 @@ export * from './models/material';
 export * from './models/material_kategori';
 export * from './models/menu';
 export * from './models/mesin';
+export * from './models/parameter';
+export * from './models/parameter_kategori';
 export * from './models/po_item_sppb_in';
 export * from './models/role';
 export * from './models/scan';

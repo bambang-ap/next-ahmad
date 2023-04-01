@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheckd
 
 import {
 	TCustomer,
@@ -11,6 +11,8 @@ import {
 	TMaterial,
 	TMaterialKategori,
 	TMesin,
+	TParameter,
+	TParameterKategori,
 	TRole,
 	TUser,
 } from '@appTypes/app.type';
@@ -143,6 +145,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 			},
 		},
 	},
+
 	'/app/material': {
 		enumName: CRUD_ENABLED.MATERIAL,
 		searchKey: 'name',
@@ -211,6 +214,82 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: 'Tambah material kategori',
 				edit: 'Ubah material kategori',
 				delete: 'Hapus material kategori',
+			},
+		},
+	},
+
+	'/app/parameter': {
+		enumName: CRUD_ENABLED.PARAMETER,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Kategori', 'Action'],
+			get body(): Body<TParameter> {
+				return [
+					'name',
+					[
+						'id_kategori',
+						() =>
+							trpc.basic.get.useQuery({
+								target: CRUD_ENABLED.PARAMETER_KATEGORI,
+							}),
+						(item: TParameter, data: TParameterKategori[]) =>
+							data?.find?.(e => e.id === item.id_kategori)?.name,
+					],
+				];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TParameter>[] {
+				return [
+					{col: 'name'},
+					{
+						col: 'id_kategori',
+						type: 'select',
+						firstOption: '- Pilih Kategori -',
+						dataQuery: () =>
+							trpc.basic.get.useQuery({
+								target: CRUD_ENABLED.PARAMETER_KATEGORI,
+							}),
+						dataMapping: (item: TParameterKategori[]) =>
+							item?.map(({id, name}) => ({value: id, label: name})),
+					},
+				];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah Parameter',
+				edit: 'Ubah Parameter',
+				delete: 'Hapus Parameter',
+			},
+		},
+	},
+
+	'/app/parameter/kategori': {
+		enumName: CRUD_ENABLED.PARAMETER_KATEGORI,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Action'],
+			get body(): Body<TParameterKategori> {
+				return ['name'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TParameterKategori>[] {
+				return [{col: 'name'}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah Parameter kategori',
+				edit: 'Ubah Parameter kategori',
+				delete: 'Hapus Parameter kategori',
 			},
 		},
 	},

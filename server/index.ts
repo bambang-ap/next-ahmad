@@ -17,6 +17,8 @@ import {
 	OrmMaterial,
 	OrmMaterialKategori,
 	OrmMesin,
+	OrmParameter,
+	OrmParameterKategori,
 	OrmRole,
 	OrmUser,
 } from './database';
@@ -33,6 +35,8 @@ export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.MATERIAL_KATEGORI]: OrmMaterialKategori,
 	[CRUD_ENABLED.HARDNESS]: OrmHardness,
 	[CRUD_ENABLED.HARDNESS_KATEGORI]: OrmHardnessKategori,
+	[CRUD_ENABLED.PARAMETER]: OrmParameter,
+	[CRUD_ENABLED.PARAMETER_KATEGORI]: OrmParameterKategori,
 };
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
