@@ -1,36 +1,42 @@
-import {Button as ButtonFlowbite} from 'flowbite-react';
+import {ReactNode, useContext} from 'react';
 
-import {Icon, IconProps, TouchableProps} from '@components';
+import {
+	Button as MUIButton,
+	ButtonProps as MUIButtonProps,
+} from '@mui/material';
+
+import {FormContext, Icon, IconProps, TouchableProps} from '@components';
+import {classNames} from '@utils';
 export type ButtonProps = TouchableProps & {
-	variant?:
-		| 'dark'
-		| 'failure'
-		| 'gray'
-		| 'info'
-		| 'light'
-		| 'purple'
-		| 'success'
-		| 'warning';
+	variant?: MUIButtonProps['color'];
+	component?: string;
 	icon?: IconProps['name'];
 	iconClassName?: string;
-	children?: string;
+	children?: ReactNode;
 	disabled?: boolean;
 };
 
 export function Button(props: ButtonProps) {
+	const formContext = useContext(FormContext);
 	const {
 		className,
 		iconClassName,
 		children,
 		icon,
-		variant = 'light',
+		variant = 'primary',
 		...rest
 	} = props;
 
+	if (formContext?.hideButton) return null;
 	return (
-		<ButtonFlowbite className={className} color={variant} {...rest}>
+		<MUIButton
+			color={variant}
+			variant="contained"
+			sx={{textTransform: 'none'}}
+			className={classNames('min-h-[36px]', className)}
+			{...rest}>
 			{icon && <Icon className={iconClassName} name={icon} />}
 			{children}
-		</ButtonFlowbite>
+		</MUIButton>
 	);
 }

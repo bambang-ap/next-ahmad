@@ -1,13 +1,11 @@
-import {Button} from '@mui/material';
 import {FieldValues} from 'react-hook-form';
 
+import {Button, ImageWithPreview} from '@components';
 import {
 	ControlledComponentProps,
 	withReactFormController,
 } from '@formController';
 import {toBase64} from '@utils';
-
-import {ImageWithPreview} from '../ImageWithPreview';
 
 export type InputFileProps = {
 	accept?: HTMLInputElement['accept'];
@@ -30,7 +28,7 @@ function InputFileComponent<F extends FieldValues>(
 
 	return (
 		<div className="flex items-center gap-2">
-			<Button component="label" variant="contained" className={className}>
+			<Button className={className} component="label">
 				{label}
 				<input
 					hidden

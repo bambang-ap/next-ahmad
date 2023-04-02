@@ -1,9 +1,9 @@
-import {ChangeEventHandler, useEffect} from 'react';
+import {ChangeEventHandler, useContext, useEffect} from 'react';
 
 import {TextField} from '@mui/material';
 import {FieldValues} from 'react-hook-form';
 
-import {Icon, Text} from '@components';
+import {FormContext, Icon, Text} from '@components';
 import {defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
@@ -37,6 +37,8 @@ function InputComponent<F extends FieldValues>(
 		rightAcc: endAdornment,
 		leftAcc: startAdornment,
 	} = props;
+
+	const formContext = useContext(FormContext);
 
 	const {
 		fieldState,
@@ -94,7 +96,12 @@ function InputComponent<F extends FieldValues>(
 				fullWidth
 				label={label}
 				type={type}
-				disabled={disabled}
+				disabled={formContext?.disabled ?? disabled}
+				sx={{
+					'& .MuiInputBase-input.Mui-disabled': {
+						WebkitTextFillColor: '#000000',
+					},
+				}}
 				placeholder={placeholder}
 				value={value ?? ''}
 				onChange={onChangeEvent}

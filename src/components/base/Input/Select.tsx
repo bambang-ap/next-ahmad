@@ -1,3 +1,5 @@
+import {useContext} from 'react';
+
 import {Autocomplete, TextField} from '@mui/material';
 import {FieldPath, FieldValues} from 'react-hook-form';
 
@@ -6,6 +8,8 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from '@formController';
+
+import {FormContext} from '../Form';
 
 export type SelectPropsData<T extends string = string> = {
 	label?: string;
@@ -48,6 +52,8 @@ function SelectComponent<F extends FieldValues>({
 	noLabel,
 	label: labelProps,
 }: ControlledComponentProps<F, SelectProps>) {
+	const formContext = useContext(FormContext);
+
 	const {
 		field: {value, onChange, name},
 	} = controller;
@@ -61,7 +67,7 @@ function SelectComponent<F extends FieldValues>({
 			<Autocomplete
 				disablePortal
 				options={data}
-				disabled={disabled}
+				disabled={formContext?.disabled ?? disabled}
 				defaultValue={selectedValue}
 				onChange={(_, option) => onChange(option?.value)}
 				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}
@@ -74,6 +80,11 @@ function SelectComponent<F extends FieldValues>({
 						{...defaultTextFieldProps}
 						label={label}
 						placeholder={firstOption}
+						sx={{
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
+							},
+						}}
 					/>
 				)}
 			/>

@@ -1,13 +1,28 @@
 import {z} from 'zod';
 
 import {
+	THardness,
+	TInstruksiKanban,
 	tKanban,
 	TKanban,
 	TKanbanUpsert,
 	tKanbanUpsert,
+	TMaterial,
+	TMesin,
+	TParameter,
 	TUser,
 } from '@appTypes/app.zod';
-import {OrmKanban, OrmKanbanItem, OrmScan, OrmUser} from '@database';
+import {
+	OrmHardness,
+	OrmKanban,
+	OrmKanbanInstruksi,
+	OrmKanbanItem,
+	OrmMaterial,
+	OrmMesin,
+	OrmParameter,
+	OrmScan,
+	OrmUser,
+} from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 import {appRouter, RouterOutput} from '@trpc/routers';
@@ -29,12 +44,22 @@ const kanbanRouters = router({
 				dataPo?: RouterOutput['customer_po']['get'][number];
 				dataCreatedBy?: TUser;
 				dataUpdatedBy?: TUser;
+				listMesin?: {
+					dataMesin?: TMesin;
+					instruksi?: {
+						dataInstruksi?: TInstruksiKanban;
+						parameterData: (TParameter | undefined)[];
+						materialData: (TMaterial | undefined)[];
+						hardnessData: (THardness | undefined)[];
+					}[];
+				}[];
 			};
 			const routerCaller = appRouter.createCaller({req, res});
 			return checkCredentialV2(req, res, async (): Promise<TType[]> => {
 				const dataKanban = await OrmKanban.findAll({where});
 				const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
-					const {id_po, id_sppb_in, createdBy, updatedBy} = dataValues;
+					const {id_po, id_sppb_in, createdBy, updatedBy, list_mesin} =
+						dataValues;
 
 					const [dataCreatedBy, dataUpdatedBy]: [TUser, TUser] = (
 						await Promise.all([
@@ -55,8 +80,48 @@ const kanbanRouters = router({
 						id: id_po,
 					});
 
+					const listMesin = await Promise.all(
+						list_mesin.map(async mesin => {
+							const dataMesin = await OrmMesin.findOne({
+								where: {id: mesin.id_mesin},
+							});
+
+							const instruksi = mesin.instruksi.map(async instruksi => {
+								const dataInstruksi = await OrmKanbanInstruksi.findOne({
+									where: {id: instruksi.id_instruksi},
+								});
+
+								const parameterData = instruksi.parameter.map(async id => {
+									const data = await OrmParameter.findOne({where: {id}});
+									return data?.dataValues;
+								});
+								const materialData = instruksi.material.map(async id => {
+									const data = await OrmMaterial.findOne({where: {id}});
+									return data?.dataValues;
+								});
+								const hardnessData = instruksi.hardness.map(async id => {
+									const data = await OrmHardness.findOne({where: {id}});
+									return data?.dataValues;
+								});
+
+								return {
+									dataInstruksi: dataInstruksi?.dataValues,
+									parameterData: await Promise.all(parameterData),
+									materialData: await Promise.all(materialData),
+									hardnessData: await Promise.all(hardnessData),
+								};
+							});
+
+							return {
+								dataMesin: dataMesin?.dataValues,
+								instruksi: await Promise.all(instruksi),
+							};
+						}),
+					);
+
 					const objectData: TType = {
 						...dataValues,
+						listMesin,
 						dataCreatedBy,
 						dataUpdatedBy,
 						dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),

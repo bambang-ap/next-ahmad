@@ -24,7 +24,7 @@ export function KanbanGenerateQR(
 		id,
 		keterangan: name,
 		dataPo,
-		dataMesin,
+		dataMesin = [],
 		items,
 		dataSppbIn,
 	} = kanban;

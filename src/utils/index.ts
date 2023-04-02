@@ -25,13 +25,22 @@ export function copyToClipboard(str: string) {
 	alert('Token copied');
 }
 
-export function modalTypeParser(type: ModalTypePreview) {
+export function modalTypeParser(type: ModalTypePreview, pageName = '') {
 	const isEdit = type === 'edit';
 	const isPreview = type === 'preview';
 	const isDelete = type === 'delete';
 	const isPreviewEdit = isEdit || isPreview;
 
-	return {isEdit, isPreview, isDelete, isPreviewEdit};
+	const modalTitle =
+		type === 'add'
+			? `Tambah ${pageName}`
+			: type === 'edit'
+			? `Ubah ${pageName}`
+			: type === 'preview'
+			? `Detail ${pageName}`
+			: `Hapus ${pageName}`;
+
+	return {isEdit, isPreview, isDelete, isPreviewEdit, modalTitle};
 }
 
 export function toBase64(

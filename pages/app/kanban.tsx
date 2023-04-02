@@ -3,13 +3,20 @@ import {FormEventHandler, useRef} from 'react';
 import {useForm} from 'react-hook-form';
 
 import {ModalTypePreview, TKanbanUpsert} from '@appTypes/app.zod';
-import {Button, ImageWithPreview, Modal, ModalRef, Table} from '@components';
+import {
+	Button,
+	Form,
+	ImageWithPreview,
+	Modal,
+	ModalRef,
+	Table,
+} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useKanban} from '@hooks';
 import {KanbanGenerateQR} from '@pageComponent/kanban_GenerateQR';
 import {KanbanModalChild} from '@pageComponent/kanban_ModalChild';
-import {dateUtils} from '@utils';
+import {dateUtils, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 Kanban.getLayout = getLayout;
@@ -34,15 +41,7 @@ export default function Kanban() {
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
 	const [modalType] = watch(['type']);
-
-	const modalTitle =
-		modalType === 'add'
-			? `add Kanban`
-			: modalType === 'edit'
-			? `edit Kanban`
-			: modalType === 'preview'
-			? `preview Kanban`
-			: `delete Kanban`;
+	const {isPreview, modalTitle} = modalTypeParser(modalType, 'Kanban');
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -124,11 +123,11 @@ export default function Kanban() {
 				}}
 			/>
 			<Modal title={modalTitle} size="7xl" ref={modalRef}>
-				<form onSubmit={submit}>
-					<fieldset disabled={modalType === 'preview'}>
-						<KanbanModalChild reset={reset} control={control} />
-					</fieldset>
-				</form>
+				<Form
+					onSubmit={submit}
+					context={{disabled: isPreview, hideButton: isPreview}}>
+					<KanbanModalChild reset={reset} control={control} />
+				</Form>
 			</Modal>
 		</>
 	);

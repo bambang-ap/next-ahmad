@@ -19,7 +19,16 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 	});
 
 	const {isPreview} = modalTypeParser(modalType);
-	const {dataMesin, dataInstruksi} = useKanban();
+	const {dataMesin, dataInstruksi, parameterData, materialData, hardnessData} =
+		useKanban();
+
+	const dataItemMapper = {
+		parameter: parameterData,
+		material: materialData,
+		hardness: hardnessData,
+	};
+
+	const selectedMesins = listMesin?.map(e => e.id_mesin);
 
 	function updateMesin(list_mesin: TKanban['list_mesin']) {
 		reset(prev => ({...prev, list_mesin}));
@@ -52,6 +61,11 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 
 			<div className="grid-cols-2 grid gap-2">
 				{listMesin?.map((mesin, i) => {
+					const selectedInstruksis = mesin.instruksi.map(e => e.id_instruksi);
+					const filteredDataMesin = dataMesin?.filter(
+						e => e.id === mesin.id_mesin || !selectedMesins.includes(e.id),
+					);
+
 					function addInstruksi() {
 						const copyMesins = listMesin.slice();
 						copyMesins[i]?.instruksi.push({
@@ -76,13 +90,20 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 									className="flex-1"
 									control={control}
 									fieldName={`list_mesin.${i}.id_mesin`}
-									data={selectMapper(dataMesin ?? [], 'id', 'name')}
+									data={selectMapper(filteredDataMesin ?? [], 'id', 'name')}
 								/>
 								<Button onClick={addInstruksi}>Add Process</Button>
 								<Button onClick={() => removeMesin(i)}>Remove Mesin</Button>
 							</div>
-							{mesin.instruksi.mmap(({item: instruksi, isLast}, ii) => {
+							{mesin.instruksi.map((instruksi, ii) => {
 								type Key = Exclude<keyof typeof instruksi, 'id_instruksi'>;
+
+								const filteredDataInstruksi = dataInstruksi?.filter(
+									e =>
+										e.id === instruksi.id_instruksi ||
+										!selectedInstruksis.includes(e.id),
+								);
+
 								const keys: Tuple<Key, 3> = [
 									'hardness',
 									'material',
@@ -121,7 +142,11 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 													control={control}
 													className="flex-1"
 													fieldName={`list_mesin.${i}.instruksi.${ii}.id_instruksi`}
-													data={selectMapper(dataInstruksi ?? [], 'id', 'name')}
+													data={selectMapper(
+														filteredDataInstruksi ?? [],
+														'id',
+														'name',
+													)}
 												/>
 												<Button onClick={() => removeInstruksi(ii)}>
 													Remove Process
@@ -140,16 +165,33 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 
 											<div className="flex gap-2">
 												{keys.map(key => {
+													const selectedItems = instruksi[key];
+
 													return (
 														<div
 															className="flex-1 flex gap-2 flex-col"
 															key={`${key}-${ii}`}>
 															{instruksi[key].map((_, iii) => {
+																const filteredDataItems = dataItemMapper[
+																	key
+																]?.filter(
+																	e =>
+																		selectedItems[iii] === e.id ||
+																		!selectedItems.includes(e.id),
+																);
+
+																const data = selectMapper(
+																	filteredDataItems!,
+																	'id',
+																	'name',
+																);
+
 																return (
 																	<div
 																		key={`${ii}-${iii}`}
 																		className="flex items-center gap-2">
 																		<Select
+																			data={data}
 																			className="flex-1"
 																			control={control}
 																			fieldName={`list_mesin.${i}.instruksi.${ii}.${key}.${iii}`}

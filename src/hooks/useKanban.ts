@@ -34,8 +34,12 @@ export function useKanban() {
 	const {data: parameterData} = trpc.basic.get.useQuery<any, TParameter[]>({
 		target: CRUD_ENABLED.PARAMETER,
 	});
+	const {data: dataSppbIn} = trpc.sppb.get.useQuery({
+		type: 'sppb_in',
+	});
 
 	return {
+		dataSppbIn,
 		dataKanban,
 		dataCustomer,
 		dataMesin,

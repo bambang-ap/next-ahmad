@@ -1,9 +1,11 @@
-import {DOMAttributes, PropsWithChildren} from 'react';
+import {PropsWithChildren} from 'react';
+
+import {ButtonProps} from '@mui/material';
 
 export type TouchableProps = {
 	className?: string;
 	type?: 'submit' | 'button';
-	onClick?: DOMAttributes<HTMLButtonElement>['onClick'];
+	onClick?: ButtonProps['onClick'];
 };
 
 export function Touchable(props: PropsWithChildren<TouchableProps>) {

@@ -13,7 +13,6 @@ import {
 } from '@components';
 import {useKanban} from '@hooks';
 import {modalTypeParser} from '@utils';
-import {trpc} from '@utils/trpc';
 
 import {RenderItem} from './RenderItem';
 import {RenderMesin} from './RenderMesin';
@@ -38,18 +37,9 @@ export function KanbanModalChild({
 			],
 		});
 
-	const {dataCustomer, dataPo, hardnessData, parameterData, materialData} =
-		useKanban();
+	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
 
 	const {isPreview, isDelete} = modalTypeParser(modalType);
-
-	const {data: dataSppbIn} = trpc.sppb.get.useQuery(
-		{
-			type: 'sppb_in',
-			where: {id_po},
-		},
-		{enabled: !!id_po},
-	);
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
 
@@ -97,6 +87,7 @@ export function KanbanModalChild({
 
 			<div className="flex gap-2">
 				<Select
+					disabled={isPreview}
 					className="flex-1"
 					firstOption="- Pilih Customer -"
 					control={control}

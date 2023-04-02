@@ -194,7 +194,7 @@ export const tKanban = zId.extend({
 	updatedBy: z.string(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
-	image: z.string().optional(),
+	image: z.string().optional().nullable(),
 	list_mesin: z
 		.object({
 			id_mesin: z.string().min(47),
