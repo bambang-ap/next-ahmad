@@ -190,16 +190,26 @@ export const tKanban = zId.extend({
 	id_po: z.string(),
 	id_sppb_in: z.string(),
 	keterangan: z.string(),
-	hardnessId: z.string(),
-	materialId: z.string(),
-	parameterId: z.string(),
-	mesin_id: z.string().array(),
-	instruksi_id: z.record(z.string().array()),
 	createdBy: z.string(),
 	updatedBy: z.string(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 	image: z.string().optional(),
+	list_mesin: z
+		.object({
+			id_mesin: z.string().min(47),
+			instruksi: z
+				.object({
+					id_instruksi: z.string().min(47),
+					hardness: z.string().min(47).array().min(1),
+					material: z.string().min(47).array().min(1),
+					parameter: z.string().min(47).array().min(1),
+				})
+				.array()
+				.min(1),
+		})
+		.array()
+		.min(1),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;

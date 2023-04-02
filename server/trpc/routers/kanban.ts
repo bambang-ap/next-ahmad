@@ -1,28 +1,13 @@
 import {z} from 'zod';
 
 import {
-	THardness,
-	TInstruksiKanban,
 	tKanban,
 	TKanban,
 	TKanbanUpsert,
 	tKanbanUpsert,
-	TMaterial,
-	TMesin,
-	TParameter,
 	TUser,
 } from '@appTypes/app.zod';
-import {
-	OrmHardness,
-	OrmKanban,
-	OrmKanbanInstruksi,
-	OrmKanbanItem,
-	OrmMaterial,
-	OrmMesin,
-	OrmParameter,
-	OrmScan,
-	OrmUser,
-} from '@database';
+import {OrmKanban, OrmKanbanItem, OrmScan, OrmUser} from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 import {appRouter, RouterOutput} from '@trpc/routers';
@@ -40,12 +25,8 @@ const kanbanRouters = router({
 			type TType = TKanban & {
 				id_customer?: string;
 				items: TKanbanUpsert['items'];
-				dataMesin: (TMesin & {dataInstruksi: TInstruksiKanban[]})[];
 				dataSppbIn?: RouterOutput['sppb']['get'][number];
 				dataPo?: RouterOutput['customer_po']['get'][number];
-				dataMaterial?: TMaterial;
-				dataHardness?: THardness;
-				dataParameter?: TParameter;
 				dataCreatedBy?: TUser;
 				dataUpdatedBy?: TUser;
 			};
@@ -53,29 +34,10 @@ const kanbanRouters = router({
 			return checkCredentialV2(req, res, async (): Promise<TType[]> => {
 				const dataKanban = await OrmKanban.findAll({where});
 				const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
-					const {
-						mesin_id,
-						instruksi_id,
-						id_po,
-						id_sppb_in,
-						hardnessId,
-						parameterId,
-						createdBy,
-						updatedBy,
-						materialId,
-					} = dataValues;
+					const {id_po, id_sppb_in, createdBy, updatedBy} = dataValues;
 
-					const [
-						dataMaterial,
-						dataHardness,
-						dataParameter,
-						dataCreatedBy,
-						dataUpdatedBy,
-					]: [TMaterial, THardness, TParameter, TUser, TUser] = (
+					const [dataCreatedBy, dataUpdatedBy]: [TUser, TUser] = (
 						await Promise.all([
-							OrmMaterial.findOne({where: {id: materialId}}),
-							OrmHardness.findOne({where: {id: hardnessId}}),
-							OrmParameter.findOne({where: {id: parameterId}}),
 							OrmUser.findOne({where: {id: createdBy}}),
 							OrmUser.findOne({where: {id: updatedBy}}),
 						])
@@ -84,7 +46,6 @@ const kanbanRouters = router({
 					const dataItems = await OrmKanbanItem.findAll({
 						where: {id_kanban: dataValues.id},
 					});
-					const dataMesin = await OrmMesin.findAll({where: {id: mesin_id}});
 					const dataSppbIn = await routerCaller.sppb.get({
 						type: 'sppb_in',
 						where: {id: id_sppb_in},
@@ -93,27 +54,11 @@ const kanbanRouters = router({
 						type: 'customer_po',
 						id: id_po,
 					});
-					const dataMesinPromises = dataMesin.map(
-						async ({dataValues: mesin}) => {
-							const id_instruksi = instruksi_id[mesin.id] ?? [];
-							const dataInstruksi = await OrmKanbanInstruksi.findAll({
-								where: {id: id_instruksi},
-							});
-							return {
-								...mesin,
-								dataInstruksi: dataInstruksi.map(e => e.dataValues),
-							};
-						},
-					);
 
 					const objectData: TType = {
 						...dataValues,
-						dataHardness,
-						dataParameter,
 						dataCreatedBy,
 						dataUpdatedBy,
-						dataMaterial,
-						dataMesin: await Promise.all(dataMesinPromises),
 						dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
 						dataPo: dataPo.find(e => e.id === id_po),
 						get id_customer() {

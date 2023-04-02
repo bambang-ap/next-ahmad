@@ -2,6 +2,7 @@ import classnames from 'classnames';
 import jsPDF from 'jspdf';
 import moment from 'moment';
 
+import {ModalTypePreview} from '@appTypes/app.zod';
 import {formatDate, formatFull, formatHour} from '@constants';
 
 export const classNames = classnames;
@@ -22,6 +23,15 @@ export function copyToClipboard(str: string) {
 	document.execCommand('copy');
 	document.body.removeChild(el);
 	alert('Token copied');
+}
+
+export function modalTypeParser(type: ModalTypePreview) {
+	const isEdit = type === 'edit';
+	const isPreview = type === 'preview';
+	const isDelete = type === 'delete';
+	const isPreviewEdit = isEdit || isPreview;
+
+	return {isEdit, isPreview, isDelete, isPreviewEdit};
 }
 
 export function toBase64(

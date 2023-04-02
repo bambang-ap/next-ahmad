@@ -1,4 +1,4 @@
-import {FormEventHandler, useEffect, useRef} from 'react';
+import {FormEventHandler, useRef} from 'react';
 
 import {useForm} from 'react-hook-form';
 
@@ -33,7 +33,7 @@ export default function Kanban() {
 	const {mutate: mutateDelete} =
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
-	const [mesinId, modalType] = watch(['mesin_id', 'type']);
+	const [modalType] = watch(['type']);
 
 	const modalTitle =
 		modalType === 'add'
@@ -75,19 +75,6 @@ export default function Kanban() {
 		modalRef.current?.show();
 	}
 
-	useEffect(() => {
-		reset(({instruksi_id, ...prev}) => {
-			const idInstruksi = Object.entries(instruksi_id ?? {}).reduce<
-				typeof instruksi_id
-			>((ret, [idMesin, value]) => {
-				const hasValue = value?.filter(Boolean);
-				if (idMesin && hasValue?.length > 0) ret[idMesin] = value;
-				return ret;
-			}, {});
-			return {...prev, instruksi_id: idInstruksi};
-		});
-	}, [mesinId?.join?.('')]);
-
 	return (
 		<>
 			<Button onClick={() => showModal('add', {})}>Add</Button>
@@ -100,9 +87,6 @@ export default function Kanban() {
 					'Nomor PO',
 					'Nomor Surat Jalan',
 					'Customer',
-					'Material',
-					'Hardness',
-					'Parameter',
 					'Created By',
 					'Action',
 				]}
@@ -122,9 +106,6 @@ export default function Kanban() {
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
-							<Cell>{item.dataMaterial?.name}</Cell>
-							<Cell>{item.dataHardness?.name}</Cell>
-							<Cell>{item.dataParameter?.name}</Cell>
 							<Cell>{item.dataCreatedBy?.name}</Cell>
 							<Cell className="flex gap-x-2">
 								<KanbanGenerateQR {...item} />
@@ -142,7 +123,7 @@ export default function Kanban() {
 					);
 				}}
 			/>
-			<Modal title={modalTitle} size="6xl" ref={modalRef}>
+			<Modal title={modalTitle} size="7xl" ref={modalRef}>
 				<form onSubmit={submit}>
 					<fieldset disabled={modalType === 'preview'}>
 						<KanbanModalChild reset={reset} control={control} />
