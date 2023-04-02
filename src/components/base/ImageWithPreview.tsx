@@ -12,6 +12,7 @@ import {Modal, ModalRef} from './Modal';
 
 export type ImageWithPreviewProps = {
 	className?: string;
+	modalClassName?: string;
 	src: string;
 };
 
@@ -28,7 +29,11 @@ export const ImageFormWithPreview = withReactFormController(function <
 	return <ImageWithPreview src={value} {...rest} />;
 });
 
-export function ImageWithPreview({className, src}: ImageWithPreviewProps) {
+export function ImageWithPreview({
+	className,
+	modalClassName,
+	src,
+}: ImageWithPreviewProps) {
 	const modalRef = useRef<ModalRef>(null);
 	const imageElement = <img alt="" src={src} />;
 
@@ -40,7 +45,9 @@ export function ImageWithPreview({className, src}: ImageWithPreviewProps) {
 				{imageElement}
 			</div>
 			<Modal title="Preview" ref={modalRef}>
-				{imageElement}
+				<div className={classNames('flex justify-center', modalClassName)}>
+					{imageElement}
+				</div>
 			</Modal>
 		</>
 	);

@@ -1,3 +1,4 @@
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {
@@ -29,6 +30,20 @@ import {appRouter, RouterOutput} from '@trpc/routers';
 import {TRPCError} from '@trpc/server';
 
 const kanbanRouters = router({
+	images: procedure.query(({ctx: {req, res}}) => {
+		return checkCredentialV2(req, res, async () => {
+			const images = await OrmKanban.findAll({
+				where: {image: {[Op.ne]: null}},
+				attributes: ['image', 'keterangan'] as (keyof TKanban)[],
+			});
+
+			return images?.map(({dataValues}) => {
+				const {image, keterangan} = dataValues;
+
+				return {image, keterangan};
+			});
+		});
+	}),
 	get: procedure
 		.input(
 			z.object({

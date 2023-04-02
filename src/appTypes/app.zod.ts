@@ -208,8 +208,8 @@ export const tKanban = zId.extend({
 				.array()
 				.min(1),
 		})
-		.array()
-		.min(1),
+		.array(),
+	// .min(1),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;

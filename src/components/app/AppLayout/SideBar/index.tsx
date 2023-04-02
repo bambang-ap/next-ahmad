@@ -12,16 +12,6 @@ export const SideBar = () => {
 
 	return (
 		<Sidebar>
-			<Sidebar.Item href="/app/hardness/kategori">
-				Hardness Kategori
-			</Sidebar.Item>
-			<Sidebar.Item href="/app/hardness">Hardness</Sidebar.Item>
-
-			<Sidebar.Item href="/app/parameter/kategori">
-				parameter Kategori
-			</Sidebar.Item>
-			<Sidebar.Item href="/app/parameter">parameter</Sidebar.Item>
-
 			<RenderMenu data={data} />
 
 			<Sidebar.Item>

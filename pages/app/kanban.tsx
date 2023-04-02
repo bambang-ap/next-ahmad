@@ -46,13 +46,13 @@ export default function Kanban() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(async ({type, callbacks, ...rest}) => {
+		handleSubmit(async ({type, callbacks, list_mesin = [], ...rest}) => {
 			if (callbacks) callbacks.forEach(callback => callback());
 
 			switch (type) {
 				case 'add':
 				case 'edit':
-					return mutateUpsert(rest, {onSuccess});
+					return mutateUpsert({...rest, list_mesin}, {onSuccess});
 				case 'delete':
 					return mutateDelete(rest.id, {onSuccess});
 				default:
