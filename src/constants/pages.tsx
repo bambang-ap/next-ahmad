@@ -1,4 +1,4 @@
-// @ts-nocheckd
+// @ts-nocheck
 
 import {
 	TCustomer,

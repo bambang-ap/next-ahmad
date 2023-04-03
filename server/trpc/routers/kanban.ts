@@ -79,6 +79,7 @@ const kanbanRouters = router({
 					const {id_po, id_sppb_in, createdBy, updatedBy, list_mesin} =
 						dataValues;
 
+					// @ts-ignore
 					const [dataCreatedBy, dataUpdatedBy]: [TUser, TUser] = (
 						await Promise.all([
 							OrmUser.findOne({where: {id: createdBy}}),

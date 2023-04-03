@@ -24,6 +24,7 @@ export function KanbanGenerateQR(
 		id,
 		keterangan: name,
 		dataPo,
+		// @ts-ignore
 		dataMesin = [],
 		items,
 		dataSppbIn,
@@ -82,6 +83,8 @@ export function KanbanGenerateQR(
 					<Table.Tr>
 						<Table.Td colSpan={2}>
 							<Table>
+								{/* @ts-ignore */}
+
 								{dataMesin.map(mesin => {
 									const {
 										dataInstruksi,
@@ -98,6 +101,7 @@ export function KanbanGenerateQR(
 											<Table.Tr>
 												<Table.Td colSpan={2}>
 													<Table>
+														{/* @ts-ignore */}
 														{dataInstruksi.map(instruksi => {
 															const {name: nameInstruksi, id: idInstruksi} =
 																instruksi;

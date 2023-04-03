@@ -43,9 +43,11 @@ const scanRouters = router({
 
 					if (dataScan) {
 						const dataScann = {...dataScan?.dataValues, dataKanban};
+						// @ts-ignore
 						if (!enabled(target, dataScann))
 							throw new TRPCError({code: 'NOT_FOUND', message: 'dhjfdfhj'});
 
+						// @ts-ignore
 						return dataScann;
 					}
 

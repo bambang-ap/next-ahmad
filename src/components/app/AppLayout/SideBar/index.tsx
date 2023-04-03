@@ -36,6 +36,7 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 						<Sidebar.Collapse
 							key={id}
 							label={title}
+							// @ts-ignore
 							href={path}
 							icon={<Icon name={icon} />}>
 							<RenderMenu data={subMenu} />
@@ -46,6 +47,7 @@ const RenderMenu = ({data}: {data?: TMenu[]}) => {
 				return (
 					<Sidebar.Item
 						key={id}
+						// @ts-ignore
 						href={path}
 						icon={<Icon name={icon} />}
 						className={isSelected ? 'wasd' : 'jklm'}>

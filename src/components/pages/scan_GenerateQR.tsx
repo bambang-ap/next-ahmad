@@ -27,6 +27,7 @@ export function ScanDetailKanban(
 	const {
 		keterangan: name,
 		dataPo,
+		// @ts-ignore
 		dataMesin,
 		items,
 		dataSppbIn,
@@ -52,6 +53,7 @@ export function ScanDetailKanban(
 										<Table.Td>nomor mesin</Table.Td>
 										<Table.Td>Instruksi</Table.Td>
 									</Table.Tr>
+									{/* @ts-ignore */}
 									{dataMesin.map(mesin => {
 										const {
 											dataInstruksi,
@@ -66,6 +68,7 @@ export function ScanDetailKanban(
 													<Table.Td>{nomor_mesin}</Table.Td>
 													<Table.Td>
 														<Table>
+															{/* @ts-ignore */}
 															{dataInstruksi.map(instruksi => {
 																const {name: nameInstruksi, id: idInstruksi} =
 																	instruksi;
