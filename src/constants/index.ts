@@ -1,7 +1,7 @@
 import {TextFieldProps} from '@mui/material';
 import type {OrderItem} from 'sequelize';
 
-import {AppRouter} from '@appTypes/app.type';
+import {AppRouter, TKanban} from '@appTypes/app.type';
 import {TRPCClientError} from '@trpc/client';
 
 export * from './colors';
@@ -21,6 +21,17 @@ export const defaultOrderBy = {order: [['createdAt', 'desc'] as OrderItem]};
 export const formatDate = 'DD-MM-YYYY';
 export const formatHour = 'HH:mm:ss';
 export const formatFull = `${formatDate} - ${formatHour}`;
+
+export const defaultInstruksi: TKanban['list_mesin'][number]['instruksi'][number] =
+	{
+		hardness: [''],
+		id_instruksi: '',
+		material: [''],
+		parameter: [''],
+		hardnessKategori: [''],
+		parameterKategori: [''],
+		materialKategori: [''],
+	};
 
 export const defaultTextFieldProps: TextFieldProps = {
 	InputLabelProps: {shrink: true},

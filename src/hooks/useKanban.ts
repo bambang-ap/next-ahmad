@@ -1,9 +1,12 @@
 import {
 	TCustomer,
 	THardness,
+	THardnessKategori,
 	TInstruksiKanban,
+	TMaterialKategori,
 	TMesin,
 	TParameter,
+	TParameterKategori,
 } from '@appTypes/app.zod';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
@@ -25,14 +28,32 @@ export function useKanban() {
 	const {data: dataPo} = trpc.customer_po.get.useQuery({
 		type: 'customer_po',
 	});
-	const {data: hardnessData} = trpc.basic.get.useQuery<any, THardness[]>({
-		target: CRUD_ENABLED.HARDNESS,
-	});
 	const {data: materialData} = trpc.basic.get.useQuery<any, TParameter[]>({
 		target: CRUD_ENABLED.MATERIAL,
 	});
+	const {data: hardnessData} = trpc.basic.get.useQuery<any, THardness[]>({
+		target: CRUD_ENABLED.HARDNESS,
+	});
 	const {data: parameterData} = trpc.basic.get.useQuery<any, TParameter[]>({
 		target: CRUD_ENABLED.PARAMETER,
+	});
+	const {data: parameterKategori} = trpc.basic.get.useQuery<
+		any,
+		TParameterKategori[]
+	>({
+		target: CRUD_ENABLED.PARAMETER_KATEGORI,
+	});
+	const {data: hardnessKategori} = trpc.basic.get.useQuery<
+		any,
+		THardnessKategori[]
+	>({
+		target: CRUD_ENABLED.HARDNESS_KATEGORI,
+	});
+	const {data: materialKategori} = trpc.basic.get.useQuery<
+		any,
+		TMaterialKategori[]
+	>({
+		target: CRUD_ENABLED.MATERIAL_KATEGORI,
 	});
 	const {data: dataSppbIn} = trpc.sppb.get.useQuery({
 		type: 'sppb_in',
@@ -48,5 +69,8 @@ export function useKanban() {
 		hardnessData,
 		parameterData,
 		materialData,
+		parameterKategori,
+		hardnessKategori,
+		materialKategori,
 	};
 }

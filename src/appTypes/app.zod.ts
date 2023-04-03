@@ -203,8 +203,11 @@ export const tKanban = zId.extend({
 				.object({
 					id_instruksi: z.string().min(47),
 					hardness: z.string().min(47).array().min(1),
+					hardnessKategori: z.string().min(47).array().min(1),
 					material: z.string().min(47).array().min(1),
+					materialKategori: z.string().min(47).array().min(1),
 					parameter: z.string().min(47).array().min(1),
+					parameterKategori: z.string().min(47).array().min(1),
 				})
 				.array()
 				.min(1),

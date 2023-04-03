@@ -4,6 +4,7 @@ import {Control, UseFormReset, useWatch} from 'react-hook-form';
 
 import {TKanban} from '@appTypes/app.zod';
 import {Button, Select, selectMapper} from '@components';
+import {defaultInstruksi} from '@constants';
 import {useKanban} from '@hooks';
 import {modalTypeParser} from '@utils';
 
@@ -19,13 +20,27 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 	});
 
 	const {isPreview} = modalTypeParser(modalType);
-	const {dataMesin, dataInstruksi, parameterData, materialData, hardnessData} =
-		useKanban();
+	const {
+		dataMesin,
+		dataInstruksi,
+		parameterKategori,
+		hardnessKategori,
+		materialKategori,
+		parameterData,
+		materialData,
+		hardnessData,
+	} = useKanban();
 
 	const dataItemMapper = {
-		parameter: parameterData,
 		material: materialData,
+		parameter: parameterData,
 		hardness: hardnessData,
+	};
+
+	const kategoriItemMapper = {
+		parameter: parameterKategori,
+		hardness: hardnessKategori,
+		material: materialKategori,
 	};
 
 	const selectedMesins = listMesin?.map(e => e.id_mesin);
@@ -43,14 +58,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 			...listMesin,
 			{
 				id_mesin: '',
-				instruksi: [
-					{
-						hardness: [''],
-						id_instruksi: '',
-						material: [''],
-						parameter: [''],
-					},
-				],
+				instruksi: [defaultInstruksi],
 			},
 		]);
 	}
@@ -59,7 +67,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 		<>
 			{!isPreview && <Button onClick={addMesin}>Add Mesin</Button>}
 
-			<div className="grid-cols-2 grid gap-2">
+			<div className="grid-cols-1 grid gap-2">
 				{listMesin?.map((mesin, i) => {
 					const selectedInstruksis = mesin.instruksi.map(e => e.id_instruksi);
 					const filteredDataMesin = dataMesin?.filter(
@@ -68,12 +76,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 
 					function addInstruksi() {
 						const copyMesins = listMesin.slice();
-						copyMesins[i]?.instruksi.push({
-							hardness: [''],
-							id_instruksi: '',
-							material: [''],
-							parameter: [''],
-						});
+						copyMesins[i]?.instruksi.push(defaultInstruksi);
 						updateMesin(copyMesins);
 					}
 
@@ -96,7 +99,13 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 								<Button onClick={() => removeMesin(i)}>Remove Mesin</Button>
 							</div>
 							{mesin.instruksi.map((instruksi, ii) => {
-								type Key = Exclude<keyof typeof instruksi, 'id_instruksi'>;
+								type Key = Exclude<
+									keyof typeof instruksi,
+									| 'id_instruksi'
+									| 'hardnessKategori'
+									| 'parameterKategori'
+									| 'materialKategori'
+								>;
 
 								const filteredDataInstruksi = dataInstruksi?.filter(
 									e =>
@@ -117,15 +126,19 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 								}
 
 								function removeItem(key: Key, index: number) {
+									const keyKategori = `${key}Kategori` as const;
 									const copyMesins = listMesin.slice();
 									const newInstruksi = copyMesins[i]?.instruksi!;
 									const removedItem = newInstruksi[ii]?.[key].remove(index)!;
+									const removedItemKategori =
+										newInstruksi[ii]?.[keyKategori].remove(index)!;
 									updateMesin(
 										copyMesins.replace(i, {
 											...mesin,
 											instruksi: newInstruksi.replace(ii, {
 												...newInstruksi[ii]!,
 												[key]: removedItem,
+												[keyKategori]: removedItemKategori,
 											}),
 										}),
 									);
@@ -172,12 +185,16 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 															className="flex-1 flex gap-2 flex-col"
 															key={`${key}-${ii}`}>
 															{instruksi[key].map((_, iii) => {
-																const filteredDataItems = dataItemMapper[
+																const keyKategori = `${key}Kategori` as const;
+																const selectedKategori =
+																	instruksi[keyKategori][iii];
+																let filteredDataItems = dataItemMapper[
 																	key
 																]?.filter(
 																	e =>
-																		selectedItems[iii] === e.id ||
-																		!selectedItems.includes(e.id),
+																		selectedKategori === e.id_kategori &&
+																		(selectedItems[iii] === e.id ||
+																			!selectedItems.includes(e.id)),
 																);
 
 																const data = selectMapper(
@@ -191,6 +208,20 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 																		key={`${ii}-${iii}`}
 																		className="flex items-center gap-2">
 																		<Select
+																			className="flex-1"
+																			control={control}
+																			fieldName={`list_mesin.${i}.instruksi.${ii}.${key}Kategori.${iii}`}
+																			data={selectMapper(
+																				kategoriItemMapper[key] ?? [],
+																				'id',
+																				'name',
+																			)}
+																		/>
+
+																		<Select
+																			key={filteredDataItems!
+																				.map(e => e.id)
+																				.join('')}
 																			data={data}
 																			className="flex-1"
 																			control={control}
