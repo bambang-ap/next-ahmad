@@ -14,10 +14,7 @@ const menuRouters = router({
 				const allMenu = (
 					await OrmMenu.findAll({
 						where: {accepted_role: {[Op.substring]: session?.user?.role}},
-						order: [
-							['index', 'asc'],
-							['title', 'asc'],
-						],
+						order: [['title', 'asc']],
 					})
 				).map(e => e.dataValues);
 

@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TMaterialKategori} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmMaterialKategori extends Model<TMaterialKategori> {}
@@ -16,6 +16,7 @@ export default function initOrmMaterialKategori(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.MATERIAL_KATEGORI,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

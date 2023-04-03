@@ -8,7 +8,7 @@ import {
 } from 'sequelize';
 
 import {TUser} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmUser extends Model<TUser> {}
@@ -28,6 +28,7 @@ export function ormUserAttributes(): [
 		{
 			tableName: TABLES.USER,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: [...defaultExcludeColumn, 'password'],
 				},

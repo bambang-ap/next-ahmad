@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {THardness} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmHardness extends Model<THardness> {}
@@ -17,6 +17,7 @@ export default function initOrmHardness(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.HARDNESS,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

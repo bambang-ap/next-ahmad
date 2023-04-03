@@ -8,7 +8,7 @@ import {
 } from 'sequelize';
 
 import {TUserLogin} from '@appTypes/app.zod';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmUserLogin extends Model<TUserLogin> {}
@@ -26,6 +26,7 @@ export function ormUserLoginAttributes(): [
 		{
 			tableName: TABLES.USER_LOGIN,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

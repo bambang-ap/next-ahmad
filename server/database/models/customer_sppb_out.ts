@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TCustomerSPPBOut} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmCustomerSPPBOut extends Model<TCustomerSPPBOut> {}
@@ -18,6 +18,7 @@ export default function initOrmCustomerSPPBOut(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.CUSTOMER_SPPB_OUT,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

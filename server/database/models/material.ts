@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TMaterial} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmMaterial extends Model<TMaterial> {}
@@ -17,6 +17,7 @@ export default function initOrmMaterial(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.MATERIAL,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

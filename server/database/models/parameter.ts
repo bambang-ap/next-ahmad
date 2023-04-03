@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TParameter} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmParameter extends Model<TParameter> {}
@@ -17,6 +17,7 @@ export default function initOrmParameter(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.PARAMETER,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

@@ -243,9 +243,9 @@ export const baseTMenu = z.object({
 	id: z.string(),
 	title: z.string(),
 	icon: z.string().optional(),
-	path: z.string().optional(),
+	path: z.string().nullable(),
 	accepted_role: z.string(),
-	parent_id: z.string().optional(),
+	parent_id: z.string().nullable(),
 	index: z.number(),
 });
 

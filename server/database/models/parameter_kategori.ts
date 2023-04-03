@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TParameterKategori} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmParameterKategori extends Model<TParameterKategori> {}
@@ -16,6 +16,7 @@ export default function initOrmParameterKategori(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.PARAMETER_KATEGORI,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

@@ -8,7 +8,7 @@ import {
 } from 'sequelize';
 
 import {TRole} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmRole extends Model<TRole> {}
@@ -25,6 +25,7 @@ export function ormRoleAttributes(): [
 		{
 			tableName: TABLES.ROLE,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

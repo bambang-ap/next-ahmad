@@ -21,6 +21,7 @@ export default function initOrmMenu(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.MENU,
 			defaultScope: {
+				order: [['index', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

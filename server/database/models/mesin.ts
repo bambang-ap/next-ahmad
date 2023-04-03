@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TMesin} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmMesin extends Model<TMesin> {}
@@ -17,6 +17,7 @@ export default function initOrmMesin(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.MESIN,
 			defaultScope: {
+				...defaultOrderBy,
 				order: [['nomor_mesin', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,

@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {THardnessKategori} from '@appTypes/app.type';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmHardnessKategori extends Model<THardnessKategori> {}
@@ -16,6 +16,7 @@ export default function initOrmHardnessKategori(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.HARDNESS_KATEGORI,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

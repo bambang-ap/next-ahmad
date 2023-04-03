@@ -71,7 +71,10 @@ const kanbanRouters = router({
 			};
 			const routerCaller = appRouter.createCaller({req, res});
 			return checkCredentialV2(req, res, async (): Promise<TType[]> => {
-				const dataKanban = await OrmKanban.findAll({where});
+				const dataKanban = await OrmKanban.findAll({
+					where,
+					order: [['createdAt', 'asc']],
+				});
 				const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
 					const {id_po, id_sppb_in, createdBy, updatedBy, list_mesin} =
 						dataValues;

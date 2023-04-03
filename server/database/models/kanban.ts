@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize} from 'sequelize';
 
 import {TKanban} from '@appTypes/app.zod';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 export class OrmKanban extends Model<TKanban> {}
@@ -22,6 +22,7 @@ export default function initOrmKanban(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.KANBAN,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

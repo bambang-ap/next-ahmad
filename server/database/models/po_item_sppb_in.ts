@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
 import {TPOItemSppbIn} from '@appTypes/app.zod';
-import {defaultExcludeColumn} from '@constants';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
 import {unitQtyField} from './customer_po_item';
@@ -20,6 +20,7 @@ export default function initOrmPOItemSppbIn(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.PO_ITEM_SPPB_IN,
 			defaultScope: {
+				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
