@@ -60,13 +60,6 @@ export function KanbanModalChild({
 
 	return (
 		<div className="flex flex-col gap-2">
-			{isPreview && (
-				<ImageFormWithPreview
-					className="w-1/3 self-center"
-					control={control}
-					fieldName="image"
-				/>
-			)}
 			<div className="flex gap-2">
 				<Input
 					className="flex-1"
@@ -75,7 +68,13 @@ export function KanbanModalChild({
 					label="Keterangan"
 				/>
 
-				{!isPreview && (
+				{isPreview ? (
+					<ImageFormWithPreview
+						className="w-1/5 self-center"
+						control={control}
+						fieldName="image"
+					/>
+				) : (
 					<InputFile
 						label="Upload Image"
 						accept="image/*"

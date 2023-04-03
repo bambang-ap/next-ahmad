@@ -3,14 +3,7 @@ import {FormEventHandler, useRef} from 'react';
 import {useForm} from 'react-hook-form';
 
 import {ModalTypePreview, TKanbanUpsert} from '@appTypes/app.zod';
-import {
-	Button,
-	Form,
-	ImageWithPreview,
-	Modal,
-	ModalRef,
-	Table,
-} from '@components';
+import {Button, Form, Modal, ModalRef, Table} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useKanban} from '@hooks';
@@ -80,7 +73,6 @@ export default function Kanban() {
 			<Table
 				data={data}
 				header={[
-					'Image',
 					'Tanggal',
 					'Keterangan',
 					'Nomor PO',
@@ -95,11 +87,6 @@ export default function Kanban() {
 					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
 					return (
 						<>
-							<Cell>
-								{item.image && (
-									<ImageWithPreview className="w-20" src={item.image} />
-								)}
-							</Cell>
 							<Cell>{dateUtils.full(item.createdAt)}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell>{item.dataPo?.nomor_po}</Cell>
