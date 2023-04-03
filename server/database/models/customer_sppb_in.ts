@@ -13,6 +13,7 @@ export default function initOrmCustomerSPPBIn(sequelize: Sequelize) {
 			nomor_surat: {type: DataTypes.STRING},
 			tgl: DataTypes.STRING,
 			id_po: DataTypes.STRING,
+			lot_no: DataTypes.STRING,
 		},
 		{
 			sequelize,

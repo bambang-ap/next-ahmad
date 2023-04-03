@@ -91,6 +91,13 @@ export function SppbInModalChild({control}: {control: Control<FormType>}) {
 					className="flex-1"
 					disabled={isPreview}
 					control={control}
+					fieldName="lot_no"
+					placeholder="Nomor Lot"
+				/>
+				<Input
+					className="flex-1"
+					disabled={isPreview}
+					control={control}
 					fieldName="tgl"
 					type="date"
 					placeholder="Tanggal surat jalan"

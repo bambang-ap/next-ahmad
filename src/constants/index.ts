@@ -18,7 +18,7 @@ export const inputClassName = 'px-2 py-1 rounded bg-white';
 export const defaultExcludeColumn = []; // ['createdAt', 'updatedAt'];
 export const defaultOrderBy = {order: [['createdAt', 'desc'] as OrderItem]};
 
-export const formatDate = 'YYYY-MM-DD';
+export const formatDate = 'DD-MM-YYYY';
 export const formatHour = 'HH:mm:ss';
 export const formatFull = `${formatDate} - ${formatHour}`;
 

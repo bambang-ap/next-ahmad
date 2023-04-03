@@ -8,6 +8,7 @@ import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilter} from '@hooks';
 import {SppbInModalChild} from '@pageComponent/ModalChild_customer_sppb_in';
+import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export type FormType = {type: ModalTypePreview} & TUpsertSppbIn;
@@ -72,18 +73,20 @@ export default function SPPBIN() {
 				pageCount={data?.totalPage}
 				topComponent={<Button onClick={() => showModal('add', {})}>Add</Button>}
 				header={[
+					'Tanggal Surat Jalan',
 					'Nomor PO',
 					'Nomor Surat Jalan',
-					'Tanggal Surat Jalan',
+					'Nomor Lot',
 					'Action',
 				]}
 				renderItem={({Cell, item}) => {
 					const {id} = item;
 					return (
 						<>
+							<Cell>{dateUtils.date(item.tgl)}</Cell>
 							<Cell>{item.detailPo?.nomor_po}</Cell>
 							<Cell>{item.nomor_surat}</Cell>
-							<Cell>{item.tgl}</Cell>
+							<Cell>{item.lot_no}</Cell>
 							<Cell className="flex gap-2">
 								<Button onClick={() => showModal('preview', item)}>
 									Preview

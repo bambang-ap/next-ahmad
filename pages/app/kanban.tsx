@@ -87,7 +87,7 @@ export default function Kanban() {
 					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
 					return (
 						<>
-							<Cell>{dateUtils.full(item.createdAt)}</Cell>
+							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>

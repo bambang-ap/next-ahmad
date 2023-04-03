@@ -1,6 +1,8 @@
 import {getLayout} from '@hoc';
 
 export default function App() {
+	return null;
+
 	return (
 		<div className="-m-1 flex flex-wrap md:-m-2">
 			{Array.from({length: 30}).map((_, i) => (

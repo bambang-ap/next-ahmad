@@ -47,7 +47,12 @@ function InputFileComponent<F extends FieldValues>(
 					}}
 				/>
 			</Button>
-			{imgSource && <ImageWithPreview className="w-20" src={imgSource} />}
+			{imgSource && (
+				<ImageWithPreview
+					className="w-20 max-h-20 overflow-hidden"
+					src={imgSource}
+				/>
+			)}
 		</div>
 	);
 }

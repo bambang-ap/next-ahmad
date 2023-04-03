@@ -70,7 +70,7 @@ export function KanbanModalChild({
 
 				{isPreview ? (
 					<ImageFormWithPreview
-						className="w-1/5 self-center"
+						className="w-20 max-h-20 overflow-hidden self-center"
 						control={control}
 						fieldName="image"
 					/>

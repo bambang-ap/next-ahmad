@@ -10,9 +10,9 @@ import {CRUD_ENABLED} from '@enum';
 import {useTableFilter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
+import {QRUserLogin, RenderTableCell, UserTokenCopy} from './component';
 import {ModalChild} from './ModalChild';
 import {RenderImportCustomer} from './RenderImportCustomer';
-import {QRUserLogin, RenderTableCell, UserTokenCopy} from './component';
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -98,6 +98,7 @@ const RenderPage = ({path}: {path: string}) => {
 						<>
 							<Button onClick={() => showModal('add', {})}>Add</Button>
 							{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
+							{/* NOTE: Optimize Menu change accepter_role to array of string json, use new Set to make sure its unique */}
 							{isOnCustomer && (
 								<Suspense>
 									<RenderImportCustomer refetch={refetch} />
