@@ -35,8 +35,6 @@ const scanRouters = router({
 						where: {id},
 					});
 
-					console.log(dataKanban);
-
 					const dataScan = await OrmScan.findOne({
 						where: {id_kanban: id},
 					});
@@ -45,7 +43,10 @@ const scanRouters = router({
 						const dataScann = {...dataScan?.dataValues, dataKanban};
 						// @ts-ignore
 						if (!enabled(target, dataScann))
-							throw new TRPCError({code: 'NOT_FOUND', message: 'dhjfdfhj'});
+							throw new TRPCError({
+								code: 'NOT_FOUND',
+								message: 'Data tidak ditemukan',
+							});
 
 						// @ts-ignore
 						return dataScann;

@@ -1,5 +1,3 @@
-import {Fragment} from 'react';
-
 import {RouterOutput, TScanTarget} from '@appTypes/app.type';
 import {RootTable as Table} from '@components';
 
@@ -24,22 +22,14 @@ export function ScanDetailKanban(
 		status?: boolean;
 	},
 ) {
-	const {
-		keterangan: name,
-		dataPo,
-		// @ts-ignore
-		dataMesin,
-		items,
-		dataSppbIn,
-		route,
-		status,
-	} = kanban;
+	const {keterangan, dataPo, items, dataSppbIn, route, status, listMesin} =
+		kanban;
 
 	return (
 		<Table>
 			<Table.Tr>
 				<Table.Td className="w-full justify-center" colSpan={3}>
-					{name}
+					{keterangan}
 				</Table.Td>
 			</Table.Tr>
 			<Table.Tr>
@@ -53,35 +43,22 @@ export function ScanDetailKanban(
 										<Table.Td>nomor mesin</Table.Td>
 										<Table.Td>Instruksi</Table.Td>
 									</Table.Tr>
-									{/* @ts-ignore */}
-									{dataMesin.map(mesin => {
-										const {
-											dataInstruksi,
-											id: idMesin,
-											name: nameMesin,
-											nomor_mesin,
-										} = mesin;
+
+									{listMesin?.map(mesin => {
 										return (
-											<Fragment key={idMesin}>
+											<Table.Tr key={mesin.dataMesin?.id}>
+												<Table.Td>{mesin.dataMesin?.name}</Table.Td>
+												<Table.Td>{mesin.dataMesin?.nomor_mesin}</Table.Td>
 												<Table.Tr>
-													<Table.Td>{nameMesin}</Table.Td>
-													<Table.Td>{nomor_mesin}</Table.Td>
-													<Table.Td>
-														<Table>
-															{/* @ts-ignore */}
-															{dataInstruksi.map(instruksi => {
-																const {name: nameInstruksi, id: idInstruksi} =
-																	instruksi;
-																return (
-																	<Table.Tr key={idInstruksi}>
-																		<Table.Td>{nameInstruksi}</Table.Td>
-																	</Table.Tr>
-																);
-															})}
-														</Table>
-													</Table.Td>
+													{mesin.instruksi?.map(instruksi => {
+														return (
+															<Table.Td key={instruksi.dataInstruksi?.id}>
+																{instruksi.dataInstruksi?.name}
+															</Table.Td>
+														);
+													})}
 												</Table.Tr>
-											</Fragment>
+											</Table.Tr>
 										);
 									})}
 								</Table>
