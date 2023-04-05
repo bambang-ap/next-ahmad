@@ -57,7 +57,7 @@ function RenderScanPage({id: uId}: ZId) {
 
 	const id = watch('id');
 	const currentKey = `status_${route}` as const;
-	const [jumlahText, submitText] = scanMapperByStatus(route);
+	const [, , submitText] = scanMapperByStatus(route);
 
 	const {data, refetch} = trpc.scan.get.useQuery(
 		{id, target: route},

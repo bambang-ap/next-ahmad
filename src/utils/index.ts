@@ -33,14 +33,14 @@ export function qtyMap(
 
 export function scanMapperByStatus(
 	target: TScanTarget,
-): [jumlah?: string, submitText?: string] {
+): [jumlah?: string, jumlahNext?: string, submitText?: string] {
 	switch (target) {
 		case 'produksi':
-			return ['Jumlah planning', 'send to QC'];
+			return ['Jumlah planning', 'Jumlah Produksi', 'send to QC'];
 		case 'qc':
-			return ['Jumlah produksi', 'OK'];
+			return ['Jumlah produksi', 'Jumlah QC', 'OK'];
 		case 'finish_good':
-			return ['Jumlah qc'];
+			return ['Jumlah qc', 'Jumlah FG'];
 		default:
 			return [];
 	}
