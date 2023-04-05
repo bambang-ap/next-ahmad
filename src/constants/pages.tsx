@@ -8,6 +8,7 @@ import {
 	THardness,
 	THardnessKategori,
 	TInstruksiKanban,
+	TKendaraan,
 	TMaterial,
 	TMaterialKategori,
 	TMesin,
@@ -50,6 +51,7 @@ export type Types =
 	| TCustomerSPPBIn
 	| TCustomerSPPBOut
 	| TMesin
+	| TKendaraan
 	| TRole
 	| TMaterial
 	| TMaterialKategori
@@ -316,6 +318,32 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: 'Tambah mesin',
 				edit: 'Ubah mesin',
 				delete: 'Hapus mesin',
+			},
+		},
+	},
+
+	'/app/kendaraan': {
+		enumName: CRUD_ENABLED.KENDARAAN,
+		searchKey: 'name',
+		table: {
+			header: ['Name', 'Action'],
+			get body(): Body<TKendaraan> {
+				return ['name'];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TKendaraan>[] {
+				return [{col: 'name'}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah kendaraan',
+				edit: 'Ubah kendaraan',
+				delete: 'Hapus kendaraan',
 			},
 		},
 	},

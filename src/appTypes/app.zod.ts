@@ -114,6 +114,11 @@ export const tMesin = zId.extend({
 	nomor_mesin: z.string(),
 });
 
+export type TKendaraan = z.infer<typeof tKendaraan>;
+export const tKendaraan = zId.extend({
+	name: z.string(),
+});
+
 export type USPPB = z.infer<typeof uSPPB>;
 export const uSPPB = z.union([
 	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_IN),

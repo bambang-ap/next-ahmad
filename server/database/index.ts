@@ -8,6 +8,7 @@ export * from './models/hardness_kategori';
 export * from './models/kanban';
 export * from './models/kanban_instruksi';
 export * from './models/kanban_item';
+export * from './models/kendaraan';
 export * from './models/material';
 export * from './models/material_kategori';
 export * from './models/menu';

@@ -9,6 +9,7 @@ export enum TABLES {
 	CUSTOMER_SPPB_OUT = 'customer_sppb_out',
 	MENU = 'menu',
 	MESIN = 'mesin',
+	KENDARAAN = 'kendaraan',
 	ROLE = 'role',
 	USER = 'user_pengguna',
 	KANBAN = 'kanban',
@@ -29,6 +30,7 @@ export const Z_TABLES = z.nativeEnum(TABLES);
 export enum CRUD_ENABLED {
 	CUSTOMER = 'customer',
 	MESIN = 'mesin',
+	KENDARAAN = 'kendaraan',
 	ROLE = 'role',
 	USER = 'user_pengguna',
 	INSTRUKSI_KANBAN = 'instruksi_kanban',
