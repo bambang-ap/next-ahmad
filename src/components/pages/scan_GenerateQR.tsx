@@ -1,137 +1,109 @@
+import {FormType} from 'pages/app/scan/[route]';
+import {Control} from 'react-hook-form';
+
 import {RouterOutput, TScanTarget} from '@appTypes/app.type';
-import {RootTable as Table} from '@components';
+import {Button, Input} from '@components';
+import {useSession} from '@hooks';
+import {dateUtils, qtyMap} from '@utils';
 
-import {qtyList} from './ModalChild_po';
+export function ScanDetailKanban({
+	route,
+	status,
+	control,
+	...kanban
+}: RouterOutput['kanban']['get'][number] & {
+	route: TScanTarget;
+	status?: boolean;
+	control: Control<FormType>;
+}) {
+	const {data} = useSession();
 
-function jumlahTitleMapper(target: TScanTarget) {
-	switch (target) {
-		case 'produksi':
-			return 'Jumlah planning';
-		case 'qc':
-			return 'Jumlah produksi';
-		case 'finish_good':
-			return 'Jumlah qc';
-		default:
-			return '';
-	}
-}
-
-export function ScanDetailKanban(
-	kanban: RouterOutput['kanban']['get'][number] & {
-		route: TScanTarget;
-		status?: boolean;
-	},
-) {
-	const {keterangan, dataPo, items, dataSppbIn, route, status, listMesin} =
-		kanban;
+	const fieldKey = `item_${route}` as const;
 
 	return (
-		<Table>
-			<Table.Tr>
-				<Table.Td className="w-full justify-center" colSpan={3}>
-					{keterangan}
-				</Table.Td>
-			</Table.Tr>
-			<Table.Tr>
-				<Table.Td colSpan={3}>
-					<Table>
-						<Table.Tr>
-							<Table.Td>
-								<Table>
-									<Table.Tr>
-										<Table.Td>Nama Mesin</Table.Td>
-										<Table.Td>nomor mesin</Table.Td>
-										<Table.Td>Instruksi</Table.Td>
-									</Table.Tr>
+		<>
+			<Button type="submit">Submit</Button>
 
-									{listMesin?.map(mesin => {
+			<div>current : {data.user?.name}</div>
+			<div>date kanban : {dateUtils.full(kanban.createdAt)}</div>
+			<div>created by : {kanban.dataCreatedBy?.name}</div>
+			<div>customer : {kanban.dataPo?.customer?.name}</div>
+			<div>customer : {kanban.dataPo?.nomor_po}</div>
+			<div>nomor surat : {kanban.dataSppbIn?.nomor_surat}</div>
+			<div>Lot no : {kanban.dataSppbIn?.lot_no}</div>
+			<Input control={control} fieldName={`lot_no_imi`} />
+
+			{Object.entries(kanban.items).map(([id_item, item], i) => {
+				const detail = kanban.dataSppbIn?.items?.find(
+					e => e.id === id_item,
+				)?.itemDetail;
+
+				return (
+					<>
+						<Input
+							className="hidden"
+							defaultValue={item.id}
+							control={control}
+							fieldName={`${fieldKey}.${i}.0`}
+						/>
+						<div>{detail?.kode_item}</div>
+						<div>{detail?.name}</div>
+						{qtyMap(({qtyKey, unitKey, num}) => {
+							const jumlah = item[qtyKey];
+
+							if (!jumlah) return null;
+
+							return (
+								<div key={qtyKey}>
+									{jumlah} {detail?.[unitKey]}
+									<Input
+										type="number"
+										defaultValue={jumlah}
+										control={control}
+										rules={{max: {value: jumlah, message: `max is ${jumlah}`}}}
+										fieldName={`${fieldKey}.${i}.${num}`}
+									/>
+								</div>
+							);
+						})}
+					</>
+				);
+			})}
+
+			{kanban.listMesin?.map(({dataMesin, instruksi}) => {
+				return (
+					<div key={dataMesin?.id}>
+						<div>nama mesin : {dataMesin?.name}</div>
+						<div>nomor mesin : {dataMesin?.nomor_mesin}</div>
+						<div>proses</div>
+						{instruksi?.map(({dataInstruksi, ...rest}) => {
+							return (
+								<>
+									<div>{dataInstruksi?.name}</div>
+									{Object.entries(rest).map(([key, values]) => {
 										return (
-											<Table.Tr key={mesin.dataMesin?.id}>
-												<Table.Td>{mesin.dataMesin?.name}</Table.Td>
-												<Table.Td>{mesin.dataMesin?.nomor_mesin}</Table.Td>
-												<Table.Tr>
-													{mesin.instruksi?.map(instruksi => {
-														return (
-															<Table.Td key={instruksi.dataInstruksi?.id}>
-																{instruksi.dataInstruksi?.name}
-															</Table.Td>
-														);
-													})}
-												</Table.Tr>
-											</Table.Tr>
-										);
-									})}
-								</Table>
-							</Table.Td>
-						</Table.Tr>
-						<Table.Tr>
-							<Table.Td>
-								<Table>
-									<Table.THead>
-										<Table.Tr>
-											<Table.Td>Nama Item</Table.Td>
-											<Table.Td colSpan={qtyList.length}>
-												{jumlahTitleMapper(route)}
-											</Table.Td>
-											<Table.Td colSpan={qtyList.length}>{route}</Table.Td>
-										</Table.Tr>
-									</Table.THead>
-									{Object.entries(items).map(([, item]) => {
-										const {id: idItem, id_item} = item;
-										const itemDetail = dataSppbIn?.items?.find(
-											e => e.id === id_item,
-										)?.itemDetail;
-
-										return (
-											<Table.Tr key={idItem}>
-												<Table.Td className="text-lg">
-													{itemDetail?.name}
-												</Table.Td>
-												{qtyList.map(num => {
-													const qtyKey = `qty${num}` as const;
-													const unitKey = `unit${num}` as const;
-													const qty = item[qtyKey];
-
-													if (!qty) return null;
-
+											<div key={key}>
+												{values.map(e => {
 													return (
-														<Table.Td key={num} className="text-lg">
-															{qty} {itemDetail?.[unitKey]}
-														</Table.Td>
+														<>
+															<div>{e?.name}</div>
+															<div>
+																kategori {key} : {e?.kategori?.name}
+															</div>
+														</>
 													);
 												})}
-												{qtyList.map(num => {
-													const qtyKey = `qty${num}` as const;
-													const unitKey = `unit${num}` as const;
-													const qty = item[qtyKey];
-
-													if (!qty) return null;
-
-													return (
-														<Table.Td key={num} className="text-lg">
-															{status ? qty : 0} {itemDetail?.[unitKey]}
-														</Table.Td>
-													);
-												})}
-											</Table.Tr>
+											</div>
 										);
 									})}
-								</Table>
-							</Table.Td>
-						</Table.Tr>
-					</Table>
-				</Table.Td>
-			</Table.Tr>
-			<Table.Tr>
-				<Table.Td>Customer</Table.Td>
-				<Table.Td>Nomor PO</Table.Td>
-				<Table.Td>Nomor Surat</Table.Td>
-			</Table.Tr>
-			<Table.Tr>
-				<Table.Td>{dataPo?.customer?.name}</Table.Td>
-				<Table.Td>{dataPo?.nomor_po}</Table.Td>
-				<Table.Td>{dataSppbIn?.nomor_surat}</Table.Td>
-			</Table.Tr>
-		</Table>
+								</>
+							);
+						})}
+					</div>
+				);
+			})}
+
+			<div>keterangan : {kanban.keterangan}</div>
+		</>
 	);
 }

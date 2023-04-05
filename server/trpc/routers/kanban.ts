@@ -3,24 +3,30 @@ import {z} from 'zod';
 
 import {
 	THardness,
+	THardnessKategori,
 	TInstruksiKanban,
 	tKanban,
 	TKanban,
 	TKanbanUpsert,
 	tKanbanUpsert,
 	TMaterial,
+	TMaterialKategori,
 	TMesin,
 	TParameter,
+	TParameterKategori,
 	TUser,
 } from '@appTypes/app.zod';
 import {
 	OrmHardness,
+	OrmHardnessKategori,
 	OrmKanban,
 	OrmKanbanInstruksi,
 	OrmKanbanItem,
 	OrmMaterial,
+	OrmMaterialKategori,
 	OrmMesin,
 	OrmParameter,
+	OrmParameterKategori,
 	OrmScan,
 	OrmUser,
 } from '@database';
@@ -61,11 +67,20 @@ const kanbanRouters = router({
 				dataUpdatedBy?: TUser;
 				listMesin?: {
 					dataMesin?: TMesin;
-					instruksi?: {
+					instruksi: {
 						dataInstruksi?: TInstruksiKanban;
-						parameterData: (TParameter | undefined)[];
-						materialData: (TMaterial | undefined)[];
-						hardnessData: (THardness | undefined)[];
+						parameter: (
+							| (TParameter & {kategori?: TParameterKategori})
+							| undefined
+						)[];
+						material: (
+							| (TMaterial & {kategori?: TMaterialKategori})
+							| undefined
+						)[];
+						hardness: (
+							| (THardness & {kategori?: THardnessKategori})
+							| undefined
+						)[];
 					}[];
 				}[];
 			};
@@ -112,22 +127,31 @@ const kanbanRouters = router({
 
 								const parameterData = instruksi.parameter.map(async id => {
 									const data = await OrmParameter.findOne({where: {id}});
-									return data?.dataValues;
+									const kategori = await OrmParameterKategori.findOne({
+										where: {id: data?.dataValues.id_kategori},
+									});
+									return {...data?.dataValues, kategori: kategori?.dataValues};
 								});
 								const materialData = instruksi.material.map(async id => {
 									const data = await OrmMaterial.findOne({where: {id}});
-									return data?.dataValues;
+									const kategori = await OrmMaterialKategori.findOne({
+										where: {id: data?.dataValues.id_kategori},
+									});
+									return {...data?.dataValues, kategori: kategori?.dataValues};
 								});
 								const hardnessData = instruksi.hardness.map(async id => {
 									const data = await OrmHardness.findOne({where: {id}});
-									return data?.dataValues;
+									const kategori = await OrmHardnessKategori.findOne({
+										where: {id: data?.dataValues.id_kategori},
+									});
+									return {...data?.dataValues, kategori: kategori?.dataValues};
 								});
 
 								return {
 									dataInstruksi: dataInstruksi?.dataValues,
-									parameterData: await Promise.all(parameterData),
-									materialData: await Promise.all(materialData),
-									hardnessData: await Promise.all(hardnessData),
+									parameter: await Promise.all(parameterData),
+									material: await Promise.all(materialData),
+									hardness: await Promise.all(hardnessData),
 								};
 							});
 

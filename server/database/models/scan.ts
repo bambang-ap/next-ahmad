@@ -11,10 +11,15 @@ export default function initOrmScan(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_kanban: DataTypes.STRING,
+			lot_no_imi: DataTypes.STRING,
 			status_produksi: DataTypes.BOOLEAN,
 			status_qc: DataTypes.BOOLEAN,
 			status_finish_good: DataTypes.BOOLEAN,
 			status_out_barang: DataTypes.BOOLEAN,
+			item_finish_good: DataTypes.JSON,
+			item_out_barang: DataTypes.JSON,
+			item_produksi: DataTypes.JSON,
+			item_qc: DataTypes.JSON,
 		},
 		{
 			sequelize,

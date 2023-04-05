@@ -258,8 +258,20 @@ export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
 	subMenu: z.lazy(() => tMenu.array()).optional(),
 });
 
+const scanItem = z.tuple([z.string()]).rest(z.number());
+
+export type TScanItem = z.infer<typeof tScanItem>;
+export const tScanItem = z.object({
+	item_produksi: scanItem.array().optional(),
+	item_qc: scanItem.array().optional(),
+	item_finish_good: scanItem.array().optional(),
+	item_out_barang: scanItem.array().optional(),
+});
+
 export type TScan = z.infer<typeof tScan>;
 export const tScan = zId.extend({
+	...tScanItem.shape,
+	lot_no_imi: z.string(),
 	id_kanban: z.string(),
 	status_produksi: z.boolean().optional(),
 	status_qc: z.boolean().optional(),

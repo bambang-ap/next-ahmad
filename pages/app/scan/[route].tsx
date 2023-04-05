@@ -1,13 +1,13 @@
 import {useEffect, useRef} from 'react';
 
 import {useRouter} from 'next/router';
-import {useForm} from 'react-hook-form';
+import {Control, useForm} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
 import {TDataScan} from '@appTypes/app.type';
-import {TScanTarget, ZId} from '@appTypes/app.zod';
+import {TScan, TScanItem, TScanTarget, ZId} from '@appTypes/app.zod';
 import {Scanner} from '@componentBlocks';
-import {Button, Input, ModalRef} from '@components';
+import {Button, Form, Input, ModalRef} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {ScanDetailKanban} from '@pageComponent/scan_GenerateQR';
@@ -17,6 +17,8 @@ import {trpc} from '@utils/trpc';
 Scan.getLayout = getLayout;
 
 type Route = {route: TScanTarget};
+
+export type FormType = Pick<TScan, keyof TScanItem | 'lot_no_imi' | 'id'>;
 
 export default function Scan() {
 	const [ids, setIds] = useRecoilState(atomUidScan);
@@ -50,26 +52,27 @@ function RenderScanPage({id: uId}: ZId) {
 	const [ids, setIds] = useRecoilState(atomUidScan);
 
 	const {route} = router.query as Route;
-	const {control, watch, handleSubmit, setValue} = useForm<ZId>();
+	const {control, watch, handleSubmit, setValue, reset} = useForm<FormType>();
 
 	const id = watch('id');
+	const currentKey = `status_${route}` as const;
 
 	const {data, refetch} = trpc.scan.get.useQuery(
 		{id, target: route},
 		{enabled: !!id, ...defaultErrorMutation},
 	);
+
 	const {mutate} = trpc.scan.update.useMutation({
 		...defaultErrorMutation,
 		onSuccess: () => refetch(),
 	});
 
-	const searchKanban = handleSubmit(() => {
-		refetch();
-	});
+	const status = data?.[currentKey];
 
-	function updateStatus() {
-		mutate({id, target: route});
-	}
+	const submit = handleSubmit(values => {
+		refetch();
+		mutate({...values, id, target: route});
+	});
 
 	function onRead(result: string) {
 		setValue('id', result);
@@ -82,22 +85,46 @@ function RenderScanPage({id: uId}: ZId) {
 		});
 	}
 
+	useEffect(() => {
+		if (data) {
+			reset(prev => {
+				const {
+					item_finish_good,
+					item_out_barang,
+					item_produksi,
+					item_qc,
+					lot_no_imi,
+				} = data;
+				return {
+					...prev,
+					lot_no_imi,
+					item_finish_good,
+					item_out_barang,
+					item_produksi,
+					item_qc,
+				};
+			});
+		}
+	}, [data]);
+
 	return (
-		<form onSubmit={searchKanban}>
+		<Form onSubmit={submit} context={{disableSubmit: status, disabled: status}}>
 			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
 			<div className="flex gap-2 items-center">
 				<Input className="flex-1" control={control} fieldName="id" />
 				<Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button>
 				<Button onClick={removeUid}>Batalkan</Button>
-				{id && <Button onClick={updateStatus}>Selesai</Button>}
+				{id && <Button type="submit">Selesai</Button>}
 			</div>
-			{data && <RenderDataKanban {...data} route={route} />}
-		</form>
+			{data && <RenderDataKanban {...data} control={control} route={route} />}
+		</Form>
 	);
 }
 
-function RenderDataKanban(kanban: TDataScan & Route) {
-	const {dataKanban, route, ...rest} = kanban;
+function RenderDataKanban(
+	kanban: TDataScan & Route & {control: Control<FormType>},
+) {
+	const {dataKanban, route, control, ...rest} = kanban;
 
 	const [kanbans] = dataKanban ?? [];
 
@@ -110,7 +137,12 @@ function RenderDataKanban(kanban: TDataScan & Route) {
 	return (
 		<>
 			{currentStatus}
-			<ScanDetailKanban route={route} status={currentStatus} {...kanbans} />
+			<ScanDetailKanban
+				route={route}
+				control={control}
+				status={currentStatus}
+				{...kanbans}
+			/>
 		</>
 	);
 }

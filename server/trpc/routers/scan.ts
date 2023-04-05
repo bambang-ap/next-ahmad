@@ -1,5 +1,5 @@
 import {TDataScan} from '@appTypes/app.type';
-import {TScanTarget, tScanTarget, zId} from '@appTypes/app.zod';
+import {tScanItem, TScanTarget, tScanTarget, zId} from '@appTypes/app.zod';
 import {OrmScan} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -58,7 +58,7 @@ const scanRouters = router({
 		}),
 
 	update: procedure
-		.input(zId.extend({target: tScanTarget}))
+		.input(tScanItem.extend({target: tScanTarget, ...zId.shape}))
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(
 				req,
@@ -66,7 +66,7 @@ const scanRouters = router({
 				async (): Promise<{message: string}> => {
 					const routerCaller = appRouter.createCaller({req, res});
 
-					const {id, target} = input;
+					const {id, target, ...rest} = input;
 					const statusTarget = `status_${target}` as const;
 
 					const dataScan = await routerCaller.scan.get({id, target});
@@ -83,7 +83,7 @@ const scanRouters = router({
 					}
 
 					await OrmScan.update(
-						{[statusTarget]: true},
+						{[statusTarget]: true, ...rest},
 						{where: {id_kanban: id}},
 					);
 

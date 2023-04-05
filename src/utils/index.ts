@@ -1,9 +1,12 @@
+import {ReactNode} from 'react';
+
 import classnames from 'classnames';
 import jsPDF from 'jspdf';
 import moment from 'moment';
 
 import {ModalTypePreview} from '@appTypes/app.zod';
 import {formatDate, formatFull, formatHour} from '@constants';
+import {qtyList} from '@pageComponent/ModalChild_po';
 
 export const classNames = classnames;
 export const dateUtils = {
@@ -11,6 +14,22 @@ export const dateUtils = {
 	hour: convertHour,
 	date: convertDate,
 };
+
+type Qty = typeof qtyList[number];
+
+export function qtyMap(
+	callback: (value: {
+		qtyKey: `qty${Qty}`;
+		unitKey: `unit${Qty}`;
+		num: Qty;
+	}) => ReactNode,
+) {
+	return qtyList.map(num => {
+		const qtyKey = `qty${num}` as const;
+		const unitKey = `unit${num}` as const;
+		return callback({qtyKey, unitKey, num});
+	});
+}
 
 export function copyToClipboard(str: string) {
 	const el = document.createElement('textarea');
