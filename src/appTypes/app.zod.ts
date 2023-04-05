@@ -264,6 +264,7 @@ export type TScanItem = z.infer<typeof tScanItem>;
 export const tScanItem = z.object({
 	item_produksi: scanItem.array().optional(),
 	item_qc: scanItem.array().optional(),
+	item_qc_reject: scanItem.array().optional(),
 	item_finish_good: scanItem.array().optional(),
 	item_out_barang: scanItem.array().optional(),
 });

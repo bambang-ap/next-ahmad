@@ -12,6 +12,7 @@ import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {ScanDetailKanban} from '@pageComponent/scan_GenerateQR';
 import {atomUidScan} from '@recoil/atoms';
+import {scanMapperByStatus} from '@utils';
 import {trpc} from '@utils/trpc';
 
 Scan.getLayout = getLayout;
@@ -56,6 +57,7 @@ function RenderScanPage({id: uId}: ZId) {
 
 	const id = watch('id');
 	const currentKey = `status_${route}` as const;
+	const [jumlahText, submitText] = scanMapperByStatus(route);
 
 	const {data, refetch} = trpc.scan.get.useQuery(
 		{id, target: route},
@@ -94,9 +96,11 @@ function RenderScanPage({id: uId}: ZId) {
 					item_produksi,
 					item_qc,
 					lot_no_imi,
+					item_qc_reject,
 				} = data;
 				return {
 					...prev,
+					item_qc_reject,
 					lot_no_imi,
 					item_finish_good,
 					item_out_barang,
@@ -114,7 +118,11 @@ function RenderScanPage({id: uId}: ZId) {
 				<Input className="flex-1" control={control} fieldName="id" />
 				<Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button>
 				<Button onClick={removeUid}>Batalkan</Button>
-				{id && <Button type="submit">Selesai</Button>}
+				{id && (
+					<Button disabled={status} type="submit">
+						{submitText}
+					</Button>
+				)}
 			</div>
 			{data && <RenderDataKanban {...data} control={control} route={route} />}
 		</Form>

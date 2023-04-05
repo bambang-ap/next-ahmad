@@ -4,7 +4,7 @@ import classnames from 'classnames';
 import jsPDF from 'jspdf';
 import moment from 'moment';
 
-import {ModalTypePreview} from '@appTypes/app.zod';
+import {ModalTypePreview, TScanItem, TScanTarget} from '@appTypes/app.zod';
 import {formatDate, formatFull, formatHour} from '@constants';
 import {qtyList} from '@pageComponent/ModalChild_po';
 
@@ -29,6 +29,32 @@ export function qtyMap(
 		const unitKey = `unit${num}` as const;
 		return callback({qtyKey, unitKey, num});
 	});
+}
+
+export function scanMapperByStatus(
+	target: TScanTarget,
+): [jumlah?: string, submitText?: string] {
+	switch (target) {
+		case 'produksi':
+			return ['Jumlah planning', 'send to QC'];
+		case 'qc':
+			return ['Jumlah produksi', 'OK'];
+		case 'finish_good':
+			return ['Jumlah qc'];
+		default:
+			return [];
+	}
+}
+
+export function prevDataScan(target: TScanTarget, data: TScanItem) {
+	switch (target) {
+		case 'qc':
+			return {data: data.item_produksi, reject: data.item_qc_reject};
+		case 'finish_good':
+			return {data: data.item_qc, reject: null};
+		default:
+			return {data: null, reject: null};
+	}
 }
 
 export function copyToClipboard(str: string) {
