@@ -26,7 +26,7 @@ export function SppbInModalChild({control}: {control: Control<FormType>}) {
 		name: ['type', 'id', 'id_po'],
 	});
 
-	const {data: dataSppbIn} = trpc.sppb.get.useQuery({type: 'sppb_in'});
+	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: 'sppb_in'});
 	const {data: listPo = []} = trpc.customer_po.get.useQuery({
 		type: 'customer_po',
 	});

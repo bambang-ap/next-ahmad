@@ -25,7 +25,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 	});
 	const {mutate: mutateItem} =
 		trpc.kanban.deleteItem.useMutation(defaultErrorMutation);
-	const {data: dataSppbIn} = trpc.sppb.get.useQuery(
+	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery(
 		{
 			type: 'sppb_in',
 			where: {id_po},

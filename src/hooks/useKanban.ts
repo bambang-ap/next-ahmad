@@ -55,7 +55,7 @@ export function useKanban() {
 	>({
 		target: CRUD_ENABLED.MATERIAL_KATEGORI,
 	});
-	const {data: dataSppbIn} = trpc.sppb.get.useQuery({
+	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({
 		type: 'sppb_in',
 	});
 

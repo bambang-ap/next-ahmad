@@ -2,6 +2,7 @@ import moment from 'moment';
 import {NextApiRequest, NextApiResponse} from 'next';
 import {getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
+import {Model, ModelStatic} from 'sequelize';
 
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {CRUD_ENABLED, TABLES} from '@enum';
@@ -13,6 +14,7 @@ import {
 	OrmCustomerSPPBOut,
 	OrmHardness,
 	OrmHardnessKategori,
+	OrmKanban,
 	OrmKanbanInstruksi,
 	OrmKendaraan,
 	OrmMaterial,
@@ -69,10 +71,6 @@ export const getNow = () => {
 	return moment().toLocaleString();
 };
 
-export const generateId = () => {
-	return `${moment(getNow()).unix()}-${uuid()}`;
-};
-
 export const checkCredential = async (
 	req: NextApiRequest,
 	res: NextApiResponse,
@@ -102,6 +100,21 @@ export const checkCredentialV2 = async <T>(
 
 	return callback(session);
 };
+
+export const generateId = () => {
+	return `${moment(getNow()).unix()}-${uuid()}`;
+};
+
+export async function genInvoice<
+	T extends ModelStatic<Model>,
+	P extends string,
+>(orm: T, prefix: P, length = 5): Promise<`${P}/${string}`> {
+	const count = await orm.count();
+	const countString = count.toString().padStart(length, '0');
+	return `${prefix}/${countString}`;
+}
+
+genInvoice(OrmKanban, 'SJ/IMI' as const);
 
 export function pagingResult<T extends unknown>(
 	count: number,

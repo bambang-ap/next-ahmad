@@ -23,14 +23,14 @@ export default function SPPBIN() {
 
 	const {formValue, hookForm} = useTableFilter();
 
-	const {data, refetch} = trpc.sppb.getPage.useQuery({
+	const {data, refetch} = trpc.sppb.in.getPage.useQuery({
 		type: 'sppb_in',
 		...formValue,
 	});
 	const {mutate: mutateUpsert} =
-		trpc.sppb.upsert.useMutation(defaultErrorMutation);
+		trpc.sppb.in.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =
-		trpc.sppb.delete.useMutation(defaultErrorMutation);
+		trpc.sppb.in.delete.useMutation(defaultErrorMutation);
 
 	const modalType = watch('type');
 	const modalTitle =

@@ -24,7 +24,7 @@ import {
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
-import {appRouter} from '.';
+import {appRouter} from '..';
 
 type GetPage = PagingResult<GetPageRows>;
 type GetPageRows = TCustomerSPPBIn & {
@@ -32,7 +32,7 @@ type GetPageRows = TCustomerSPPBIn & {
 	items?: (TPOItemSppbIn & {itemDetail?: TPOItem})[];
 };
 
-const sppbRouters = router({
+const sppbInRouters = router({
 	get: procedure
 		.input(
 			z.object({
@@ -43,7 +43,7 @@ const sppbRouters = router({
 		.query(async ({ctx, input}): Promise<GetPage['rows']> => {
 			const routerCaller = appRouter.createCaller(ctx);
 
-			const {rows} = await routerCaller.sppb.getPage({
+			const {rows} = await routerCaller.sppb.in.getPage({
 				...input,
 				limit: 99999999,
 			});
@@ -153,4 +153,4 @@ const sppbRouters = router({
 		}),
 });
 
-export default sppbRouters;
+export default sppbInRouters;

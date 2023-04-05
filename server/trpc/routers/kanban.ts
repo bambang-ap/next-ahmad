@@ -61,7 +61,7 @@ const kanbanRouters = router({
 			type TType = TKanban & {
 				id_customer?: string;
 				items: TKanbanUpsert['items'];
-				dataSppbIn?: RouterOutput['sppb']['get'][number];
+				dataSppbIn?: RouterOutput['sppb']['in.get'][number];
 				dataPo?: RouterOutput['customer_po']['get'][number];
 				dataCreatedBy?: TUser;
 				dataUpdatedBy?: TUser;
@@ -105,7 +105,7 @@ const kanbanRouters = router({
 					const dataItems = await OrmKanbanItem.findAll({
 						where: {id_kanban: dataValues.id},
 					});
-					const dataSppbIn = await routerCaller.sppb.get({
+					const dataSppbIn = await routerCaller.sppb.in.get({
 						type: 'sppb_in',
 						where: {id: id_sppb_in},
 					});
