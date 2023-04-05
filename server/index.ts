@@ -6,6 +6,7 @@ import {authOptions} from 'pages/api/auth/[...nextauth]';
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {CRUD_ENABLED, TABLES} from '@enum';
 import {TRPCError} from '@trpc/server';
+import {classNames} from '@utils';
 
 import {
 	OrmCustomer,
@@ -67,7 +68,16 @@ export const getNow = () => {
 	return moment().toLocaleString();
 };
 
-export const generateId = () => {
+export const generateId = (part = '') => {
+	const now = moment();
+	return classNames(
+		{
+			[`${part}-`]: !!part,
+		},
+		now.format('YY MM DD'),
+		now.valueOf().toString().slice(8),
+	).replace(/\s/g, '');
+
 	return `${moment(getNow()).unix()}-${uuid()}`;
 };
 

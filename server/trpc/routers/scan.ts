@@ -22,6 +22,9 @@ function enabled(target: TScanTarget, dataScan?: TDataScan) {
 }
 
 const scanRouters = router({
+	produksi: router({
+		// upsert: procedure
+	}),
 	get: procedure
 		.input(zId.extend({target: tScanTarget}))
 		.query(async ({input: {id, target}, ctx: {req, res}}) => {

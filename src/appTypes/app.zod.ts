@@ -1,6 +1,6 @@
 import {z} from 'zod';
 
-import {CRUD_ENABLED} from '@enum';
+import {CRUD_ENABLED, STATUS_KANBAN} from '@enum';
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
@@ -193,6 +193,7 @@ export const tKanban = zId.extend({
 	keterangan: z.string(),
 	createdBy: z.string(),
 	updatedBy: z.string(),
+	status: z.nativeEnum(STATUS_KANBAN).optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 	image: z.string().optional().nullable(),

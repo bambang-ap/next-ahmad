@@ -96,3 +96,9 @@ export const eOpKeys = z.enum(OpKeys);
 
 export type EOp = z.infer<typeof eOp>;
 export const eOp = z.record(eOpKeys, z.symbol());
+
+export enum STATUS_KANBAN {
+	INIT = '0',
+	PROD = '1',
+	QC = '2',
+}

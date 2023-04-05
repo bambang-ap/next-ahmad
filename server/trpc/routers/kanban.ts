@@ -28,6 +28,7 @@ import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
 import {appRouter, RouterOutput} from '@trpc/routers';
 import {TRPCError} from '@trpc/server';
+import toArraySchema from '@utils/zod';
 
 const kanbanRouters = router({
 	images: procedure.query(({ctx: {req, res}}) => {
@@ -48,7 +49,15 @@ const kanbanRouters = router({
 		.input(
 			z.object({
 				type: z.literal('kanban'),
-				where: tKanban.partial().optional(),
+				where: z
+					.object(
+						toArraySchema(
+							tKanban.omit({list_mesin: true, image: true}).required(),
+						),
+					)
+					.partial()
+					.or(tKanban.partial())
+					.optional(),
 			}),
 		)
 		.query(({ctx: {req, res}, input: {where}}) => {
@@ -176,11 +185,6 @@ const kanbanRouters = router({
 					createdBy: createdBy ?? session.user?.id!,
 					updatedBy: session.user?.id!,
 					id: id || generateId(),
-				});
-
-				await OrmScan.create({
-					id_kanban: createdKanban.dataValues.id,
-					id: generateId(),
 				});
 
 				const itemPromises = Object.entries(kanban_items)?.map(
