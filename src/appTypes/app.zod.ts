@@ -272,7 +272,7 @@ export const tScanItem = z.object({
 export type TScan = z.infer<typeof tScan>;
 export const tScan = zId.extend({
 	...tScanItem.shape,
-	lot_no_imi: z.string(),
+	lot_no_imi: z.string().optional(),
 	id_kanban: z.string(),
 	status_produksi: z.boolean().optional(),
 	status_qc: z.boolean().optional(),

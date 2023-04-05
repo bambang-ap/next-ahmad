@@ -164,6 +164,7 @@ const kanbanRouters = router({
 
 					const objectData: TType = {
 						...dataValues,
+						// @ts-ignore
 						listMesin,
 						dataCreatedBy,
 						dataUpdatedBy,
