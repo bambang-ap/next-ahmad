@@ -12,6 +12,7 @@ import {
 import {classNames} from '@utils';
 
 export type InputProps = {
+	hidden?: boolean;
 	placeholder?: string;
 	label?: string;
 	noLabel?: boolean;
@@ -26,6 +27,7 @@ function InputComponent<F extends FieldValues>(
 ) {
 	let restProps: MyObject<any> = {};
 	const {
+		hidden,
 		type,
 		label: labelProps,
 		disabled,
@@ -67,6 +69,7 @@ function InputComponent<F extends FieldValues>(
 			<div
 				className={classNames(
 					`flex items-center cursor-pointer !px-0 !py-0`,
+					{hidden},
 					className,
 				)}
 				onClick={onCheck}>
@@ -89,7 +92,7 @@ function InputComponent<F extends FieldValues>(
 	};
 
 	return (
-		<div className={className}>
+		<div className={classNames({hidden}, className)}>
 			<TextField
 				{...defaultTextFieldProps}
 				error={!!errorMessage}

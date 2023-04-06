@@ -1,9 +1,7 @@
-import {z} from 'zod';
-
 import {KanbanGetRow} from '@appTypes/app.type';
-import {TScan} from '@appTypes/app.zod';
+import {tCustomerSPPBOut, TScan} from '@appTypes/app.zod';
 import {OrmCustomerSPPBOut, OrmScan} from '@database';
-import {checkCredentialV2, genInvoice} from '@server';
+import {checkCredentialV2, generateId, genInvoice} from '@server';
 import {procedure, router} from '@trpc';
 
 import {appRouter} from '..';
@@ -36,7 +34,18 @@ const sppbOutRouters = router({
 			},
 		);
 	}),
-	upsert: procedure.input(z.string()).mutation(() => {}),
+	upsert: procedure
+		.input(tCustomerSPPBOut.partial({id: true}))
+		.mutation(({ctx: {req, res}, input}) => {
+			return checkCredentialV2(req, res, async () => {
+				await OrmCustomerSPPBOut.upsert({
+					...input,
+					id: input.id ?? generateId(),
+				});
+
+				return {message: 'Success'};
+			});
+		}),
 });
 
 export default sppbOutRouters;

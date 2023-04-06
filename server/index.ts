@@ -7,6 +7,7 @@ import {Model, ModelStatic} from 'sequelize';
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {CRUD_ENABLED, TABLES} from '@enum';
 import {TRPCError} from '@trpc/server';
+import {classNames} from '@utils';
 
 import {
 	OrmCustomer,
@@ -102,7 +103,11 @@ export const checkCredentialV2 = async <T>(
 };
 
 export const generateId = () => {
-	return `${moment(getNow()).unix()}-${uuid()}`;
+	const now = moment();
+	return classNames(
+		now.format('YY MM DD'),
+		now.valueOf().toString().slice(8),
+	).replace(/\s/g, '');
 };
 
 export async function genInvoice<

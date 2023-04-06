@@ -1,7 +1,13 @@
 import {useForm} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomer, TKendaraan} from '@appTypes/app.zod';
+import {
+	ModalTypePreview,
+	TCustomer,
+	TCustomerSPPBOut,
+	TKendaraan,
+} from '@appTypes/app.zod';
 import {Button, Form, Input, Select, selectMapper, Text} from '@components';
+import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {RenderListMesin} from '@pageComponent/scan_GenerateQR';
@@ -10,24 +16,13 @@ import {trpc} from '@utils/trpc';
 
 SPPBOUT.getLayout = getLayout;
 
-type FormValue = ModalTypePreview & {
-	invoice_no: string;
-	date: string;
-	id_kendaraan: string;
-	id_customer: string;
-	po: {
-		id_po: string;
-		sppb_in: {
-			id_sppb_in: string;
-			customer_no_lot: string;
-		}[];
-	}[];
-};
+type FormValue = ModalTypePreview & TCustomerSPPBOut;
 
 export default function SPPBOUT() {
 	const {control, handleSubmit, watch} = useForm<FormValue>();
 
 	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();
+	const {mutate} = trpc.sppb.out.upsert.useMutation();
 	const {data: dataFg = []} = trpc.sppb.out.getFg.useQuery();
 
 	const {data: dataKendaraan = []} = trpc.basic.get.useQuery<any, TKendaraan[]>(
@@ -51,11 +46,14 @@ export default function SPPBOUT() {
 		'kanban.id_po',
 		'kanban.dataSppbIn.detailPo.nomor_po',
 	);
-	const ddd = availableSppbIn.find(
+	const selectedSppbIn = availableSppbIn.find(
 		e => formData.po?.[0]?.sppb_in[0]?.id_sppb_in === e.kanban?.dataSppbIn?.id,
 	);
+	const listItems = Object.entries(selectedSppbIn?.kanban.items ?? {});
 
-	const submit = handleSubmit(values => console.log(values));
+	const submit = handleSubmit(values => {
+		mutate(values, defaultErrorMutation);
+	});
 
 	return (
 		<Form onSubmit={submit}>
@@ -101,12 +99,15 @@ export default function SPPBOUT() {
 				)}
 			/>
 
-			{Object.entries(ddd?.kanban.items ?? {}).map(([id_item, item]) => {
-				const detail = ddd?.kanban.dataPo?.po_item.find(e => e.id === id_item);
+			{listItems.map(([id_item, item]) => {
+				const detail = selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+					e => e.id === id_item,
+				)?.itemDetail;
+
 				return (
-					<>
-						<Text>{detail?.name}</Text>
-						{qtyMap(({qtyKey, unitKey, num}) => {
+					<div key={id_item} className="flex items-center gap-2">
+						<Text className="flex-1">{detail?.name}</Text>
+						{qtyMap(({qtyKey, unitKey}) => {
 							const jumlah = item[qtyKey];
 
 							if (!jumlah) return null;
@@ -122,18 +123,18 @@ export default function SPPBOUT() {
 										max: {value: jumlah, message: `max is ${jumlah}`},
 									}}
 									rightAcc={<Text>{detail?.[unitKey]}</Text>}
-									fieldName={`${id_item}.${qtyKey}`}
+									fieldName={`po.0.sppb_in.0.items.${id_item}.${qtyKey}`}
 								/>
 							);
 						})}
-						{/* <Input control={control}  /> */}
-					</>
+					</div>
 				);
 			})}
 
-			<RenderListMesin data={ddd?.kanban.listMesin} />
+			<RenderListMesin data={selectedSppbIn?.kanban.listMesin} />
 
-			<div>cust no lot :{ddd?.kanban?.dataSppbIn?.lot_no}</div>
+			<div>cust no lot :{selectedSppbIn?.kanban?.dataSppbIn?.lot_no}</div>
+			<Input control={control} fieldName="po.0.sppb_in.0.customer_no_lot" />
 		</Form>
 	);
 }

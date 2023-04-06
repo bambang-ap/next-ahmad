@@ -119,75 +119,8 @@ export const tKendaraan = zId.extend({
 	name: z.string(),
 });
 
-export type USPPB = z.infer<typeof uSPPB>;
-export const uSPPB = z.union([
-	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_IN),
-	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_OUT),
-]);
-
-export type ItemsSppb = z.infer<typeof itemsSppb>;
-export const itemsSppb = tPOItem.pick({id: true, qty1: true}).partial().array();
-
-export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
-export const tCustomerSPPBIn = zId.partial().extend({
-	nomor_surat: z.string(),
-	id_po: z.string(),
-	lot_no: z.string(),
-	tgl: z.string(),
-});
-
-const picker = {id: true, id_sppb_in: true} as const;
-const tPOItemSppbInNonId = tPOItemSppbIn.omit(picker);
-const tPOItemSppbInOnlyId = tPOItemSppbIn.pick(picker);
-
-export const tUpsertSppbIn = tCustomerSPPBIn.extend({
-	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
-});
-
-export type TUpsertSppbIn = z.infer<typeof tUpsertSppbIn>;
-
-export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
-export const tCustomerSPPBOut = zId.extend({
-	name: z.string(),
-	nomor_po: z.string(),
-	items: itemsSppb.optional(),
-});
-
 export type TInstruksiKanban = z.infer<typeof tInstruksiKanban>;
 export const tInstruksiKanban = zId.extend({
-	name: z.string(),
-});
-
-export type TMaterial = z.infer<typeof tMaterial>;
-export const tMaterial = zId.extend({
-	id_kategori: z.string(),
-	name: z.string(),
-});
-
-export type TMaterialKategori = z.infer<typeof tMaterialKategori>;
-export const tMaterialKategori = zId.extend({
-	name: z.string(),
-});
-
-export type THardness = z.infer<typeof tHardness>;
-export const tHardness = zId.extend({
-	id_kategori: z.string(),
-	name: z.string(),
-});
-
-export type THardnessKategori = z.infer<typeof tHardnessKategori>;
-export const tHardnessKategori = zId.extend({
-	name: z.string(),
-});
-
-export type TParameter = z.infer<typeof tParameter>;
-export const tParameter = zId.extend({
-	id_kategori: z.string(),
-	name: z.string(),
-});
-
-export type TParameterKategori = z.infer<typeof tParameterKategori>;
-export const tParameterKategori = zId.extend({
 	name: z.string(),
 });
 
@@ -228,16 +161,16 @@ export const tKanbanItem = zId.extend({
 	...unitQty,
 });
 
+/** key property of items is id_item */
+const tKanbanUpsertItem = tKanbanItem
+	.extend({id_sppb_in: z.string().nullish()})
+	.partial({id: true, id_kanban: true});
+
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban
 	.partial({id: true, createdBy: true, updatedBy: true})
 	.extend({
-		/** key property of items is id_item */
-		items: z.record(
-			tKanbanItem
-				.extend({id_sppb_in: z.string().nullish()})
-				.partial({id: true, id_kanban: true}),
-		),
+		items: z.record(tKanbanUpsertItem),
 	});
 
 export type TKanbanExtended = z.infer<typeof tKanbanExtended>;
@@ -245,6 +178,85 @@ export const tKanbanExtended = tKanban.extend({
 	po: tCustomerPOExtended.array().nullish(),
 	mesin: tMesin.array().nullish(),
 	instruksi_kanban: tInstruksiKanban.array().nullish(),
+});
+
+export type USPPB = z.infer<typeof uSPPB>;
+export const uSPPB = z.union([
+	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_IN),
+	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_OUT),
+]);
+
+export type ItemsSppb = z.infer<typeof itemsSppb>;
+export const itemsSppb = tPOItem.pick({id: true, qty1: true}).partial().array();
+
+export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
+export const tCustomerSPPBIn = zId.partial().extend({
+	nomor_surat: z.string(),
+	id_po: z.string(),
+	lot_no: z.string(),
+	tgl: z.string(),
+});
+
+const picker = {id: true, id_sppb_in: true} as const;
+const tPOItemSppbInNonId = tPOItemSppbIn.omit(picker);
+const tPOItemSppbInOnlyId = tPOItemSppbIn.pick(picker);
+
+export type TUpsertSppbIn = z.infer<typeof tUpsertSppbIn>;
+export const tUpsertSppbIn = tCustomerSPPBIn.extend({
+	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
+});
+
+export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
+export const tCustomerSPPBOut = zId.extend({
+	invoice_no: z.string(),
+	date: z.string(),
+	id_kendaraan: z.string(),
+	id_customer: z.string(),
+	po: z
+		.object({
+			id_po: z.string(),
+			sppb_in: z
+				.object({
+					id_sppb_in: z.string(),
+					customer_no_lot: z.string(),
+					items: z.record(tKanbanUpsertItem.omit({id_item: true})),
+				})
+				.array(),
+		})
+		.array(),
+});
+
+export type TMaterial = z.infer<typeof tMaterial>;
+export const tMaterial = zId.extend({
+	id_kategori: z.string(),
+	name: z.string(),
+});
+
+export type TMaterialKategori = z.infer<typeof tMaterialKategori>;
+export const tMaterialKategori = zId.extend({
+	name: z.string(),
+});
+
+export type THardness = z.infer<typeof tHardness>;
+export const tHardness = zId.extend({
+	id_kategori: z.string(),
+	name: z.string(),
+});
+
+export type THardnessKategori = z.infer<typeof tHardnessKategori>;
+export const tHardnessKategori = zId.extend({
+	name: z.string(),
+});
+
+export type TParameter = z.infer<typeof tParameter>;
+export const tParameter = zId.extend({
+	id_kategori: z.string(),
+	name: z.string(),
+});
+
+export type TParameterKategori = z.infer<typeof tParameterKategori>;
+export const tParameterKategori = zId.extend({
+	name: z.string(),
 });
 
 export type BaseMenu = z.infer<typeof baseTMenu>;
