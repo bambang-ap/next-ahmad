@@ -1,4 +1,3 @@
-import {qtyList, UQtyList} from '@pageComponent/ModalChild_po';
 import {Op} from 'sequelize';
 import {z} from 'zod';
 
@@ -19,6 +18,7 @@ import {
 	OrmCustomerSPPBIn,
 	OrmPOItemSppbIn,
 } from '@database';
+import {qtyList, UQtyList} from '@pageComponent/ModalChild_po';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -60,7 +60,7 @@ const customer_poRouters = router({
 		.query(async ({ctx: {req, res}, input}) => {
 			const {id: idPo, limit = defaultLimit, page = 1, search} = input;
 
-			return checkCredentialV2(req, res, async (): Promise<GetPage> => {
+			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
 				const limitation = {
 					limit,
 					offset: (page - 1) * limit,
@@ -141,7 +141,7 @@ const customer_poRouters = router({
 				.extend({po_item: tPOItem.omit({id_po: true, id: true}).array()}),
 		)
 		.mutation(async ({input, ctx: {req, res}}) => {
-			return checkCredentialV2(req, res, async () => {
+			return checkCredentialV2({req, res}, async () => {
 				const {po_item, ...body} = input;
 				const {dataValues: createdPo} = await OrmCustomerPO.create({
 					...body,
@@ -168,7 +168,7 @@ const customer_poRouters = router({
 			}),
 		)
 		.mutation(async ({input, ctx: {req, res}}) => {
-			return checkCredentialV2(req, res, async () => {
+			return checkCredentialV2({req, res}, async () => {
 				const {id, po_item, ...body} = input;
 
 				await OrmCustomerPO.upsert({...body, id});
@@ -206,7 +206,7 @@ const customer_poRouters = router({
 	delete: procedure
 		.input(z.string())
 		.mutation(async ({input: id, ctx: {req, res}}) => {
-			return checkCredentialV2(req, res, async () => {
+			return checkCredentialV2({req, res}, async () => {
 				const dataSppb = await OrmCustomerSPPBIn.findAll({where: {id_po: id}});
 				await Promise.all(
 					dataSppb.map(async sppb => {

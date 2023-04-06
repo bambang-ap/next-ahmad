@@ -72,7 +72,7 @@ const sppbInRouters = router({
 				},
 			};
 
-			return checkCredentialV2(req, res, async (): Promise<GetPage> => {
+			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
 				const {count, rows: dataSppb} = await OrmCustomerSPPBIn.findAndCountAll(
 					where ? {where} : limitation,
 				);
@@ -108,7 +108,7 @@ const sppbInRouters = router({
 	upsert: procedure
 		.input(tUpsertSppbIn)
 		.mutation(({ctx: {req, res}, input}) => {
-			return checkCredentialV2(req, res, async () => {
+			return checkCredentialV2({req, res}, async () => {
 				const {id, po_item, ...rest} = input;
 
 				const [{dataValues: createdSppb}] = await OrmCustomerSPPBIn.upsert({
@@ -145,7 +145,7 @@ const sppbInRouters = router({
 	delete: procedure
 		.input(zId.partial())
 		.mutation(({ctx: {req, res}, input: {id}}) => {
-			return checkCredentialV2(req, res, async () => {
+			return checkCredentialV2({req, res}, async () => {
 				return OrmPOItemSppbIn.destroy({where: {id_sppb_in: id}}).then(() =>
 					OrmCustomerSPPBIn.destroy({where: {id}}),
 				);

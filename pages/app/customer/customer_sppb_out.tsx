@@ -1,4 +1,6 @@
-import {useForm} from 'react-hook-form';
+import {useRef} from 'react';
+
+import {Control, useForm, useWatch} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
@@ -6,7 +8,16 @@ import {
 	TCustomerSPPBOut,
 	TKendaraan,
 } from '@appTypes/app.zod';
-import {Button, Form, Input, Select, selectMapper, Text} from '@components';
+import {
+	Button,
+	Form,
+	Input,
+	Modal,
+	ModalRef,
+	Select,
+	selectMapper,
+	Text,
+} from '@components';
 import {defaultErrorMutation} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
@@ -19,12 +30,33 @@ SPPBOUT.getLayout = getLayout;
 type FormValue = ModalTypePreview & TCustomerSPPBOut;
 
 export default function SPPBOUT() {
-	const {control, handleSubmit, watch} = useForm<FormValue>();
+	useSppbOut();
 
-	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();
+	const modalRef = useRef<ModalRef>(null);
+
+	const {control, handleSubmit} = useForm<FormValue>();
 	const {mutate} = trpc.sppb.out.upsert.useMutation();
-	const {data: dataFg = []} = trpc.sppb.out.getFg.useQuery();
 
+	const submit = handleSubmit(values => {
+		mutate(values, defaultErrorMutation);
+	});
+
+	return (
+		<>
+			<Button onClick={() => modalRef.current?.show()}>Add</Button>
+			<Modal ref={modalRef}>
+				<Form onSubmit={submit}>
+					<SPPBOUTe control={control} />
+				</Form>
+			</Modal>
+		</>
+	);
+}
+
+function useSppbOut() {
+	// const {data: invoiceId, refetch} = trpc.sppb.out.get.useQuery();
+	const {data: invoiceId, refetch} = trpc.sppb.out.getInvoice.useQuery();
+	const {data: dataFg = []} = trpc.sppb.out.getFg.useQuery();
 	const {data: dataKendaraan = []} = trpc.basic.get.useQuery<any, TKendaraan[]>(
 		{target: CRUD_ENABLED.KENDARAAN},
 	);
@@ -32,7 +64,13 @@ export default function SPPBOUT() {
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 
-	const formData = watch();
+	return {invoiceId, dataFg, dataKendaraan, dataCustomer};
+}
+
+export function SPPBOUTe({control}: {control: Control<FormValue>}) {
+	const {dataCustomer, dataFg, dataKendaraan, invoiceId} = useSppbOut();
+
+	const formData = useWatch({control});
 	const selectedCustomer = dataCustomer.find(
 		e => e.id === formData.id_customer,
 	);
@@ -47,16 +85,13 @@ export default function SPPBOUT() {
 		'kanban.dataSppbIn.detailPo.nomor_po',
 	);
 	const selectedSppbIn = availableSppbIn.find(
-		e => formData.po?.[0]?.sppb_in[0]?.id_sppb_in === e.kanban?.dataSppbIn?.id,
+		e =>
+			formData.po?.[0]?.sppb_in?.[0]?.id_sppb_in === e.kanban?.dataSppbIn?.id,
 	);
 	const listItems = Object.entries(selectedSppbIn?.kanban.items ?? {});
 
-	const submit = handleSubmit(values => {
-		mutate(values, defaultErrorMutation);
-	});
-
 	return (
-		<Form onSubmit={submit}>
+		<>
 			<Button type="submit" />
 			<Input
 				disabled
@@ -134,7 +169,7 @@ export default function SPPBOUT() {
 			<RenderListMesin data={selectedSppbIn?.kanban.listMesin} />
 
 			<div>cust no lot :{selectedSppbIn?.kanban?.dataSppbIn?.lot_no}</div>
-			<Input control={control} fieldName="po.0.sppb_in.0.customer_no_lot" />
-		</Form>
+			{/* <Input control={control} fieldName="po.0.sppb_in.0.customer_no_lot" /> */}
+		</>
 	);
 }

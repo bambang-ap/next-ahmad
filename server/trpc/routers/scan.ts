@@ -26,8 +26,7 @@ const scanRouters = router({
 		.input(zId.extend({target: tScanTarget}))
 		.query(async ({input: {id, target}, ctx: {req, res}}) => {
 			return checkCredentialV2(
-				req,
-				res,
+				{req, res},
 				async (): Promise<TDataScan | null> => {
 					const routerCaller = appRouter.createCaller({req, res});
 					const dataKanban = await routerCaller.kanban.get({
@@ -61,8 +60,7 @@ const scanRouters = router({
 		.input(tScanItem.extend({target: tScanTarget, ...zId.shape}))
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(
-				req,
-				res,
+				{req, res},
 				async (): Promise<{message: string}> => {
 					const routerCaller = appRouter.createCaller({req, res});
 

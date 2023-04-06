@@ -10,7 +10,7 @@ const menuRouters = router({
 	get: procedure
 		.input(z.object({type: z.literal('menu'), sorted: z.boolean().optional()}))
 		.query(async ({ctx: {req, res}, input: {sorted}}) => {
-			return checkCredentialV2(req, res, async session => {
+			return checkCredentialV2({req, res}, async session => {
 				const allMenu = (
 					await OrmMenu.findAll({
 						where: {accepted_role: {[Op.substring]: session?.user?.role}},
@@ -27,7 +27,7 @@ const menuRouters = router({
 	mutate: procedure
 		.input(tMenu.array())
 		.mutation(({ctx: {req, res}, input}) => {
-			return checkCredentialV2(req, res, async () => {
+			return checkCredentialV2({req, res}, async () => {
 				const promises = input.map(async ({id, ...row}) => {
 					return OrmMenu.update(row, {where: {id}});
 				});

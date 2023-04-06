@@ -218,7 +218,7 @@ export const tCustomerSPPBOut = zId.extend({
 			sppb_in: z
 				.object({
 					id_sppb_in: z.string(),
-					customer_no_lot: z.string(),
+					// customer_no_lot: z.string(),
 					items: z.record(tKanbanUpsertItem.omit({id_item: true})),
 				})
 				.array(),

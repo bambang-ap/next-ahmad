@@ -15,7 +15,6 @@ import {
 	OrmCustomerSPPBOut,
 	OrmHardness,
 	OrmHardnessKategori,
-	OrmKanban,
 	OrmKanbanInstruksi,
 	OrmKendaraan,
 	OrmMaterial,
@@ -84,13 +83,12 @@ export const checkCredential = async (
 	return callback();
 };
 
-export const checkCredentialV2 = async <T>(
-	req: NextApiRequest,
-	res: NextApiResponse,
+export async function checkCredentialV2<T>(
+	ctx: {req: NextApiRequest; res: NextApiResponse},
 	callback: ((session: TSession) => Promise<T>) | ((session: TSession) => T),
 	// allowedRole?: string,
-) => {
-	const {hasSession, session} = await getSession(req, res);
+) {
+	const {hasSession, session} = await getSession(ctx.req, ctx.res);
 
 	if (!hasSession) {
 		throw new TRPCError({
@@ -100,15 +98,15 @@ export const checkCredentialV2 = async <T>(
 	}
 
 	return callback(session);
-};
+}
 
-export const generateId = () => {
+export function generateId() {
 	const now = moment();
 	return classNames(
 		now.format('YY MM DD'),
 		now.valueOf().toString().slice(8),
 	).replace(/\s/g, '');
-};
+}
 
 export async function genInvoice<
 	T extends ModelStatic<Model>,
@@ -118,8 +116,6 @@ export async function genInvoice<
 	const countString = (count + 1).toString().padStart(length, '0');
 	return `${prefix}/${countString}`;
 }
-
-genInvoice(OrmKanban, 'SJ/IMI' as const);
 
 export function pagingResult<T extends unknown>(
 	count: number,
