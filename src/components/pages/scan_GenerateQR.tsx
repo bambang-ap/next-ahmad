@@ -1,7 +1,7 @@
 import {FormType} from 'pages/app/scan/[route]';
 import {Control, useWatch} from 'react-hook-form';
 
-import {RouterOutput, TScanTarget} from '@appTypes/app.type';
+import {KanbanGetRow, RouterOutput, TScanTarget} from '@appTypes/app.type';
 import {Input, Text} from '@components';
 import {useSession} from '@hooks';
 import {dateUtils, prevDataScan, qtyMap, scanMapperByStatus} from '@utils';
@@ -180,7 +180,17 @@ export function ScanDetailKanban({
 				</div>
 			</div>
 
-			{kanban.listMesin?.map(({dataMesin, instruksi}) => {
+			<RenderListMesin data={kanban.listMesin} />
+
+			<div className="bg-white">keterangan : {kanban.keterangan}</div>
+		</div>
+	);
+}
+
+export function RenderListMesin({data}: {data?: KanbanGetRow['listMesin']}) {
+	return (
+		<>
+			{data?.map(({dataMesin, instruksi}) => {
 				return (
 					<div key={dataMesin?.id} className="flex gap-[1px]">
 						<div className="w-1/6 bg-white">{dataMesin?.name}</div>
@@ -223,8 +233,6 @@ export function ScanDetailKanban({
 					</div>
 				);
 			})}
-
-			<div className="bg-white">keterangan : {kanban.keterangan}</div>
-		</div>
+		</>
 	);
 }
