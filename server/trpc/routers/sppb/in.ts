@@ -26,8 +26,8 @@ import {procedure, router} from '@trpc';
 
 import {appRouter} from '..';
 
-type GetPage = PagingResult<GetPageRows>;
-type GetPageRows = TCustomerSPPBIn & {
+type GetPage = PagingResult<SppbInRows>;
+export type SppbInRows = TCustomerSPPBIn & {
 	detailPo?: TCustomerPO;
 	items?: (TPOItemSppbIn & {itemDetail?: TPOItem})[];
 };

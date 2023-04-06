@@ -1,21 +1,8 @@
 import {Op} from 'sequelize';
 import {z} from 'zod';
 
-import {
-	THardness,
-	THardnessKategori,
-	TInstruksiKanban,
-	tKanban,
-	TKanban,
-	TKanbanUpsert,
-	tKanbanUpsert,
-	TMaterial,
-	TMaterialKategori,
-	TMesin,
-	TParameter,
-	TParameterKategori,
-	TUser,
-} from '@appTypes/app.zod';
+import {KanbanGetRow} from '@appTypes/app.type';
+import {tKanban, TKanban, tKanbanUpsert, TUser} from '@appTypes/app.zod';
 import {
 	OrmHardness,
 	OrmHardnessKategori,
@@ -32,7 +19,7 @@ import {
 } from '@database';
 import {checkCredentialV2, generateId} from '@server';
 import {procedure, router} from '@trpc';
-import {appRouter, RouterOutput} from '@trpc/routers';
+import {appRouter} from '@trpc/routers';
 import {TRPCError} from '@trpc/server';
 
 const kanbanRouters = router({
@@ -58,34 +45,8 @@ const kanbanRouters = router({
 			}),
 		)
 		.query(({ctx: {req, res}, input: {where}}) => {
-			type TType = TKanban & {
-				id_customer?: string;
-				items: TKanbanUpsert['items'];
-				dataSppbIn?: RouterOutput['sppb']['in.get'][number];
-				dataPo?: RouterOutput['customer_po']['get'][number];
-				dataCreatedBy?: TUser;
-				dataUpdatedBy?: TUser;
-				listMesin?: {
-					dataMesin?: TMesin;
-					instruksi: {
-						dataInstruksi?: TInstruksiKanban;
-						parameter: (
-							| (TParameter & {kategori?: TParameterKategori})
-							| undefined
-						)[];
-						material: (
-							| (TMaterial & {kategori?: TMaterialKategori})
-							| undefined
-						)[];
-						hardness: (
-							| (THardness & {kategori?: THardnessKategori})
-							| undefined
-						)[];
-					}[];
-				}[];
-			};
 			const routerCaller = appRouter.createCaller({req, res});
-			return checkCredentialV2(req, res, async (): Promise<TType[]> => {
+			return checkCredentialV2(req, res, async (): Promise<KanbanGetRow[]> => {
 				const dataKanban = await OrmKanban.findAll({
 					where,
 					order: [['createdAt', 'asc']],
@@ -162,7 +123,7 @@ const kanbanRouters = router({
 						}),
 					);
 
-					const objectData: TType = {
+					const objectData: KanbanGetRow = {
 						...dataValues,
 						// @ts-ignore
 						listMesin,
@@ -174,7 +135,7 @@ const kanbanRouters = router({
 							return this.dataPo?.id_customer;
 						},
 						get items() {
-							return dataItems.reduce<TType['items']>((ret, e) => {
+							return dataItems.reduce<KanbanGetRow['items']>((ret, e) => {
 								ret[e.dataValues.id_item] = {
 									...e.dataValues,
 									id_sppb_in: this.dataSppbIn?.id,
@@ -203,9 +164,10 @@ const kanbanRouters = router({
 					id: id || generateId(),
 				});
 
-				await OrmScan.create({
-					id_kanban: createdKanban.dataValues.id,
-					id: generateId(),
+				await OrmScan.findOrCreate({
+					where: {id_kanban: createdKanban.dataValues.id},
+					defaults: {id_kanban: createdKanban.dataValues.id, id: generateId()},
+					logging: true,
 				});
 
 				const itemPromises = Object.entries(kanban_items)?.map(

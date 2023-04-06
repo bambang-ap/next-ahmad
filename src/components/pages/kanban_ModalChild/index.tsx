@@ -113,7 +113,11 @@ export function KanbanModalChild({
 						control={control}
 						fieldName="id_sppb_in"
 						firstOption="- Pilih Surat Jalan -"
-						data={selectMapper(dataSppbIn ?? [], 'id', 'nomor_surat')}
+						data={selectMapper(
+							dataSppbIn?.filter(e => e.id_po === id_po) ?? [],
+							'id',
+							'nomor_surat',
+						)}
 					/>
 				)}
 

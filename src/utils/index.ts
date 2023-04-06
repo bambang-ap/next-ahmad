@@ -40,7 +40,7 @@ export function scanMapperByStatus(
 		case 'qc':
 			return ['Jumlah produksi', 'Jumlah QC', 'OK'];
 		case 'finish_good':
-			return ['Jumlah qc', 'Jumlah FG'];
+			return ['Jumlah qc', 'Jumlah FG', 'Diterima'];
 		default:
 			return [];
 	}

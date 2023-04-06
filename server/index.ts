@@ -110,7 +110,7 @@ export async function genInvoice<
 	P extends string,
 >(orm: T, prefix: P, length = 5): Promise<`${P}/${string}`> {
 	const count = await orm.count();
-	const countString = count.toString().padStart(length, '0');
+	const countString = (count + 1).toString().padStart(length, '0');
 	return `${prefix}/${countString}`;
 }
 
