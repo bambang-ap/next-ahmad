@@ -312,6 +312,7 @@ export function SppbOutModalChild({
 											</div>
 										);
 									})}
+									{/* @ts-ignore */}
 									<RenderListMesin data={selectedSppbIn?.kanban.listMesin} />
 								</>
 							);

@@ -180,6 +180,7 @@ export function ScanDetailKanban({
 				</div>
 			</div>
 
+			{/* @ts-ignore */}
 			<RenderListMesin data={kanban.listMesin} />
 
 			<div className="bg-white">keterangan : {kanban.keterangan}</div>
