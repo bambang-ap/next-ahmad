@@ -179,7 +179,6 @@ const kanbanRouters = router({
 				await OrmScan.findOrCreate({
 					where: {id_kanban: createdKanban.dataValues.id},
 					defaults: {id_kanban: createdKanban.dataValues.id, id: generateId()},
-					logging: true,
 				});
 
 				const itemPromises = Object.entries(kanban_items)?.map(

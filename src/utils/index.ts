@@ -70,22 +70,32 @@ export function copyToClipboard(str: string) {
 	alert('Token copied');
 }
 
-export function modalTypeParser(type: ModalTypePreview, pageName = '') {
+export function modalTypeParser(type?: ModalTypePreview, pageName = '') {
 	const isEdit = type === 'edit';
 	const isPreview = type === 'preview';
 	const isDelete = type === 'delete';
 	const isPreviewEdit = isEdit || isPreview;
 
-	const modalTitle =
-		type === 'add'
-			? `Tambah ${pageName}`
-			: type === 'edit'
-			? `Ubah ${pageName}`
-			: type === 'preview'
-			? `Detail ${pageName}`
-			: `Hapus ${pageName}`;
-
-	return {isEdit, isPreview, isDelete, isPreviewEdit, modalTitle};
+	return {
+		isEdit,
+		isPreview,
+		isDelete,
+		isPreviewEdit,
+		get modalTitle() {
+			switch (type) {
+				case 'add':
+					return `Tambah ${pageName}`;
+				case 'edit':
+					return `Ubah ${pageName}`;
+				case 'preview':
+					return `Detail ${pageName}`;
+				case 'delete':
+					return `Hapus ${pageName}`;
+				default:
+					return '';
+			}
+		},
+	};
 }
 
 export function toBase64(

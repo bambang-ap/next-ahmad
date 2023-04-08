@@ -1,17 +1,30 @@
 import {KanbanGetRow, PagingResult} from '@appTypes/app.type';
-import {TCustomerSPPBOut, tCustomerSPPBOut, TScan} from '@appTypes/app.zod';
+import {
+	tableFormValue,
+	TCustomerSPPBOut,
+	tCustomerSPPBOut,
+	TScan,
+} from '@appTypes/app.zod';
 import {OrmCustomerSPPBOut, OrmScan} from '@database';
-import {checkCredentialV2, generateId, genInvoice} from '@server';
+import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+
+import {Op} from 'sequelize';
 
 import {appRouter} from '..';
 
 type GetPage = PagingResult<TCustomerSPPBOut>;
 
 const sppbOutRouters = router({
-	get: procedure.query(({ctx, input}) => {
+	get: procedure.input(tableFormValue).query(({ctx, input}) => {
+		const {limit, page, search = ''} = input;
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
-			return;
+			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
+				where: {invoice_no: {[Op.iLike]: `%${search}%`}},
+			});
+			const allDataSppbIn = data.map(e => e.dataValues);
+
+			return pagingResult(count, page, limit, allDataSppbIn);
 		});
 	}),
 	getInvoice: procedure.query(() => {
