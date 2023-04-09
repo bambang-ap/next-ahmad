@@ -3,8 +3,9 @@ import {ChangeEventHandler, useContext, useEffect} from 'react';
 import {TextField} from '@mui/material';
 import {FieldValues} from 'react-hook-form';
 
+import {decimalSchema} from '@appTypes/app.zod';
 import {FormContext, Icon, Text} from '@components';
-import {defaultTextFieldProps} from '@constants';
+import {decimalRegex, defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
@@ -17,7 +18,14 @@ export type InputProps = {
 	label?: string;
 	noLabel?: boolean;
 	disabled?: boolean;
-	type?: 'number' | 'text' | 'search' | 'checkbox' | 'password' | 'date';
+	type?:
+		| 'number'
+		| 'decimal'
+		| 'text'
+		| 'search'
+		| 'checkbox'
+		| 'password'
+		| 'date';
 };
 
 export const Input = withReactFormController(InputComponent);
@@ -38,6 +46,7 @@ function InputComponent<F extends FieldValues>(
 		defaultValue,
 		rightAcc: endAdornment,
 		leftAcc: startAdornment,
+		appliedRules,
 	} = props;
 
 	const formContext = useContext(FormContext);
@@ -86,6 +95,23 @@ function InputComponent<F extends FieldValues>(
 		switch (type) {
 			case 'number':
 				return onChange(parseInt(event.target.value));
+			case 'decimal':
+				const strValue = event.target.value
+					.toString()
+					.replace(/[^0-9.]/g, '')
+					.replace(/(?<=\..*)\./g, '');
+
+				const parsed = decimalSchema.safeParse(strValue);
+
+				if (parsed.success) return onChange(parsed.data);
+
+				appliedRules?.({
+					pattern: {
+						message: `"${strValue}" is not a number format`,
+						value: decimalRegex,
+					},
+				});
+				return onChange(strValue);
 			default:
 				return onChange(event);
 		}

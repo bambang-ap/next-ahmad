@@ -1,7 +1,9 @@
 import {z} from 'zod';
 
-import {defaultLimit} from '@constants';
+import {decimalRegex, defaultLimit} from '@constants';
 import {CRUD_ENABLED} from '@enum';
+
+export const decimalSchema = z.string().regex(decimalRegex).transform(Number);
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([

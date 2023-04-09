@@ -1,9 +1,12 @@
+import {useState} from 'react';
+
 import {
 	Control,
 	Controller,
 	ControllerProps,
 	FieldPath,
 	FieldValues,
+	UseControllerProps,
 	UseControllerReturn,
 } from 'react-hook-form';
 
@@ -19,6 +22,7 @@ export type ControlledComponentProps<
 > = T & {
 	controller: UseControllerReturn<F>;
 	defaultValue?: unknown;
+	appliedRules?: (rules: UseControllerProps<F>['rules']) => void;
 } & Partial<DefaultProps>;
 
 export const withReactFormController = <T extends {}, F extends FieldValues>(
@@ -32,22 +36,26 @@ export const withReactFormController = <T extends {}, F extends FieldValues>(
 	} & Omit<T, keyof ControlledComponentProps<F>> &
 		DefaultProps;
 	return function Decorated({
-		rules,
+		rules = {},
 		control,
 		fieldName,
 		defaultValue,
 		shouldUnregister,
 		...props
 	}: WrappedProps) {
+		const [rulesApply, setRulesApply] =
+			useState<UseControllerProps<F>['rules']>();
+
 		return (
 			<Controller
 				name={fieldName}
-				rules={rules}
+				rules={{...rulesApply, ...rules}}
 				shouldUnregister={shouldUnregister}
 				control={control}
 				defaultValue={defaultValue}
 				render={controllerProps => (
 					<Component
+						appliedRules={setRulesApply}
 						defaultValue={defaultValue}
 						controller={controllerProps}
 						{...(props as unknown as T & Required<DefaultProps>)}

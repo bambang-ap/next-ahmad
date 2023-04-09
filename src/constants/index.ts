@@ -22,6 +22,8 @@ export const formatDate = 'DD-MM-YYYY';
 export const formatHour = 'HH:mm:ss';
 export const formatFull = `${formatDate} - ${formatHour}`;
 
+export const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,100})?$/;
+
 export const defaultInstruksi: TKanban['list_mesin'][number]['instruksi'][number] =
 	{
 		hardness: [''],
