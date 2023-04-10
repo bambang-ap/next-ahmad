@@ -119,7 +119,7 @@ export function ScanDetailKanban({
 										<Input
 											className="flex-1 bg-white"
 											key={jumlah}
-											type="number"
+											type="decimal"
 											defaultValue={jumlah}
 											control={control}
 											rules={{
@@ -145,7 +145,7 @@ export function ScanDetailKanban({
 											<Input
 												key={jumlah}
 												className="flex-1 bg-white"
-												type="number"
+												type="decimal"
 												defaultValue={0}
 												control={control}
 												rules={{

@@ -88,7 +88,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 									return (
 										<div className="flex-1" key={`${rowItem.id}${num}`}>
 											<Input
-												type="number"
+												type="decimal"
 												control={control}
 												defaultValue={defaultValue as string}
 												fieldName={`items.${id_item}.${keyQty}`}

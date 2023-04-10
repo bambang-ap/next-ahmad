@@ -216,7 +216,7 @@ export function SppbInModalChild({
 										<Input
 											className="flex-1"
 											disabled={isPreview}
-											type="number"
+											type="decimal"
 											control={control}
 											shouldUnregister
 											fieldName={`po_item.${index}.qty${num}`}

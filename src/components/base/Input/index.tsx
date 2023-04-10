@@ -36,7 +36,7 @@ function InputComponent<F extends FieldValues>(
 	let restProps: MyObject<any> = {};
 	const {
 		hidden,
-		type,
+		type = 'text',
 		label: labelProps,
 		disabled,
 		className,

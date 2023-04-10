@@ -152,7 +152,7 @@ export default function PoModalChild({
 										className="flex-1"
 										disabled={isPreview}
 										control={control}
-										type="number"
+										type="decimal"
 										fieldName={`po_item.${index}.harga`}
 									/>
 								</Cell>
@@ -163,7 +163,7 @@ export default function PoModalChild({
 												className="flex-1"
 												disabled={isPreview}
 												control={control}
-												type="number"
+												type="decimal"
 												fieldName={`po_item.${index}.qty${num}`}
 											/>
 											<Select

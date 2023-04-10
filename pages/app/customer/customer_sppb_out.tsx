@@ -296,7 +296,7 @@ export function SppbOutModalChild({
 														<Input
 															className="flex-1 bg-white"
 															key={jumlah}
-															type="number"
+															type="decimal"
 															// @ts-ignore
 															defaultValue={jumlah}
 															control={control}
