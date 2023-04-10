@@ -1,5 +1,11 @@
 import {TDataScan} from '@appTypes/app.type';
-import {tScanItem, TScanTarget, tScanTarget, zId} from '@appTypes/app.zod';
+import {
+	tScan,
+	tScanItem,
+	TScanTarget,
+	tScanTarget,
+	zId,
+} from '@appTypes/app.zod';
 import {OrmScan} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -57,7 +63,12 @@ const scanRouters = router({
 		}),
 
 	update: procedure
-		.input(tScanItem.extend({target: tScanTarget, ...zId.shape}))
+		.input(
+			tScanItem.extend({
+				target: tScanTarget,
+				...tScan.pick({id: true, lot_no_imi: true}).shape,
+			}),
+		)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2(
 				{req, res},

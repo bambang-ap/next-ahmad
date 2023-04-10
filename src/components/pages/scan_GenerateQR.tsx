@@ -214,9 +214,9 @@ export function RenderListMesin({data}: {data?: KanbanGetRow['listMesin']}) {
 																<div
 																	key={e?.id}
 																	className="flex flex-col gap-[1px]">
-																	<div className="flex-1 bg-white">
+																	{/* <div className="flex-1 bg-white">
 																		kategori : {e?.kategori?.name}
-																	</div>
+																	</div> */}
 																	<div className="flex-1 bg-white">
 																		{e?.name}
 																	</div>
