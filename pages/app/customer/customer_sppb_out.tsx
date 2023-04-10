@@ -66,6 +66,7 @@ export default function SPPBOUT() {
 				form={hookForm}
 				data={data?.rows}
 				pageCount={data?.totalPage}
+				header={['Nomor Surat', 'Kendaraan', 'Customer', 'Action']}
 				topComponent={
 					<Button
 						onClick={() =>
@@ -160,6 +161,7 @@ export function SppbOutModalChild({
 			<Input
 				disabled
 				control={control}
+				label="Nomor Surat"
 				fieldName="invoice_no"
 				defaultValue={invoiceId}
 			/>
