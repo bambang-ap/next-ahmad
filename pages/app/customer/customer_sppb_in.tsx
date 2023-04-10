@@ -2,9 +2,10 @@ import {FormEventHandler, useRef} from 'react';
 
 import {useForm} from 'react-hook-form';
 
-import {ModalTypePreview, TUpsertSppbIn} from '@appTypes/app.type';
+import {ModalTypePreview, TCustomer, TUpsertSppbIn} from '@appTypes/app.type';
 import {Button, Modal, ModalRef, TableFilter} from '@components';
 import {defaultErrorMutation} from '@constants';
+import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {useTableFilter} from '@hooks';
 import {SppbInModalChild} from '@pageComponent/ModalChild_customer_sppb_in';
@@ -29,6 +30,9 @@ export default function SPPBIN() {
 	const {data, refetch} = trpc.sppb.in.getPage.useQuery({
 		type: 'sppb_in',
 		...formValue,
+	});
+	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
+		target: CRUD_ENABLED.CUSTOMER,
 	});
 	const {mutate: mutateUpsert} =
 		trpc.sppb.in.upsert.useMutation(defaultErrorMutation);
@@ -88,6 +92,12 @@ export default function SPPBIN() {
 						<>
 							<Cell>{dateUtils.date(item.tgl)}</Cell>
 							<Cell>{item.detailPo?.nomor_po}</Cell>
+							<Cell>
+								{
+									dataCustomer?.find(e => e.id === item.detailPo?.id_customer)
+										?.name
+								}
+							</Cell>
 							<Cell>{item.nomor_surat}</Cell>
 							<Cell>{item.lot_no}</Cell>
 							<Cell className="flex gap-2">
