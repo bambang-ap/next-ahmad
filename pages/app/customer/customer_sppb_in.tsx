@@ -11,7 +11,10 @@ import {SppbInModalChild} from '@pageComponent/ModalChild_customer_sppb_in';
 import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
-export type FormType = {type: ModalTypePreview} & TUpsertSppbIn;
+export type FormType = {
+	type: ModalTypePreview;
+	id_customer?: string;
+} & TUpsertSppbIn;
 
 SPPBIN.getLayout = getLayout;
 
@@ -103,7 +106,7 @@ export default function SPPBIN() {
 
 			<Modal size="6xl" title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit}>
-					<SppbInModalChild control={control} />
+					<SppbInModalChild reset={reset} control={control} />
 				</form>
 			</Modal>
 		</>

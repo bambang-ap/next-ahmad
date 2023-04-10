@@ -1,9 +1,11 @@
 import {PropsWithChildren, useEffect} from 'react';
 
 import {FormType} from 'pages/app/customer/customer_sppb_in';
-import {Control, useWatch} from 'react-hook-form';
+import {useWatch} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
+import {TCustomer} from '@appTypes/app.type';
+import {FormScreenProps} from '@appTypes/props.type';
 import {
 	Button,
 	Cells,
@@ -13,20 +15,27 @@ import {
 	Table,
 	Text,
 } from '@components';
+import {CRUD_ENABLED} from '@enum';
 import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
 import {qtyList} from './ModalChild_po';
 
-export function SppbInModalChild({control}: {control: Control<FormType>}) {
+export function SppbInModalChild({
+	control,
+	reset,
+}: FormScreenProps<FormType, 'control' | 'reset'>) {
 	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
-	const [modalType, idSppbIn, idPo] = useWatch({
+	const [modalType, idSppbIn, idPo, idCustomer] = useWatch({
 		control,
-		name: ['type', 'id', 'id_po'],
+		name: ['type', 'id', 'id_po', 'id_customer'],
 	});
 
 	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: 'sppb_in'});
+	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
+		target: CRUD_ENABLED.CUSTOMER,
+	});
 	const {data: listPo = []} = trpc.customer_po.get.useQuery({
 		type: 'customer_po',
 	});
@@ -35,6 +44,11 @@ export function SppbInModalChild({control}: {control: Control<FormType>}) {
 	const isPreview = modalType === 'preview';
 	const isDelete = modalType === 'delete';
 	const isPreviewEdit = isEdit || isPreview;
+	const selectedPo = listPo?.find(e => e.id === idPo);
+
+	useEffect(() => {
+		reset(prev => ({...prev, id_customer: selectedPo?.id_customer}));
+	}, [selectedPo?.id_customer]);
 
 	useEffect(() => {
 		return () => {
@@ -45,7 +59,6 @@ export function SppbInModalChild({control}: {control: Control<FormType>}) {
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
-	const selectedPo = listPo?.find(e => e.id === idPo);
 	const selectedSppbIn = dataSppbIn?.filter(e => e.id_po === idPo);
 	const selectedSppbInn = dataSppbIn?.find(e => e.id === idSppbIn);
 
@@ -79,6 +92,14 @@ export function SppbInModalChild({control}: {control: Control<FormType>}) {
 						'id',
 						'nomor_po',
 					)}
+				/>
+				<Select
+					disabled
+					key={idCustomer}
+					className="flex-1"
+					control={control}
+					fieldName="id_customer"
+					data={selectMapper(dataCustomer, 'id', 'name')}
 				/>
 				<Input
 					className="flex-1"

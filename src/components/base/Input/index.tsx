@@ -59,7 +59,7 @@ function InputComponent<F extends FieldValues>(
 	const label = !noLabel && (labelProps || field.name);
 
 	const errorMessage = fieldState.error?.message && (
-		<Text className="text-app-secondary-03 flex items-center">
+		<Text className="text-red-700 flex items-center">
 			<Icon name="faWarning" className="mr-2" />
 			{fieldState.error?.message}
 		</Text>
