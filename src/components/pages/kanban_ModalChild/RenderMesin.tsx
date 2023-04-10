@@ -93,7 +93,11 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 									className="flex-1"
 									control={control}
 									fieldName={`list_mesin.${i}.id_mesin`}
-									data={selectMapper(filteredDataMesin ?? [], 'id', 'name')}
+									data={selectMapper(
+										filteredDataMesin ?? [],
+										'id',
+										'nomor_mesin',
+									)}
 								/>
 								<Button onClick={addInstruksi}>Add Process</Button>
 								<Button onClick={() => removeMesin(i)}>Remove Mesin</Button>
