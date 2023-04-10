@@ -178,6 +178,7 @@ const kanbanRouters = router({
 
 				await OrmScan.findOrCreate({
 					where: {id_kanban: createdKanban.dataValues.id},
+					// @ts-ignore
 					defaults: {id_kanban: createdKanban.dataValues.id, id: generateId()},
 				});
 
