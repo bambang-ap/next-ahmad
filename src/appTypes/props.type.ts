@@ -13,6 +13,11 @@ export type NextPageWithLayout = NextPage & {
 	authPage?: (page: ReactNode) => ReactNode;
 };
 
+/**
+ * @param F FieldValues
+ * @param K Required Keys
+ * @param T Don't pass anything, its only for typing check
+ */
 export type FormScreenProps<
 	F extends FieldValues,
 	K extends keyof T = 'control',

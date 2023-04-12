@@ -125,7 +125,7 @@ function InputComponent<F extends FieldValues>(
 				fullWidth
 				label={label}
 				type={type}
-				disabled={disabled || formContext?.disabled}
+				disabled={disabled !== undefined ? disabled : formContext?.disabled}
 				sx={{
 					'& .MuiInputBase-input.Mui-disabled': {
 						WebkitTextFillColor: '#000000',

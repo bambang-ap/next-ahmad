@@ -38,7 +38,7 @@ export function scanMapperByStatus(
 		case 'produksi':
 			return ['Jumlah planning', 'Jumlah Produksi', 'send to QC'];
 		case 'qc':
-			return ['Jumlah produksi', 'Jumlah QC', 'OK'];
+			return ['Jumlah produksi', 'Jumlah QC', 'Send to Finish Good'];
 		case 'finish_good':
 			return ['Jumlah qc', 'Jumlah FG', 'Diterima'];
 		default:
@@ -126,6 +126,47 @@ export function generatePDF(id: string, filename = 'a4.pdf') {
 			document.save(filename);
 		},
 	});
+}
+
+export class Storage<T> {
+	private key!: string;
+	private primitive!: boolean;
+
+	constructor(key: string, defaultValue: T) {
+		this.key = key;
+		this.primitive = this.isPrimitive(defaultValue);
+
+		const isExist = !!this.get();
+		if (!isExist) {
+			const value = this.primitive
+				? defaultValue
+				: JSON.stringify(defaultValue);
+			this.set(value as T);
+		}
+	}
+
+	get() {
+		const data = localStorage.getItem(this.key);
+		try {
+			if (this.primitive) return data as T;
+			return JSON.parse(data!) as T;
+		} catch (err) {
+			return null;
+		}
+	}
+
+	set(value: T) {
+		if (this.primitive) localStorage.setItem(this.key, value as string);
+		else localStorage.setItem(this.key, JSON.stringify(value));
+	}
+
+	del() {
+		localStorage.removeItem(this.key);
+	}
+
+	private isPrimitive(test: any) {
+		return test !== Object(test);
+	}
 }
 
 function convertDate(date?: string) {
