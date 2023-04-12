@@ -3,6 +3,7 @@ export * from './models/customer_po';
 export * from './models/customer_po_item';
 export * from './models/customer_sppb_in';
 export * from './models/customer_sppb_out';
+export * from './models/document';
 export * from './models/hardness';
 export * from './models/hardness_kategori';
 export * from './models/kanban';

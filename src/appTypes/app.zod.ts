@@ -262,6 +262,14 @@ export const tParameterKategori = zId.extend({
 	name: z.string(),
 });
 
+export type TDocument = z.infer<typeof tDocument>;
+export const tDocument = zId.extend({
+	doc_no: z.string(),
+	keterangan: z.string(),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
+});
+
 export type BaseMenu = z.infer<typeof baseTMenu>;
 export const baseTMenu = z.object({
 	id: z.string(),

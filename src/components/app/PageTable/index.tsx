@@ -10,9 +10,9 @@ import {CRUD_ENABLED} from '@enum';
 import {useTableFilter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
+import {QRUserLogin, RenderTableCell, UserTokenCopy} from './component';
 import {ModalChild} from './ModalChild';
 import {RenderImportCustomer} from './RenderImportCustomer';
-import {QRUserLogin, RenderTableCell, UserTokenCopy} from './component';
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -113,16 +113,18 @@ const RenderPage = ({path}: {path: string}) => {
 						return (
 							<>
 								{table?.body?.map?.(key => {
-									if (Array.isArray(key))
-										return (
-											<Cell>
-												<RenderTableCell item={item} keys={key} />
-											</Cell>
-										);
+									const isArray = Array.isArray(key);
+									const isFunction = typeof key === 'function';
 
 									return (
-										<Cell key={key as string}>
-											<Text>{item[key]}</Text>
+										<Cell key={key?.toString() as string}>
+											{isArray ? (
+												<RenderTableCell item={item} keys={key} />
+											) : isFunction ? (
+												<Text>{key(item)}</Text>
+											) : (
+												<Text>{item[key]}</Text>
+											)}
 										</Cell>
 									);
 								})}

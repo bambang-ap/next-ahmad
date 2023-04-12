@@ -1,10 +1,11 @@
-// @ts-nocheck
+// @ts-nocheckd
 
 import {
 	TCustomer,
 	TCustomerPO,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	TDocument,
 	THardness,
 	THardnessKategori,
 	TInstruksiKanban,
@@ -23,6 +24,7 @@ import {TRPCClientErrorLike} from '@trpc/client';
 import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 import {AnyProcedure} from '@trpc/server';
 import {inferTransformedProcedureOutput} from '@trpc/server/shared';
+import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type Action = 'add' | 'edit' | 'delete';
@@ -33,7 +35,11 @@ export type BodyArrayKey<T extends Record<string, any>> = [
 	(item: unknown, data: unknown[]) => string,
 ];
 
-export type Body<T extends Record<string, any>> = (keyof T | BodyArrayKey<T>)[];
+export type Body<T extends Record<string, any>> = (
+	| keyof T
+	| BodyArrayKey<T>
+	| ((item: T) => string)
+)[];
 
 export type AllowedPages = {
 	enumName: CRUD_ENABLED;
@@ -55,6 +61,7 @@ export type Types =
 	| TRole
 	| TMaterial
 	| TMaterialKategori
+	| TDocument
 	| TUser;
 
 export type ColUnion = FieldForm<UnionToIntersection<Types>>;
@@ -76,6 +83,37 @@ export type FieldForm<T extends {}> = {
 );
 
 export const allowedPages: Record<string, AllowedPages> = {
+	'/app/document': {
+		enumName: CRUD_ENABLED.DOCUMENT,
+		searchKey: 'doc_no',
+		table: {
+			header: ['Dibuat Pada', 'Dirubah Pada', 'Name', 'Keterangan', 'Action'],
+			get body(): Body<TDocument> {
+				return [
+					item => dateUtils.full(item.createdAt)!,
+					item => dateUtils.full(item.updatedAt)!,
+					'doc_no',
+					'keterangan',
+				];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TDocument>[] {
+				return [{col: 'doc_no'}, {col: 'keterangan'}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: 'Tambah Document',
+				edit: 'Ubah Document',
+				delete: 'Hapus Document',
+			},
+		},
+	},
+
 	'/app/hardness': {
 		enumName: CRUD_ENABLED.HARDNESS,
 		searchKey: 'name',

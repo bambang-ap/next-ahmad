@@ -23,6 +23,7 @@ export enum TABLES {
 	HARDNESS_KATEGORI = 'hardness_kategori',
 	PARAMETER = 'parameter',
 	PARAMETER_KATEGORI = 'parameter_kategori',
+	DOCUMENT = 'document_number',
 }
 
 export const Z_TABLES = z.nativeEnum(TABLES);
@@ -43,6 +44,7 @@ export enum CRUD_ENABLED {
 	HARDNESS_KATEGORI = 'hardness_kategori',
 	PARAMETER = 'parameter',
 	PARAMETER_KATEGORI = 'parameter_kategori',
+	DOCUMENT = 'document_number',
 }
 
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

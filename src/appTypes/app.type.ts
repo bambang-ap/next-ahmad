@@ -27,6 +27,7 @@ export type {
 	TCustomerPOExtended,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	TDocument,
 	THardness,
 	THardnessKategori,
 	TInstruksiKanban,
