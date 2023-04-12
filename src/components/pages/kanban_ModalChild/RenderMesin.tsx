@@ -118,8 +118,8 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 								);
 
 								const keys: Tuple<Key, 3> = [
-									'hardness',
 									'material',
+									'hardness',
 									'parameter',
 								];
 
@@ -183,6 +183,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 											<div className="flex gap-2">
 												{keys.map(key => {
 													const selectedItems = instruksi[key];
+													const isMaterial = key === 'material';
 
 													return (
 														<div
@@ -194,11 +195,12 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 																	instruksi[keyKategori][iii];
 																let filteredDataItems = dataItemMapper[
 																	key
-																]?.filter(
-																	e =>
-																		selectedKategori === e.id_kategori &&
-																		(selectedItems[iii] === e.id ||
-																			!selectedItems.includes(e.id)),
+																]?.filter(e =>
+																	isMaterial
+																		? true
+																		: selectedKategori === e.id_kategori &&
+																		  (selectedItems[iii] === e.id ||
+																				!selectedItems.includes(e.id)),
 																);
 
 																const data = selectMapper(
@@ -211,16 +213,18 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 																	<div
 																		key={`${ii}-${iii}`}
 																		className="flex items-center gap-2">
-																		<Select
-																			className="flex-1"
-																			control={control}
-																			fieldName={`list_mesin.${i}.instruksi.${ii}.${key}Kategori.${iii}`}
-																			data={selectMapper(
-																				kategoriItemMapper[key] ?? [],
-																				'id',
-																				'name',
-																			)}
-																		/>
+																		{!isMaterial && (
+																			<Select
+																				className="flex-1"
+																				control={control}
+																				fieldName={`list_mesin.${i}.instruksi.${ii}.${key}Kategori.${iii}`}
+																				data={selectMapper(
+																					kategoriItemMapper[key] ?? [],
+																					'id',
+																					'name',
+																				)}
+																			/>
+																		)}
 
 																		<Select
 																			key={filteredDataItems!
