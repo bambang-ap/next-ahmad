@@ -82,6 +82,7 @@ export default function SPPBIN() {
 				header={[
 					'Tanggal Surat Jalan',
 					'Nomor PO',
+					'Customer',
 					'Nomor Surat Jalan',
 					'Nomor Lot',
 					'Action',
