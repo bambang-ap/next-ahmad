@@ -2,7 +2,7 @@ import {Button, RootTable as Table, Text} from '@components';
 import {dateUtils, generatePDF} from '@utils';
 import {trpc} from '@utils/trpc';
 
-const {Td, Tr, THead} = Table;
+const {Td, Tr} = Table;
 
 export function SPPBOutGenerateQR(props: {
 	id: string;
@@ -20,10 +20,10 @@ export function SPPBOutGenerateQR(props: {
 		// className = 'flex flex-col gap-2 p-4 w-[500px]',
 	} = props;
 
-	const {data: qrImage} = trpc.qr.useQuery<any, string>(
-		{input: id},
-		{enabled: !!id},
-	);
+	// const {data: qrImage} = trpc.qr.useQuery<any, string>(
+	// 	{input: id},
+	// 	{enabled: !!id},
+	// );
 
 	const {data: detail} = trpc.sppb.out.getDetail.useQuery(id, {enabled: !!id});
 

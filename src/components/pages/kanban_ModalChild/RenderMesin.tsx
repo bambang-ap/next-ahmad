@@ -135,7 +135,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 									const newInstruksi = copyMesins[i]?.instruksi!;
 									const removedItem = newInstruksi[ii]?.[key].remove(index)!;
 									const removedItemKategori =
-										newInstruksi[ii]?.[keyKategori].remove(index)!;
+										newInstruksi[ii]?.[keyKategori]?.remove(index)!;
 									updateMesin(
 										copyMesins.replace(i, {
 											...mesin,
@@ -192,7 +192,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 															{instruksi[key].map((_, iii) => {
 																const keyKategori = `${key}Kategori` as const;
 																const selectedKategori =
-																	instruksi[keyKategori][iii];
+																	instruksi[keyKategori]?.[iii];
 																let filteredDataItems = dataItemMapper[
 																	key
 																]?.filter(e =>

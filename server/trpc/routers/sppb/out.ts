@@ -36,6 +36,8 @@ const sppbOutRouters = router({
 				}
 			> => {
 				const data = (await OrmCustomerSPPBOut.findOne({where: {id: input}}))!;
+				// @ts-ignore
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
 				const {id_customer, id_kendaraan, po: listPo} = data?.dataValues!;
 
 				const customer = (await OrmCustomer.findOne({where: {id: id_customer}}))
