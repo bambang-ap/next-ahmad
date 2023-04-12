@@ -16,6 +16,7 @@ export default function initOrmKanban(sequelize: Sequelize) {
 			createdBy: DataTypes.STRING,
 			updatedBy: DataTypes.STRING,
 			image: DataTypes.STRING,
+			doc_id: DataTypes.STRING,
 			list_mesin: DataTypes.JSONB,
 		},
 		{

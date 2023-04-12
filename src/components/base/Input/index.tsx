@@ -3,9 +3,8 @@ import {ChangeEventHandler, useContext, useEffect} from 'react';
 import {TextField} from '@mui/material';
 import {FieldValues} from 'react-hook-form';
 
-import {decimalSchema} from '@appTypes/app.zod';
 import {FormContext, Icon, Text} from '@components';
-import {decimalRegex, defaultTextFieldProps} from '@constants';
+import {decimalRegex, decimalSchema, defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,

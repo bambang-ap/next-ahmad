@@ -1,6 +1,7 @@
 import type {RouterOutput} from '@trpc/routers';
 
 import type {
+	TDocument,
 	THardness,
 	THardnessKategori,
 	TInstruksiKanban,
@@ -74,6 +75,7 @@ export type KanbanGetRow = TKanban & {
 	items: TKanbanUpsert['items'];
 	dataSppbIn?: RouterOutput['sppb']['in']['get'][number];
 	dataPo?: RouterOutput['customer_po']['get'][number];
+	docDetail?: TDocument;
 	dataCreatedBy?: TUser;
 	dataUpdatedBy?: TUser;
 	listMesin?: {

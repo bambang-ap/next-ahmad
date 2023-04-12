@@ -74,6 +74,7 @@ export default function Kanban() {
 				data={data}
 				header={[
 					'Tanggal',
+					'Doc No',
 					'Keterangan',
 					'Nomor PO',
 					'Nomor Surat Jalan',
@@ -88,11 +89,12 @@ export default function Kanban() {
 					return (
 						<>
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
-							<Cell>{item.keterangan}</Cell>
+							<Cell>{item.docDetail?.doc_no}</Cell>
 							<Cell>{item.dataPo?.nomor_po}</Cell>
 							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
 							<Cell>{item.dataPo?.customer?.name}</Cell>
 							<Cell>{item.dataCreatedBy?.name}</Cell>
+							<Cell>{item.keterangan}</Cell>
 							<Cell className="flex gap-x-2">
 								<KanbanGenerateQR {...item} />
 								<Button

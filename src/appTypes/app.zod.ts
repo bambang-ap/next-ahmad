@@ -1,9 +1,7 @@
 import {z} from 'zod';
 
-import {decimalRegex, defaultLimit} from '@constants';
+import {defaultLimit} from '@constants';
 import {CRUD_ENABLED} from '@enum';
-
-export const decimalSchema = z.string().regex(decimalRegex).transform(Number);
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
@@ -137,24 +135,26 @@ export const tKanban = zId.extend({
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 	image: z.string().optional().nullable(),
+	doc_id: z.string(),
 	list_mesin: z
 		.object({
-			id_mesin: z.string().min(47),
+			id_mesin: z.string().min(1),
 			instruksi: z
 				.object({
-					id_instruksi: z.string().min(47),
-					hardness: z.string().min(47).array().min(1),
-					hardnessKategori: z.string().min(47).array().min(1),
-					material: z.string().min(47).array().min(1),
-					materialKategori: z.string().min(47).array().min(1),
-					parameter: z.string().min(47).array().min(1),
-					parameterKategori: z.string().min(47).array().min(1),
+					id_instruksi: z.string().min(1),
+					hardness: z.string().min(1).array().min(1),
+					hardnessKategori: z.string().min(1).array().min(1),
+					material: z.string().min(1).array().min(1),
+					materialKategori: z.string().array().optional(),
+					// materialKategori: z.string().min(1).array().min(1).optional(),
+					parameter: z.string().min(1).array().min(1),
+					parameterKategori: z.string().min(1).array().min(1),
 				})
 				.array()
 				.min(1),
 		})
-		.array(),
-	// .min(1),
+		.array()
+		.min(1),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;
@@ -171,7 +171,7 @@ const tKanbanUpsertItem = tKanbanItem
 
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban
-	.partial({id: true, createdBy: true, updatedBy: true})
+	.partial({id: true, doc_id: true, createdBy: true, updatedBy: true})
 	.extend({
 		items: z.record(tKanbanUpsertItem),
 	});

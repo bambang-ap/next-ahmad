@@ -4,6 +4,7 @@ import {z} from 'zod';
 import {KanbanGetRow} from '@appTypes/app.type';
 import {tKanban, TKanban, tKanbanUpsert, TUser} from '@appTypes/app.zod';
 import {
+	OrmDocument,
 	OrmHardness,
 	OrmHardnessKategori,
 	OrmKanban,
@@ -54,8 +55,14 @@ const kanbanRouters = router({
 						order: [['createdAt', 'asc']],
 					});
 					const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
-						const {id_po, id_sppb_in, createdBy, updatedBy, list_mesin} =
-							dataValues;
+						const {
+							id_po,
+							id_sppb_in,
+							createdBy,
+							updatedBy,
+							list_mesin,
+							doc_id,
+						} = dataValues;
 
 						// @ts-ignore
 						const [dataCreatedBy, dataUpdatedBy]: [TUser, TUser] = (
@@ -134,10 +141,13 @@ const kanbanRouters = router({
 							}),
 						);
 
+						const docDetail = await OrmDocument.findOne({where: {id: doc_id}});
+
 						const objectData: KanbanGetRow = {
 							...dataValues,
 							// @ts-ignore
 							listMesin,
+							docDetail: docDetail?.dataValues,
 							dataCreatedBy,
 							dataUpdatedBy,
 							dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
@@ -168,12 +178,22 @@ const kanbanRouters = router({
 		.input(tKanbanUpsert)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async session => {
-				const {id, items: kanban_items, createdBy, ...rest} = input;
+				const docData = await OrmDocument.findOne();
+
+				if (!docData) {
+					throw new TRPCError({
+						code: 'NOT_FOUND',
+						message: 'Doc number not found',
+					});
+				}
+
+				const {id, doc_id, items: kanban_items, createdBy, ...rest} = input;
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
 					createdBy: createdBy ?? session.user?.id!,
 					updatedBy: session.user?.id!,
 					id: id || generateId(),
+					doc_id: doc_id || docData.dataValues.id,
 				});
 
 				await OrmScan.findOrCreate({
