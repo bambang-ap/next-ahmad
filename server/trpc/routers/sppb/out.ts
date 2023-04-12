@@ -1,21 +1,67 @@
-import {KanbanGetRow, PagingResult} from '@appTypes/app.type';
+import {
+	KanbanGetRow,
+	PagingResult,
+	TCustomer,
+	TKendaraan,
+} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	TCustomerSPPBOut,
 	tCustomerSPPBOut,
 	TScan,
 } from '@appTypes/app.zod';
-import {OrmCustomerSPPBOut, OrmScan} from '@database';
+import {
+	OrmCustomer,
+	OrmCustomerSPPBOut,
+	OrmKendaraan,
+	OrmScan,
+} from '@database';
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
 import {Op} from 'sequelize';
+import {z} from 'zod';
 
 import {appRouter} from '..';
 
 type GetPage = PagingResult<TCustomerSPPBOut>;
 
 const sppbOutRouters = router({
+	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
+		return checkCredentialV2(
+			ctx,
+			async (): Promise<
+				TCustomerSPPBOut & {
+					data: {customer?: TCustomer; kendaraan?: TKendaraan};
+				}
+			> => {
+				const data = (await OrmCustomerSPPBOut.findOne({where: {id: input}}))!;
+				const {id_customer, id_kendaraan, po: listPo} = data?.dataValues!;
+
+				const customer = (await OrmCustomer.findOne({where: {id: id_customer}}))
+					?.dataValues;
+				const kendaraan = (
+					await OrmKendaraan.findOne({where: {id: id_kendaraan}})
+				)?.dataValues;
+
+				// const dhsd = listPo.forEach(po => {
+				// 	return po.sppb_in.map(e = > {
+				// 		return Object.entries(e.items).map(([id_item, item]) => {
+				// 			return '<></>;';
+				// 		});
+				// 	});
+				// });
+
+				return {
+					...data?.dataValues,
+					data: {
+						customer,
+						kendaraan,
+					},
+				};
+			},
+		);
+	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, search = ''} = input;
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {

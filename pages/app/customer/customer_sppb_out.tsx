@@ -24,6 +24,7 @@ import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
 import {useTableFilter} from '@hooks';
 import {RenderListMesin} from '@pageComponent/scan_GenerateQR';
+import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
 import {modalTypeParser, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
@@ -87,16 +88,21 @@ export default function SPPBOUT() {
 							<Cell>{item.invoice_no}</Cell>
 							<Cell>{kendaraan?.name}</Cell>
 							<Cell>{customer?.name}</Cell>
+
 							<Cell>
-								<Button onClick={() => showModal({...item, type: 'preview'})}>
-									Preview
-								</Button>
-								<Button onClick={() => showModal({...item, type: 'edit'})}>
-									Edit
-								</Button>
-								<Button onClick={() => showModal({id, type: 'delete'})}>
-									Delete
-								</Button>
+								<SPPBOutGenerateQR {...item} />
+								<Button
+									icon="faMagnifyingGlass"
+									onClick={() => showModal({...item, type: 'preview'})}
+								/>
+								<Button
+									onClick={() => showModal({...item, type: 'edit'})}
+									icon="faEdit"
+								/>
+								<Button
+									onClick={() => showModal({id, type: 'delete'})}
+									icon="faTrash"
+								/>
 							</Cell>
 						</>
 					);

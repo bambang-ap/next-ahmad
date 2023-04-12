@@ -8,13 +8,13 @@ import {qtyList} from './ModalChild_po';
 const {Td, Tr, THead} = Table;
 
 export function KanbanGenerateQR(
-	kanban: RouterOutput['kanban']['get'][number] & {
+	props: RouterOutput['kanban']['get'][number] & {
 		className?: string;
 		transform?: boolean;
 		withButton?: boolean;
 	},
 ) {
-	const tagId = `data-${kanban.id}`;
+	const tagId = `data-${props.id}`;
 
 	const {
 		className = 'flex flex-col gap-2 p-4 w-[500px] -z-10 fixed',
@@ -24,7 +24,8 @@ export function KanbanGenerateQR(
 		id,
 		items,
 		dataSppbIn,
-	} = kanban;
+		...sppb
+	} = props;
 
 	const {data: qrImage} = trpc.qr.useQuery<any, string>(
 		{input: id},
@@ -51,21 +52,19 @@ export function KanbanGenerateQR(
 							<img src={qrImage} alt="" />
 						</Td>
 						<Td colSpan={2} className="flex-col gap-2">
-							<Text>tgl kanban : {dateUtils.full(kanban.createdAt)}</Text>
-							<Text>
-								tgl sj masuk : {dateUtils.full(kanban.dataSppbIn?.tgl)}
-							</Text>
+							<Text>tgl kanban : {dateUtils.full(sppb.createdAt)}</Text>
+							<Text>tgl sj masuk : {dateUtils.full(dataSppbIn?.tgl)}</Text>
 						</Td>
 					</Tr>
 					<Tr>
 						<Td colSpan={2} className="flex-col gap-2">
-							<Text>no po : {kanban.dataPo?.nomor_po}</Text>
-							<Text>no sj masuk : {kanban.dataSppbIn?.nomor_surat}</Text>
-							<Text>no cust lot : {kanban.dataSppbIn?.lot_no}</Text>
+							<Text>no po : {sppb.dataPo?.nomor_po}</Text>
+							<Text>no sj masuk : {dataSppbIn?.nomor_surat}</Text>
+							<Text>no cust lot : {dataSppbIn?.lot_no}</Text>
 						</Td>
 						<Td colSpan={2} className="flex-col gap-2">
-							<Text>created by : {kanban.dataCreatedBy?.name}</Text>
-							<Text>customer : {kanban.dataPo?.customer?.name}</Text>
+							<Text>created by : {sppb.dataCreatedBy?.name}</Text>
+							<Text>customer : {sppb.dataPo?.customer?.name}</Text>
 						</Td>
 					</Tr>
 				</Table>
@@ -114,7 +113,7 @@ export function KanbanGenerateQR(
 							<Td>Process</Td>
 						</Tr>
 					</THead>
-					{kanban.listMesin?.map(mesin => {
+					{sppb.listMesin?.map(mesin => {
 						return (
 							<>
 								<Tr>
@@ -171,7 +170,7 @@ export function KanbanGenerateQR(
 				</Table>
 				<Table>
 					<Tr>
-						<Td colSpan={4}>Keterangan : {kanban.keterangan}</Td>
+						<Td colSpan={4}>Keterangan : {sppb.keterangan}</Td>
 					</Tr>
 				</Table>
 			</div>
