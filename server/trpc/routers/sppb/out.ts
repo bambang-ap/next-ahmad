@@ -28,7 +28,7 @@ type GetPage = PagingResult<TCustomerSPPBOut>;
 
 const sppbOutRouters = router({
 	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
-		const routerCaller = appRouter.createCaller(ctx);
+		// const routerCaller = appRouter.createCaller(ctx);
 		return checkCredentialV2(
 			ctx,
 			async (): Promise<
