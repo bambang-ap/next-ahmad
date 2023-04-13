@@ -72,8 +72,18 @@ function RenderScanPage({id: uId}: ZId) {
 	const status = data?.[currentKey];
 
 	const submit = handleSubmit(values => {
-		refetch();
-		mutate({...values, id, target: route});
+		function mutateScan() {
+			refetch();
+			mutate({...values, id, target: route});
+		}
+		if (route === 'qc') {
+			if (confirm('Apakah Anda yakin data tersebut sudah benar?'))
+				return mutateScan();
+
+			return;
+		}
+
+		mutateScan();
 	});
 
 	function onRead(result: string) {
@@ -83,6 +93,7 @@ function RenderScanPage({id: uId}: ZId) {
 	function removeUid() {
 		setIds(prev => {
 			const index = ids.indexOf(uId);
+			if (status) return prev.replace(index, '');
 			return prev.remove(index);
 		});
 	}
@@ -115,10 +126,18 @@ function RenderScanPage({id: uId}: ZId) {
 		<Form onSubmit={submit} context={{disableSubmit: status, disabled: status}}>
 			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
 			<div className="flex gap-2 items-center">
-				<Input className="flex-1" control={control} fieldName="id" />
-				<Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button>
-				<Button onClick={removeUid}>Batalkan</Button>
-				{id && (
+				<Input
+					disabled={false}
+					className="flex-1"
+					control={control}
+					fieldName="id"
+				/>
+				{/* <Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button> */}
+				<Button
+					icon={status ? 'faEyeSlash' : 'faCircleXmark'}
+					onClick={removeUid}
+				/>
+				{id && !!data && (
 					<Button disabled={status} type="submit">
 						{submitText}
 					</Button>

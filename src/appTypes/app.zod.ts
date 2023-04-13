@@ -106,7 +106,7 @@ export const tCustomerPO = zId.extend({
 export type TCustomerPOExtended = z.infer<typeof tCustomerPOExtended>;
 export const tCustomerPOExtended = tCustomerPO.extend({
 	customer: tCustomer.deepPartial().nullish(),
-	po_item: z.array(tPOItem).optional(),
+	po_item: z.array(tPOItem).min(1).optional(),
 });
 
 export type TMesin = z.infer<typeof tMesin>;

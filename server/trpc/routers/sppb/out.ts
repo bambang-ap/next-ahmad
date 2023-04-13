@@ -28,6 +28,7 @@ type GetPage = PagingResult<TCustomerSPPBOut>;
 
 const sppbOutRouters = router({
 	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
+		const routerCaller = appRouter.createCaller(ctx);
 		return checkCredentialV2(
 			ctx,
 			async (): Promise<
@@ -46,20 +47,9 @@ const sppbOutRouters = router({
 					await OrmKendaraan.findOne({where: {id: id_kendaraan}})
 				)?.dataValues;
 
-				// const dhsd = listPo.forEach(po => {
-				// 	return po.sppb_in.map(e = > {
-				// 		return Object.entries(e.items).map(([id_item, item]) => {
-				// 			return '<></>;';
-				// 		});
-				// 	});
-				// });
-
 				return {
 					...data?.dataValues,
-					data: {
-						customer,
-						kendaraan,
-					},
+					data: {customer, kendaraan},
 				};
 			},
 		);

@@ -2,12 +2,7 @@ import {useRef} from 'react';
 
 import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
 
-import {
-	ModalTypePreview,
-	TCustomer,
-	TCustomerSPPBOut,
-	TKendaraan,
-} from '@appTypes/app.type';
+import {ModalTypePreview, TCustomerSPPBOut} from '@appTypes/app.type';
 import {
 	Button,
 	Form,
@@ -20,9 +15,8 @@ import {
 	Text,
 } from '@components';
 import {defaultErrorMutation} from '@constants';
-import {CRUD_ENABLED} from '@enum';
 import {getLayout} from '@hoc';
-import {useTableFilter} from '@hooks';
+import {useSppbOut, useTableFilter} from '@hooks';
 import {RenderListMesin} from '@pageComponent/scan_GenerateQR';
 import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
 import {modalTypeParser, qtyMap} from '@utils';
@@ -118,19 +112,6 @@ export default function SPPBOUT() {
 			</Modal>
 		</>
 	);
-}
-
-function useSppbOut() {
-	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();
-	const {data: dataFg = []} = trpc.sppb.out.getFg.useQuery();
-	const {data: dataKendaraan = []} = trpc.basic.get.useQuery<any, TKendaraan[]>(
-		{target: CRUD_ENABLED.KENDARAAN},
-	);
-	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
-		target: CRUD_ENABLED.CUSTOMER,
-	});
-
-	return {invoiceId, dataFg, dataKendaraan, dataCustomer};
 }
 
 export function SppbOutModalChild({

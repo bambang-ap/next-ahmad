@@ -1,8 +1,11 @@
 import {Button, RootTable as Table, Text} from '@components';
-import {dateUtils, generatePDF} from '@utils';
+import {useSppbOut} from '@hooks';
+import {dateUtils, generatePDF, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
-const {Td, Tr} = Table;
+import {qtyList} from './ModalChild_po';
+
+const {Td, Tr, THead} = Table;
 
 export function SPPBOutGenerateQR(props: {
 	id: string;
@@ -19,6 +22,8 @@ export function SPPBOutGenerateQR(props: {
 		className = 'flex flex-col gap-2 p-4 w-[500px] -z-10 fixed',
 		// className = 'flex flex-col gap-2 p-4 w-[500px]',
 	} = props;
+
+	const {dataFg} = useSppbOut();
 
 	// const {data: qrImage} = trpc.qr.useQuery<any, string>(
 	// 	{input: id},
@@ -57,17 +62,63 @@ export function SPPBOutGenerateQR(props: {
 						</Td>
 					</Tr>
 				</Table>
-				{/* <Table>
+				<Table>
+					<THead>
+						<Tr>
+							<Td>No</Td>
+							<Td>Nama Barang</Td>
+							{qtyList.map(num => (
+								<Td key={num}>Qty</Td>
+							))}
+							<Td>Lot No Customer</Td>
+							<Td>Lot No IMI</Td>
+							<Td>No PO</Td>
+							<Td>Proses</Td>
+						</Tr>
+					</THead>
 					{detail?.po.map(po => {
 						return (
 							<>
 								{po.sppb_in.map(e => {
+									const selectedSppbIn = dataFg.find(
+										eee => e.id_sppb_in === eee.kanban?.dataSppbIn?.id,
+									);
 									return (
 										<>
-											{Object.entries(e.items).map(([id_item, item]) => {
-												return <>
-												
-												</>;
+											{Object.entries(e.items).map(([id_item, item], index) => {
+												const {itemDetail} =
+													selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+														eItem => eItem.id === id_item,
+													) ?? {};
+												return (
+													<>
+														<Tr>
+															<Td>{index + 1}</Td>
+															<Td>{itemDetail?.name}</Td>
+															{qtyMap(({num, qtyKey, unitKey}) => {
+																return (
+																	<Td key={num}>
+																		{item[qtyKey]} {itemDetail?.[unitKey]}
+																	</Td>
+																);
+															})}
+															<Td>
+																{selectedSppbIn?.kanban.dataSppbIn?.lot_no}
+															</Td>
+															<Td>{selectedSppbIn?.lot_no_imi}</Td>
+															<Td>{selectedSppbIn?.kanban.dataPo?.nomor_po}</Td>
+															<Td className="flex-col gap-2">
+																{selectedSppbIn?.kanban.listMesin?.map(m => {
+																	return m.instruksi.map(ins => (
+																		<Text key={ins.dataInstruksi?.id}>
+																			{ins.dataInstruksi?.name}
+																		</Text>
+																	));
+																})}
+															</Td>
+														</Tr>
+													</>
+												);
 											})}
 										</>
 									);
@@ -75,7 +126,7 @@ export function SPPBOutGenerateQR(props: {
 							</>
 						);
 					})}
-				</Table> */}
+				</Table>
 			</div>
 		</>
 	);
