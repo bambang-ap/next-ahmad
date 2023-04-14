@@ -92,6 +92,7 @@ export function KanbanModalChild({
 					control={control}
 					data={selectMapper(dataCustomer ?? [], 'id', 'name')}
 					fieldName="id_customer"
+					label="Customer"
 				/>
 				{idCustomer && (
 					<Select
@@ -99,6 +100,7 @@ export function KanbanModalChild({
 						control={control}
 						fieldName="id_po"
 						firstOption="- Pilih PO -"
+						label="PO"
 						data={selectMapper(
 							dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
 							'id',
@@ -112,6 +114,7 @@ export function KanbanModalChild({
 						className="flex-1"
 						control={control}
 						fieldName="id_sppb_in"
+						label="Surat Jalan Masuk"
 						firstOption="- Pilih Surat Jalan -"
 						data={selectMapper(
 							dataSppbIn?.filter(e => e.id_po === id_po) ?? [],
@@ -126,6 +129,7 @@ export function KanbanModalChild({
 						className="flex-1"
 						control={control}
 						fieldName="temp_id_item"
+						label="Item"
 						firstOption="- Tambah Item -"
 						data={selectMapper(
 							selectedSppbIn?.items?.filter(

@@ -86,6 +86,7 @@ export function SppbInModalChild({
 					disabled={isPreviewEdit}
 					control={control}
 					fieldName="id_po"
+					label="PO"
 					firstOption="- Pilih PO -"
 					data={selectMapper(
 						isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),
@@ -99,6 +100,7 @@ export function SppbInModalChild({
 					className="flex-1"
 					control={control}
 					fieldName="id_customer"
+					label="Customer"
 					data={selectMapper(dataCustomer, 'id', 'name')}
 				/>
 				<Input
@@ -107,6 +109,7 @@ export function SppbInModalChild({
 					control={control}
 					fieldName="nomor_surat"
 					placeholder="Nomor surat jalan"
+					label="Nomor Surat"
 				/>
 				<Input
 					className="flex-1"
@@ -114,6 +117,7 @@ export function SppbInModalChild({
 					control={control}
 					fieldName="lot_no"
 					placeholder="Nomor Lot"
+					label="Nomor Lot"
 				/>
 				<Input
 					className="flex-1"
@@ -122,6 +126,7 @@ export function SppbInModalChild({
 					fieldName="tgl"
 					type="date"
 					placeholder="Tanggal surat jalan"
+					label="Tanggal"
 				/>
 			</div>
 
@@ -220,6 +225,7 @@ export function SppbInModalChild({
 											control={control}
 											shouldUnregister
 											fieldName={`po_item.${index}.qty${num}`}
+											label={`Jumlah ${num}`}
 											rightAcc={<Text>{unit}</Text>}
 											rules={{
 												max: {

@@ -92,6 +92,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 												control={control}
 												defaultValue={defaultValue as string}
 												fieldName={`items.${id_item}.${keyQty}`}
+												label={`Jumlah ${num}`}
 												rules={{
 													max: {
 														value: defaultValue,

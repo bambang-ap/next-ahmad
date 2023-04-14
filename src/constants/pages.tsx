@@ -99,7 +99,10 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<TDocument>[] {
-				return [{col: 'doc_no'}, {col: 'keterangan'}];
+				return [
+					{col: 'doc_no', label: 'Document Number'},
+					{col: 'keterangan', label: 'Keterangan'},
+				];
 			},
 			get edit() {
 				return this.add;
@@ -135,9 +138,10 @@ export const allowedPages: Record<string, AllowedPages> = {
 		modalField: {
 			get add(): FieldForm<THardness>[] {
 				return [
-					{col: 'name'},
+					{col: 'name', label: 'Nama'},
 					{
 						col: 'id_kategori',
+						label: 'Pilih Kategori',
 						type: 'select',
 						firstOption: '- Pilih Kategori -',
 						dataQuery: () =>
@@ -171,7 +175,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<THardnessKategori>[] {
-				return [{col: 'name'}];
+				return [{col: 'name', label: 'Kategori'}];
 			},
 			get edit() {
 				return this.add;
@@ -207,9 +211,10 @@ export const allowedPages: Record<string, AllowedPages> = {
 		modalField: {
 			get add(): FieldForm<TMaterial>[] {
 				return [
-					{col: 'name'},
+					{col: 'name', label: 'Nama'},
 					{
 						col: 'id_kategori',
+						label: 'Kategori',
 						type: 'select',
 						firstOption: '- Pilih Kategori -',
 						dataQuery: () =>
@@ -243,7 +248,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<TMaterialKategori>[] {
-				return [{col: 'name'}];
+				return [{col: 'name', label: 'Kategori'}];
 			},
 			get edit() {
 				return this.add;
@@ -281,9 +286,10 @@ export const allowedPages: Record<string, AllowedPages> = {
 		modalField: {
 			get add(): FieldForm<TParameter>[] {
 				return [
-					{col: 'name'},
+					{col: 'name', label: 'Nama'},
 					{
 						col: 'id_kategori',
+						label: 'Pilih Kategori',
 						type: 'select',
 						firstOption: '- Pilih Kategori -',
 						dataQuery: () =>
@@ -319,7 +325,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<TParameterKategori>[] {
-				return [{col: 'name'}];
+				return [{col: 'name', label: 'Kategori'}];
 			},
 			get edit() {
 				return this.add;
@@ -345,7 +351,10 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<TMesin>[] {
-				return [{col: 'name'}, {col: 'nomor_mesin'}];
+				return [
+					{col: 'name', label: 'Nama Mesin'},
+					{col: 'nomor_mesin', label: 'Nomor Mesin'},
+				];
 			},
 			get edit() {
 				return this.add;
@@ -371,7 +380,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<TKendaraan>[] {
-				return [{col: 'name'}];
+				return [{col: 'name', label: 'Nama Kendaraan'}];
 			},
 			get edit() {
 				return this.add;
@@ -390,14 +399,14 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.INSTRUKSI_KANBAN,
 		searchKey: 'name',
 		table: {
-			header: ['Name', 'Action'],
+			header: ['Proses', 'Action'],
 			get body(): Body<TInstruksiKanban> {
 				return ['name'];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TInstruksiKanban>[] {
-				return [{col: 'name'}];
+				return [{col: 'name', label: 'Proses'}];
 			},
 			get edit() {
 				return this.add;
@@ -405,9 +414,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah instruksi kanban',
-				edit: 'Ubah instruksi kanban',
-				delete: 'Hapus instruksi kanban',
+				add: 'Tambah proses kanban',
+				edit: 'Ubah proses kanban',
+				delete: 'Hapus proses kanban',
 			},
 		},
 	},
@@ -416,7 +425,19 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.CUSTOMER,
 		searchKey: 'name',
 		table: {
-			header: ['name', 'alamat', 'npwp', 'no_telp', 'Up', 'Action'],
+			header: [
+				'Customer',
+				'Alamat',
+				'NPWP',
+				'No. Telepon',
+				'UP',
+				'Action',
+				'',
+				'',
+				'',
+				'',
+				'',
+			],
 			get body(): Body<TCustomer> {
 				return ['name', 'alamat', 'npwp', 'no_telp', 'up'];
 			},
@@ -424,11 +445,11 @@ export const allowedPages: Record<string, AllowedPages> = {
 		modalField: {
 			get add(): FieldForm<TCustomer>[] {
 				return [
-					{col: 'name'},
-					{col: 'alamat'},
-					{col: 'npwp'},
-					{col: 'no_telp'},
-					{col: 'up'},
+					{col: 'name', label: 'Customer'},
+					{col: 'alamat', label: 'Alamat'},
+					{col: 'npwp', label: 'NPWP'},
+					{col: 'no_telp', label: 'No. Telepon'},
+					{col: 'up', label: 'UP'},
 				];
 			},
 			get edit() {
@@ -465,10 +486,11 @@ export const allowedPages: Record<string, AllowedPages> = {
 		modalField: {
 			get add(): FieldForm<TUser>[] {
 				return [
-					{col: 'name'},
-					{col: 'email'},
+					{col: 'name', label: 'Name'},
+					{col: 'email', label: 'Email'},
 					{
 						col: 'role',
+						label: 'Role',
 						type: 'select',
 						firstOption: '- Pilih Role -',
 						dataQuery: () =>
@@ -476,7 +498,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: TRole[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
-					{col: 'password'},
+					{col: 'password', label: 'Password'},
 				];
 			},
 			get edit(): FieldForm<TUser>[] {
@@ -505,7 +527,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		modalField: {
 			get add(): FieldForm<TRole>[] {
-				return [{col: 'name'}];
+				return [{col: 'name', label: 'Role'}];
 			},
 			get edit() {
 				return this.add;

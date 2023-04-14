@@ -179,7 +179,7 @@ const RenderMenu = (props: {
 										key={role.id}
 										control={control}
 										fieldName={`${id}.role.${role.id}`}
-										label={role.name}
+										label={role.name.ucwords()}
 									/>
 								);
 							})}

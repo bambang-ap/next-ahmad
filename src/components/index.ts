@@ -1,4 +1,5 @@
 export * from './base/Form';
+export * from './base/Gallery';
 export * from './base/Icon';
 export * from './base/ImageWithPreview';
 export * from './base/Input';

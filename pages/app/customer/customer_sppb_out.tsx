@@ -152,13 +152,15 @@ export function SppbOutModalChild({
 				fieldName="invoice_no"
 				defaultValue={invoiceId}
 			/>
-			<Input type="date" control={control} fieldName="date" />
+			<Input type="date" control={control} fieldName="date" label="Tanggal" />
 			<Select
 				control={control}
 				fieldName="id_kendaraan"
+				label="Kendaraan"
 				data={selectMapper(dataKendaraan, 'id', 'name')}
 			/>
 			<Select
+				label="Customer"
 				control={control}
 				fieldName="id_customer"
 				data={selectMapper(dataCustomer, 'id', 'name')}
@@ -191,6 +193,7 @@ export function SppbOutModalChild({
 							<Select
 								className="flex-1"
 								key={formData.id_customer}
+								label="PO"
 								control={control}
 								fieldName={`po.${i}.id_po`}
 								data={dataAvailablePo.filter(
@@ -239,6 +242,7 @@ export function SppbOutModalChild({
 											className="flex-1"
 											key={`${formData.id_customer}${formData.po?.[i]?.id_po}`}
 											fieldName={`po.${i}.sppb_in.${ii}.id_sppb_in`}
+											label="Surat Jalan Masuk"
 											data={selectMapper(
 												availableSppbIn,
 												'kanban.dataSppbIn.id',
@@ -274,7 +278,7 @@ export function SppbOutModalChild({
 										return (
 											<div key={id_item} className="flex items-center gap-2">
 												<Text className="flex-1">{detail?.name}</Text>
-												{qtyMap(({qtyKey, unitKey}) => {
+												{qtyMap(({qtyKey, unitKey, num}) => {
 													const jumlah = item[qtyKey];
 
 													if (!jumlah) return null;
@@ -283,6 +287,7 @@ export function SppbOutModalChild({
 														<Input
 															className="flex-1 bg-white"
 															key={jumlah}
+															label={`Qty ${num}`}
 															type="decimal"
 															// @ts-ignore
 															defaultValue={jumlah}

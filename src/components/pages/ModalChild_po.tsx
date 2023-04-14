@@ -99,6 +99,7 @@ export default function PoModalChild({
 					firstOption="- Pilih customer -"
 					control={control}
 					data={mappedData}
+					label="Customer"
 					fieldName="id_customer"
 				/>
 				<Input
@@ -106,17 +107,20 @@ export default function PoModalChild({
 					disabled={isPreview}
 					control={control}
 					fieldName="nomor_po"
+					label="PO"
 				/>
 				<Input
 					className="flex-1"
 					type="date"
 					disabled={isPreview}
 					control={control}
+					label="Tanggal"
 					fieldName="tgl_po"
 				/>
 				<Input
 					className="flex-1"
 					type="date"
+					label="Due Date"
 					disabled={isPreview}
 					control={control}
 					fieldName="due_date"
@@ -137,6 +141,7 @@ export default function PoModalChild({
 										disabled={isPreview}
 										control={control}
 										fieldName={`po_item.${index}.name`}
+										label="Nama Item"
 									/>
 								</Cell>
 								<Cell>
@@ -145,6 +150,7 @@ export default function PoModalChild({
 										disabled={isPreview}
 										control={control}
 										fieldName={`po_item.${index}.kode_item`}
+										label="Kode Item"
 									/>
 								</Cell>
 								<Cell>
@@ -154,6 +160,7 @@ export default function PoModalChild({
 										control={control}
 										type="decimal"
 										fieldName={`po_item.${index}.harga`}
+										LABEL="Harga"
 									/>
 								</Cell>
 								{qtyList.map(num => {
@@ -165,6 +172,7 @@ export default function PoModalChild({
 												control={control}
 												type="decimal"
 												fieldName={`po_item.${index}.qty${num}`}
+												label="Qty"
 											/>
 											<Select
 												disabled={isPreview}
@@ -173,6 +181,7 @@ export default function PoModalChild({
 												control={control}
 												fieldName={`po_item.${index}.unit${num}`}
 												data={selectUnitData}
+												label="Unit"
 											/>
 										</Cell>
 									);

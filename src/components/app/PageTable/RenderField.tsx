@@ -14,6 +14,7 @@ export function RenderField(props: RenderFieldProps) {
 
 		return (
 			<Select
+				label={label}
 				control={control}
 				fieldName={col}
 				firstOption={item.firstOption}

@@ -93,6 +93,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 									className="flex-1"
 									control={control}
 									fieldName={`list_mesin.${i}.id_mesin`}
+									label="Mesin"
 									data={selectMapper(
 										filteredDataMesin ?? [],
 										'id',
@@ -158,6 +159,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 												<Select
 													control={control}
 													className="flex-1"
+													label="Proses"
 													fieldName={`list_mesin.${i}.instruksi.${ii}.id_instruksi`}
 													data={selectMapper(
 														filteredDataInstruksi ?? [],
@@ -217,6 +219,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 																			<Select
 																				className="flex-1"
 																				control={control}
+																				label={`Kategori ${key.ucfirst()}`}
 																				fieldName={`list_mesin.${i}.instruksi.${ii}.${key}Kategori.${iii}`}
 																				data={selectMapper(
 																					kategoriItemMapper[key] ?? [],
@@ -233,6 +236,7 @@ export function RenderMesin({control, reset}: RenderMesinProps) {
 																			data={data}
 																			className="flex-1"
 																			control={control}
+																			label={key.ucfirst()}
 																			fieldName={`list_mesin.${i}.instruksi.${ii}.${key}.${iii}`}
 																		/>
 																		<Button

@@ -55,7 +55,12 @@ export function ScanDetailKanban({
 				<div className="flex-1 bg-white text-center">
 					Lot no : {kanban.dataSppbIn?.lot_no}
 				</div>
-				<Input className="flex-1" control={control} fieldName={`lot_no_imi`} />
+				<Input
+					className="flex-1"
+					control={control}
+					fieldName="lot_no_imi"
+					label="Nomor Lot IMI"
+				/>
 			</div>
 
 			<div className="flex gap-[1px]">
@@ -127,6 +132,7 @@ export function ScanDetailKanban({
 											}}
 											rightAcc={<Text>{detail?.[unitKey]}</Text>}
 											fieldName={`${fieldKey}.${i}.${num}`}
+											label={`Jumlah ${num}`}
 										/>
 									);
 								})}
@@ -156,6 +162,7 @@ export function ScanDetailKanban({
 												}}
 												rightAcc={<Text>{detail?.[unitKey]}</Text>}
 												fieldName={`item_qc_reject.${i}.${num}`}
+												label={`Jumlah Reject ${num}`}
 											/>
 										);
 									})}
