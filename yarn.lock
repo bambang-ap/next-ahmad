@@ -1725,13 +1725,6 @@ config-chain@^1.1.13:
     ini "^1.3.4"
     proto-list "~1.2.1"
 
-context-api@0.0.2:
-  version "0.0.2"
-  resolved "https://registry.yarnpkg.com/context-api/-/context-api-0.0.2.tgz#e7653b94c5ef80f75aeb368f5f67ed02b7ab2dc1"
-  integrity sha512-/92pnGJS5irtzF2SNFjnNl2c2EIbFiyB88N8/r0CS9xnE3F/+wQKBV2ym7Fr7XVUqV9QvTkmEDuwdiyzaX3M8w==
-  dependencies:
-    immer "^9.0.1"
-
 convert-source-map@^1.5.0:
   version "1.9.0"
   resolved "https://registry.yarnpkg.com/convert-source-map/-/convert-source-map-1.9.0.tgz#7faae62353fb4213366d0ca98358d22e8368b05f"
@@ -3309,11 +3302,6 @@ ignore@^5.2.0:
   version "5.2.4"
   resolved "https://registry.yarnpkg.com/ignore/-/ignore-5.2.4.tgz#a291c0c6178ff1b960befe47fcdec301674a6324"
   integrity sha512-MAb38BcSbH0eHNBxn7ql2NH/kX33OkB3lZ1BNdh7ENeRChHTYsTvWrMubiIAMNS2llXEEgZ1MUOBtXChP3kaFQ==
-
-immer@^9.0.1:
-  version "9.0.21"
-  resolved "https://registry.yarnpkg.com/immer/-/immer-9.0.21.tgz#1e025ea31a40f24fb064f1fef23e931496330176"
-  integrity sha512-bc4NBHqOqSfRW7POMkHd51LvClaeMXpm8dx0e8oE2GORbq5aRK7Bxl4FyzVLdGtLmvLKL7BTDBG5ACQm4HWjTA==
 
 immutability-helper@^3.0.0:
   version "3.1.1"
