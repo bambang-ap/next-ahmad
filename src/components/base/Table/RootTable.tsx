@@ -13,7 +13,7 @@ import {
 import {classNames} from '@utils';
 
 const StyledTableCell = styled(TableCell)(({valign}) => ({
-	padding: 4,
+	padding: 8,
 	verticalAlign: valign,
 }));
 

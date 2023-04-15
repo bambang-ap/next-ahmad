@@ -1,7 +1,12 @@
 import {forwardRef, ReactNode, useImperativeHandle, useState} from 'react';
 
-import {Modal as ModalFlowbite} from 'flowbite-react';
-import {FlowbiteSizes} from 'flowbite-react/lib/esm/components/Flowbite/FlowbiteTheme';
+import {
+	Dialog,
+	DialogActions,
+	DialogContent,
+	DialogProps,
+	DialogTitle,
+} from '@mui/material';
 
 export type ModalRef = {
 	visible: boolean;
@@ -13,7 +18,7 @@ export type ModalProps = {
 	title?: string;
 	visible?: boolean;
 	renderFooter?: false | (() => JSX.Element);
-	size?: keyof FlowbiteSizes;
+	size?: DialogProps['maxWidth'];
 };
 
 export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
@@ -25,11 +30,11 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 		title,
 		renderFooter,
 		visible: initVisible = false,
-		size: modalSize,
+		size: modalSize = 'xl',
 	} = props;
 	const [visible, setVisible] = useState(initVisible);
 
-	const {hide, show}: Pick<ModalRef, 'hide' | 'show'> = {
+	const {hide, show}: Omit<ModalRef, 'visible'> = {
 		async hide(callback) {
 			if (!callback) return setVisible(false);
 
@@ -49,16 +54,14 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	if (!visible) return null;
 
 	return (
-		<ModalFlowbite size={modalSize} show={visible} onClose={() => hide()}>
-			{title && (
-				<ModalFlowbite.Header className="items-center">
-					{title}
-				</ModalFlowbite.Header>
-			)}
-			<ModalFlowbite.Body>{children}</ModalFlowbite.Body>
-			{renderFooter && (
-				<ModalFlowbite.Footer>{renderFooter()}</ModalFlowbite.Footer>
-			)}
-		</ModalFlowbite>
+		<Dialog
+			fullWidth
+			maxWidth={modalSize}
+			open={visible}
+			onClose={() => hide()}>
+			{title && <DialogTitle>{title}</DialogTitle>}
+			<DialogContent>{children}</DialogContent>
+			{renderFooter && <DialogActions>{renderFooter()}</DialogActions>}
+		</Dialog>
 	);
 });

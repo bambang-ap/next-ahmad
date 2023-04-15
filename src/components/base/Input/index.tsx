@@ -120,6 +120,10 @@ function InputComponent<F extends FieldValues>(
 		<div className={classNames({hidden}, className)}>
 			<TextField
 				{...defaultTextFieldProps}
+				InputLabelProps={{
+					...defaultTextFieldProps.InputLabelProps,
+					shrink: type === 'date' ? true : undefined,
+				}}
 				error={!!errorMessage}
 				fullWidth
 				label={label}

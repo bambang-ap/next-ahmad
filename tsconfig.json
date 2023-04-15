@@ -3,6 +3,7 @@
   "display": "Default",
   "compilerOptions": {
     "allowJs": true,
+    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
@@ -11,9 +12,8 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "lib": [
-      "DOM",
-      "DOM.Iterable",
-      "ESNext"
+      "dom",
+      "es2017"
     ],
     "module": "ESNext",
     "moduleResolution": "node",
@@ -24,6 +24,7 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
+    "preserveConstEnums": true,
     "plugins": [
       {
         "name": "next"
@@ -34,12 +35,10 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": true,
+    "strictPropertyInitialization": false,
     "target": "ESNext",
     "baseUrl": ".",
     "paths": {
-      "@tailwind/*": [
-        "./tailwind/*"
-      ],
       "@server": [
         "./server"
       ],
@@ -61,6 +60,15 @@
       "@components": [
         "./src/components"
       ],
+      "@prevComp/*": [
+        "./src/components/prev-components/*"
+      ],
+      "@layouts": [
+        "./src/layouts"
+      ],
+      "@app/*": [
+        "./src/app/*"
+      ],
       "@pageComponent/*": [
         "./src/components/pages/*"
       ],
@@ -80,10 +88,10 @@
         "./src/hooks"
       ],
       "@hoc": [
-        "./src/hoc"
+        "src/hocs"
       ],
       "@formController": [
-        "./src/hoc/withReactFormController"
+        "./src/hocs/withReactFormController"
       ],
       "@utils": [
         "./src/utils"
@@ -103,6 +111,7 @@
   "include": [
     ".next/types/**/*.ts",
     "next-env.d.ts",
+    "src",
     "**/*.ts",
     "**/*.tsx"
   ]

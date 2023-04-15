@@ -1,6 +1,6 @@
 import {useAuth} from '@hooks';
 
-export default function Home() {
+export default function Index() {
 	useAuth();
 
 	return null;

@@ -1,10 +1,18 @@
-/** @type {import('next').NextConfig} */
-const nextConfig = {
-	images: {
-		domains: ['flowbite.com'],
+const withImages = require('next-images');
+
+const redirects = {
+	experimental: {
+		appDir: false
 	},
-	reactStrictMode: false,
-	swcMinify: true,
+	async redirects() {
+		return [
+			{
+				source: '/app',
+				destination: '/app',
+				permanent: true
+			}
+		];
+	}
 };
 
-module.exports = nextConfig;
+module.exports = withImages(redirects);

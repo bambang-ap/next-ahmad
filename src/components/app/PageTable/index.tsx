@@ -29,7 +29,7 @@ const RenderPage = ({path}: {path: string}) => {
 		text,
 		table,
 		enumName: target,
-		searchKey,
+		searchKey
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalRef = useRef<ModalRef>(null);
@@ -37,7 +37,7 @@ const RenderPage = ({path}: {path: string}) => {
 		...defaultErrorMutation,
 		onSuccess() {
 			refetch();
-		},
+		}
 	});
 
 	const {formValue, hookForm} = useTableFilter();
@@ -46,7 +46,7 @@ const RenderPage = ({path}: {path: string}) => {
 	const {data: dataTable, refetch} = trpc.basic.getPage.useQuery({
 		target,
 		searchKey,
-		...formValue,
+		...formValue
 	});
 
 	const isOnCustomer = target === CRUD_ENABLED.CUSTOMER;
@@ -84,7 +84,7 @@ const RenderPage = ({path}: {path: string}) => {
 	return (
 		<>
 			<Modal title={modalTitle} ref={modalRef}>
-				<form onSubmit={submit}>
+				<form onSubmit={submit} className="flex flex-col gap-2">
 					<ModalChild path={path} control={control} />
 				</form>
 			</Modal>

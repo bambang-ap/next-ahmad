@@ -1,7 +1,7 @@
 import {Op} from 'sequelize';
 import {z} from 'zod';
 
-import {PagingResult} from '@appTypes/app.type';
+import {PagingResult, UQtyList} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	TCustomer,
@@ -10,7 +10,7 @@ import {
 	TPOItem,
 	tPOItem,
 } from '@appTypes/app.zod';
-import {defaultLimit} from '@constants';
+import {defaultLimit, qtyList} from '@constants';
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -18,7 +18,6 @@ import {
 	OrmCustomerSPPBIn,
 	OrmPOItemSppbIn,
 } from '@database';
-import {qtyList, UQtyList} from '@pageComponent/ModalChild_po';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 

@@ -80,6 +80,7 @@ export function TableFilter<T>({
 					<div className="flex items-center gap-2">{topComponent}</div>
 					<div className="flex gap-2 w-1/2">
 						<Select
+							disableClear
 							label="Data per halaman"
 							data={selectData}
 							control={control}

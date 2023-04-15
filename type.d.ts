@@ -1,4 +1,17 @@
+import type {ReactElement, ReactNode} from 'react';
+
 type TNextApi = (req: NextApiRequest, res: NextApiResponse) => void;
+
+declare module 'next' {
+	export declare type NextPage<P = {}, IP = P> = NextComponentType<
+		NextPageContext,
+		IP,
+		P
+	> & {
+		getLayout?: (page: ReactElement) => ReactNode;
+	};
+}
+
 declare namespace NodeJS {
 	interface ProcessEnv {
 		AUTH_SECRET: string;

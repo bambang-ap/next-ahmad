@@ -22,7 +22,7 @@ export default function SignIn() {
 
 	useEffect(() => {
 		if (status === 'authenticated') replace('/app');
-	}, [status, replace]);
+	}, [status]);
 
 	function toggleMethod() {
 		setUsingQr(v => !v);

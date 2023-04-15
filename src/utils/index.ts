@@ -1,12 +1,11 @@
 import {ReactNode} from 'react';
 
-import classnames from 'classnames';
+import classnames from 'clsx';
 import jsPDF from 'jspdf';
 import moment from 'moment';
 
 import {ModalTypePreview, TScanItem, TScanTarget} from '@appTypes/app.zod';
-import {formatDate, formatFull, formatHour} from '@constants';
-import {qtyList} from '@pageComponent/ModalChild_po';
+import {formatDate, formatFull, formatHour, qtyList} from '@constants';
 
 export const classNames = classnames;
 export const dateUtils = {

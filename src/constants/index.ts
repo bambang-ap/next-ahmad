@@ -10,6 +10,7 @@ export * from './pages';
 export * from './sizes';
 
 export const defaultLimit = 10;
+export const qtyList = [1, 2, 3] as const;
 
 export const focusInputClassName =
 	'border-2 border-transparent focus-within:border-app-secondary-03';
@@ -38,7 +39,7 @@ export const defaultInstruksi: TKanban['list_mesin'][number]['instruksi'][number
 	};
 
 export const defaultTextFieldProps: TextFieldProps = {
-	InputLabelProps: {shrink: true},
+	// InputLabelProps: { shrink: true },
 	variant: 'filled',
 };
 

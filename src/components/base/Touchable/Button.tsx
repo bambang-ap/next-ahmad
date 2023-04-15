@@ -31,8 +31,7 @@ export function Button(props: ButtonProps) {
 	return (
 		<MUIButton
 			color={variant}
-			// variant="contained"
-			// NOTE: Sementara
+			variant="contained"
 			sx={{textTransform: 'none'}}
 			className={classNames('min-h-[36px]', className)}
 			{...rest}>

@@ -1,3 +1,4 @@
+import {qtyList} from '@constants';
 import type {RouterOutput} from '@trpc/routers';
 
 import type {
@@ -60,7 +61,7 @@ export type {
 } from './app.zod';
 
 export type TDataScan = {dataKanban: RouterOutput['kanban']['get']} & TScan;
-// export type TDataScan = TScan | undefined;
+export type UQtyList = `qty${typeof qtyList[number]}`;
 
 export type PagingResult<T> = {
 	rows: T[];

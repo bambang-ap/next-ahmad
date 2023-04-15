@@ -22,6 +22,7 @@ export type SelectProps = {
 	data?: SelectPropsData[];
 	label?: string;
 	noLabel?: boolean;
+	disableClear?: boolean;
 };
 
 export const Select = withReactFormController(SelectComponent);
@@ -47,6 +48,7 @@ function SelectComponent<F extends FieldValues>({
 	data = [],
 	disabled,
 	controller,
+	disableClear,
 	firstOption,
 	className,
 	noLabel,
@@ -65,6 +67,7 @@ function SelectComponent<F extends FieldValues>({
 	return (
 		<div className={className}>
 			<Autocomplete
+				disableClearable={disableClear}
 				disablePortal
 				options={data}
 				disabled={formContext?.disabled ?? disabled}
