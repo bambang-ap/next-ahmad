@@ -160,7 +160,7 @@ export default function PoModalChild({
 										control={control}
 										type="decimal"
 										fieldName={`po_item.${index}.harga`}
-										LABEL="Harga"
+										label="Harga"
 									/>
 								</Cell>
 								{qtyList.map(num => {

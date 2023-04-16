@@ -75,7 +75,7 @@ export default function POCustomer() {
 			<Modal
 				ref={modalRef}
 				title={modalTitle}
-				size={isDelete ? undefined : '7xl'}>
+				size={isDelete ? undefined : 'xl'}>
 				<form onSubmit={submit}>
 					<PoModalChild reset={reset} control={control} />
 				</form>

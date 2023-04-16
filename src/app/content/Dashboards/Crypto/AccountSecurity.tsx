@@ -13,30 +13,30 @@ import {
 	ListItemAvatar,
 	ListItemText,
 	styled,
-	Switch
+	Switch,
 } from '@mui/material';
 
-import Text from '@prevComp/Text';
+import {Text} from '@components';
 
 const AvatarWrapperError = styled(Avatar)(
 	({theme}) => `
       background-color: ${theme.colors.error.lighter};
       color:  ${theme.colors.error.main};
-`
+`,
 );
 
 const AvatarWrapperSuccess = styled(Avatar)(
 	({theme}) => `
       background-color: ${theme.colors.success.lighter};
       color:  ${theme.colors.success.main};
-`
+`,
 );
 
 const AvatarWrapperWarning = styled(Avatar)(
 	({theme}) => `
       background-color: ${theme.colors.warning.lighter};
       color:  ${theme.colors.warning.main};
-`
+`,
 );
 
 function AccountSecurity() {
@@ -62,7 +62,7 @@ function AccountSecurity() {
 			<List disablePadding>
 				<ListItem
 					sx={{
-						py: 2
+						py: 2,
 					}}>
 					<ListItemAvatar>
 						<AvatarWrapperError>
@@ -76,7 +76,7 @@ function AccountSecurity() {
 							fontWeight: 'bold',
 							color: 'textPrimary',
 							gutterBottom: true,
-							noWrap: true
+							noWrap: true,
 						}}
 						secondary={<Text color="error">Disabled</Text>}
 						secondaryTypographyProps={{variant: 'body2', noWrap: true}}
@@ -91,7 +91,7 @@ function AccountSecurity() {
 				<Divider />
 				<ListItem
 					sx={{
-						py: 2
+						py: 2,
 					}}>
 					<ListItemAvatar>
 						<AvatarWrapperSuccess>
@@ -105,7 +105,7 @@ function AccountSecurity() {
 							fontWeight: 'bold',
 							color: 'textPrimary',
 							gutterBottom: true,
-							noWrap: true
+							noWrap: true,
 						}}
 						secondary={<Text color="success">Active</Text>}
 						secondaryTypographyProps={{variant: 'body2', noWrap: true}}
@@ -120,7 +120,7 @@ function AccountSecurity() {
 				<Divider />
 				<ListItem
 					sx={{
-						py: 2
+						py: 2,
 					}}>
 					<ListItemAvatar>
 						<AvatarWrapperWarning>
@@ -134,7 +134,7 @@ function AccountSecurity() {
 							fontWeight: 'bold',
 							color: 'textPrimary',
 							gutterBottom: true,
-							noWrap: true
+							noWrap: true,
 						}}
 						secondary={<Text color="warning">Not completed</Text>}
 						secondaryTypographyProps={{variant: 'body2', noWrap: true}}

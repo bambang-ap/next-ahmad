@@ -7,7 +7,7 @@ import {
 	List,
 	ListItemButton,
 	ListItemIcon,
-	ListItemText
+	ListItemText,
 } from '@mui/material';
 import {useRouter} from 'next/router';
 
@@ -64,7 +64,6 @@ function Menu(menu: TMenu) {
 				<Icon name={icon} className="text-white" />
 			</ListItemIcon>
 			<ListItemText primary={title} />
-			{hasSubMenu && (open ? <ExpandLess /> : <ExpandMore />)}
 		</ListItemButton>
 	);
 }

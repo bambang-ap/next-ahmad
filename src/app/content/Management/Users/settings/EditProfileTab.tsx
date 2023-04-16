@@ -1,4 +1,3 @@
-
 import DoneTwoToneIcon from '@mui/icons-material/DoneTwoTone';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import {
@@ -8,11 +7,12 @@ import {
 	CardContent,
 	Divider,
 	Grid,
-	Typography
+	Typography,
 } from '@mui/material';
 
+import {Text} from '@components';
 import Label from '@prevComp/Label';
-import Text from '@prevComp/Text';
+
 
 function EditProfileTab() {
 	return (

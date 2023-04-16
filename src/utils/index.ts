@@ -110,8 +110,8 @@ export function toBase64(
 		callback(null);
 	};
 
-	reader.onerror = function (error) {
-		console.log('Error: ', error);
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	reader.onerror = function (_error) {
 		callback(null);
 	};
 }

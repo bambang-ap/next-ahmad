@@ -1,4 +1,3 @@
-
 import CommentTwoToneIcon from '@mui/icons-material/CommentTwoTone';
 import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
 import ShareTwoToneIcon from '@mui/icons-material/ShareTwoTone';
@@ -14,17 +13,17 @@ import {
 	Divider,
 	IconButton,
 	Link,
-	Typography
+	Typography,
 } from '@mui/material';
 import {styled} from '@mui/material/styles';
 
-import Text from '@prevComp/Text';
+import {Text} from '@components';
 
 const CardActionsWrapper = styled(CardActions)(
 	({theme}) => `
      background: ${theme.colors.alpha.black[5]};
      padding: ${theme.spacing(3)};
-`
+`,
 );
 
 function ActivityTab() {
@@ -86,7 +85,7 @@ function ActivityTab() {
 				sx={{
 					display: {xs: 'block', md: 'flex'},
 					alignItems: 'center',
-					justifyContent: 'space-between'
+					justifyContent: 'space-between',
 				}}>
 				<Box>
 					<Button startIcon={<ThumbUpAltTwoToneIcon />} variant="contained">

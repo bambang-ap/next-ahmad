@@ -111,7 +111,7 @@ export default function Kanban() {
 					);
 				}}
 			/>
-			<Modal title={modalTitle} size="7xl" ref={modalRef}>
+			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form
 					onSubmit={submit}
 					context={{disabled: isPreview, hideButton: isPreview}}>

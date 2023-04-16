@@ -30,7 +30,7 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 		title,
 		renderFooter,
 		visible: initVisible = false,
-		size: modalSize = 'xl',
+		size: modalSize,
 	} = props;
 	const [visible, setVisible] = useState(initVisible);
 

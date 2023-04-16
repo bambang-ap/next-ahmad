@@ -8,7 +8,6 @@ import {dateUtils, prevDataScan, qtyMap, scanMapperByStatus} from '@utils';
 
 export function ScanDetailKanban({
 	route,
-	status,
 	control,
 	...kanban
 }: RouterOutput['kanban']['get'][number] & {

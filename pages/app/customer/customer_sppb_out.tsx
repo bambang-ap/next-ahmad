@@ -102,7 +102,7 @@ export default function SPPBOUT() {
 					);
 				}}
 			/>
-			<Modal size="7xl" title={modalTitle} ref={modalRef}>
+			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<Form
 					className="flex flex-col gap-2 max-h-[600px] overflow-y-auto"
 					onSubmit={submit}

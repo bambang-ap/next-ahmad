@@ -115,7 +115,7 @@ export default function SPPBIN() {
 				}}
 			/>
 
-			<Modal size="6xl" title={modalTitle} ref={modalRef}>
+			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit}>
 					<SppbInModalChild reset={reset} control={control} />
 				</form>

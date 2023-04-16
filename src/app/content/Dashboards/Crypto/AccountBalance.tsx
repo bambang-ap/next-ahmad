@@ -13,12 +13,12 @@ import {
 	ListItemText,
 	styled,
 	Typography,
-	useTheme
+	useTheme,
 } from '@mui/material';
 import type {ApexOptions} from 'apexcharts';
 
+import {Text} from '@components';
 import {Chart} from '@prevComp/Chart';
-import Text from '@prevComp/Text';
 
 const AvatarSuccess = styled(Avatar)(
 	({theme}) => `
@@ -27,7 +27,7 @@ const AvatarSuccess = styled(Avatar)(
       width: ${theme.spacing(8)};
       height: ${theme.spacing(8)};
       box-shadow: ${theme.colors.shadows.success};
-`
+`,
 );
 
 const ListItemAvatarWrapper = styled(ListItemAvatar)(
@@ -53,7 +53,7 @@ const ListItemAvatarWrapper = styled(ListItemAvatar)(
     height: ${theme.spacing(4.5)};
     width: ${theme.spacing(4.5)};
   }
-`
+`,
 );
 
 function AccountBalance() {
@@ -64,24 +64,24 @@ function AccountBalance() {
 			background: 'transparent',
 			stacked: false,
 			toolbar: {
-				show: false
-			}
+				show: false,
+			},
 		},
 		plotOptions: {
 			pie: {
 				donut: {
-					size: '60%'
-				}
-			}
+					size: '60%',
+				},
+			},
 		},
 		colors: ['#ff9900', '#1c81c2', '#333', '#5c6ac0'],
 		dataLabels: {
 			enabled: true,
-			formatter (val) {
+			formatter(val) {
 				return val + '%';
 			},
 			style: {
-				colors: [theme.colors.alpha.trueWhite[100]]
+				colors: [theme.colors.alpha.trueWhite[100]],
 			},
 			background: {
 				enabled: true,
@@ -96,8 +96,8 @@ function AccountBalance() {
 					left: 1,
 					blur: 1,
 					color: theme.colors.alpha.black[70],
-					opacity: 0.5
-				}
+					opacity: 0.5,
+				},
 			},
 			dropShadow: {
 				enabled: true,
@@ -105,25 +105,25 @@ function AccountBalance() {
 				left: 1,
 				blur: 1,
 				color: theme.colors.alpha.black[50],
-				opacity: 0.5
-			}
+				opacity: 0.5,
+			},
 		},
 		fill: {
-			opacity: 1
+			opacity: 1,
 		},
 		labels: ['Bitcoin', 'Ripple', 'Cardano', 'Ethereum'],
 		legend: {
 			labels: {
-				colors: theme.colors.alpha.trueWhite[100]
+				colors: theme.colors.alpha.trueWhite[100],
 			},
-			show: false
+			show: false,
 		},
 		stroke: {
-			width: 0
+			width: 0,
 		},
 		theme: {
-			mode: theme.palette.mode
-		}
+			mode: theme.palette.mode,
+		},
 	};
 
 	const chartSeries = [10, 20, 25, 45];
@@ -135,7 +135,7 @@ function AccountBalance() {
 					<Box p={4}>
 						<Typography
 							sx={{
-								pb: 3
+								pb: 3,
 							}}
 							variant="h4">
 							Account Balance
@@ -153,12 +153,12 @@ function AccountBalance() {
 							<Box
 								display="flex"
 								sx={{
-									py: 4
+									py: 4,
 								}}
 								alignItems="center">
 								<AvatarSuccess
 									sx={{
-										mr: 2
+										mr: 2,
 									}}
 									variant="rounded">
 									<TrendingUp fontSize="large" />
@@ -187,7 +187,7 @@ function AccountBalance() {
 				</Grid>
 				<Grid
 					sx={{
-						position: 'relative'
+						position: 'relative',
 					}}
 					display="flex"
 					alignItems="center"
@@ -197,7 +197,7 @@ function AccountBalance() {
 					<Box
 						component="span"
 						sx={{
-							display: {xs: 'none', md: 'inline-block'}
+							display: {xs: 'none', md: 'inline-block'},
 						}}>
 						<Divider absolute orientation="vertical" />
 					</Box>
@@ -221,7 +221,7 @@ function AccountBalance() {
 								<List
 									disablePadding
 									sx={{
-										width: '100%'
+										width: '100%',
 									}}>
 									<ListItem disableGutters>
 										<ListItemAvatarWrapper>
@@ -236,7 +236,7 @@ function AccountBalance() {
 											secondary="Bitcoin"
 											secondaryTypographyProps={{
 												variant: 'subtitle2',
-												noWrap: true
+												noWrap: true,
 											}}
 										/>
 										<Box>
@@ -259,7 +259,7 @@ function AccountBalance() {
 											secondary="Ripple"
 											secondaryTypographyProps={{
 												variant: 'subtitle2',
-												noWrap: true
+												noWrap: true,
 											}}
 										/>
 										<Box>
@@ -282,7 +282,7 @@ function AccountBalance() {
 											secondary="Cardano"
 											secondaryTypographyProps={{
 												variant: 'subtitle2',
-												noWrap: true
+												noWrap: true,
 											}}
 										/>
 										<Box>
@@ -305,7 +305,7 @@ function AccountBalance() {
 											secondary="Ethereum"
 											secondaryTypographyProps={{
 												variant: 'subtitle2',
-												noWrap: true
+												noWrap: true,
 											}}
 										/>
 										<Box>

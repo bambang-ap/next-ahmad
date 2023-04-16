@@ -51,6 +51,7 @@ function App(props: AppProps) {
 		emotionCache = clientSideEmotionCache,
 		pageProps: {session, ...pageProps},
 	} = props;
+	// @ts-ignore
 	const getLayout = Component.getLayout ?? (page => page);
 
 	Router.events.on('routeChangeStart', nProgress.start);
