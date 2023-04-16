@@ -10,6 +10,8 @@ import './globals.css';
 
 import type {ReactElement, ReactNode} from 'react';
 
+import {SidebarProvider} from '@app/contexts/SidebarContext';
+import ThemeProvider from '@app/theme/ThemeProvider';
 import {CacheProvider, EmotionCache} from '@emotion/react';
 import AdapterDateFns from '@mui/lab/AdapterDateFns';
 import LocalizationProvider from '@mui/lab/LocalizationProvider';
@@ -25,8 +27,6 @@ import nProgress from 'nprogress';
 import 'nprogress/nprogress.css';
 import {RecoilRoot} from 'recoil';
 
-import {SidebarProvider} from '@app/contexts/SidebarContext';
-import ThemeProvider from '@app/theme/ThemeProvider';
 import {createEmotionCache} from '@hoc';
 import {trpc} from '@utils/trpc';
 
