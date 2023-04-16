@@ -8,6 +8,9 @@ import {
 	DialogTitle,
 } from '@mui/material';
 
+import {Icon} from './Icon';
+import {Text} from './Text';
+
 export type ModalRef = {
 	visible: boolean;
 	show: (callback?: () => Promise<void>) => void;
@@ -59,7 +62,18 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 			maxWidth={modalSize}
 			open={visible}
 			onClose={() => hide()}>
-			{title && <DialogTitle>{title}</DialogTitle>}
+			{title && (
+				<DialogTitle>
+					<div className="flex justify-between items-center">
+						<Text>{title}</Text>
+						<Icon
+							name="faClose"
+							onClick={() => hide()}
+							className="text-black text-lg cursor-pointer"
+						/>
+					</div>
+				</DialogTitle>
+			)}
 			<DialogContent>{children}</DialogContent>
 			{renderFooter && <DialogActions>{renderFooter()}</DialogActions>}
 		</Dialog>

@@ -23,7 +23,7 @@ export function Button(props: ButtonProps) {
 		iconClassName,
 		children,
 		icon,
-		variant = 'primary',
+		variant = 'inherit',
 		...rest
 	} = props;
 

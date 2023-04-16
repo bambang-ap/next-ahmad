@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import moment from 'moment';
 
 import {ModalTypePreview, TScanItem, TScanTarget} from '@appTypes/app.zod';
-import {formatDate, formatFull, formatHour, qtyList} from '@constants';
+import {formatDateView, formatFullView, formatHour, qtyList} from '@constants';
 
 export const classNames = classnames;
 export const dateUtils = {
@@ -171,7 +171,7 @@ export class Storage<T> {
 function convertDate(date?: string) {
 	if (!date) return null;
 
-	return moment(date).format(formatDate);
+	return moment(date).format(formatDateView);
 }
 
 function convertHour(date?: string) {
@@ -183,5 +183,5 @@ function convertHour(date?: string) {
 function convertFull(date?: string) {
 	if (!date) return null;
 
-	return moment(date).format(formatFull);
+	return moment(date).format(formatFullView);
 }

@@ -20,9 +20,12 @@ export const inputClassName = 'px-2 py-1 rounded bg-white';
 export const defaultExcludeColumn = []; // ['createdAt', 'updatedAt'];
 export const defaultOrderBy = {order: [['createdAt', 'desc'] as OrderItem]};
 
-export const formatDate = 'DD-MM-YYYY';
+export const formatDate = 'YYYY-MM-DD';
 export const formatHour = 'HH:mm:ss';
 export const formatFull = `${formatDate} - ${formatHour}`;
+
+export const formatDateView = 'DD/MM/YYYY';
+export const formatFullView = `${formatDateView} - ${formatHour}`;
 
 export const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,100})?$/;
 export const decimalSchema = z.string().regex(decimalRegex).transform(Number);

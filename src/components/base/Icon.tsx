@@ -23,7 +23,7 @@ export function Icon({name, onClick, className}: IconProps) {
 	return (
 		<FontAwesomeIcon
 			onClick={onClick}
-			className={`text-app-neutral-10 dark:text-white ${className}`}
+			className={`text-app-neutral-10 ${className}`}
 			icon={svgIcon[name as IconName]}
 		/>
 	);

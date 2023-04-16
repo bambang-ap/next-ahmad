@@ -8,6 +8,7 @@ import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilter} from '@hooks';
 import PoModalChild, {FormType} from '@pageComponent/ModalChild_po';
+import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
 POCustomer.getLayout = getLayout;
@@ -96,8 +97,8 @@ export default function POCustomer() {
 							<>
 								<Cell>{nomor_po}</Cell>
 								<Cell>{customer?.name}</Cell>
-								<Cell>{tgl_po}</Cell>
-								<Cell>{due_date}</Cell>
+								<Cell>{dateUtils.date(tgl_po)}</Cell>
+								<Cell>{dateUtils.date(due_date)}</Cell>
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('preview', item)}>
 										Preview

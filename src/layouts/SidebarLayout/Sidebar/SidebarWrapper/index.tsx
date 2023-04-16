@@ -43,7 +43,7 @@ function RenderSidebar() {
 			<Scrollbar>
 				<Box mt={3}>
 					<Box mx={2}>
-						<div className="flex dark:bg-gray-700 rounded-lg flex-col gap-2 p-4">
+						<div className="flex rounded-lg flex-col gap-2 p-4">
 							<Text>Inventory PT. IMI</Text>
 							<div className="flex items-center gap-2">
 								<Icon name="faUserCircle" className="text-3xl" />

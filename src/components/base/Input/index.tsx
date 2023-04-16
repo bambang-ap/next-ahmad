@@ -1,10 +1,20 @@
-import {ChangeEventHandler, useContext, useEffect} from 'react';
+import {ChangeEventHandler, useContext, useEffect, useRef} from 'react';
 
-import {TextField} from '@mui/material';
+import {TextField, useTheme} from '@mui/material';
+import {CalendarPicker} from '@mui/x-date-pickers';
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import moment from 'moment';
 import {FieldValues} from 'react-hook-form';
 
-import {FormContext, Icon, Text} from '@components';
-import {decimalRegex, decimalSchema, defaultTextFieldProps} from '@constants';
+import {FormContext, Icon, Modal, ModalRef, Text} from '@components';
+import {
+	decimalRegex,
+	decimalSchema,
+	defaultTextFieldProps,
+	formatDate,
+	formatDateView,
+} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
@@ -33,6 +43,7 @@ function InputComponent<F extends FieldValues>(
 	props: ControlledComponentProps<F, InputProps>,
 ) {
 	let restProps: MyObject<any> = {};
+	const theme = useTheme();
 	const {
 		hidden,
 		type = 'text',
@@ -49,6 +60,7 @@ function InputComponent<F extends FieldValues>(
 	} = props;
 
 	const formContext = useContext(FormContext);
+	const modalRef = useRef<ModalRef>(null);
 
 	const {
 		fieldState,
@@ -68,84 +80,137 @@ function InputComponent<F extends FieldValues>(
 		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
 	}, [value, defaultValue]);
 
-	if (type === 'checkbox') {
-		function onCheck() {
-			onChange(!value);
-		}
-
-		return (
-			<div
-				className={classNames(
-					`flex items-center cursor-pointer !px-0 !py-0`,
-					{hidden},
-					className,
-				)}
-				onClick={onCheck}>
-				<div className="flex justify-center items-center mr-2 border rounded h-6 w-6">
-					{value && <Icon name="faCheck" />}
+	switch (type) {
+		case 'date': {
+			console.log({value});
+			return (
+				<div className={className}>
+					<TextField
+						{...defaultTextFieldProps}
+						className="cursor-pointer w-full"
+						error={!!errorMessage}
+						fullWidth
+						label={label}
+						disabled
+						onClick={() => modalRef.current?.show()}
+						sx={{
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
+							},
+							'& .MuiFormLabel-root.Mui-disabled': {
+								WebkitTextFillColor: theme.colors.alpha.black[100],
+							},
+							'& .MuiInputBase-root.Mui-disabled': {
+								backgroundColor: theme.colors.alpha.black[10],
+							},
+						}}
+						placeholder={formatDateView}
+						value={value ? moment(value).format(formatDateView) : undefined}
+						InputProps={{
+							startAdornment,
+							endAdornment: <Icon name="faCalendar" />,
+							classes: {input: 'focus:bg-yellow'},
+						}}
+						{...restProps}
+						{...field}
+					/>
+					<Modal ref={modalRef}>
+						<LocalizationProvider dateAdapter={AdapterMoment}>
+							<CalendarPicker
+								date={moment(value)}
+								onChange={date => {
+									modalRef.current?.hide();
+									onChange(date?.format(formatDate));
+								}}
+							/>
+						</LocalizationProvider>
+					</Modal>
 				</div>
-				<Text>{label}</Text>
-				{errorMessage}
-			</div>
-		);
-	}
-
-	const onChangeEvent: ChangeEventHandler<HTMLInputElement> = function (event) {
-		switch (type) {
-			case 'number':
-				return onChange(parseInt(event.target.value));
-			case 'decimal':
-				const strValue = event.target.value
-					.toString()
-					.replace(/[^0-9.]/g, '')
-					.replace(/(?<=\..*)\./g, '');
-
-				const parsed = decimalSchema.safeParse(strValue);
-
-				if (parsed.success) return onChange(parsed.data);
-
-				appliedRules?.({
-					pattern: {
-						message: `"${strValue}" is not a number format`,
-						value: decimalRegex,
-					},
-				});
-				return onChange(strValue);
-			default:
-				return onChange(event);
+			);
 		}
-	};
+		case 'checkbox': {
+			function onCheck() {
+				onChange(!value);
+			}
 
-	return (
-		<div className={classNames({hidden}, className)}>
-			<TextField
-				{...defaultTextFieldProps}
-				InputLabelProps={{
-					...defaultTextFieldProps.InputLabelProps,
-					shrink: type === 'date' ? true : undefined,
-				}}
-				error={!!errorMessage}
-				fullWidth
-				label={label}
-				type={type}
-				disabled={disabled !== undefined ? disabled : formContext?.disabled}
-				sx={{
-					'& .MuiInputBase-input.Mui-disabled': {
-						WebkitTextFillColor: '#000000',
-					},
-				}}
-				placeholder={placeholder}
-				value={value ?? ''}
-				onChange={onChangeEvent}
-				InputProps={{
-					endAdornment,
-					startAdornment,
-					classes: {input: 'focus:bg-yellow'},
-				}}
-				{...restProps}
-				{...field}
-			/>
-			{errorMessage}
-		</div>
-	);
+			return (
+				<div
+					className={classNames(
+						`flex items-center cursor-pointer !px-0 !py-0`,
+						{hidden},
+						className,
+					)}
+					onClick={onCheck}>
+					<div className="flex justify-center items-center mr-2 border rounded h-6 w-6">
+						{value && <Icon name="faCheck" />}
+					</div>
+					<Text>{label}</Text>
+					{errorMessage}
+				</div>
+			);
+		}
+
+		default: {
+			const onChangeEvent: ChangeEventHandler<HTMLInputElement> = function (
+				event,
+			) {
+				switch (type) {
+					case 'number':
+						return onChange(parseInt(event.target.value));
+					case 'decimal':
+						const strValue = event.target.value
+							.toString()
+							.replace(/[^0-9.]/g, '')
+							.replace(/(?<=\..*)\./g, '');
+
+						const parsed = decimalSchema.safeParse(strValue);
+
+						if (parsed.success) return onChange(parsed.data);
+
+						appliedRules?.({
+							pattern: {
+								message: `"${strValue}" is not a number format`,
+								value: decimalRegex,
+							},
+						});
+						return onChange(strValue);
+					default:
+						return onChange(event);
+				}
+			};
+
+			return (
+				<div className={classNames({hidden}, className)}>
+					<TextField
+						{...defaultTextFieldProps}
+						InputLabelProps={{
+							...defaultTextFieldProps.InputLabelProps,
+							// shrink: type === 'date' ? true : undefined,
+						}}
+						error={!!errorMessage}
+						fullWidth
+						label={label}
+						type={type}
+						disabled={disabled !== undefined ? disabled : formContext?.disabled}
+						sx={{
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
+							},
+						}}
+						placeholder={placeholder}
+						value={value ?? ''}
+						onChange={onChangeEvent}
+						InputProps={{
+							endAdornment,
+							startAdornment,
+							classes: {input: 'focus:bg-yellow'},
+						}}
+						{...restProps}
+						{...field}
+					/>
+					{errorMessage}
+				</div>
+			);
+		}
+	}
 }

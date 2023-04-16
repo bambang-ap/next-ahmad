@@ -83,7 +83,7 @@ export default function SPPBOUT() {
 							<Cell>{kendaraan?.name}</Cell>
 							<Cell>{customer?.name}</Cell>
 
-							<Cell>
+							<Cell className="flex gap-2">
 								<SPPBOutGenerateQR {...item} />
 								<Button
 									icon="faMagnifyingGlass"
