@@ -19,6 +19,7 @@ export function KanbanGenerateQR(
 	const {
 		className = 'h-0 overflow-hidden -z-10 fixed',
 		// className = '',
+		docDetail,
 		transform = true,
 		withButton = true,
 		id,
@@ -52,6 +53,7 @@ export function KanbanGenerateQR(
 								<img src={qrImage} alt="" />
 							</Td>
 							<Td colSpan={2} className="flex-col gap-2">
+								<Text>Doc no : {docDetail?.doc_no}</Text>
 								<Text>tgl kanban : {dateUtils.full(sppb.createdAt)}</Text>
 								<Text>tgl sj masuk : {dateUtils.full(dataSppbIn?.tgl)}</Text>
 							</Td>
