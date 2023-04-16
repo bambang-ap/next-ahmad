@@ -1,5 +1,5 @@
 const {
-	compilerOptions: {paths}
+	compilerOptions: {paths},
 } = require('./tsconfig.json');
 
 const aliasesImportGroups = Object.keys(paths).reduce((ret, pathKey) => {
@@ -13,26 +13,21 @@ const aliasesImportGroups = Object.keys(paths).reduce((ret, pathKey) => {
 module.exports = {
 	root: true,
 	env: {
-		es6: true
+		es6: true,
 	},
-	extends: [
-		'next/core-web-vitals',
-		'prettier',
-		'next/core-web-vitals',
-		'plugin:prettier/recommended'
-	],
+	extends: ['next/core-web-vitals', 'prettier'],
 	parser: '@typescript-eslint/parser',
 	plugins: [
 		'eslint-plugin-import-helpers',
 		'@typescript-eslint',
-		'testing-library'
+		'testing-library',
 	],
 	parserOptions: {
 		ecmaFeatures: {
-			jsx: true
+			jsx: true,
 		},
 		ecmaVersion: 2018,
-		sourceType: 'module'
+		sourceType: 'module',
 	},
 	overrides: [
 		{
@@ -57,8 +52,8 @@ module.exports = {
 					{
 						selector: 'default',
 						format: ['camelCase', 'UPPER_CASE', 'PascalCase', 'snake_case'],
-						leadingUnderscore: 'allow'
-					}
+						leadingUnderscore: 'allow',
+					},
 				],
 
 				'import/no-extraneous-dependencies': 0,
@@ -75,8 +70,8 @@ module.exports = {
 						html: 'enforce',
 						custom: 'enforce',
 						explicitSpread: 'enforce',
-						exceptions: ['Image', 'img']
-					}
+						exceptions: ['Image', 'img'],
+					},
 				],
 				'react-hooks/rules-of-hooks': 'error',
 				'react/jsx-wrap-multilines': [
@@ -88,8 +83,8 @@ module.exports = {
 						arrow: 'ignore',
 						condition: 'ignore',
 						logical: 'ignore',
-						prop: 'ignore'
-					}
+						prop: 'ignore',
+					},
 				],
 				'react/destructuring-assignment': 0,
 				'react/jsx-filename-extension': 0,
@@ -100,16 +95,16 @@ module.exports = {
 					2,
 					{
 						selfClosing: 'tag-aligned',
-						nonEmpty: 'after-props'
-					}
+						nonEmpty: 'after-props',
+					},
 				],
 				'react/button-has-type': 0,
 				'react/prop-types': 0,
 				'react/jsx-tag-spacing': [
 					2,
 					{
-						beforeSelfClosing: 'always'
-					}
+						beforeSelfClosing: 'always',
+					},
 				],
 
 				'@typescript-eslint/no-explicit-any': 0,
@@ -135,13 +130,13 @@ module.exports = {
 							['/^react$/'],
 							['/^react/', 'module', 'absolute'],
 							aliasesImportGroups,
-							['parent', 'index', 'sibling']
+							['parent', 'index', 'sibling'],
 						],
-						alphabetize: {order: 'asc', ignoreCase: false}
-					}
-				]
-			}
-		}
+						alphabetize: {order: 'asc', ignoreCase: false},
+					},
+				],
+			},
+		},
 	],
 
 	settings: {
@@ -149,7 +144,7 @@ module.exports = {
 			createClass: 'createReactClass', // Regex for Component Factory to use,
 			// default to "createReactClass"
 			pragma: 'React', // Pragma to use, default to "React"
-			version: 'detect' // React version. "detect" automatically picks the version you have installed.
+			version: 'detect', // React version. "detect" automatically picks the version you have installed.
 			// You can also use `16.0`, `16.3`, etc, if you want to override the detected value.
 			// default to latest and warns if missing
 			// It will default to "detect" in the future
@@ -160,19 +155,19 @@ module.exports = {
 			'forbidExtraProps',
 			{
 				property: 'freeze',
-				object: 'Object'
+				object: 'Object',
 			},
 			{
-				property: 'myFavoriteWrapper'
-			}
+				property: 'myFavoriteWrapper',
+			},
 		],
 		linkComponents: [
 			// Components used as alternatives to <a> for linking, eg. <Link to={ url } />
 			'Hyperlink',
 			{
 				name: 'Link',
-				linkAttribute: 'to'
-			}
-		]
-	}
+				linkAttribute: 'to',
+			},
+		],
+	},
 };

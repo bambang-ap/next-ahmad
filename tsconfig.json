@@ -3,7 +3,6 @@
   "display": "Default",
   "compilerOptions": {
     "allowJs": true,
-    "allowSyntheticDefaultImports": true,
     "declaration": true,
     "declarationMap": true,
     "esModuleInterop": true,
@@ -12,8 +11,9 @@
     "isolatedModules": true,
     "jsx": "preserve",
     "lib": [
-      "dom",
-      "es2017"
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
     ],
     "module": "ESNext",
     "moduleResolution": "node",
@@ -24,7 +24,6 @@
     "noUncheckedIndexedAccess": true,
     "noUnusedLocals": true,
     "noUnusedParameters": true,
-    "preserveConstEnums": true,
     "plugins": [
       {
         "name": "next"
@@ -35,7 +34,6 @@
     "sourceMap": true,
     "strict": true,
     "strictNullChecks": true,
-    "strictPropertyInitialization": false,
     "target": "ESNext",
     "baseUrl": ".",
     "paths": {
@@ -88,7 +86,7 @@
         "./src/hooks"
       ],
       "@hoc": [
-        "src/hocs"
+        "./src/hocs"
       ],
       "@formController": [
         "./src/hocs/withReactFormController"
@@ -111,7 +109,6 @@
   "include": [
     ".next/types/**/*.ts",
     "next-env.d.ts",
-    "src",
     "**/*.ts",
     "**/*.tsx"
   ]

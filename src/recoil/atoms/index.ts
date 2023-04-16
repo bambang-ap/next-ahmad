@@ -29,5 +29,5 @@ export const atomIncludedItem = atom<string[]>({
 
 export const atomUidScan = atom<string[]>({
 	key: 'atomUidScan',
-	default: [uuid()],
+	default: [],
 });

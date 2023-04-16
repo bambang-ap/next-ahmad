@@ -1,5 +1,6 @@
 import {useContext} from 'react';
 
+import {SidebarContext} from '@app/contexts/SidebarContext';
 import {
 	alpha,
 	Box,
@@ -11,12 +12,12 @@ import {
 	styled,
 	useTheme,
 } from '@mui/material';
+import Scrollbar from '@prevComp/Scrollbar';
 import {signOut} from 'next-auth/react';
+import {useRouter} from 'next/router';
 
-import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Icon, Text} from '@components';
 import {useSession} from '@hooks';
-import Scrollbar from '@prevComp/Scrollbar';
 
 import SidebarMenu from '../SidebarMenu';
 
@@ -35,6 +36,7 @@ const SidebarWrapper = styled(Box)(
 function RenderSidebar() {
 	const theme = useTheme();
 	const {data} = useSession();
+	const {replace} = useRouter();
 
 	return (
 		<>
@@ -67,7 +69,10 @@ function RenderSidebar() {
 			/>
 			<Box p={2}>
 				<Button
-					onClick={() => signOut({redirect: false})}
+					onClick={async () => {
+						await signOut({redirect: false});
+						replace('/');
+					}}
 					variant="contained"
 					color="error"
 					size="small"

@@ -1,18 +1,8 @@
-const withImages = require('next-images');
-
-const redirects = {
-	experimental: {
-		appDir: false
-	},
-	async redirects() {
-		return [
-			{
-				source: '/app',
-				destination: '/app',
-				permanent: true
-			}
-		];
-	}
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+	experimental: {appDir: true},
+	reactStrictMode: false,
+	swcMinify: true,
 };
 
-module.exports = withImages(redirects);
+module.exports = nextConfig;
