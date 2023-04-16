@@ -69,10 +69,7 @@ function RenderSidebar() {
 			/>
 			<Box p={2}>
 				<Button
-					onClick={async () => {
-						await signOut({redirect: false});
-						replace('/');
-					}}
+					onClick={() => signOut({redirect: false})}
 					variant="contained"
 					color="error"
 					size="small"

@@ -1,5 +1,6 @@
 import {useContext} from 'react';
 
+import {SidebarContext} from '@app/contexts/SidebarContext';
 import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import {
@@ -14,9 +15,8 @@ import {
 import Head from 'next/head';
 import {useRouter} from 'next/router';
 
-import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Text} from '@components';
-import {useMenu} from '@hooks';
+import {useAuth, useMenu} from '@hooks';
 
 const HeaderWrapper = styled(Box)(
 	({theme}) => `
@@ -38,11 +38,13 @@ const HeaderWrapper = styled(Box)(
 );
 
 function Header() {
-	const {sidebarToggle, toggleSidebar} = useContext(SidebarContext);
+	useAuth();
+
 	const theme = useTheme();
 
 	const {asPath} = useRouter();
 	const {unMappedMenu} = useMenu();
+	const {sidebarToggle, toggleSidebar} = useContext(SidebarContext);
 
 	const selectedMenu = unMappedMenu?.find(e => e.path === asPath);
 

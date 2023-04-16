@@ -5,7 +5,7 @@ import {trpc} from '@utils/trpc';
 
 import {qtyList} from './ModalChild_po';
 
-const {Td, Tr, THead} = Table;
+const {Td, Tr} = Table;
 
 export function SPPBOutGenerateQR(props: {
 	id: string;
@@ -19,8 +19,8 @@ export function SPPBOutGenerateQR(props: {
 		id,
 		transform = true,
 		withButton = true,
-		className = 'flex flex-col gap-2 p-4 w-[500px] -z-10 fixed',
-		// className = 'flex flex-col gap-2 p-4 w-[500px]',
+		className = 'h-0 overflow-hidden -z-10 fixed',
+		// className = '',
 	} = props;
 
 	const {dataFg} = useSppbOut();
@@ -38,32 +38,32 @@ export function SPPBOutGenerateQR(props: {
 				<Button icon="faPrint" onClick={() => generatePDF(tagId)} />
 			)}
 
-			<div
-				id={tagId}
-				className={className}
-				style={{
-					...(transform && {
-						transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
-					}),
-				}}>
-				<Table>
-					<Tr>
-						<Td className="flex-col gap-2">
-							<Text>tanggal sj : {dateUtils.full(detail?.date)}</Text>
-							<Text>no sj : {detail?.invoice_no}</Text>
-							<Text>kendaraan : {detail?.data.kendaraan?.name}</Text>
-							<Text>no pol : </Text>
-						</Td>
-						<Td className="flex-col gap-2">
-							<Text>Customer : {detail?.data.customer?.name}</Text>
-							<Text>Alamat : {detail?.data.customer?.alamat}</Text>
-							<Text>No Telp : {detail?.data.customer?.no_telp}</Text>
-							<Text>UP : {detail?.data.customer?.up}</Text>
-						</Td>
-					</Tr>
-				</Table>
-				<Table>
-					<THead>
+			<div className={className}>
+				<div
+					id={tagId}
+					className="flex flex-col gap-2 p-4 w-[600px]"
+					style={{
+						...(transform && {
+							transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
+						}),
+					}}>
+					<Table>
+						<Tr>
+							<Td className="flex-col gap-2">
+								<Text>tanggal sj : {dateUtils.full(detail?.date)}</Text>
+								<Text>no sj : {detail?.invoice_no}</Text>
+								<Text>kendaraan : {detail?.data.kendaraan?.name}</Text>
+								<Text>no pol : </Text>
+							</Td>
+							<Td className="flex-col gap-2">
+								<Text>Customer : {detail?.data.customer?.name}</Text>
+								<Text>Alamat : {detail?.data.customer?.alamat}</Text>
+								<Text>No Telp : {detail?.data.customer?.no_telp}</Text>
+								<Text>UP : {detail?.data.customer?.up}</Text>
+							</Td>
+						</Tr>
+					</Table>
+					<Table>
 						<Tr>
 							<Td>No</Td>
 							<Td>Nama Barang</Td>
@@ -75,58 +75,65 @@ export function SPPBOutGenerateQR(props: {
 							<Td>No PO</Td>
 							<Td>Proses</Td>
 						</Tr>
-					</THead>
-					{detail?.po.map(po => {
-						return (
-							<>
-								{po.sppb_in.map(e => {
-									const selectedSppbIn = dataFg.find(
-										eee => e.id_sppb_in === eee.kanban?.dataSppbIn?.id,
-									);
-									return (
-										<>
-											{Object.entries(e.items).map(([id_item, item], index) => {
-												const {itemDetail} =
-													selectedSppbIn?.kanban.dataSppbIn?.items?.find(
-														eItem => eItem.id === id_item,
-													) ?? {};
-												return (
-													<>
-														<Tr>
-															<Td>{index + 1}</Td>
-															<Td>{itemDetail?.name}</Td>
-															{qtyMap(({num, qtyKey, unitKey}) => {
-																return (
-																	<Td key={num}>
-																		{item[qtyKey]} {itemDetail?.[unitKey]}
+
+						{detail?.po.map(po => {
+							return (
+								<>
+									{po.sppb_in.map(e => {
+										const selectedSppbIn = dataFg.find(
+											eee => e.id_sppb_in === eee.kanban?.dataSppbIn?.id,
+										);
+										return (
+											<>
+												{Object.entries(e.items).map(
+													([id_item, item], index) => {
+														const {itemDetail} =
+															selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+																eItem => eItem.id === id_item,
+															) ?? {};
+														return (
+															<>
+																<Tr>
+																	<Td>{index + 1}</Td>
+																	<Td>{itemDetail?.name}</Td>
+																	{qtyMap(({num, qtyKey, unitKey}) => {
+																		return (
+																			<Td key={num}>
+																				{item[qtyKey]} {itemDetail?.[unitKey]}
+																			</Td>
+																		);
+																	})}
+																	<Td>
+																		{selectedSppbIn?.kanban.dataSppbIn?.lot_no}
 																	</Td>
-																);
-															})}
-															<Td>
-																{selectedSppbIn?.kanban.dataSppbIn?.lot_no}
-															</Td>
-															<Td>{selectedSppbIn?.lot_no_imi}</Td>
-															<Td>{selectedSppbIn?.kanban.dataPo?.nomor_po}</Td>
-															<Td className="flex-col gap-2">
-																{selectedSppbIn?.kanban.listMesin?.map(m => {
-																	return m.instruksi.map(ins => (
-																		<Text key={ins.dataInstruksi?.id}>
-																			{ins.dataInstruksi?.name}
-																		</Text>
-																	));
-																})}
-															</Td>
-														</Tr>
-													</>
-												);
-											})}
-										</>
-									);
-								})}
-							</>
-						);
-					})}
-				</Table>
+																	<Td>{selectedSppbIn?.lot_no_imi}</Td>
+																	<Td>
+																		{selectedSppbIn?.kanban.dataPo?.nomor_po}
+																	</Td>
+																	<Td className="flex-col gap-2">
+																		{selectedSppbIn?.kanban.listMesin?.map(
+																			m => {
+																				return m.instruksi.map(ins => (
+																					<Text key={ins.dataInstruksi?.id}>
+																						{ins.dataInstruksi?.name}
+																					</Text>
+																				));
+																			},
+																		)}
+																	</Td>
+																</Tr>
+															</>
+														);
+													},
+												)}
+											</>
+										);
+									})}
+								</>
+							);
+						})}
+					</Table>
+				</div>
 			</div>
 		</>
 	);
