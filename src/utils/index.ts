@@ -116,13 +116,13 @@ export function toBase64(
 	};
 }
 
-export function generatePDF(id: string, filename = 'a4.pdf') {
+export function generatePDF(id: string, filename = 'a4') {
 	const doc = new jsPDF({unit: 'px', orientation: 'p'});
 
 	doc.html(document.getElementById(id) ?? '', {
 		windowWidth: 100,
 		callback(document) {
-			document.save(filename);
+			document.save(`${filename}.pdf`);
 		},
 	});
 }

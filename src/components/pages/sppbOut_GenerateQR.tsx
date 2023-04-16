@@ -35,7 +35,7 @@ export function SPPBOutGenerateQR(props: {
 	return (
 		<>
 			{withButton && (
-				<Button icon="faPrint" onClick={() => generatePDF(tagId)} />
+				<Button icon="faPrint" onClick={() => generatePDF(tagId, 'sppb_out')} />
 			)}
 
 			<div className={className}>

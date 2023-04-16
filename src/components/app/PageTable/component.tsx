@@ -62,7 +62,9 @@ export function QRUserLogin(user: TUser) {
 				</div>
 				{dataToken && (
 					<div className="flex gap-2">
-						<Button className="flex-1" onClick={() => generatePDF(tagId)}>
+						<Button
+							className="flex-1"
+							onClick={() => generatePDF(tagId, 'customer')}>
 							Print
 						</Button>
 						<Button

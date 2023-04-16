@@ -35,7 +35,7 @@ export function KanbanGenerateQR(
 	return (
 		<>
 			{withButton && (
-				<Button icon="faPrint" onClick={() => generatePDF(tagId)} />
+				<Button icon="faPrint" onClick={() => generatePDF(tagId, 'kanban')} />
 			)}
 			<div className={className}>
 				<div
