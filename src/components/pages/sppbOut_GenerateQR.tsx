@@ -19,8 +19,8 @@ export function SPPBOutGenerateQR(props: {
 		id,
 		transform = true,
 		withButton = true,
-		// className = 'h-0 overflow-hidden -z-10 fixed',
-		className = '',
+		className = 'h-0 overflow-hidden -z-10 fixed',
+		// className = '',
 	} = props;
 
 	const {dataFg} = useSppbOut();
