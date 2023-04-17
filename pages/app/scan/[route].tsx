@@ -6,6 +6,7 @@ import {useRecoilState} from 'recoil';
 
 import {TDataScan} from '@appTypes/app.type';
 import {TScan, TScanItem, TScanTarget, ZId} from '@appTypes/app.zod';
+import {FormScreenProps} from '@appTypes/props.type';
 import {Scanner} from '@componentBlocks';
 import {Button, Form, Input, ModalRef} from '@components';
 import {defaultErrorMutation} from '@constants';
@@ -19,9 +20,106 @@ Scan.getLayout = getLayout;
 
 type Route = {route: TScanTarget};
 
-export type FormType = Pick<TScan, keyof TScanItem | 'lot_no_imi' | 'id'>;
+export type FormTypeScan = Pick<TScan, keyof TScanItem | 'lot_no_imi' | 'id'>;
+export type FormType = {
+	form: ZId[];
+};
 
 export default function Scan() {
+	const form = useForm<FormType>({defaultValues: {form: []}});
+
+	const {isReady, ...router} = useRouter();
+
+	const {control, reset, watch} = form;
+	const {route} = router.query as Route;
+
+	const ids = watch('form');
+
+	function addNew() {
+		reset(prev => ({form: [...prev.form, {id: ''}]}));
+	}
+
+	if (!isReady) return null;
+
+	return (
+		<div className="flex flex-col gap-2">
+			<Button onClick={addNew}>Tambah</Button>
+			{ids.map((data, index) => (
+				<RenderScanPagee
+					route={route}
+					key={index}
+					index={index}
+					control={control}
+					reset={reset}
+					id={data.id}
+				/>
+			))}
+		</div>
+	);
+}
+
+function RenderScanPagee(
+	props: {
+		index: number;
+	} & ZId &
+		Route &
+		FormScreenProps<FormType, 'control' | 'reset'>,
+) {
+	const {control, reset, id, index, route} = props;
+	const {control: controlScan} = useForm<FormTypeScan>({defaultValues: {id}});
+	const {data: dataScan, refetch} = trpc.scan.get.useQuery(
+		{id, target: route},
+		{enabled: !!id, ...defaultErrorMutation},
+	);
+
+	const {mutate} = trpc.scan.update.useMutation({
+		...defaultErrorMutation,
+		onSuccess: () => refetch(),
+	});
+
+	const currentKey = `status_${route}` as const;
+	const status = dataScan?.[currentKey];
+	const [, , submitText] = scanMapperByStatus(route);
+
+	function remove() {
+		reset(prev => ({form: prev.form.remove(index)}));
+	}
+
+	return (
+		<>
+			<Form
+				// onSubmit={submit}
+				context={{disableSubmit: status, disabled: status}}>
+				{/* <Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} /> */}
+				<div className="flex gap-2">
+					<Input
+						className="flex-1"
+						control={control}
+						fieldName={`form.${index}.id`}
+					/>
+					<Button
+						icon={status ? 'faEyeSlash' : 'faCircleXmark'}
+						onClick={remove}
+					/>
+					{!!dataScan && (
+						<Button disabled={status} type="submit">
+							{submitText}
+						</Button>
+					)}
+					{dataScan && (
+						<RenderDataKanban
+							{...dataScan}
+							control={controlScan}
+							route={route}
+						/>
+					)}
+				</div>
+			</Form>
+		</>
+	);
+}
+
+export function Scann() {
 	const [ids, setIds] = useRecoilState(atomUidScan);
 	const {isReady, ...router} = useRouter();
 
@@ -53,7 +151,11 @@ function RenderScanPage({id: uId}: ZId) {
 	const [ids, setIds] = useRecoilState(atomUidScan);
 
 	const {route} = router.query as Route;
-	const {control, watch, handleSubmit, setValue, reset} = useForm<FormType>();
+	const {control, watch, handleSubmit, setValue, reset} = useForm<FormTypeScan>(
+		{
+			defaultValues: {id: uId},
+		},
+	);
 
 	const id = watch('id');
 	const currentKey = `status_${route}` as const;
@@ -149,7 +251,7 @@ function RenderScanPage({id: uId}: ZId) {
 }
 
 function RenderDataKanban(
-	kanban: TDataScan & Route & {control: Control<FormType>},
+	kanban: TDataScan & Route & {control: Control<FormTypeScan>},
 ) {
 	const {dataKanban, route, control, ...rest} = kanban;
 

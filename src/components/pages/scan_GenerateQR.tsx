@@ -1,4 +1,4 @@
-import {FormType} from 'pages/app/scan/[route]';
+import {FormTypeScan} from 'pages/app/scan/[route]';
 import {Control, useWatch} from 'react-hook-form';
 
 import {KanbanGetRow, RouterOutput, TScanTarget} from '@appTypes/app.type';
@@ -13,7 +13,7 @@ export function ScanDetailKanban({
 }: RouterOutput['kanban']['get'][number] & {
 	route: TScanTarget;
 	status?: boolean;
-	control: Control<FormType>;
+	control: Control<FormTypeScan>;
 }) {
 	const {data} = useSession();
 

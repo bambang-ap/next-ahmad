@@ -53,9 +53,12 @@ export function KanbanGenerateQR(
 								<img src={qrImage} alt="" />
 							</Td>
 							<Td colSpan={2} className="flex-col gap-2">
-								<Text>Doc no : {docDetail?.doc_no}</Text>
+								<div className="p-2 border rounded-md">
+									<Text>Doc no : {docDetail?.doc_no}</Text>
+									<Text>Keterangan : {docDetail?.keterangan}</Text>
+								</div>
 								<Text>tgl kanban : {dateUtils.full(sppb.createdAt)}</Text>
-								<Text>tgl sj masuk : {dateUtils.full(dataSppbIn?.tgl)}</Text>
+								<Text>tgl sj masuk : {dateUtils.date(dataSppbIn?.tgl)}</Text>
 							</Td>
 						</Tr>
 						<Tr>

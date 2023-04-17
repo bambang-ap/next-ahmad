@@ -19,8 +19,8 @@ export function SPPBOutGenerateQR(props: {
 		id,
 		transform = true,
 		withButton = true,
-		className = 'h-0 overflow-hidden -z-10 fixed',
-		// className = '',
+		// className = 'h-0 overflow-hidden -z-10 fixed',
+		className = '',
 	} = props;
 
 	const {dataFg} = useSppbOut();
@@ -47,19 +47,28 @@ export function SPPBOutGenerateQR(props: {
 							transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
 						}),
 					}}>
+					<div className="p-[50px]" />
 					<Table>
 						<Tr>
-							<Td className="flex-col gap-2">
-								<Text>tanggal sj : {dateUtils.full(detail?.date)}</Text>
-								<Text>no sj : {detail?.invoice_no}</Text>
+							<Td width="40%" className="flex-col gap-2">
+								<Text>tanggal : {dateUtils.date(detail?.date)}</Text>
+								<Text>no : {detail?.invoice_no}</Text>
 								<Text>kendaraan : {detail?.data.kendaraan?.name}</Text>
 								<Text>no pol : </Text>
 							</Td>
-							<Td className="flex-col gap-2">
-								<Text>Customer : {detail?.data.customer?.name}</Text>
-								<Text>Alamat : {detail?.data.customer?.alamat}</Text>
-								<Text>No Telp : {detail?.data.customer?.no_telp}</Text>
-								<Text>UP : {detail?.data.customer?.up}</Text>
+							<Td className="flex-col gap-2 items-end">
+								<Text className="text-xs text-right">
+									{`Kepada ${detail?.data.customer?.name}`}
+								</Text>
+								<Text className="text-xs text-right">
+									{`di ${detail?.data.customer?.alamat}`}
+								</Text>
+								<Text className="text-xs text-right">
+									{`No Telp : ${detail?.data.customer?.no_telp}`}
+								</Text>
+								<Text className="text-xs text-right">
+									{`UP : ${detail?.data.customer?.up}`}
+								</Text>
 							</Td>
 						</Tr>
 					</Table>
