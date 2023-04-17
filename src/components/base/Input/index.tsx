@@ -82,7 +82,6 @@ function InputComponent<F extends FieldValues>(
 
 	switch (type) {
 		case 'date': {
-			console.log({value});
 			return (
 				<div className={className}>
 					<TextField

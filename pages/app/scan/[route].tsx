@@ -67,15 +67,15 @@ function RenderScanPagee(
 ) {
 	const {control, reset, id, index, route} = props;
 	const {control: controlScan} = useForm<FormTypeScan>({defaultValues: {id}});
-	const {data: dataScan, refetch} = trpc.scan.get.useQuery(
+	const {data: dataScan /* refetch */} = trpc.scan.get.useQuery(
 		{id, target: route},
 		{enabled: !!id, ...defaultErrorMutation},
 	);
 
-	const {mutate} = trpc.scan.update.useMutation({
-		...defaultErrorMutation,
-		onSuccess: () => refetch(),
-	});
+	// const {mutate} = trpc.scan.update.useMutation({
+	// 	...defaultErrorMutation,
+	// 	onSuccess: () => refetch(),
+	// });
 
 	const currentKey = `status_${route}` as const;
 	const status = dataScan?.[currentKey];

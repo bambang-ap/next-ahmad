@@ -1,6 +1,5 @@
 import {useContext} from 'react';
 
-import {SidebarContext} from '@app/contexts/SidebarContext';
 import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
 import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import {
@@ -15,6 +14,7 @@ import {
 import Head from 'next/head';
 import {useRouter} from 'next/router';
 
+import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Text} from '@components';
 import {useAuth, useMenu} from '@hooks';
 
