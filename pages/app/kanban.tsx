@@ -75,11 +75,11 @@ export default function Kanban() {
 				header={[
 					'Tanggal',
 					'Doc No',
-					'Keterangan',
 					'Nomor PO',
 					'Nomor Surat Jalan',
 					'Customer',
 					'Created By',
+					'Keterangan',
 					'Action',
 				]}
 				renderItem={({Cell, item}) => {

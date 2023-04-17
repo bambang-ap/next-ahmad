@@ -121,10 +121,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.HARDNESS,
 		searchKey: 'name',
 		table: {
-			header: ['Name', 'Kategori', 'Action'],
+			header: ['Kategori', 'Name', 'Action'],
 			get body(): Body<THardness> {
 				return [
-					'name',
 					[
 						'id_kategori',
 						() =>
@@ -132,13 +131,13 @@ export const allowedPages: Record<string, AllowedPages> = {
 						(item: THardness, data: THardnessKategori[]) =>
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
+					'name',
 				];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<THardness>[] {
 				return [
-					{col: 'name', label: 'Nama'},
 					{
 						col: 'id_kategori',
 						label: 'Pilih Kategori',
@@ -149,6 +148,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: THardnessKategori[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
+					{col: 'name', label: 'Nama'},
 				];
 			},
 			get edit() {
@@ -194,10 +194,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.MATERIAL,
 		searchKey: 'name',
 		table: {
-			header: ['Name', 'Kategori', 'Action'],
+			header: ['Kategori', 'Name', 'Action'],
 			get body(): Body<TMaterial> {
 				return [
-					'name',
 					[
 						'id_kategori',
 						() =>
@@ -205,13 +204,13 @@ export const allowedPages: Record<string, AllowedPages> = {
 						(item: TMaterial, data: TMaterialKategori[]) =>
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
+					'name',
 				];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TMaterial>[] {
 				return [
-					{col: 'name', label: 'Nama'},
 					{
 						col: 'id_kategori',
 						label: 'Kategori',
@@ -222,6 +221,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: TMaterialKategori[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
+					{col: 'name', label: 'Nama'},
 				];
 			},
 			get edit() {
@@ -267,10 +267,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.PARAMETER,
 		searchKey: 'name',
 		table: {
-			header: ['Name', 'Kategori', 'Action'],
+			header: ['Kategori', 'Name', 'Action'],
 			get body(): Body<TParameter> {
 				return [
-					'name',
 					[
 						'id_kategori',
 						() =>
@@ -280,13 +279,13 @@ export const allowedPages: Record<string, AllowedPages> = {
 						(item: TParameter, data: TParameterKategori[]) =>
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
+					'name',
 				];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TParameter>[] {
 				return [
-					{col: 'name', label: 'Nama'},
 					{
 						col: 'id_kategori',
 						label: 'Pilih Kategori',
@@ -299,6 +298,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: TParameterKategori[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
+					{col: 'name', label: 'Nama'},
 				];
 			},
 			get edit() {

@@ -25,6 +25,7 @@ export function KanbanGenerateQR(
 		id,
 		items,
 		dataSppbIn,
+		image,
 		...sppb
 	} = props;
 
@@ -174,6 +175,15 @@ export function KanbanGenerateQR(
 						<Tr>
 							<Td colSpan={4}>Keterangan : {sppb.keterangan}</Td>
 						</Tr>
+						{image && (
+							<Tr>
+								<Td colSpan={4} className="flex justify-center">
+									<div className="w-1/2">
+										<img alt="" src={image} />
+									</div>
+								</Td>
+							</Tr>
+						)}
 					</Table>
 				</div>
 			</div>

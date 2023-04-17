@@ -86,6 +86,7 @@ function InputComponent<F extends FieldValues>(
 				<div className={className}>
 					<TextField
 						{...defaultTextFieldProps}
+						InputLabelProps={{shrink: true}}
 						className="cursor-pointer w-full"
 						error={!!errorMessage}
 						fullWidth

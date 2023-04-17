@@ -136,7 +136,7 @@ export function KanbanModalChild({
 								e => !Object.keys(kanbanItems).includes(e.id),
 							) ?? [],
 							'id',
-							'itemDetail.kode_item',
+							'itemDetail.name',
 						)}
 					/>
 				)}

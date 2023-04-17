@@ -78,7 +78,7 @@ export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
 	id_po: z.string(),
 	name: z.string(),
-	kode_item: z.string(),
+	kode_item: z.string().optional(),
 	harga: z.number(),
 	unit1: tItemUnit,
 	unit2: tItemUnit.nullish(),
@@ -196,7 +196,7 @@ export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
 	nomor_surat: z.string(),
 	id_po: z.string(),
-	lot_no: z.string(),
+	lot_no: z.string().optional(),
 	tgl: z.string(),
 });
 
@@ -265,7 +265,7 @@ export const tParameterKategori = zId.extend({
 export type TDocument = z.infer<typeof tDocument>;
 export const tDocument = zId.extend({
 	doc_no: z.string(),
-	keterangan: z.string(),
+	keterangan: z.string().optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });

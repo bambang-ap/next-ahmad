@@ -17,7 +17,6 @@ import {
 import {defaultErrorMutation} from '@constants';
 import {getLayout} from '@hoc';
 import {useSppbOut, useTableFilter} from '@hooks';
-import {RenderListMesin} from '@pageComponent/scan_GenerateQR';
 import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
 import {modalTypeParser, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -253,8 +252,15 @@ export function SppbOutModalChild({
 													!po.sppb_in?.map(y => y.id_sppb_in).includes(e.value),
 											)}
 										/>
-										{/* <Input control={control} fieldName={`po.${i}.sppb_in.${ii}.customer_no_lot`} /> */}
-										{lot_no && <div>cust no lot : {lot_no}</div>}
+										<div className="flex flex-col">
+											{/* <Input control={control} fieldName={`po.${i}.sppb_in.${ii}.customer_no_lot`} /> */}
+											{lot_no && <div>no lot customer : {lot_no}</div>}
+											{availableSppbIn?.[0]?.lot_no_imi && (
+												<div>
+													no lot imi : {availableSppbIn?.[0]?.lot_no_imi}
+												</div>
+											)}
+										</div>
 										<Button
 											onClick={() => {
 												reset(prev => {
@@ -307,7 +313,7 @@ export function SppbOutModalChild({
 										);
 									})}
 									{/* @ts-ignore */}
-									<RenderListMesin data={selectedSppbIn?.kanban.listMesin} />
+									{/* <RenderListMesin data={selectedSppbIn?.kanban.listMesin} /> */}
 								</>
 							);
 						})}
