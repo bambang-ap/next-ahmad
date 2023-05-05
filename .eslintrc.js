@@ -33,7 +33,6 @@ module.exports = {
 		{
 			files: ["*.ts", "*.tsx"],
 			rules: {
-				quotes: 1,
 				"prettier/prettier": 0,
 				"max-len": [1, {code: 150}],
 				"no-return-await": 1,
