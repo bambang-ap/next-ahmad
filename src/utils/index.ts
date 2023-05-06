@@ -1,11 +1,17 @@
-import {ReactNode} from 'react';
+import {ReactNode} from "react";
 
-import classnames from 'clsx';
-import jsPDF from 'jspdf';
-import moment from 'moment';
+import classnames from "clsx";
+import jsPDF from "jspdf";
+import moment from "moment";
 
-import {ModalTypePreview, TScanItem, TScanTarget} from '@appTypes/app.zod';
-import {formatDateView, formatFullView, formatHour, qtyList} from '@constants';
+import {ModalTypePreview, TScanItem, TScanTarget} from "@appTypes/app.zod";
+import {
+	formatDateView,
+	formatFullView,
+	formatHour,
+	paperA4,
+	qtyList,
+} from "@constants";
 
 export const classNames = classnames;
 export const dateUtils = {
@@ -34,12 +40,12 @@ export function scanMapperByStatus(
 	target: TScanTarget,
 ): [jumlah?: string, jumlahNext?: string, submitText?: string] {
 	switch (target) {
-		case 'produksi':
-			return ['Jumlah planning', 'Jumlah Produksi', 'send to QC'];
-		case 'qc':
-			return ['Jumlah produksi', 'Jumlah QC', 'Send to Finish Good'];
-		case 'finish_good':
-			return ['Jumlah qc', 'Jumlah FG', 'Diterima'];
+		case "produksi":
+			return ["Jumlah planning", "Jumlah Produksi", "send to QC"];
+		case "qc":
+			return ["Jumlah produksi", "Jumlah QC", "Send to Finish Good"];
+		case "finish_good":
+			return ["Jumlah qc", "Jumlah FG", "Diterima"];
 		default:
 			return [];
 	}
@@ -47,9 +53,9 @@ export function scanMapperByStatus(
 
 export function prevDataScan(target: TScanTarget, data: TScanItem) {
 	switch (target) {
-		case 'qc':
+		case "qc":
 			return {data: data.item_produksi, reject: data.item_qc_reject};
-		case 'finish_good':
+		case "finish_good":
 			return {data: data.item_qc, reject: null};
 		default:
 			return {data: null, reject: null};
@@ -57,22 +63,22 @@ export function prevDataScan(target: TScanTarget, data: TScanItem) {
 }
 
 export function copyToClipboard(str: string) {
-	const el = document.createElement('textarea');
+	const el = document.createElement("textarea");
 	el.value = str;
-	el.setAttribute('readonly', '');
-	el.style.position = 'absolute';
-	el.style.left = '-9999px';
+	el.setAttribute("readonly", "");
+	el.style.position = "absolute";
+	el.style.left = "-9999px";
 	document.body.appendChild(el);
 	el.select();
-	document.execCommand('copy');
+	document.execCommand("copy");
 	document.body.removeChild(el);
-	alert('Token copied');
+	alert("Token copied");
 }
 
-export function modalTypeParser(type?: ModalTypePreview, pageName = '') {
-	const isEdit = type === 'edit';
-	const isPreview = type === 'preview';
-	const isDelete = type === 'delete';
+export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
+	const isEdit = type === "edit";
+	const isPreview = type === "preview";
+	const isDelete = type === "delete";
 	const isPreviewEdit = isEdit || isPreview;
 
 	return {
@@ -82,16 +88,16 @@ export function modalTypeParser(type?: ModalTypePreview, pageName = '') {
 		isPreviewEdit,
 		get modalTitle() {
 			switch (type) {
-				case 'add':
+				case "add":
 					return `Tambah ${pageName}`;
-				case 'edit':
+				case "edit":
 					return `Ubah ${pageName}`;
-				case 'preview':
+				case "preview":
 					return `Detail ${pageName}`;
-				case 'delete':
+				case "delete":
 					return `Hapus ${pageName}`;
 				default:
-					return '';
+					return "";
 			}
 		},
 	};
@@ -105,7 +111,7 @@ export function toBase64(
 
 	reader.readAsDataURL(file);
 	reader.onload = function () {
-		if (typeof reader?.result === 'string') callback(reader.result);
+		if (typeof reader?.result === "string") callback(reader.result);
 
 		callback(null);
 	};
@@ -116,56 +122,16 @@ export function toBase64(
 	};
 }
 
-export function generatePDF(id: string, filename = 'a4') {
-	const doc = new jsPDF({unit: 'px', orientation: 'p'});
+export function generatePDF(id: string, filename = "a4") {
+	const doc = new jsPDF({unit: "mm", orientation: "p", format: paperA4});
+	const element = document.getElementById(id)!;
 
-	doc.html(document.getElementById(id) ?? '', {
-		windowWidth: 100,
+	doc.html(element, {
+		html2canvas: {scale: paperA4[0] / element.clientWidth},
 		callback(document) {
 			document.save(`${filename}.pdf`);
 		},
 	});
-}
-
-export class Storage<T> {
-	private key!: string;
-	private primitive!: boolean;
-
-	constructor(key: string, defaultValue: T) {
-		this.key = key;
-		this.primitive = this.isPrimitive(defaultValue);
-
-		const isExist = !!this.get();
-		if (!isExist) {
-			const value = this.primitive
-				? defaultValue
-				: JSON.stringify(defaultValue);
-			this.set(value as T);
-		}
-	}
-
-	get() {
-		const data = localStorage.getItem(this.key);
-		try {
-			if (this.primitive) return data as T;
-			return JSON.parse(data!) as T;
-		} catch (err) {
-			return null;
-		}
-	}
-
-	set(value: T) {
-		if (this.primitive) localStorage.setItem(this.key, value as string);
-		else localStorage.setItem(this.key, JSON.stringify(value));
-	}
-
-	del() {
-		localStorage.removeItem(this.key);
-	}
-
-	private isPrimitive(test: any) {
-		return test !== Object(test);
-	}
 }
 
 function convertDate(date?: string) {

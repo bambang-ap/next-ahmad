@@ -1,8 +1,8 @@
-import {useRef} from 'react';
+import {useRef} from "react";
 
-import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
+import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
 
-import {ModalTypePreview, TCustomerSPPBOut} from '@appTypes/app.type';
+import {ModalTypePreview, TCustomerSPPBOut} from "@appTypes/app.type";
 import {
 	Button,
 	Form,
@@ -13,13 +13,13 @@ import {
 	selectMapper,
 	TableFilter,
 	Text,
-} from '@components';
-import {defaultErrorMutation} from '@constants';
-import {getLayout} from '@hoc';
-import {useSppbOut, useTableFilter} from '@hooks';
-import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
-import {modalTypeParser, qtyMap} from '@utils';
-import {trpc} from '@utils/trpc';
+} from "@components";
+import {defaultErrorMutation} from "@constants";
+import {getLayout} from "@hoc";
+import {useSppbOut, useTableFilter} from "@hooks";
+import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
+import {modalTypeParser, qtyMap} from "@utils";
+import {trpc} from "@utils/trpc";
 
 SPPBOUT.getLayout = getLayout;
 
@@ -35,7 +35,7 @@ export default function SPPBOUT() {
 	const {mutate} = trpc.sppb.out.upsert.useMutation();
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
-	const [modalType] = watch(['type']);
+	const [modalType] = watch(["type"]);
 	const {modalTitle, isPreview} = modalTypeParser(modalType);
 
 	const submit = handleSubmit(values => {
@@ -60,13 +60,13 @@ export default function SPPBOUT() {
 				form={hookForm}
 				data={data?.rows}
 				pageCount={data?.totalPage}
-				header={['Nomor Surat', 'Kendaraan', 'Customer', 'Action']}
+				header={["Nomor Surat", "Kendaraan", "Customer", "Action"]}
 				topComponent={
 					<Button
 						onClick={() =>
 							showModal({
-								type: 'add',
-								po: [{id_po: '', sppb_in: [{id_sppb_in: '', items: {}}]}],
+								type: "add",
+								po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
 							})
 						}>
 						Add
@@ -86,14 +86,14 @@ export default function SPPBOUT() {
 								<SPPBOutGenerateQR {...item} />
 								<Button
 									icon="faMagnifyingGlass"
-									onClick={() => showModal({...item, type: 'preview'})}
+									onClick={() => showModal({...item, type: "preview"})}
 								/>
 								<Button
-									onClick={() => showModal({...item, type: 'edit'})}
+									onClick={() => showModal({...item, type: "edit"})}
 									icon="faEdit"
 								/>
 								<Button
-									onClick={() => showModal({id, type: 'delete'})}
+									onClick={() => showModal({id, type: "delete"})}
 									icon="faTrash"
 								/>
 							</Cell>
@@ -136,8 +136,8 @@ export function SppbOutModalChild({
 		dataFg.filter(
 			e => e.kanban.dataSppbIn?.detailPo?.id_customer === formData.id_customer,
 		),
-		'kanban.id_po',
-		'kanban.dataSppbIn.detailPo.nomor_po',
+		"kanban.id_po",
+		"kanban.dataSppbIn.detailPo.nomor_po",
 	);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
@@ -156,13 +156,13 @@ export function SppbOutModalChild({
 				control={control}
 				fieldName="id_kendaraan"
 				label="Kendaraan"
-				data={selectMapper(dataKendaraan, 'id', 'name')}
+				data={selectMapper(dataKendaraan, "id", "name")}
 			/>
 			<Select
 				label="Customer"
 				control={control}
 				fieldName="id_customer"
-				data={selectMapper(dataCustomer, 'id', 'name')}
+				data={selectMapper(dataCustomer, "id", "name")}
 			/>
 			{selectedCustomer && (
 				<>
@@ -178,7 +178,7 @@ export function SppbOutModalChild({
 						const {po = []} = prev;
 						return {
 							...prev,
-							po: [...po, {id_po: '', sppb_in: [{id_sppb_in: '', items: {}}]}],
+							po: [...po, {id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
 						};
 					})
 				}>
@@ -206,7 +206,7 @@ export function SppbOutModalChild({
 								onClick={() =>
 									reset(prev => {
 										const u = prev.po[i];
-										u?.sppb_in.push({id_sppb_in: '', items: {}});
+										u?.sppb_in.push({id_sppb_in: "", items: {}});
 										return {
 											...prev,
 											po: prev.po.replace(i, u!),
@@ -244,8 +244,8 @@ export function SppbOutModalChild({
 											label="Surat Jalan Masuk"
 											data={selectMapper(
 												availableSppbIn,
-												'kanban.dataSppbIn.id',
-												'kanban.dataSppbIn.nomor_surat',
+												"kanban.dataSppbIn.id",
+												"kanban.dataSppbIn.nomor_surat",
 											).filter(
 												e =>
 													e.value === po.sppb_in?.[ii]?.id_sppb_in ||

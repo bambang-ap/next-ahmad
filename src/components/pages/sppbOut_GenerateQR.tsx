@@ -1,26 +1,58 @@
-import {Button, RootTable as Table, Text} from '@components';
-import {useSppbOut} from '@hooks';
-import {dateUtils, generatePDF, qtyMap} from '@utils';
-import {trpc} from '@utils/trpc';
+import {PropsWithChildren} from "react";
 
-import {qtyList} from './ModalChild_po';
+import {Button, RootTable as Table, Text as Txt, TextProps} from "@components";
+import {useSppbOut} from "@hooks";
+import {dateUtils, generatePDF, qtyMap} from "@utils";
+import {trpc} from "@utils/trpc";
+
+import {qtyList} from "./ModalChild_po";
 
 const {Td, Tr} = Table;
+
+function Text(props: TextProps) {
+	return <Txt {...props} color="black" />;
+}
+
+function Section({
+	title,
+	children,
+	mid = ":",
+}: PropsWithChildren<{title: string; mid?: string}>) {
+	return (
+		<div className="flex gap-2 flex-1">
+			<Text className="w-1/6">{title}</Text>
+			<Text>{mid}</Text>
+			<Text className="flex-1">{children}</Text>
+		</div>
+	);
+}
+
+function Sign({children}: PropsWithChildren) {
+	return (
+		<div className="flex flex-col w-full items-center">
+			<Text>{children}</Text>
+			<div className="h-16" />
+			<div className="flex w-full justify-center">
+				<Text>(</Text>
+				<div className="w-1/2" />
+				<Text>)</Text>
+			</div>
+		</div>
+	);
+}
 
 export function SPPBOutGenerateQR(props: {
 	id: string;
 	className?: string;
-	transform?: boolean;
 	withButton?: boolean;
 }) {
 	const tagId = `data-${props.id}`;
 
 	const {
 		id,
-		transform = true,
 		withButton = true,
-		className = 'h-0 overflow-hidden -z-10 fixed',
-		// className = '',
+		// className = "",
+		className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
 
 	const {dataFg} = useSppbOut();
@@ -32,116 +64,145 @@ export function SPPBOutGenerateQR(props: {
 
 	const {data: detail} = trpc.sppb.out.getDetail.useQuery(id, {enabled: !!id});
 
+	function showPdf() {
+		generatePDF(tagId, "sppb_out");
+	}
+
 	return (
 		<>
-			{withButton && (
-				<Button icon="faPrint" onClick={() => generatePDF(tagId, 'sppb_out')} />
-			)}
+			{withButton && <Button icon="faPrint" onClick={showPdf} />}
 
 			<div className={className}>
-				<div
-					id={tagId}
-					className="flex flex-col gap-2 p-4 w-[600px]"
-					style={{
-						...(transform && {
-							transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
-						}),
-					}}>
-					<div className="p-[50px]" />
-					<Table>
-						<Tr>
-							<Td width="40%" className="flex-col gap-2">
-								<Text>tanggal : {dateUtils.date(detail?.date)}</Text>
-								<Text>no : {detail?.invoice_no}</Text>
-								<Text>kendaraan : {detail?.data.kendaraan?.name}</Text>
-								<Text>no pol : </Text>
-							</Td>
-							<Td className="flex-col gap-2 items-end">
-								<Text className="text-xs text-right">
-									{`Kepada ${detail?.data.customer?.name}`}
+				<div id={tagId} className="w-[900px] flex flex-col gap-2 p-4">
+					<div className="flex flex-col gap-2 p-4 border border-black">
+						<div className="flex justify-between">
+							<div className="flex flex-1 flex-col">
+								<Text className="font-extrabold">PT. INDOHEAT METAL INTI</Text>
+								<Text>Jl. Desa Anggadita, Kec. Klari</Text>
+								<Text>Karawang, Jawa Barat 41371</Text>
+								<Section title="Phone">(0267) 432168</Section>
+								<Section title="Fax">(0267) 432268</Section>
+							</div>
+							<div className="flex flex-1 flex-col">
+								<div className="w-[100px] self-end">
+									<img alt="" src="/assets/iso.png" />
+								</div>
+								<Section title="No. Dok">asdf</Section>
+								<Section title="Tgl Efektif">asdf</Section>
+								<div className="flex gap-4 flex-1">
+									<Section title="Revisi">00</Section>
+									<Section title="Terbit">A</Section>
+								</div>
+							</div>
+						</div>
+						<div className="flex justify-between">
+							<div className="flex-1">
+								<Text className="font-extrabold">SURAT JALAN</Text>
+								<Section title="Tanggal">
+									{dateUtils.date(detail?.date)}
+								</Section>
+								<Section title="No. D.O.">{detail?.invoice_no}</Section>
+								<Section title="Kendaraan">
+									{detail?.data.kendaraan?.name}
+								</Section>
+								<Section title="No. Pol."></Section>
+								<Text>
+									Harap diterima dengan baik barang-barang dibawah ini
 								</Text>
-								<Text className="text-xs text-right">
-									{`di ${detail?.data.customer?.alamat}`}
-								</Text>
-								<Text className="text-xs text-right">
-									{`No Telp : ${detail?.data.customer?.no_telp}`}
-								</Text>
-								<Text className="text-xs text-right">
-									{`UP : ${detail?.data.customer?.up}`}
-								</Text>
-							</Td>
-						</Tr>
-					</Table>
-					<Table>
-						<Tr>
-							<Td>No</Td>
-							<Td>Nama Barang</Td>
-							{qtyList.map(num => (
-								<Td key={num}>Qty</Td>
-							))}
-							<Td>Lot No Customer</Td>
-							<Td>Lot No IMI</Td>
-							<Td>No PO</Td>
-							<Td>Proses</Td>
-						</Tr>
+							</div>
+							<div className="flex-1 border border-black p-4">
+								<Text>Kepada : {detail?.data.customer?.name}</Text>
+								<Text>di {detail?.data.customer?.alamat}</Text>
+							</div>
+						</div>
+					</div>
+					<div className="border border-black">
+						<Table>
+							<Tr>
+								<Td>No</Td>
+								<Td>Nama Barang</Td>
+								{qtyList.map(num => (
+									<Td key={num}>Qty</Td>
+								))}
+								<Td>Lot No Customer</Td>
+								<Td>Lot No IMI</Td>
+								<Td>No PO</Td>
+								<Td>Proses</Td>
+							</Tr>
 
-						{detail?.po.map(po => {
-							return (
-								<>
-									{po.sppb_in.map(e => {
-										const selectedSppbIn = dataFg.find(
-											eee => e.id_sppb_in === eee.kanban?.dataSppbIn?.id,
-										);
-										return (
-											<>
-												{Object.entries(e.items).map(
-													([id_item, item], index) => {
-														const {itemDetail} =
-															selectedSppbIn?.kanban.dataSppbIn?.items?.find(
-																eItem => eItem.id === id_item,
-															) ?? {};
-														return (
-															<>
-																<Tr>
-																	<Td>{index + 1}</Td>
-																	<Td>{itemDetail?.name}</Td>
-																	{qtyMap(({num, qtyKey, unitKey}) => {
-																		return (
-																			<Td key={num}>
-																				{item[qtyKey]} {itemDetail?.[unitKey]}
-																			</Td>
-																		);
-																	})}
-																	<Td>
-																		{selectedSppbIn?.kanban.dataSppbIn?.lot_no}
-																	</Td>
-																	<Td>{selectedSppbIn?.lot_no_imi}</Td>
-																	<Td>
-																		{selectedSppbIn?.kanban.dataPo?.nomor_po}
-																	</Td>
-																	<Td className="flex-col gap-2">
-																		{selectedSppbIn?.kanban.listMesin?.map(
-																			m => {
-																				return m.instruksi.map(ins => (
-																					<Text key={ins.dataInstruksi?.id}>
-																						{ins.dataInstruksi?.name}
-																					</Text>
-																				));
-																			},
-																		)}
-																	</Td>
-																</Tr>
-															</>
-														);
-													},
-												)}
-											</>
-										);
-									})}
-								</>
-							);
-						})}
-					</Table>
+							{detail?.po.map(po => {
+								return (
+									<>
+										{po.sppb_in.map(e => {
+											const selectedSppbIn = dataFg.find(
+												eee => e.id_sppb_in === eee.kanban?.dataSppbIn?.id,
+											);
+											return (
+												<>
+													{Object.entries(e.items).map(
+														([id_item, item], index) => {
+															const {itemDetail} =
+																selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+																	eItem => eItem.id === id_item,
+																) ?? {};
+															return (
+																<>
+																	<Tr>
+																		<Td>{index + 1}</Td>
+																		<Td>{itemDetail?.name}</Td>
+																		{qtyMap(({num, qtyKey, unitKey}) => {
+																			return (
+																				<Td key={num}>
+																					{item[qtyKey]} {itemDetail?.[unitKey]}
+																				</Td>
+																			);
+																		})}
+																		<Td>
+																			{
+																				selectedSppbIn?.kanban.dataSppbIn
+																					?.lot_no
+																			}
+																		</Td>
+																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
+																		<Td>
+																			{selectedSppbIn?.kanban.dataPo?.nomor_po}
+																		</Td>
+																		<Td className="flex-col gap-2">
+																			{selectedSppbIn?.kanban.listMesin?.map(
+																				m => {
+																					return m.instruksi.map(ins => (
+																						<Text key={ins.dataInstruksi?.id}>
+																							{ins.dataInstruksi?.name}
+																						</Text>
+																					));
+																				},
+																			)}
+																		</Td>
+																	</Tr>
+																</>
+															);
+														},
+													)}
+												</>
+											);
+										})}
+									</>
+								);
+							})}
+						</Table>
+					</div>
+					<div className="flex justify-between gap-2 p-4 border border-black">
+						<Sign>Penerima,</Sign>
+						<Sign>Kemananan,</Sign>
+						<Sign>Mengetahui,</Sign>
+						<Sign>Pembuat,</Sign>
+					</div>
+					<div className="flex gap-2">
+						<Text>Putih : Accounting</Text>
+						<Text>Merah : Arsip</Text>
+						<Text>Kuning : Security</Text>
+						<Text>Biru & Hijau : Customer</Text>
+					</div>
 				</div>
 			</div>
 		</>
