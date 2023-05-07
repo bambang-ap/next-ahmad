@@ -6,17 +6,25 @@ export class Storage<T> {
 		return test !== Object(test);
 	}
 
-	constructor(key: string, defaultValue: T) {
-		this.key = key;
-		this.primitive = this.isPrimitive(defaultValue);
+	private initialize(defaultValue: T): any {
+		if (typeof window === "undefined") {
+			setTimeout(() => this.initialize(defaultValue), 100);
+			return;
+		}
 
 		const isExist = !!this.get();
 		if (!isExist) {
-			const value = this.primitive
+			const value = this.isPrimitive(defaultValue)
 				? defaultValue
 				: JSON.stringify(defaultValue);
 			this.set(value as T);
 		}
+	}
+
+	constructor(key: string, defaultValue: T) {
+		this.key = key;
+		this.primitive = this.isPrimitive(defaultValue);
+		this.initialize(defaultValue);
 	}
 
 	get() {

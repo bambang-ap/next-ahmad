@@ -2,7 +2,7 @@ import {TextFieldProps} from "@mui/material";
 import type {OrderItem} from "sequelize";
 import {z} from "zod";
 
-import {AppRouter, TKanban} from "@appTypes/app.type";
+import {AppRouter, TKanban, TScanTarget} from "@appTypes/app.type";
 import {TRPCClientError} from "@trpc/client";
 
 export * from "./colors";
@@ -11,6 +11,8 @@ export * from "./sizes";
 
 export const defaultLimit = 10;
 export const qtyList = [1, 2, 3] as const;
+
+export const ScanTarget: TScanTarget[] = ["produksi", "qc", "finish_good"];
 
 export const paperA4: [width: number, height: number] = [210, 297];
 
