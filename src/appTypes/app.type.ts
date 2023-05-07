@@ -1,5 +1,5 @@
-import {qtyList} from '@constants';
-import type {RouterOutput} from '@trpc/routers';
+import {qtyList} from "@constants";
+import type {RouterOutput} from "@trpc/routers";
 
 import type {
 	TDocument,
@@ -15,9 +15,9 @@ import type {
 	TParameterKategori,
 	TScan,
 	TUser,
-} from './app.zod';
+} from "./app.zod";
 
-export type {AppRouter, RouterInput, RouterOutput} from '@trpc/routers';
+export type {AppRouter, RouterInput, RouterOutput} from "@trpc/routers";
 export type {
 	BaseMenu,
 	ItemsSppb,
@@ -29,6 +29,7 @@ export type {
 	TCustomerPOExtended,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	TDashboard,
 	TDocument,
 	THardness,
 	THardnessKategori,
@@ -58,9 +59,9 @@ export type {
 	TUserSignIn,
 	USPPB,
 	ZId,
-} from './app.zod';
+} from "./app.zod";
 
-export type TDataScan = {dataKanban: RouterOutput['kanban']['get']} & TScan;
+export type TDataScan = {dataKanban: RouterOutput["kanban"]["get"]} & TScan;
 export type UQtyList = `qty${typeof qtyList[number]}`;
 
 export type PagingResult<T> = {
@@ -73,9 +74,9 @@ export type PagingResult<T> = {
 
 export type KanbanGetRow = TKanban & {
 	id_customer?: string;
-	items: TKanbanUpsert['items'];
-	dataSppbIn?: RouterOutput['sppb']['in']['get'][number];
-	dataPo?: RouterOutput['customer_po']['get'][number];
+	items: TKanbanUpsert["items"];
+	dataSppbIn?: RouterOutput["sppb"]["in"]["get"][number];
+	dataPo?: RouterOutput["customer_po"]["get"][number];
 	docDetail?: TDocument;
 	dataCreatedBy?: TUser;
 	dataUpdatedBy?: TUser;

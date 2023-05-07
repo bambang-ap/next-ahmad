@@ -1,16 +1,16 @@
-import {FormTypeScan} from 'pages/app/scan/[route]';
-import {Control, useWatch} from 'react-hook-form';
+import {FormTypeScan} from "pages/app/scan/[route]";
+import {Control, useWatch} from "react-hook-form";
 
-import {KanbanGetRow, RouterOutput, TScanTarget} from '@appTypes/app.type';
-import {Input, Text} from '@components';
-import {useSession} from '@hooks';
-import {dateUtils, prevDataScan, qtyMap, scanMapperByStatus} from '@utils';
+import {KanbanGetRow, RouterOutput, TScanTarget} from "@appTypes/app.type";
+import {Input, Text} from "@components";
+import {useSession} from "@hooks";
+import {dateUtils, prevDataScan, qtyMap, scanMapperByStatus} from "@utils";
 
 export function ScanDetailKanban({
 	route,
 	control,
 	...kanban
-}: RouterOutput['kanban']['get'][number] & {
+}: RouterOutput["kanban"]["get"][number] & {
 	route: TScanTarget;
 	status?: boolean;
 	control: Control<FormTypeScan>;
@@ -24,7 +24,7 @@ export function ScanDetailKanban({
 	const {data: dataPrev} = prevDataScan(route, formData);
 
 	const fieldKey = `item_${route}` as const;
-	const isQC = route === 'qc';
+	const isQC = route === "qc";
 
 	return (
 		<div className="bg-slate-700 p-[1px] flex flex-col gap-[1px]">
@@ -55,7 +55,7 @@ export function ScanDetailKanban({
 					Lot no : {kanban.dataSppbIn?.lot_no}
 				</div>
 				<Input
-					className="flex-1"
+					className="flex-1 bg-white"
 					control={control}
 					fieldName="lot_no_imi"
 					label="Nomor Lot IMI"
@@ -194,7 +194,7 @@ export function ScanDetailKanban({
 	);
 }
 
-export function RenderListMesin({data}: {data?: KanbanGetRow['listMesin']}) {
+export function RenderListMesin({data}: {data?: KanbanGetRow["listMesin"]}) {
 	return (
 		<>
 			{data?.map(({dataMesin, instruksi}) => {

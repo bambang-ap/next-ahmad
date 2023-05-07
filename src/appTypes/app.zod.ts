@@ -1,16 +1,16 @@
-import {z} from 'zod';
+import {z} from "zod";
 
-import {defaultLimit} from '@constants';
-import {CRUD_ENABLED} from '@enum';
+import {defaultLimit} from "@constants";
+import {CRUD_ENABLED, Z_TABLES} from "@enum";
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
-	z.literal('add'),
-	z.literal('edit'),
-	z.literal('delete'),
+	z.literal("add"),
+	z.literal("edit"),
+	z.literal("delete"),
 ]);
 export type ModalTypePreview = z.infer<typeof uModalTypePreview>;
-export const uModalTypePreview = z.union([uModalType, z.literal('preview')]);
+export const uModalTypePreview = z.union([uModalType, z.literal("preview")]);
 
 export type TableFormValue = z.infer<typeof tableFormValue>;
 export const tableFormValue = z.object({
@@ -59,11 +59,11 @@ export const tCustomer = zId.extend({
 
 export type TItemUnit = z.infer<typeof tItemUnit>;
 export const tItemUnit = z.union([
-	z.literal('pcs'),
-	z.literal('kg'),
-	z.literal('box'),
-	z.literal('set'),
-	z.literal('carton'),
+	z.literal("pcs"),
+	z.literal("kg"),
+	z.literal("box"),
+	z.literal("set"),
+	z.literal("carton"),
 ]);
 
 const unitQty = {
@@ -310,8 +310,18 @@ export const tScan = zId.extend({
 
 export type TScanTarget = z.infer<typeof tScanTarget>;
 export const tScanTarget = z.union([
-	z.literal('produksi'),
-	z.literal('qc'),
-	z.literal('finish_good'),
-	z.literal('out_barang'),
+	z.literal("produksi"),
+	z.literal("qc"),
+	z.literal("finish_good"),
+	z.literal("out_barang"),
 ]);
+
+export type TDashboard = z.infer<typeof tDashboard>;
+export const tDashboard = z.object({
+	table: Z_TABLES,
+	title: z.string(),
+	path: z.string().optional(),
+	image: z.string().optional(),
+	count: z.number().optional(),
+	className: z.string().optional(),
+});

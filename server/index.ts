@@ -1,13 +1,13 @@
-import moment from 'moment';
-import {NextApiRequest, NextApiResponse} from 'next';
-import {getServerSession} from 'next-auth';
-import {authOptions} from 'pages/api/auth/[...nextauth]';
-import {Model, ModelStatic} from 'sequelize';
+import moment from "moment";
+import {NextApiRequest, NextApiResponse} from "next";
+import {getServerSession} from "next-auth";
+import {authOptions} from "pages/api/auth/[...nextauth]";
+import {Model, ModelStatic} from "sequelize";
 
-import {PagingResult, TSession} from '@appTypes/app.type';
-import {CRUD_ENABLED, TABLES} from '@enum';
-import {TRPCError} from '@trpc/server';
-import {classNames} from '@utils';
+import {PagingResult, TSession} from "@appTypes/app.type";
+import {CRUD_ENABLED, TABLES} from "@enum";
+import {TRPCError} from "@trpc/server";
+import {classNames} from "@utils";
 
 import {
 	OrmCustomer,
@@ -25,7 +25,7 @@ import {
 	OrmParameterKategori,
 	OrmRole,
 	OrmUser,
-} from './database';
+} from "./database";
 
 export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.CUSTOMER]: OrmCustomer,
@@ -46,9 +46,9 @@ export const MAPPING_CRUD_ORM = {
 };
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
-	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
+	if (req.headers["user-agent"]?.toLowerCase()?.includes("postman")) {
 		return {
-			session: {user: {role: 'admin'}} as TSession,
+			session: {user: {role: "admin"}} as TSession,
 			hasSession: true,
 		};
 	}
@@ -80,7 +80,7 @@ export const checkCredential = async (
 ) => {
 	const {hasSession} = await getSession(req, res);
 
-	if (!hasSession) return Response(res).error('You have no credentials');
+	if (!hasSession) return Response(res).error("You have no credentials");
 
 	return callback();
 };
@@ -94,8 +94,8 @@ export async function checkCredentialV2<T>(
 
 	if (!hasSession) {
 		throw new TRPCError({
-			code: 'FORBIDDEN',
-			message: 'You have no credentials',
+			code: "FORBIDDEN",
+			message: "You have no credentials",
 		});
 	}
 
@@ -105,9 +105,9 @@ export async function checkCredentialV2<T>(
 export function generateId() {
 	const now = moment();
 	return classNames(
-		now.format('YY MM DD'),
+		now.format("YY MM DD"),
 		now.valueOf().toString().slice(8),
-	).replace(/\s/g, '');
+	).replace(/\s/g, "");
 }
 
 export async function genInvoice<
@@ -115,7 +115,7 @@ export async function genInvoice<
 	P extends string,
 >(orm: T, prefix: P, length = 5): Promise<`${P}/${string}`> {
 	const count = await orm.count();
-	const countString = (count + 1).toString().padStart(length, '0');
+	const countString = (count + 1).toString().padStart(length, "0");
 	return `${prefix}/${countString}`;
 }
 

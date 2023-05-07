@@ -56,11 +56,8 @@ function RenderScanPage({id: uId}: ZId) {
 	const [ids, setIds] = useRecoilState(atomUidScan);
 
 	const {route} = router.query as Route;
-	const {control, watch, handleSubmit, setValue, reset} = useForm<FormTypeScan>(
-		{
-			defaultValues: {id: uId},
-		},
-	);
+	const {control, watch, handleSubmit, setValue, reset} =
+		useForm<FormTypeScan>();
 
 	const id = watch("id");
 	const currentKey = `status_${route}` as const;
