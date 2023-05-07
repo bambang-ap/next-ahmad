@@ -45,6 +45,8 @@ function DashboardCrypto() {
 	);
 }
 
-DashboardCrypto.getLayout = page => <SidebarLayout>{page}</SidebarLayout>;
+DashboardCrypto.getLayout = (page: any) => (
+	<SidebarLayout>{page}</SidebarLayout>
+);
 
 export default DashboardCrypto;
