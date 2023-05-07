@@ -1,66 +1,64 @@
 {
-  "cSpell.words": [
-    "alamat",
-    "barang",
-    "Hapus",
-    "harga",
-    "Instruksi",
-    "Jalan",
-    "Kanban",
-    "kode",
-    "manajemen",
-    "mesin",
-    "Nomor",
-    "npwp",
-    "PGSQL",
-    "Pilih",
-    "produksi",
-    "SPPB",
-    "SPPBIN",
-    "SPPBOUT",
-    "Tambah",
-    "Tanggal",
-    "telp",
-    "TRPC",
-    "Upsert",
-    "USPPB"
-  ],
-  "[javascript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[javascriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescript]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "[typescriptreact]": {
-    "editor.defaultFormatter": "esbenp.prettier-vscode"
-  },
-  "eslint.validate": [
-    "javascriptreact"
-  ],
-  "editor.codeActionsOnSave": {
-    "source.fixAll.eslint": true
-  },
-  "typescript.tsdk": "node_modules/typescript/lib",
-  "typescript.enablePromptUseWorkspaceTsdk": true,
-  // "codemetrics.nodeconfiguration.AnyKeyword": 100,
-  "editor.formatOnSave": true,
-  "eslint.enable": true,
-  "javascript.preferences.quoteStyle": "single",
-  "prettier.configPath": ".prettierrc.js",
-  "eslint.nodePath": ".eslintrc.js",
-  "prettier.packageManager": "yarn",
-  "prettier.singleQuote": true,
-  "prettier.trailingComma": "es5",
-  "typescript.preferences.quoteStyle": "single",
-  "files.eol": "\n",
-  "tailwindCSS.classAttributes": [
-    "className",
-    "className\\w+",
-    "\\w+ClassName"
-  ],
-  "files.exclude": {},
-  "inlineFold.maskChar": "◦◦◦"
+	"cSpell.words": [
+		"alamat",
+		"barang",
+		"Hapus",
+		"harga",
+		"Instruksi",
+		"Jalan",
+		"Kanban",
+		"kode",
+		"manajemen",
+		"mesin",
+		"Nomor",
+		"npwp",
+		"PGSQL",
+		"Pilih",
+		"produksi",
+		"SPPB",
+		"SPPBIN",
+		"SPPBOUT",
+		"Tambah",
+		"Tanggal",
+		"telp",
+		"TRPC",
+		"Upsert",
+		"USPPB"
+	],
+	"[javascript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[javascriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescript]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"[typescriptreact]": {
+		"editor.defaultFormatter": "esbenp.prettier-vscode"
+	},
+	"eslint.validate": ["javascriptreact"],
+	"editor.codeActionsOnSave": {
+		"source.fixAll.eslint": true
+	},
+	"typescript.tsdk": "node_modules/typescript/lib",
+	"typescript.enablePromptUseWorkspaceTsdk": true,
+	// "codemetrics.nodeconfiguration.AnyKeyword": 100,
+	"editor.formatOnSave": true,
+	"eslint.enable": true,
+	"javascript.preferences.quoteStyle": "single",
+	"prettier.configPath": ".prettierrc.js",
+	"eslint.nodePath": ".eslintrc.js",
+	"prettier.packageManager": "yarn",
+	"prettier.singleQuote": true,
+	"prettier.trailingComma": "es5",
+	"typescript.preferences.quoteStyle": "single",
+	"files.eol": "\n",
+	"tailwindCSS.classAttributes": [
+		"className",
+		"className\\w+",
+		"\\w+ClassName"
+	],
+	"files.exclude": {},
+	"inlineFold.maskChar": "◦◦◦"
 }

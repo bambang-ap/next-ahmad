@@ -1,10 +1,10 @@
-import {useRef, useState} from 'react';
+import {useRef, useState} from "react";
 
-import AccountBoxTwoToneIcon from '@mui/icons-material/AccountBoxTwoTone';
-import AccountTreeTwoToneIcon from '@mui/icons-material/AccountTreeTwoTone';
-import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
-import InboxTwoToneIcon from '@mui/icons-material/InboxTwoTone';
-import LockOpenTwoToneIcon from '@mui/icons-material/LockOpenTwoTone';
+import AccountBoxTwoToneIcon from "@mui/icons-material/AccountBoxTwoTone";
+import AccountTreeTwoToneIcon from "@mui/icons-material/AccountTreeTwoTone";
+import ExpandMoreTwoToneIcon from "@mui/icons-material/ExpandMoreTwoTone";
+import InboxTwoToneIcon from "@mui/icons-material/InboxTwoTone";
+import LockOpenTwoToneIcon from "@mui/icons-material/LockOpenTwoTone";
 import {
 	Box,
 	Button,
@@ -16,12 +16,12 @@ import {
 	ListItemText,
 	Popover,
 	Typography,
-} from '@mui/material';
-import {styled} from '@mui/material/styles';
-import {signOut} from 'next-auth/react';
-import NextLink from 'next/link';
+} from "@mui/material";
+import {styled} from "@mui/material/styles";
+import {signOut} from "next-auth/react";
+import NextLink from "next/link";
 
-import {useSession} from '@hooks';
+import {useSession} from "@hooks";
 
 const UserBoxButton = styled(Button)(
 	({theme}) => `
@@ -94,12 +94,12 @@ function HeaderUserbox() {
 				onClose={handleClose}
 				open={isOpen}
 				anchorOrigin={{
-					vertical: 'top',
-					horizontal: 'right',
+					vertical: "top",
+					horizontal: "right",
 				}}
 				transformOrigin={{
-					vertical: 'top',
-					horizontal: 'right',
+					vertical: "top",
+					horizontal: "right",
 				}}>
 				<MenuUserBox sx={{minWidth: 210}} display="flex">
 					{/* <Avatar variant="rounded" alt={user.name} src={user.avatar} /> */}

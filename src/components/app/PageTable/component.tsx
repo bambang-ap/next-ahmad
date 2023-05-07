@@ -1,10 +1,10 @@
-import {useRef} from 'react';
+import {useRef} from "react";
 
-import {TUser} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Text} from '@components';
-import {BodyArrayKey, defaultErrorMutation} from '@constants';
-import {copyToClipboard, generatePDF} from '@utils';
-import {trpc} from '@utils/trpc';
+import {TUser} from "@appTypes/app.type";
+import {Button, Modal, ModalRef, Text} from "@components";
+import {BodyArrayKey, defaultErrorMutation} from "@constants";
+import {copyToClipboard, generatePDF} from "@utils";
+import {trpc} from "@utils/trpc";
 
 type RenderTableCellProps = {
 	item: any;
@@ -48,7 +48,7 @@ export function QRUserLogin(user: TUser) {
 		mutate(user.id, {
 			onSuccess: () => {
 				refetch();
-				alert('Berhasil');
+				alert("Berhasil");
 			},
 		});
 	}
@@ -64,7 +64,7 @@ export function QRUserLogin(user: TUser) {
 					<div className="flex gap-2">
 						<Button
 							className="flex-1"
-							onClick={() => generatePDF(tagId, 'customer')}>
+							onClick={() => generatePDF(tagId, "customer")}>
 							Print
 						</Button>
 						<Button

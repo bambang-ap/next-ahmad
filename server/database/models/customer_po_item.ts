@@ -1,8 +1,8 @@
-import {DataTypes, Model, NUMBER, Sequelize, STRING} from 'sequelize';
+import {DataTypes, Model, NUMBER, Sequelize, STRING} from "sequelize";
 
-import {TPOItem} from '@appTypes/app.type';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TPOItem} from "@appTypes/app.type";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmCustomerPOItem extends Model<TPOItem> {}
 

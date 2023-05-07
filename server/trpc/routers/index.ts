@@ -1,14 +1,14 @@
-import {router} from '@trpc';
-import {inferRouterInputs, inferRouterOutputs} from '@trpc/server';
+import {router} from "@trpc";
+import {inferRouterInputs, inferRouterOutputs} from "@trpc/server";
 
-import basicRouters from './basic';
-import customer_poRouters from './customer_po';
-import kanbanRouters from './kanban';
-import menuRouters from './menu';
-import miscRouter from './misc';
-import scanRouters from './scan';
-import sppbRouters from './sppb';
-import user_loginRouters from './user_login';
+import basicRouters from "./basic";
+import customer_poRouters from "./customer_po";
+import kanbanRouters from "./kanban";
+import menuRouters from "./menu";
+import miscRouter from "./misc";
+import scanRouters from "./scan";
+import sppbRouters from "./sppb";
+import user_loginRouters from "./user_login";
 
 export const appRouter = router({
 	...miscRouter,

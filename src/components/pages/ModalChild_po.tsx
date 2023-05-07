@@ -1,22 +1,22 @@
-import {Control, useController, UseFormReset, useWatch} from 'react-hook-form';
+import {Control, useController, UseFormReset, useWatch} from "react-hook-form";
 
 import {
 	ModalTypePreview,
 	TCustomer,
 	TCustomerPO,
 	TCustomerPOExtended,
-} from '@appTypes/app.type';
-import {TItemUnit} from '@appTypes/app.zod';
-import {Button, Input, Select, SelectPropsData, Table} from '@components';
-import {CRUD_ENABLED} from '@enum';
-import {trpc} from '@utils/trpc';
+} from "@appTypes/app.type";
+import {TItemUnit} from "@appTypes/app.zod";
+import {Button, Input, Select, SelectPropsData, Table} from "@components";
+import {CRUD_ENABLED} from "@enum";
+import {trpc} from "@utils/trpc";
 
 const selectUnitData = [
-	{value: 'pcs'},
-	{value: 'kg'},
-	{value: 'box'},
-	{value: 'set'},
-	{value: 'carton'},
+	{value: "pcs"},
+	{value: "kg"},
+	{value: "box"},
+	{value: "set"},
+	{value: "carton"},
 ] as SelectPropsData<TItemUnit>[];
 
 export type UQtyList = `qty${typeof qtyList[number]}`;
@@ -24,7 +24,7 @@ export const qtyList = [1, 2, 3] as const;
 
 export type FormType = TCustomerPO & {
 	type: ModalTypePreview;
-} & Pick<TCustomerPOExtended, 'po_item'>;
+} & Pick<TCustomerPOExtended, "po_item">;
 
 export default function PoModalChild({
 	control,
@@ -35,7 +35,7 @@ export default function PoModalChild({
 }) {
 	const [modalType, poItem = []] = useWatch({
 		control,
-		name: ['type', 'po_item'],
+		name: ["type", "po_item"],
 	});
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -44,22 +44,22 @@ export default function PoModalChild({
 
 	const {
 		field: {onChange: onChangePoItem},
-	} = useController({control, name: 'po_item'});
+	} = useController({control, name: "po_item"});
 
 	const {headerTable, isPreview} = {
 		get isPreview() {
-			return modalType === 'preview';
+			return modalType === "preview";
 		},
 		get headerTable() {
 			const tableHeader = [
-				'Name',
-				'Kode Item',
-				'Harga',
+				"Name",
+				"Kode Item",
+				"Harga",
 				...qtyList.map(num => `Jumlah ${num}`),
 			];
 
 			if (this.isPreview) return tableHeader;
-			return [...tableHeader, 'Action'];
+			return [...tableHeader, "Action"];
 		},
 	};
 
@@ -81,7 +81,7 @@ export default function PoModalChild({
 		});
 	}
 
-	if (modalType === 'delete') {
+	if (modalType === "delete") {
 		return (
 			<div>
 				<label>Hapus ?</label>

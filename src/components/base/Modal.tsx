@@ -1,4 +1,4 @@
-import {forwardRef, ReactNode, useImperativeHandle, useState} from 'react';
+import {forwardRef, ReactNode, useImperativeHandle, useState} from "react";
 
 import {
 	Dialog,
@@ -6,10 +6,10 @@ import {
 	DialogContent,
 	DialogProps,
 	DialogTitle,
-} from '@mui/material';
+} from "@mui/material";
 
-import {Icon} from './Icon';
-import {Text} from './Text';
+import {Icon} from "./Icon";
+import {Text} from "./Text";
 
 export type ModalRef = {
 	visible: boolean;
@@ -21,7 +21,7 @@ export type ModalProps = {
 	title?: string;
 	visible?: boolean;
 	renderFooter?: false | (() => JSX.Element);
-	size?: DialogProps['maxWidth'];
+	size?: DialogProps["maxWidth"];
 };
 
 export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
@@ -37,7 +37,7 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	} = props;
 	const [visible, setVisible] = useState(initVisible);
 
-	const {hide, show}: Omit<ModalRef, 'visible'> = {
+	const {hide, show}: Omit<ModalRef, "visible"> = {
 		async hide(callback) {
 			if (!callback) return setVisible(false);
 

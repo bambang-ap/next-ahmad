@@ -3,26 +3,26 @@ import {
 	PagingResult,
 	TCustomer,
 	TKendaraan,
-} from '@appTypes/app.type';
+} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	TCustomerSPPBOut,
 	tCustomerSPPBOut,
 	TScan,
-} from '@appTypes/app.zod';
+} from "@appTypes/app.zod";
 import {
 	OrmCustomer,
 	OrmCustomerSPPBOut,
 	OrmKendaraan,
 	OrmScan,
-} from '@database';
-import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
-import {procedure, router} from '@trpc';
+} from "@database";
+import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
+import {procedure, router} from "@trpc";
 
-import {Op} from 'sequelize';
-import {z} from 'zod';
+import {Op} from "sequelize";
+import {z} from "zod";
 
-import {appRouter} from '..';
+import {appRouter} from "..";
 
 type GetPage = PagingResult<TCustomerSPPBOut>;
 
@@ -55,7 +55,7 @@ const sppbOutRouters = router({
 		);
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, search = ''} = input;
+		const {limit, page, search = ""} = input;
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
 				where: {invoice_no: {[Op.iLike]: `%${search}%`}},
@@ -66,7 +66,7 @@ const sppbOutRouters = router({
 		});
 	}),
 	getInvoice: procedure.query(() => {
-		return genInvoice(OrmCustomerSPPBOut, 'SJ/IMI');
+		return genInvoice(OrmCustomerSPPBOut, "SJ/IMI");
 	}),
 	getFg: procedure.query(({ctx: {req, res}}) => {
 		const routerCaller = appRouter.createCaller({req, res});
@@ -80,7 +80,7 @@ const sppbOutRouters = router({
 
 				const dataScanPromise = dataScan.map(async ({dataValues}) => {
 					const [kanban] = await routerCaller.kanban.get({
-						type: 'kanban',
+						type: "kanban",
 						where: {id: dataValues.id_kanban},
 					});
 
@@ -100,7 +100,7 @@ const sppbOutRouters = router({
 					id: input.id ?? generateId(),
 				});
 
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 });

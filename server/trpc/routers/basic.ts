@@ -1,12 +1,12 @@
-import {Op} from 'sequelize';
-import {z} from 'zod';
+import {Op} from "sequelize";
+import {z} from "zod";
 
-import {tableFormValue, uModalType} from '@appTypes/app.zod';
-import {defaultLimit} from '@constants';
-import {eOpKeys, Z_CRUD_ENABLED} from '@enum';
-import {generateId, MAPPING_CRUD_ORM, pagingResult} from '@server';
-import {procedure, router} from '@trpc';
-import {TRPCError} from '@trpc/server';
+import {tableFormValue, uModalType} from "@appTypes/app.zod";
+import {defaultLimit} from "@constants";
+import {eOpKeys, Z_CRUD_ENABLED} from "@enum";
+import {generateId, MAPPING_CRUD_ORM, pagingResult} from "@server";
+import {procedure, router} from "@trpc";
+import {TRPCError} from "@trpc/server";
 
 const basicUnion = z.union([
 	z.string(),
@@ -22,7 +22,7 @@ const basicWherer = z.record(
 
 export const basicWhere = basicWherer.transform(obj => {
 	return Object.entries(obj).reduce<BasicWherer>((ret, [key, val]) => {
-		if (typeof val === 'object') {
+		if (typeof val === "object") {
 			return {
 				...ret,
 				[key]: Object.entries(val).reduce((r, [k, v]) => {
@@ -55,11 +55,11 @@ const basicRouters = router({
 				searchKey,
 			} = input;
 
-			if (!target) throw new TRPCError({code: 'BAD_REQUEST'});
+			if (!target) throw new TRPCError({code: "BAD_REQUEST"});
 
 			const limitation = {
 				limit,
-				order: [['id', 'asc']],
+				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
 				where: searchKey
 					? {
@@ -88,7 +88,7 @@ const basicRouters = router({
 		.query(async ({input: {target, where}}) => {
 			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
-			const ormResult = await orm.findAll({where, order: [['id', 'asc']]});
+			const ormResult = await orm.findAll({where, order: [["id", "asc"]]});
 			return ormResult;
 		}),
 
@@ -108,9 +108,9 @@ const basicRouters = router({
 			const orm = MAPPING_CRUD_ORM[target];
 
 			switch (type) {
-				case 'delete':
+				case "delete":
 					return orm.destroy({where: {id}});
-				case 'edit':
+				case "edit":
 					return orm.update(rest, {where: {id}});
 				default:
 					return orm.create({...rest, id: generateId()});

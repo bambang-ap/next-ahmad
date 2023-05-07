@@ -5,17 +5,17 @@ import {
 	ModelAttributes,
 	Optional,
 	Sequelize,
-} from 'sequelize';
+} from "sequelize";
 
-import {TUserLogin} from '@appTypes/app.zod';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TUserLogin} from "@appTypes/app.zod";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmUserLogin extends Model<TUserLogin> {}
 
 export function ormUserLoginAttributes(): [
 	ModelAttributes<OrmUserLogin, Optional<TUserLogin, never>>,
-	Omit<InitOptions<OrmUserLogin>, 'sequelize'>,
+	Omit<InitOptions<OrmUserLogin>, "sequelize">,
 ] {
 	return [
 		{

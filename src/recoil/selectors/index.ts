@@ -1,8 +1,8 @@
-import {UseFormReset} from 'react-hook-form';
-import {DefaultValue, selector} from 'recoil';
+import {UseFormReset} from "react-hook-form";
+import {DefaultValue, selector} from "recoil";
 
-import {FormMenu} from '@hooks';
-import {atomMappedMenu} from '@recoil/atoms';
+import {FormMenu} from "@hooks";
+import {atomMappedMenu} from "@recoil/atoms";
 
 export const selectorMappedMenu = selector<{
 	fromIndex: number;
@@ -10,7 +10,7 @@ export const selectorMappedMenu = selector<{
 	dataSourceIndex?: number;
 	reset: UseFormReset<FormMenu>;
 }>({
-	key: 'selectorMappedMenu',
+	key: "selectorMappedMenu",
 	get: noop as any,
 	set({get, set}, value) {
 		if (value instanceof DefaultValue) return;

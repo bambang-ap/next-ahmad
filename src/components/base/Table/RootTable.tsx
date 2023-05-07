@@ -8,9 +8,9 @@ import {
 	TableHead,
 	TableProps,
 	TableRow,
-} from '@mui/material';
+} from "@mui/material";
 
-import {classNames} from '@utils';
+import {classNames} from "@utils";
 
 const StyledTableCell = styled(TableCell)(({valign}) => ({
 	padding: 8,
@@ -24,7 +24,7 @@ const StyledCell = ({
 }: GetProps<typeof StyledTableCell>) => {
 	return (
 		<StyledTableCell {...rest}>
-			<div className={classNames('flex', className)}>{children}</div>
+			<div className={classNames("flex", className)}>{children}</div>
 		</StyledTableCell>
 	);
 };
@@ -36,7 +36,7 @@ const Table = Object.assign(RootTable, {
 	Td: StyledCell,
 });
 
-RootTable.displayName = 'Table';
+RootTable.displayName = "Table";
 function RootTable({children, ...rest}: TableProps) {
 	return (
 		<TableContainer component={Paper}>

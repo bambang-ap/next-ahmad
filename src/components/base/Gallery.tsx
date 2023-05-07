@@ -1,4 +1,4 @@
-import {Masonry} from '@mui/lab';
+import {Masonry} from "@mui/lab";
 
 type GalleryProps<T> = {
 	data: T[];

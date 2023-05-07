@@ -1,11 +1,11 @@
-import {PropsWithChildren, useEffect} from 'react';
+import {PropsWithChildren, useEffect} from "react";
 
-import {FormType} from 'pages/app/customer/customer_sppb_in';
-import {useWatch} from 'react-hook-form';
-import {useRecoilState} from 'recoil';
+import {FormType} from "pages/app/customer/customer_sppb_in";
+import {useWatch} from "react-hook-form";
+import {useRecoilState} from "recoil";
 
-import {TCustomer} from '@appTypes/app.type';
-import {FormScreenProps} from '@appTypes/props.type';
+import {TCustomer} from "@appTypes/app.type";
+import {FormScreenProps} from "@appTypes/props.type";
 import {
 	Button,
 	Cells,
@@ -14,35 +14,35 @@ import {
 	selectMapper,
 	Table,
 	Text,
-} from '@components';
-import {CRUD_ENABLED} from '@enum';
-import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
-import {trpc} from '@utils/trpc';
+} from "@components";
+import {CRUD_ENABLED} from "@enum";
+import {atomExcludedItem, atomIncludedItem} from "@recoil/atoms";
+import {trpc} from "@utils/trpc";
 
-import {qtyList} from './ModalChild_po';
+import {qtyList} from "./ModalChild_po";
 
 export function SppbInModalChild({
 	control,
 	reset,
-}: FormScreenProps<FormType, 'control' | 'reset'>) {
+}: FormScreenProps<FormType, "control" | "reset">) {
 	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
 	const [modalType, idSppbIn, idPo, idCustomer] = useWatch({
 		control,
-		name: ['type', 'id', 'id_po', 'id_customer'],
+		name: ["type", "id", "id_po", "id_customer"],
 	});
 
-	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: 'sppb_in'});
+	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: "sppb_in"});
 	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 	const {data: listPo = []} = trpc.customer_po.get.useQuery({
-		type: 'customer_po',
+		type: "customer_po",
 	});
 
-	const isEdit = modalType === 'edit';
-	const isPreview = modalType === 'preview';
-	const isDelete = modalType === 'delete';
+	const isEdit = modalType === "edit";
+	const isPreview = modalType === "preview";
+	const isDelete = modalType === "delete";
 	const isPreviewEdit = isEdit || isPreview;
 	const selectedPo = listPo?.find(e => e.id === idPo);
 
@@ -90,8 +90,8 @@ export function SppbInModalChild({
 					firstOption="- Pilih PO -"
 					data={selectMapper(
 						isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),
-						'id',
-						'nomor_po',
+						"id",
+						"nomor_po",
 					)}
 				/>
 				<Select
@@ -101,7 +101,7 @@ export function SppbInModalChild({
 					control={control}
 					fieldName="id_customer"
 					label="Customer"
-					data={selectMapper(dataCustomer, 'id', 'name')}
+					data={selectMapper(dataCustomer, "id", "name")}
 				/>
 				<Input
 					className="flex-1"
@@ -132,10 +132,10 @@ export function SppbInModalChild({
 
 			<Table
 				header={[
-					'Kode Item',
-					'Nama Item',
-					['Jumlah', qtyList.length],
-					!isPreview && 'Action',
+					"Kode Item",
+					"Nama Item",
+					["Jumlah", qtyList.length],
+					!isPreview && "Action",
 				]}
 				data={selectedPo?.po_item}
 				renderItem={({Cell, item}, index) => {

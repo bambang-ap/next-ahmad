@@ -1,19 +1,19 @@
-import {useEffect, useRef, useState} from 'react';
+import {useEffect, useRef, useState} from "react";
 
-import * as XLSX from 'xlsx';
+import * as XLSX from "xlsx";
 
-import {TCustomer} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, Table} from '@components';
-import {defaultErrorMutation} from '@constants';
-import {CRUD_ENABLED} from '@enum';
-import {trpc} from '@utils/trpc';
+import {TCustomer} from "@appTypes/app.type";
+import {Button, Modal, ModalRef, Table} from "@components";
+import {defaultErrorMutation} from "@constants";
+import {CRUD_ENABLED} from "@enum";
+import {trpc} from "@utils/trpc";
 
 export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const modalRef = useRef<ModalRef>(null);
 	const [jsonData, setJsonData] = useState<TCustomer[]>();
 	const [file, setFile] = useState<File>();
 
-	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
+	const {data: exampleData} = trpc.exampleData.get.useQuery("customer");
 	const {mutate} = trpc.basic.mutate.useMutation(defaultErrorMutation);
 
 	async function mutateInsert(force?: boolean): Promise<any> {
@@ -21,7 +21,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 
 		if (!force) {
 			const confirmation = confirm(
-				'Data dibawah akan di import, apakah anda yakin?',
+				"Data dibawah akan di import, apakah anda yakin?",
 			);
 			if (!confirmation) return;
 
@@ -35,7 +35,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 		function createPromise(body: TCustomer) {
 			return new Promise(() => {
 				mutate(
-					{target: CRUD_ENABLED.CUSTOMER, type: 'add', body},
+					{target: CRUD_ENABLED.CUSTOMER, type: "add", body},
 					{onSuccess: refetch},
 				);
 			});
@@ -45,7 +45,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	function downloadExampleData() {
 		if (!exampleData) return;
 
-		const sheetName = 'Sheet 1';
+		const sheetName = "Sheet 1";
 		const workbook = XLSX.utils.book_new();
 		workbook.SheetNames.push(sheetName);
 		workbook.Sheets[sheetName] = XLSX.utils.json_to_sheet(exampleData);
@@ -59,7 +59,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 		fileReader.onload = event => {
 			const data = event.target?.result;
 
-			const workbook = XLSX.read(data, {type: 'binary'});
+			const workbook = XLSX.read(data, {type: "binary"});
 
 			Object.values(workbook.Sheets).forEach((sheet, i) => {
 				if (i > 0) return;

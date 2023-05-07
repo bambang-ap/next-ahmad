@@ -1,15 +1,15 @@
-import {useContext} from 'react';
+import {useContext} from "react";
 
-import {Autocomplete, TextField} from '@mui/material';
-import {FieldPath, FieldValues} from 'react-hook-form';
+import {Autocomplete, TextField} from "@mui/material";
+import {FieldPath, FieldValues} from "react-hook-form";
 
-import {defaultTextFieldProps} from '@constants';
+import {defaultTextFieldProps} from "@constants";
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from '@formController';
+} from "@formController";
 
-import {FormContext} from '../Form';
+import {FormContext} from "../Form";
 
 export type SelectPropsData<T extends string = string> = {
 	label?: string;
@@ -38,7 +38,7 @@ export function selectMapper<T extends {}>(
 		function finder(path?: string) {
 			if (!path) return undefined;
 
-			return eval(`item?.${path.replace(/\./g, '?.')}`);
+			return eval(`item?.${path.replace(/\./g, "?.")}`);
 		}
 		return {value: finder(value), label: label ? finder(label) : undefined};
 	});
@@ -84,8 +84,8 @@ function SelectComponent<F extends FieldValues>({
 						label={label}
 						placeholder={firstOption}
 						sx={{
-							'& .MuiInputBase-input.Mui-disabled': {
-								WebkitTextFillColor: '#000000',
+							"& .MuiInputBase-input.Mui-disabled": {
+								WebkitTextFillColor: "#000000",
 							},
 						}}
 					/>

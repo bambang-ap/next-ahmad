@@ -1,8 +1,8 @@
-import {Op} from 'sequelize';
-import {z} from 'zod';
+import {Op} from "sequelize";
+import {z} from "zod";
 
-import {KanbanGetRow} from '@appTypes/app.type';
-import {tKanban, TKanban, tKanbanUpsert, TUser} from '@appTypes/app.zod';
+import {KanbanGetRow} from "@appTypes/app.type";
+import {tKanban, TKanban, tKanbanUpsert, TUser} from "@appTypes/app.zod";
 import {
 	OrmDocument,
 	OrmHardness,
@@ -17,18 +17,18 @@ import {
 	OrmParameterKategori,
 	OrmScan,
 	OrmUser,
-} from '@database';
-import {checkCredentialV2, generateId} from '@server';
-import {procedure, router} from '@trpc';
-import {appRouter} from '@trpc/routers';
-import {TRPCError} from '@trpc/server';
+} from "@database";
+import {checkCredentialV2, generateId} from "@server";
+import {procedure, router} from "@trpc";
+import {appRouter} from "@trpc/routers";
+import {TRPCError} from "@trpc/server";
 
 const kanbanRouters = router({
 	images: procedure.query(({ctx: {req, res}}) => {
 		return checkCredentialV2({req, res}, async () => {
 			const images = await OrmKanban.findAll({
 				where: {image: {[Op.ne]: null}},
-				attributes: ['image', 'keterangan'] as (keyof TKanban)[],
+				attributes: ["image", "keterangan"] as (keyof TKanban)[],
 			});
 
 			return images?.map(({dataValues}) => {
@@ -41,7 +41,7 @@ const kanbanRouters = router({
 	get: procedure
 		.input(
 			z.object({
-				type: z.literal('kanban'),
+				type: z.literal("kanban"),
 				where: tKanban.partial().optional(),
 			}),
 		)
@@ -52,7 +52,7 @@ const kanbanRouters = router({
 				async (): Promise<KanbanGetRow[]> => {
 					const dataKanban = await OrmKanban.findAll({
 						where,
-						order: [['createdAt', 'asc']],
+						order: [["createdAt", "asc"]],
 					});
 					const kanbanDetailPromses = dataKanban.map(async ({dataValues}) => {
 						const {
@@ -76,11 +76,11 @@ const kanbanRouters = router({
 							where: {id_kanban: dataValues.id},
 						});
 						const dataSppbIn = await routerCaller.sppb.in.get({
-							type: 'sppb_in',
+							type: "sppb_in",
 							where: {id: id_sppb_in},
 						});
 						const dataPo = await routerCaller.customer_po.get({
-							type: 'customer_po',
+							type: "customer_po",
 							id: id_po,
 						});
 
@@ -156,7 +156,7 @@ const kanbanRouters = router({
 								return this.dataPo?.id_customer;
 							},
 							get items() {
-								return dataItems.reduce<KanbanGetRow['items']>((ret, e) => {
+								return dataItems.reduce<KanbanGetRow["items"]>((ret, e) => {
 									ret[e.dataValues.id_item] = {
 										...e.dataValues,
 										id_sppb_in: this.dataSppbIn?.id,
@@ -182,8 +182,8 @@ const kanbanRouters = router({
 
 				if (!docData) {
 					throw new TRPCError({
-						code: 'NOT_FOUND',
-						message: 'Doc number not found',
+						code: "NOT_FOUND",
+						message: "Doc number not found",
 					});
 				}
 
@@ -215,7 +215,7 @@ const kanbanRouters = router({
 					},
 				);
 				await Promise.all(itemPromises);
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 
@@ -224,14 +224,14 @@ const kanbanRouters = router({
 		.mutation(async ({input: id, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
 				if (!id) {
-					throw new TRPCError({code: 'BAD_REQUEST', message: 'ID is required'});
+					throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});
 				}
 
 				await OrmScan.destroy({where: {id_kanban: id}});
 				await OrmKanbanItem.destroy({where: {id_kanban: id}});
 				await OrmKanban.destroy({where: {id}});
 
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 	deleteItem: procedure
@@ -239,12 +239,12 @@ const kanbanRouters = router({
 		.mutation(async ({input: id, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
 				if (!id) {
-					throw new TRPCError({code: 'BAD_REQUEST', message: 'ID is required'});
+					throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});
 				}
 
 				await OrmKanbanItem.destroy({where: {id}});
 
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 });

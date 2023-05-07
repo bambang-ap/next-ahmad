@@ -5,17 +5,17 @@ import {
 	ModelAttributes,
 	Optional,
 	Sequelize,
-} from 'sequelize';
+} from "sequelize";
 
-import {TUser} from '@appTypes/app.type';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TUser} from "@appTypes/app.type";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmUser extends Model<TUser> {}
 
 export function ormUserAttributes(): [
 	ModelAttributes<OrmUser, Optional<TUser, never>>,
-	Omit<InitOptions<OrmUser>, 'sequelize'>,
+	Omit<InitOptions<OrmUser>, "sequelize">,
 ] {
 	return [
 		{
@@ -30,7 +30,7 @@ export function ormUserAttributes(): [
 			defaultScope: {
 				...defaultOrderBy,
 				attributes: {
-					exclude: [...defaultExcludeColumn, 'password'],
+					exclude: [...defaultExcludeColumn, "password"],
 				},
 			},
 		},

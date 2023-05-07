@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {DataTypes, Model, Sequelize} from "sequelize";
 
-import {TCustomerSPPBIn} from '@appTypes/app.type';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TCustomerSPPBIn} from "@appTypes/app.type";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmCustomerSPPBIn extends Model<TCustomerSPPBIn> {}
 
@@ -21,8 +21,8 @@ export default function initOrmCustomerSPPBIn(sequelize: Sequelize) {
 			defaultScope: {
 				order: [
 					...defaultOrderBy.order,
-					['tgl', 'asc'],
-					['nomor_surat', 'asc'],
+					["tgl", "asc"],
+					["nomor_surat", "asc"],
 				],
 				attributes: {
 					exclude: defaultExcludeColumn,

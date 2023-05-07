@@ -36,13 +36,13 @@ declare namespace NodeJS {
 	}
 }
 
-declare module 'react-qr-scanner' {
-	import {HTMLAttributes} from 'react';
+declare module "react-qr-scanner" {
+	import {HTMLAttributes} from "react";
 
 	export type QRResult = {text: string} | null;
 	export type QRReaderProps = {
 		delay?: number;
-		style?: HTMLAttributes<HTMLDivElement>['style'];
+		style?: HTMLAttributes<HTMLDivElement>["style"];
 		onScan?: (result: QRResult) => void;
 	};
 

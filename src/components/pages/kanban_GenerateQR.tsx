@@ -1,14 +1,14 @@
-import {RouterOutput} from '@appTypes/app.type';
-import {Button, RootTable as Table, Text} from '@components';
-import {dateUtils, generatePDF} from '@utils';
-import {trpc} from '@utils/trpc';
+import {RouterOutput} from "@appTypes/app.type";
+import {Button, RootTable as Table, Text} from "@components";
+import {dateUtils, generatePDF} from "@utils";
+import {trpc} from "@utils/trpc";
 
-import {qtyList} from './ModalChild_po';
+import {qtyList} from "./ModalChild_po";
 
 const {Td, Tr} = Table;
 
 export function KanbanGenerateQR(
-	props: RouterOutput['kanban']['get'][number] & {
+	props: RouterOutput["kanban"]["get"][number] & {
 		className?: string;
 		transform?: boolean;
 		withButton?: boolean;
@@ -17,7 +17,7 @@ export function KanbanGenerateQR(
 	const tagId = `data-${props.id}`;
 
 	const {
-		className = 'h-0 overflow-hidden -z-10 fixed',
+		className = "h-0 overflow-hidden -z-10 fixed",
 		// className = '',
 		docDetail,
 		transform = true,
@@ -37,7 +37,7 @@ export function KanbanGenerateQR(
 	return (
 		<>
 			{withButton && (
-				<Button icon="faPrint" onClick={() => generatePDF(tagId, 'kanban')} />
+				<Button icon="faPrint" onClick={() => generatePDF(tagId, "kanban")} />
 			)}
 			<div className={className}>
 				<div
@@ -45,7 +45,7 @@ export function KanbanGenerateQR(
 					className="flex flex-col gap-2 p-4 w-[600px]"
 					style={{
 						...(transform && {
-							transform: 'scale(0.7) translateY(-20%) translateX(-20%)',
+							transform: "scale(0.7) translateY(-20%) translateX(-20%)",
 						}),
 					}}>
 					<Table>
@@ -126,9 +126,9 @@ export function KanbanGenerateQR(
 										<Td>
 											{mesin.instruksi.map(({dataInstruksi, ...instruksi}) => {
 												const keys = [
-													'material',
-													'hardness',
-													'parameter',
+													"material",
+													"hardness",
+													"parameter",
 												] as const;
 												return (
 													<>
@@ -147,7 +147,7 @@ export function KanbanGenerateQR(
 
 																				{instruksi[key].map(itemn => {
 																					const txt =
-																						key === 'material'
+																						key === "material"
 																							? itemn?.name
 																							: `${itemn?.name}`;
 																					return (

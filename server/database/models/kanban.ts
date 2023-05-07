@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {DataTypes, Model, Sequelize} from "sequelize";
 
-import {TKanban} from '@appTypes/app.zod';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TKanban} from "@appTypes/app.zod";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmKanban extends Model<TKanban> {}
 

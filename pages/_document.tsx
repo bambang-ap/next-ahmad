@@ -1,9 +1,9 @@
-import * as React from 'react';
+import * as React from "react";
 
-import createEmotionServer from '@emotion/server/create-instance';
-import Document, {Head, Html, Main, NextScript} from 'next/document';
+import createEmotionServer from "@emotion/server/create-instance";
+import Document, {Head, Html, Main, NextScript} from "next/document";
 
-import {createEmotionCache} from '@hoc';
+import {createEmotionCache} from "@hoc";
 
 export default class MyDocument extends Document {
 	render() {
@@ -60,7 +60,8 @@ MyDocument.getInitialProps = async ctx => {
 
 	ctx.renderPage = () =>
 		originalRenderPage({
-			enhanceApp: (App: any) => props => <App emotionCache={cache} {...props} />
+			enhanceApp: (App: any) => props =>
+				<App emotionCache={cache} {...props} />,
 		});
 
 	const initialProps = await Document.getInitialProps(ctx);
@@ -69,7 +70,7 @@ MyDocument.getInitialProps = async ctx => {
 	const emotionStyles = extractCriticalToChunks(initialProps.html);
 	const emotionStyleTags = emotionStyles.styles.map(style => (
 		<style
-			data-emotion={`${style.key} ${style.ids.join(' ')}`}
+			data-emotion={`${style.key} ${style.ids.join(" ")}`}
 			key={style.key}
 			// eslint-disable-next-line react/no-danger
 			dangerouslySetInnerHTML={{__html: style.css}}
@@ -81,7 +82,7 @@ MyDocument.getInitialProps = async ctx => {
 		// Styles fragment is rendered after the app and page rendering finish.
 		styles: [
 			...React.Children.toArray(initialProps.styles),
-			...emotionStyleTags
-		]
+			...emotionStyleTags,
+		],
 	};
 };

@@ -1,20 +1,20 @@
-import React, {useContext} from 'react';
+import React, {useContext} from "react";
 
-import ExpandLess from '@mui/icons-material/ExpandLess';
-import ExpandMore from '@mui/icons-material/ExpandMore';
+import ExpandLess from "@mui/icons-material/ExpandLess";
+import ExpandMore from "@mui/icons-material/ExpandMore";
 import {
 	Collapse,
 	List,
 	ListItemButton,
 	ListItemIcon,
 	ListItemText,
-} from '@mui/material';
-import {useRouter} from 'next/router';
+} from "@mui/material";
+import {useRouter} from "next/router";
 
-import {SidebarContext} from '@app/contexts/SidebarContext';
-import {TMenu} from '@appTypes/app.zod';
-import {Icon} from '@components';
-import {trpc} from '@utils/trpc';
+import {SidebarContext} from "@app/contexts/SidebarContext";
+import {TMenu} from "@appTypes/app.zod";
+import {Icon} from "@components";
+import {trpc} from "@utils/trpc";
 
 function SubMenu({title, path, icon, subMenu}: TMenu) {
 	const {push} = useRouter();
@@ -79,7 +79,7 @@ function RenderMenuList({data}: {data?: TMenu[]}) {
 }
 
 function SidebarMenu() {
-	const {data: listMenu} = trpc.menu.get.useQuery({type: 'menu', sorted: true});
+	const {data: listMenu} = trpc.menu.get.useQuery({type: "menu", sorted: true});
 
 	return (
 		<List component="div">

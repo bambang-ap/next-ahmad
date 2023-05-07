@@ -1,17 +1,17 @@
-import {Box, Button, Container, Grid, styled, Typography} from '@mui/material';
+import {Box, Button, Container, Grid, styled, Typography} from "@mui/material";
 
-import Link from '@prevComp/Link';
+import Link from "@prevComp/Link";
 
 const TypographyH1 = styled(Typography)(
 	({theme}) => `
     font-size: ${theme.typography.pxToRem(50)};
-`
+`,
 );
 
 const TypographyH2 = styled(Typography)(
 	({theme}) => `
     font-size: ${theme.typography.pxToRem(17)};
-`
+`,
 );
 
 const LabelWrapper = styled(Box)(
@@ -25,7 +25,7 @@ const LabelWrapper = styled(Box)(
     font-size: ${theme.typography.pxToRem(11)};
     padding: ${theme.spacing(0.5)} ${theme.spacing(1.5)};
     margin-bottom: ${theme.spacing(2)};
-`
+`,
 );
 
 const MuiAvatar = styled(Box)(
@@ -45,7 +45,7 @@ const MuiAvatar = styled(Box)(
       height: 60%;
       display: block;
     }
-`
+`,
 );
 
 const TsAvatar = styled(Box)(
@@ -65,7 +65,7 @@ const TsAvatar = styled(Box)(
       height: 60%;
       display: block;
     }
-`
+`,
 );
 
 const NextJsAvatar = styled(Box)(
@@ -85,12 +85,12 @@ const NextJsAvatar = styled(Box)(
       height: 60%;
       display: block;
     }
-`
+`,
 );
 
 function Hero() {
 	return (
-		<Container maxWidth="lg" sx={{textAlign: 'center'}}>
+		<Container maxWidth="lg" sx={{textAlign: "center"}}>
 			<Grid
 				spacing={{xs: 6, md: 10}}
 				justifyContent="center"

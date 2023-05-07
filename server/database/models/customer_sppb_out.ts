@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {DataTypes, Model, Sequelize} from "sequelize";
 
-import {TCustomerSPPBOut} from '@appTypes/app.type';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TCustomerSPPBOut} from "@appTypes/app.type";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmCustomerSPPBOut extends Model<TCustomerSPPBOut> {}
 

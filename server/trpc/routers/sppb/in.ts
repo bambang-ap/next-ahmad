@@ -1,5 +1,5 @@
-import {Op} from 'sequelize';
-import {z} from 'zod';
+import {Op} from "sequelize";
+import {z} from "zod";
 
 import {
 	PagingResult,
@@ -7,24 +7,24 @@ import {
 	TCustomerSPPBIn,
 	TPOItem,
 	TPOItemSppbIn,
-} from '@appTypes/app.type';
+} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	tCustomerSPPBIn,
 	tUpsertSppbIn,
 	zId,
-} from '@appTypes/app.zod';
-import {defaultLimit} from '@constants';
+} from "@appTypes/app.zod";
+import {defaultLimit} from "@constants";
 import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmPOItemSppbIn,
-} from '@database';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
-import {procedure, router} from '@trpc';
+} from "@database";
+import {checkCredentialV2, generateId, pagingResult} from "@server";
+import {procedure, router} from "@trpc";
 
-import {appRouter} from '..';
+import {appRouter} from "..";
 
 type GetPage = PagingResult<SppbInRows>;
 export type SppbInRows = TCustomerSPPBIn & {
@@ -36,11 +36,11 @@ const sppbInRouters = router({
 	get: procedure
 		.input(
 			z.object({
-				type: z.literal('sppb_in'),
+				type: z.literal("sppb_in"),
 				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)
-		.query(async ({ctx, input}): Promise<GetPage['rows']> => {
+		.query(async ({ctx, input}): Promise<GetPage["rows"]> => {
 			const routerCaller = appRouter.createCaller(ctx);
 
 			const {rows} = await routerCaller.sppb.in.getPage({
@@ -53,7 +53,7 @@ const sppbInRouters = router({
 	getPage: procedure
 		.input(
 			tableFormValue.partial().extend({
-				type: z.literal('sppb_in'),
+				type: z.literal("sppb_in"),
 				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)

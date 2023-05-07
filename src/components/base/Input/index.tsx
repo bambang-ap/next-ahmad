@@ -1,25 +1,25 @@
-import {ChangeEventHandler, useContext, useEffect, useRef} from 'react';
+import {ChangeEventHandler, useContext, useEffect, useRef} from "react";
 
-import {TextField, useTheme} from '@mui/material';
-import {CalendarPicker} from '@mui/x-date-pickers';
-import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
-import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import moment from 'moment';
-import {FieldValues} from 'react-hook-form';
+import {TextField, useTheme} from "@mui/material";
+import {CalendarPicker} from "@mui/x-date-pickers";
+import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
+import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
+import moment from "moment";
+import {FieldValues} from "react-hook-form";
 
-import {FormContext, Icon, Modal, ModalRef, Text} from '@components';
+import {FormContext, Icon, Modal, ModalRef, Text} from "@components";
 import {
 	decimalRegex,
 	decimalSchema,
 	defaultTextFieldProps,
 	formatDate,
 	formatDateView,
-} from '@constants';
+} from "@constants";
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from '@formController';
-import {classNames} from '@utils';
+} from "@formController";
+import {classNames} from "@utils";
 
 export type InputProps = {
 	hidden?: boolean;
@@ -28,13 +28,13 @@ export type InputProps = {
 	noLabel?: boolean;
 	disabled?: boolean;
 	type?:
-		| 'number'
-		| 'decimal'
-		| 'text'
-		| 'search'
-		| 'checkbox'
-		| 'password'
-		| 'date';
+		| "number"
+		| "decimal"
+		| "text"
+		| "search"
+		| "checkbox"
+		| "password"
+		| "date";
 };
 
 export const Input = withReactFormController(InputComponent);
@@ -46,7 +46,7 @@ function InputComponent<F extends FieldValues>(
 	const theme = useTheme();
 	const {
 		hidden,
-		type = 'text',
+		type = "text",
 		label: labelProps,
 		disabled,
 		className,
@@ -81,7 +81,7 @@ function InputComponent<F extends FieldValues>(
 	}, [value, defaultValue]);
 
 	switch (type) {
-		case 'date': {
+		case "date": {
 			return (
 				<div className={className}>
 					<TextField
@@ -94,13 +94,13 @@ function InputComponent<F extends FieldValues>(
 						disabled
 						onClick={() => modalRef.current?.show()}
 						sx={{
-							'& .MuiInputBase-input.Mui-disabled': {
-								WebkitTextFillColor: '#000000',
+							"& .MuiInputBase-input.Mui-disabled": {
+								WebkitTextFillColor: "#000000",
 							},
-							'& .MuiFormLabel-root.Mui-disabled': {
+							"& .MuiFormLabel-root.Mui-disabled": {
 								WebkitTextFillColor: theme.colors.alpha.black[100],
 							},
-							'& .MuiInputBase-root.Mui-disabled': {
+							"& .MuiInputBase-root.Mui-disabled": {
 								backgroundColor: theme.colors.alpha.black[10],
 							},
 						}}
@@ -109,7 +109,7 @@ function InputComponent<F extends FieldValues>(
 						InputProps={{
 							startAdornment,
 							endAdornment: <Icon name="faCalendar" />,
-							classes: {input: 'focus:bg-yellow'},
+							classes: {input: "focus:bg-yellow"},
 						}}
 						{...restProps}
 						{...field}
@@ -128,7 +128,7 @@ function InputComponent<F extends FieldValues>(
 				</div>
 			);
 		}
-		case 'checkbox': {
+		case "checkbox": {
 			function onCheck() {
 				onChange(!value);
 			}
@@ -155,13 +155,13 @@ function InputComponent<F extends FieldValues>(
 				event,
 			) {
 				switch (type) {
-					case 'number':
+					case "number":
 						return onChange(parseInt(event.target.value));
-					case 'decimal':
+					case "decimal":
 						const strValue = event.target.value
 							.toString()
-							.replace(/[^0-9.]/g, '')
-							.replace(/(?<=\..*)\./g, '');
+							.replace(/[^0-9.]/g, "")
+							.replace(/(?<=\..*)\./g, "");
 
 						const parsed = decimalSchema.safeParse(strValue);
 
@@ -193,17 +193,17 @@ function InputComponent<F extends FieldValues>(
 						type={type}
 						disabled={disabled !== undefined ? disabled : formContext?.disabled}
 						sx={{
-							'& .MuiInputBase-input.Mui-disabled': {
-								WebkitTextFillColor: '#000000',
+							"& .MuiInputBase-input.Mui-disabled": {
+								WebkitTextFillColor: "#000000",
 							},
 						}}
 						placeholder={placeholder}
-						value={value ?? ''}
+						value={value ?? ""}
 						onChange={onChangeEvent}
 						InputProps={{
 							endAdornment,
 							startAdornment,
-							classes: {input: 'focus:bg-yellow'},
+							classes: {input: "focus:bg-yellow"},
 						}}
 						{...restProps}
 						{...field}

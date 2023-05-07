@@ -1,16 +1,16 @@
-import {FormEventHandler, useRef} from 'react';
+import {FormEventHandler, useRef} from "react";
 
-import {useForm} from 'react-hook-form';
+import {useForm} from "react-hook-form";
 
-import {ModalTypePreview, TCustomer, TUpsertSppbIn} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, TableFilter} from '@components';
-import {defaultErrorMutation} from '@constants';
-import {CRUD_ENABLED} from '@enum';
-import {getLayout} from '@hoc';
-import {useTableFilter} from '@hooks';
-import {SppbInModalChild} from '@pageComponent/ModalChild_customer_sppb_in';
-import {dateUtils} from '@utils';
-import {trpc} from '@utils/trpc';
+import {ModalTypePreview, TCustomer, TUpsertSppbIn} from "@appTypes/app.type";
+import {Button, Modal, ModalRef, TableFilter} from "@components";
+import {defaultErrorMutation} from "@constants";
+import {CRUD_ENABLED} from "@enum";
+import {getLayout} from "@hoc";
+import {useTableFilter} from "@hooks";
+import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
+import {dateUtils} from "@utils";
+import {trpc} from "@utils/trpc";
 
 export type FormType = {
 	type: ModalTypePreview;
@@ -22,13 +22,13 @@ SPPBIN.getLayout = getLayout;
 export default function SPPBIN() {
 	const modalRef = useRef<ModalRef>(null);
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
-		defaultValues: {type: 'add'},
+		defaultValues: {type: "add"},
 	});
 
 	const {formValue, hookForm} = useTableFilter();
 
 	const {data, refetch} = trpc.sppb.in.getPage.useQuery({
-		type: 'sppb_in',
+		type: "sppb_in",
 		...formValue,
 	});
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -39,13 +39,13 @@ export default function SPPBIN() {
 	const {mutate: mutateDelete} =
 		trpc.sppb.in.delete.useMutation(defaultErrorMutation);
 
-	const modalType = watch('type');
+	const modalType = watch("type");
 	const modalTitle =
-		modalType === 'add'
+		modalType === "add"
 			? `add SPPB In`
-			: modalType === 'edit'
+			: modalType === "edit"
 			? `edit SPPB In`
-			: modalType === 'preview'
+			: modalType === "preview"
 			? `preview SPPB In`
 			: `delete SPPB In`;
 
@@ -53,7 +53,7 @@ export default function SPPBIN() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, po_item, ...rest}) => {
-			if (type === 'delete') return mutateDelete({id: rest.id}, {onSuccess});
+			if (type === "delete") return mutateDelete({id: rest.id}, {onSuccess});
 
 			mutateUpsert({...rest, po_item: po_item.filter(Boolean)}, {onSuccess});
 		})();
@@ -78,14 +78,14 @@ export default function SPPBIN() {
 				form={hookForm}
 				data={data?.rows}
 				pageCount={data?.totalPage}
-				topComponent={<Button onClick={() => showModal('add', {})}>Add</Button>}
+				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
 				header={[
-					'Tanggal Surat Jalan',
-					'Nomor PO',
-					'Customer',
-					'Nomor Surat Jalan',
-					'Nomor Lot',
-					'Action',
+					"Tanggal Surat Jalan",
+					"Nomor PO",
+					"Customer",
+					"Nomor Surat Jalan",
+					"Nomor Lot",
+					"Action",
 				]}
 				renderItem={({Cell, item}) => {
 					const {id} = item;
@@ -102,11 +102,11 @@ export default function SPPBIN() {
 							<Cell>{item.nomor_surat}</Cell>
 							<Cell>{item.lot_no}</Cell>
 							<Cell className="flex gap-2">
-								<Button onClick={() => showModal('preview', item)}>
+								<Button onClick={() => showModal("preview", item)}>
 									Preview
 								</Button>
-								<Button onClick={() => showModal('edit', item)}>Edit</Button>
-								<Button onClick={() => showModal('delete', {id})}>
+								<Button onClick={() => showModal("edit", item)}>Edit</Button>
+								<Button onClick={() => showModal("delete", {id})}>
 									Delete
 								</Button>
 							</Cell>

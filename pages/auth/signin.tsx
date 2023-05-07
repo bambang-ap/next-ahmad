@@ -1,12 +1,12 @@
-import {useEffect, useState} from 'react';
+import {useEffect, useState} from "react";
 
-import {signIn} from 'next-auth/react';
-import {useRouter} from 'next/router';
-import {useForm} from 'react-hook-form';
+import {signIn} from "next-auth/react";
+import {useRouter} from "next/router";
+import {useForm} from "react-hook-form";
 
-import {TUserSignIn} from '@appTypes/app.type';
-import {Button, Input} from '@components';
-import {useSession} from '@hooks';
+import {TUserSignIn} from "@appTypes/app.type";
+import {Button, Input} from "@components";
+import {useSession} from "@hooks";
 
 export default function SignIn() {
 	const {status} = useSession();
@@ -17,11 +17,11 @@ export default function SignIn() {
 	const [usingQr, setUsingQr] = useState(false);
 
 	const onSubmit = handleSubmit(async ({email, password, token}) => {
-		await signIn('credentials', {email, password, token, redirect: false});
+		await signIn("credentials", {email, password, token, redirect: false});
 	});
 
 	useEffect(() => {
-		if (status === 'authenticated') replace('/app');
+		if (status === "authenticated") replace("/app");
 	}, [status]);
 
 	function toggleMethod() {
@@ -56,7 +56,7 @@ export default function SignIn() {
 							Login
 						</Button>
 						<Button className="flex-1" onClick={toggleMethod}>
-							{`Login Using ${usingQr ? 'Form' : 'QR'}`}
+							{`Login Using ${usingQr ? "Form" : "QR"}`}
 						</Button>
 					</div>
 				</form>

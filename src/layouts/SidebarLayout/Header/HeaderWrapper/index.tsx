@@ -1,7 +1,7 @@
-import {useContext} from 'react';
+import {useContext} from "react";
 
-import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
-import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
+import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
+import MenuTwoToneIcon from "@mui/icons-material/MenuTwoTone";
 import {
 	alpha,
 	Box,
@@ -10,13 +10,13 @@ import {
 	styled,
 	Tooltip,
 	useTheme,
-} from '@mui/material';
-import Head from 'next/head';
-import {useRouter} from 'next/router';
+} from "@mui/material";
+import Head from "next/head";
+import {useRouter} from "next/router";
 
-import {SidebarContext} from '@app/contexts/SidebarContext';
-import {Text} from '@components';
-import {useAuth, useMenu} from '@hooks';
+import {SidebarContext} from "@app/contexts/SidebarContext";
+import {Text} from "@components";
+import {useAuth, useMenu} from "@hooks";
 
 const HeaderWrapper = styled(Box)(
 	({theme}) => `
@@ -25,7 +25,7 @@ const HeaderWrapper = styled(Box)(
         padding: ${theme.spacing(0, 2)};
         right: 0;
         z-index: 6;
-        background-color: ${alpha(theme?.header?.background ?? '', 0.95)};
+        background-color: ${alpha(theme?.header?.background ?? "", 0.95)};
         backdrop-filter: blur(3px);
         position: fixed;
         justify-content: space-between;
@@ -58,7 +58,7 @@ function Header() {
 				alignItems="center"
 				sx={{
 					boxShadow:
-						theme.palette.mode === 'dark'
+						theme.palette.mode === "dark"
 							? `0 1px 0 ${alpha(
 									lighten(theme.colors.primary.main, 0.7),
 									0.15,
@@ -85,7 +85,7 @@ function Header() {
 						component="span"
 						sx={{
 							ml: 2,
-							display: {lg: 'none', xs: 'inline-block'},
+							display: {lg: "none", xs: "inline-block"},
 						}}>
 						<Tooltip arrow title="Toggle Menu">
 							<IconButton color="primary" onClick={toggleSidebar}>

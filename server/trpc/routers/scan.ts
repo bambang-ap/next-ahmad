@@ -1,24 +1,24 @@
-import {TDataScan} from '@appTypes/app.type';
+import {TDataScan} from "@appTypes/app.type";
 import {
 	tScan,
 	tScanItem,
 	TScanTarget,
 	tScanTarget,
 	zId,
-} from '@appTypes/app.zod';
-import {OrmScan} from '@database';
-import {checkCredentialV2} from '@server';
-import {procedure, router} from '@trpc';
-import {appRouter} from '@trpc/routers';
-import {TRPCError} from '@trpc/server';
+} from "@appTypes/app.zod";
+import {OrmScan} from "@database";
+import {checkCredentialV2} from "@server";
+import {procedure, router} from "@trpc";
+import {appRouter} from "@trpc/routers";
+import {TRPCError} from "@trpc/server";
 
 function enabled(target: TScanTarget, dataScan?: TDataScan) {
 	switch (target) {
-		case 'produksi':
+		case "produksi":
 			return true;
-		case 'qc':
+		case "qc":
 			return dataScan?.status_produksi;
-		case 'finish_good':
+		case "finish_good":
 			return dataScan?.status_qc;
 		// case 'out_barang':
 		// 	return dataScan?.status_finish_good;
@@ -36,7 +36,7 @@ const scanRouters = router({
 				async (): Promise<TDataScan | null> => {
 					const routerCaller = appRouter.createCaller({req, res});
 					const dataKanban = await routerCaller.kanban.get({
-						type: 'kanban',
+						type: "kanban",
 						where: {id},
 					});
 
@@ -49,8 +49,8 @@ const scanRouters = router({
 						// @ts-ignore
 						if (!enabled(target, dataScann))
 							throw new TRPCError({
-								code: 'NOT_FOUND',
-								message: 'Data tidak ditemukan',
+								code: "NOT_FOUND",
+								message: "Data tidak ditemukan",
 							});
 
 						// @ts-ignore
@@ -82,13 +82,13 @@ const scanRouters = router({
 
 					if (!dataScan) {
 						throw new TRPCError({
-							code: 'BAD_REQUEST',
-							message: 'Failed to get dataScan',
+							code: "BAD_REQUEST",
+							message: "Failed to get dataScan",
 						});
 					}
 
 					if (!enabled(target, dataScan)) {
-						throw new TRPCError({code: 'BAD_REQUEST', message: 'Failed'});
+						throw new TRPCError({code: "BAD_REQUEST", message: "Failed"});
 					}
 
 					await OrmScan.update(
@@ -96,7 +96,7 @@ const scanRouters = router({
 						{where: {id_kanban: id}},
 					);
 
-					return {message: 'Success'};
+					return {message: "Success"};
 				},
 			);
 		}),

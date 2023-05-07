@@ -4,18 +4,18 @@
 
 module.exports = {
 	content: [
-		'./public/**/*.html',
-		'./app/**/*.{ts,tsx}',
-		'./pages/**/*.{js,ts,jsx,tsx}',
-		'./src/**/*.{js,ts,jsx,tsx}',
+		"./public/**/*.html",
+		"./app/**/*.{ts,tsx}",
+		"./pages/**/*.{js,ts,jsx,tsx}",
+		"./src/**/*.{js,ts,jsx,tsx}",
 	],
 	theme: {
 		extend: {
 			fontFamily: {
-				'noto-sans': ['Noto Sans', 'Noto Sans_bold'],
+				"noto-sans": ["Noto Sans", "Noto Sans_bold"],
 			},
 			outlineWidth: {
-				5: '5px',
+				5: "5px",
 			},
 		},
 	},

@@ -1,16 +1,16 @@
-import {FormEventHandler, useRef} from 'react';
+import {FormEventHandler, useRef} from "react";
 
-import {useForm} from 'react-hook-form';
+import {useForm} from "react-hook-form";
 
-import {ModalTypePreview, TKanbanUpsert} from '@appTypes/app.zod';
-import {Button, Form, Modal, ModalRef, Table} from '@components';
-import {defaultErrorMutation} from '@constants';
-import {getLayout} from '@hoc';
-import {useKanban} from '@hooks';
-import {KanbanGenerateQR} from '@pageComponent/kanban_GenerateQR';
-import {KanbanModalChild} from '@pageComponent/kanban_ModalChild';
-import {dateUtils, modalTypeParser} from '@utils';
-import {trpc} from '@utils/trpc';
+import {ModalTypePreview, TKanbanUpsert} from "@appTypes/app.zod";
+import {Button, Form, Modal, ModalRef, Table} from "@components";
+import {defaultErrorMutation} from "@constants";
+import {getLayout} from "@hoc";
+import {useKanban} from "@hooks";
+import {KanbanGenerateQR} from "@pageComponent/kanban_GenerateQR";
+import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
+import {dateUtils, modalTypeParser} from "@utils";
+import {trpc} from "@utils/trpc";
 
 Kanban.getLayout = getLayout;
 
@@ -27,14 +27,14 @@ export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
-	const {data, refetch} = trpc.kanban.get.useQuery({type: 'kanban'});
+	const {data, refetch} = trpc.kanban.get.useQuery({type: "kanban"});
 	const {mutate: mutateUpsert} =
 		trpc.kanban.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
-	const [modalType] = watch(['type']);
-	const {isPreview, modalTitle} = modalTypeParser(modalType, 'Kanban');
+	const [modalType] = watch(["type"]);
+	const {isPreview, modalTitle} = modalTypeParser(modalType, "Kanban");
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -43,10 +43,10 @@ export default function Kanban() {
 			if (callbacks) callbacks.forEach(callback => callback());
 
 			switch (type) {
-				case 'add':
-				case 'edit':
+				case "add":
+				case "edit":
 					return mutateUpsert({...rest, list_mesin}, {onSuccess});
-				case 'delete':
+				case "delete":
 					return mutateDelete(rest.id, {onSuccess});
 				default:
 					return null;
@@ -61,7 +61,7 @@ export default function Kanban() {
 
 	function showModal(
 		type: ModalTypePreview,
-		initValue?: Partial<Omit<FormType, 'type'>>,
+		initValue?: Partial<Omit<FormType, "type">>,
 	) {
 		reset({...initValue, type});
 		modalRef.current?.show();
@@ -69,18 +69,18 @@ export default function Kanban() {
 
 	return (
 		<>
-			<Button onClick={() => showModal('add', {})}>Add</Button>
+			<Button onClick={() => showModal("add", {})}>Add</Button>
 			<Table
 				data={data}
 				header={[
-					'Tanggal',
-					'Doc No',
-					'Nomor PO',
-					'Nomor Surat Jalan',
-					'Customer',
-					'Created By',
-					'Keterangan',
-					'Action',
+					"Tanggal",
+					"Doc No",
+					"Nomor PO",
+					"Nomor Surat Jalan",
+					"Customer",
+					"Created By",
+					"Keterangan",
+					"Action",
 				]}
 				renderItem={({Cell, item}) => {
 					// @ts-ignore
@@ -99,11 +99,11 @@ export default function Kanban() {
 								<KanbanGenerateQR {...item} />
 								<Button
 									icon="faMagnifyingGlass"
-									onClick={() => showModal('preview', rest)}
+									onClick={() => showModal("preview", rest)}
 								/>
-								<Button onClick={() => showModal('edit', rest)} icon="faEdit" />
+								<Button onClick={() => showModal("edit", rest)} icon="faEdit" />
 								<Button
-									onClick={() => showModal('delete', {id: item.id})}
+									onClick={() => showModal("delete", {id: item.id})}
 									icon="faTrash"
 								/>
 							</Cell>

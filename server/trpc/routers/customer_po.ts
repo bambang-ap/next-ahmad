@@ -1,7 +1,7 @@
-import {Op} from 'sequelize';
-import {z} from 'zod';
+import {Op} from "sequelize";
+import {z} from "zod";
 
-import {PagingResult, UQtyList} from '@appTypes/app.type';
+import {PagingResult, UQtyList} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	TCustomer,
@@ -9,19 +9,19 @@ import {
 	tCustomerPO,
 	TPOItem,
 	tPOItem,
-} from '@appTypes/app.zod';
-import {defaultLimit, qtyList} from '@constants';
+} from "@appTypes/app.zod";
+import {defaultLimit, qtyList} from "@constants";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmPOItemSppbIn,
-} from '@database';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
-import {procedure, router} from '@trpc';
+} from "@database";
+import {checkCredentialV2, generateId, pagingResult} from "@server";
+import {procedure, router} from "@trpc";
 
-import {appRouter} from '.';
+import {appRouter} from ".";
 
 type GetPage = PagingResult<GetPageRows>;
 type GetPageRows = TCustomerPO & {
@@ -37,10 +37,10 @@ const customer_poRouters = router({
 				.pick({id: true})
 				.partial()
 				.extend({
-					type: z.literal('customer_po'),
+					type: z.literal("customer_po"),
 				}),
 		)
-		.query(async ({ctx, input}): Promise<GetPage['rows']> => {
+		.query(async ({ctx, input}): Promise<GetPage["rows"]> => {
 			const routerCaller = appRouter.createCaller(ctx);
 
 			const data = await routerCaller.customer_po.getPage({
@@ -53,7 +53,7 @@ const customer_poRouters = router({
 		.input(
 			tableFormValue
 				.partial()
-				.extend({type: z.literal('customer_po')})
+				.extend({type: z.literal("customer_po")})
 				.and(tCustomerPO.pick({id: true}).partial()),
 		)
 		.query(async ({ctx: {req, res}, input}) => {
@@ -75,7 +75,7 @@ const customer_poRouters = router({
 				const {count, rows: allPO} = await OrmCustomerPO.findAndCountAll(
 					idPo ? {where: {id: idPo}} : limitation,
 				);
-				const joinedPOPromises = allPO.map<Promise<GetPage['rows'][number]>>(
+				const joinedPOPromises = allPO.map<Promise<GetPage["rows"][number]>>(
 					async ({dataValues}) => {
 						const poItem = await OrmCustomerPOItem.findAll({
 							where: {id_po: dataValues.id},
@@ -154,7 +154,7 @@ const customer_poRouters = router({
 					}),
 				);
 				await Promise.all(poItemPromises ?? []);
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 
@@ -198,7 +198,7 @@ const customer_poRouters = router({
 				await Promise.all(poItemPromises);
 				await Promise.all(excludeItem.map(e => e.destroy()));
 
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 
@@ -217,7 +217,7 @@ const customer_poRouters = router({
 				await OrmCustomerSPPBIn.destroy({where: {id_po: id}});
 				await OrmCustomerPOItem.destroy({where: {id_po: id}});
 				await OrmCustomerPO.destroy({where: {id}});
-				return {message: 'Success'};
+				return {message: "Success"};
 			});
 		}),
 });

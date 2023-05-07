@@ -17,17 +17,17 @@ import {
 	TParameterKategori,
 	TRole,
 	TUser,
-} from '@appTypes/app.type';
-import {InputProps, SelectPropsData} from '@components';
-import {CRUD_ENABLED} from '@enum';
-import {TRPCClientErrorLike} from '@trpc/client';
-import {UseTRPCQueryResult} from '@trpc/react-query/shared';
-import {AnyProcedure} from '@trpc/server';
-import {inferTransformedProcedureOutput} from '@trpc/server/shared';
-import {dateUtils} from '@utils';
-import {trpc} from '@utils/trpc';
+} from "@appTypes/app.type";
+import {InputProps, SelectPropsData} from "@components";
+import {CRUD_ENABLED} from "@enum";
+import {TRPCClientErrorLike} from "@trpc/client";
+import {UseTRPCQueryResult} from "@trpc/react-query/shared";
+import {AnyProcedure} from "@trpc/server";
+import {inferTransformedProcedureOutput} from "@trpc/server/shared";
+import {dateUtils} from "@utils";
+import {trpc} from "@utils/trpc";
 
-type Action = 'add' | 'edit' | 'delete';
+type Action = "add" | "edit" | "delete";
 
 export type BodyArrayKey<T extends Record<string, any>> = [
 	keyof T,
@@ -70,9 +70,9 @@ export type FieldForm<T extends {}> = {
 	col: keyof T;
 	label?: string;
 } & (
-	| {type?: InputProps['type']}
+	| {type?: InputProps["type"]}
 	| {
-			type: 'select';
+			type: "select";
 			firstOption?: string;
 			dataMapping: (item: any[]) => SelectPropsData[];
 			dataQuery: () => UseTRPCQueryResult<
@@ -83,25 +83,25 @@ export type FieldForm<T extends {}> = {
 );
 
 export const allowedPages: Record<string, AllowedPages> = {
-	'/app/document': {
+	"/app/document": {
 		enumName: CRUD_ENABLED.DOCUMENT,
-		searchKey: 'doc_no',
+		searchKey: "doc_no",
 		table: {
-			header: ['Dibuat Pada', 'Dirubah Pada', 'Name', 'Keterangan', 'Action'],
+			header: ["Dibuat Pada", "Dirubah Pada", "Name", "Keterangan", "Action"],
 			get body(): Body<TDocument> {
 				return [
 					item => dateUtils.full(item.createdAt)!,
 					item => dateUtils.full(item.updatedAt)!,
-					'doc_no',
-					'keterangan',
+					"doc_no",
+					"keterangan",
 				];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TDocument>[] {
 				return [
-					{col: 'doc_no', label: 'Document Number'},
-					{col: 'keterangan', label: 'Keterangan'},
+					{col: "doc_no", label: "Document Number"},
+					{col: "keterangan", label: "Keterangan"},
 				];
 			},
 			get edit() {
@@ -110,28 +110,28 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah Document',
-				edit: 'Ubah Document',
-				delete: 'Hapus Document',
+				add: "Tambah Document",
+				edit: "Ubah Document",
+				delete: "Hapus Document",
 			},
 		},
 	},
 
-	'/app/hardness': {
+	"/app/hardness": {
 		enumName: CRUD_ENABLED.HARDNESS,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Kategori', 'Name', 'Action'],
+			header: ["Kategori", "Name", "Action"],
 			get body(): Body<THardness> {
 				return [
 					[
-						'id_kategori',
+						"id_kategori",
 						() =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.HARDNESS_KATEGORI}),
 						(item: THardness, data: THardnessKategori[]) =>
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
-					'name',
+					"name",
 				];
 			},
 		},
@@ -139,16 +139,16 @@ export const allowedPages: Record<string, AllowedPages> = {
 			get add(): FieldForm<THardness>[] {
 				return [
 					{
-						col: 'id_kategori',
-						label: 'Pilih Kategori',
-						type: 'select',
-						firstOption: '- Pilih Kategori -',
+						col: "id_kategori",
+						label: "Pilih Kategori",
+						type: "select",
+						firstOption: "- Pilih Kategori -",
 						dataQuery: () =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.HARDNESS_KATEGORI}),
 						dataMapping: (item: THardnessKategori[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
-					{col: 'name', label: 'Nama'},
+					{col: "name", label: "Nama"},
 				];
 			},
 			get edit() {
@@ -157,25 +157,25 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah Hardness',
-				edit: 'Ubah Hardness',
-				delete: 'Hapus Hardness',
+				add: "Tambah Hardness",
+				edit: "Ubah Hardness",
+				delete: "Hapus Hardness",
 			},
 		},
 	},
 
-	'/app/hardness/kategori': {
+	"/app/hardness/kategori": {
 		enumName: CRUD_ENABLED.HARDNESS_KATEGORI,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Name', 'Action'],
+			header: ["Name", "Action"],
 			get body(): Body<THardnessKategori> {
-				return ['name'];
+				return ["name"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<THardnessKategori>[] {
-				return [{col: 'name', label: 'Kategori'}];
+				return [{col: "name", label: "Kategori"}];
 			},
 			get edit() {
 				return this.add;
@@ -183,28 +183,28 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah Hardness kategori',
-				edit: 'Ubah Hardness kategori',
-				delete: 'Hapus Hardness kategori',
+				add: "Tambah Hardness kategori",
+				edit: "Ubah Hardness kategori",
+				delete: "Hapus Hardness kategori",
 			},
 		},
 	},
 
-	'/app/material': {
+	"/app/material": {
 		enumName: CRUD_ENABLED.MATERIAL,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Kategori', 'Name', 'Action'],
+			header: ["Kategori", "Name", "Action"],
 			get body(): Body<TMaterial> {
 				return [
 					[
-						'id_kategori',
+						"id_kategori",
 						() =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.MATERIAL_KATEGORI}),
 						(item: TMaterial, data: TMaterialKategori[]) =>
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
-					'name',
+					"name",
 				];
 			},
 		},
@@ -212,16 +212,16 @@ export const allowedPages: Record<string, AllowedPages> = {
 			get add(): FieldForm<TMaterial>[] {
 				return [
 					{
-						col: 'id_kategori',
-						label: 'Kategori',
-						type: 'select',
-						firstOption: '- Pilih Kategori -',
+						col: "id_kategori",
+						label: "Kategori",
+						type: "select",
+						firstOption: "- Pilih Kategori -",
 						dataQuery: () =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.MATERIAL_KATEGORI}),
 						dataMapping: (item: TMaterialKategori[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
-					{col: 'name', label: 'Nama'},
+					{col: "name", label: "Nama"},
 				];
 			},
 			get edit() {
@@ -230,25 +230,25 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah material',
-				edit: 'Ubah material',
-				delete: 'Hapus material',
+				add: "Tambah material",
+				edit: "Ubah material",
+				delete: "Hapus material",
 			},
 		},
 	},
 
-	'/app/material/kategori': {
+	"/app/material/kategori": {
 		enumName: CRUD_ENABLED.MATERIAL_KATEGORI,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Name', 'Action'],
+			header: ["Name", "Action"],
 			get body(): Body<TMaterialKategori> {
-				return ['name'];
+				return ["name"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TMaterialKategori>[] {
-				return [{col: 'name', label: 'Kategori'}];
+				return [{col: "name", label: "Kategori"}];
 			},
 			get edit() {
 				return this.add;
@@ -256,22 +256,22 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah material kategori',
-				edit: 'Ubah material kategori',
-				delete: 'Hapus material kategori',
+				add: "Tambah material kategori",
+				edit: "Ubah material kategori",
+				delete: "Hapus material kategori",
 			},
 		},
 	},
 
-	'/app/parameter': {
+	"/app/parameter": {
 		enumName: CRUD_ENABLED.PARAMETER,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Kategori', 'Name', 'Action'],
+			header: ["Kategori", "Name", "Action"],
 			get body(): Body<TParameter> {
 				return [
 					[
-						'id_kategori',
+						"id_kategori",
 						() =>
 							trpc.basic.get.useQuery({
 								target: CRUD_ENABLED.PARAMETER_KATEGORI,
@@ -279,7 +279,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						(item: TParameter, data: TParameterKategori[]) =>
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
-					'name',
+					"name",
 				];
 			},
 		},
@@ -287,10 +287,10 @@ export const allowedPages: Record<string, AllowedPages> = {
 			get add(): FieldForm<TParameter>[] {
 				return [
 					{
-						col: 'id_kategori',
-						label: 'Pilih Kategori',
-						type: 'select',
-						firstOption: '- Pilih Kategori -',
+						col: "id_kategori",
+						label: "Pilih Kategori",
+						type: "select",
+						firstOption: "- Pilih Kategori -",
 						dataQuery: () =>
 							trpc.basic.get.useQuery({
 								target: CRUD_ENABLED.PARAMETER_KATEGORI,
@@ -298,7 +298,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: TParameterKategori[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
-					{col: 'name', label: 'Nama'},
+					{col: "name", label: "Nama"},
 				];
 			},
 			get edit() {
@@ -307,25 +307,25 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah Parameter',
-				edit: 'Ubah Parameter',
-				delete: 'Hapus Parameter',
+				add: "Tambah Parameter",
+				edit: "Ubah Parameter",
+				delete: "Hapus Parameter",
 			},
 		},
 	},
 
-	'/app/parameter/kategori': {
+	"/app/parameter/kategori": {
 		enumName: CRUD_ENABLED.PARAMETER_KATEGORI,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Name', 'Action'],
+			header: ["Name", "Action"],
 			get body(): Body<TParameterKategori> {
-				return ['name'];
+				return ["name"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TParameterKategori>[] {
-				return [{col: 'name', label: 'Kategori'}];
+				return [{col: "name", label: "Kategori"}];
 			},
 			get edit() {
 				return this.add;
@@ -333,27 +333,27 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah Parameter kategori',
-				edit: 'Ubah Parameter kategori',
-				delete: 'Hapus Parameter kategori',
+				add: "Tambah Parameter kategori",
+				edit: "Ubah Parameter kategori",
+				delete: "Hapus Parameter kategori",
 			},
 		},
 	},
 
-	'/app/mesin': {
+	"/app/mesin": {
 		enumName: CRUD_ENABLED.MESIN,
-		searchKey: 'nomor_mesin',
+		searchKey: "nomor_mesin",
 		table: {
-			header: ['Name', 'Nomor Mesin', 'Action'],
+			header: ["Name", "Nomor Mesin", "Action"],
 			get body(): Body<TMesin> {
-				return ['name', 'nomor_mesin'];
+				return ["name", "nomor_mesin"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TMesin>[] {
 				return [
-					{col: 'name', label: 'Nama Mesin'},
-					{col: 'nomor_mesin', label: 'Nomor Mesin'},
+					{col: "name", label: "Nama Mesin"},
+					{col: "nomor_mesin", label: "Nomor Mesin"},
 				];
 			},
 			get edit() {
@@ -362,25 +362,25 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah mesin',
-				edit: 'Ubah mesin',
-				delete: 'Hapus mesin',
+				add: "Tambah mesin",
+				edit: "Ubah mesin",
+				delete: "Hapus mesin",
 			},
 		},
 	},
 
-	'/app/kendaraan': {
+	"/app/kendaraan": {
 		enumName: CRUD_ENABLED.KENDARAAN,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Name', 'Action'],
+			header: ["Name", "Action"],
 			get body(): Body<TKendaraan> {
-				return ['name'];
+				return ["name"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TKendaraan>[] {
-				return [{col: 'name', label: 'Nama Kendaraan'}];
+				return [{col: "name", label: "Nama Kendaraan"}];
 			},
 			get edit() {
 				return this.add;
@@ -388,25 +388,25 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah kendaraan',
-				edit: 'Ubah kendaraan',
-				delete: 'Hapus kendaraan',
+				add: "Tambah kendaraan",
+				edit: "Ubah kendaraan",
+				delete: "Hapus kendaraan",
 			},
 		},
 	},
 
-	'/app/kanban/instruksi': {
+	"/app/kanban/instruksi": {
 		enumName: CRUD_ENABLED.INSTRUKSI_KANBAN,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Proses', 'Action'],
+			header: ["Proses", "Action"],
 			get body(): Body<TInstruksiKanban> {
-				return ['name'];
+				return ["name"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TInstruksiKanban>[] {
-				return [{col: 'name', label: 'Proses'}];
+				return [{col: "name", label: "Proses"}];
 			},
 			get edit() {
 				return this.add;
@@ -414,42 +414,42 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah proses kanban',
-				edit: 'Ubah proses kanban',
-				delete: 'Hapus proses kanban',
+				add: "Tambah proses kanban",
+				edit: "Ubah proses kanban",
+				delete: "Hapus proses kanban",
 			},
 		},
 	},
 
-	'/app/customer': {
+	"/app/customer": {
 		enumName: CRUD_ENABLED.CUSTOMER,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
 			header: [
-				'Customer',
-				'Alamat',
-				'NPWP',
-				'No. Telepon',
-				'UP',
-				'Action',
-				'',
-				'',
-				'',
-				'',
-				'',
+				"Customer",
+				"Alamat",
+				"NPWP",
+				"No. Telepon",
+				"UP",
+				"Action",
+				"",
+				"",
+				"",
+				"",
+				"",
 			],
 			get body(): Body<TCustomer> {
-				return ['name', 'alamat', 'npwp', 'no_telp', 'up'];
+				return ["name", "alamat", "npwp", "no_telp", "up"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TCustomer>[] {
 				return [
-					{col: 'name', label: 'Customer'},
-					{col: 'alamat', label: 'Alamat'},
-					{col: 'npwp', label: 'NPWP'},
-					{col: 'no_telp', label: 'No. Telepon'},
-					{col: 'up', label: 'UP'},
+					{col: "name", label: "Customer"},
+					{col: "alamat", label: "Alamat"},
+					{col: "npwp", label: "NPWP"},
+					{col: "no_telp", label: "No. Telepon"},
+					{col: "up", label: "UP"},
 				];
 			},
 			get edit() {
@@ -458,24 +458,24 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah customer',
-				edit: 'Ubah customer',
-				delete: 'Hapus customer',
+				add: "Tambah customer",
+				edit: "Ubah customer",
+				delete: "Hapus customer",
 			},
 		},
 	},
 
-	'/app/user': {
+	"/app/user": {
 		enumName: CRUD_ENABLED.USER,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Name', 'Email', 'Role', 'Action'],
+			header: ["Name", "Email", "Role", "Action"],
 			get body(): Body<TUser> {
 				return [
-					'name',
-					'email',
+					"name",
+					"email",
 					[
-						'role',
+						"role",
 						() => trpc.basic.get.useQuery({target: CRUD_ENABLED.ROLE}),
 						(item: TUser, data: TRole[]) =>
 							data?.find?.(e => e.id === item.role)?.name,
@@ -486,19 +486,19 @@ export const allowedPages: Record<string, AllowedPages> = {
 		modalField: {
 			get add(): FieldForm<TUser>[] {
 				return [
-					{col: 'name', label: 'Name'},
-					{col: 'email', label: 'Email'},
+					{col: "name", label: "Name"},
+					{col: "email", label: "Email"},
 					{
-						col: 'role',
-						label: 'Role',
-						type: 'select',
-						firstOption: '- Pilih Role -',
+						col: "role",
+						label: "Role",
+						type: "select",
+						firstOption: "- Pilih Role -",
 						dataQuery: () =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.ROLE}),
 						dataMapping: (item: TRole[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
-					{col: 'password', label: 'Password'},
+					{col: "password", label: "Password"},
 				];
 			},
 			get edit(): FieldForm<TUser>[] {
@@ -509,25 +509,25 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah user',
-				edit: 'Ubah user',
-				delete: 'Hapus user',
+				add: "Tambah user",
+				edit: "Ubah user",
+				delete: "Hapus user",
 			},
 		},
 	},
 
-	'/app/user/role': {
+	"/app/user/role": {
 		enumName: CRUD_ENABLED.ROLE,
-		searchKey: 'name',
+		searchKey: "name",
 		table: {
-			header: ['Role', 'Action'],
+			header: ["Role", "Action"],
 			get body(): Body<TRole> {
-				return ['name'];
+				return ["name"];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TRole>[] {
-				return [{col: 'name', label: 'Role'}];
+				return [{col: "name", label: "Role"}];
 			},
 			get edit() {
 				return this.add;
@@ -535,9 +535,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 		text: {
 			modal: {
-				add: 'Tambah role',
-				edit: 'Ubah role',
-				delete: 'Hapus role',
+				add: "Tambah role",
+				edit: "Ubah role",
+				delete: "Hapus role",
 			},
 		},
 	},

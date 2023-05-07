@@ -1,7 +1,7 @@
-import {ChangeEvent, FC, useState} from 'react';
+import {ChangeEvent, FC, useState} from "react";
 
-import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
-import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
+import DeleteTwoToneIcon from "@mui/icons-material/DeleteTwoTone";
+import EditTwoToneIcon from "@mui/icons-material/EditTwoTone";
 import {
 	Box,
 	Card,
@@ -23,15 +23,15 @@ import {
 	Tooltip,
 	Typography,
 	useTheme,
-} from '@mui/material';
-import {format} from 'date-fns';
-import numeral from 'numeral';
-import PropTypes from 'prop-types';
+} from "@mui/material";
+import {format} from "date-fns";
+import numeral from "numeral";
+import PropTypes from "prop-types";
 
-import {CryptoOrder, CryptoOrderStatus} from '@app/models/crypto_order';
-import Label from '@prevComp/Label';
+import {CryptoOrder, CryptoOrderStatus} from "@app/models/crypto_order";
+import Label from "@prevComp/Label";
 
-import BulkActions from './BulkActions';
+import BulkActions from "./BulkActions";
 
 interface RecentOrdersTableProps {
 	className?: string;
@@ -45,16 +45,16 @@ interface Filters {
 const getStatusLabel = (cryptoOrderStatus: CryptoOrderStatus): JSX.Element => {
 	const map = {
 		failed: {
-			text: 'Failed',
-			color: 'error',
+			text: "Failed",
+			color: "error",
 		},
 		completed: {
-			text: 'Completed',
-			color: 'success',
+			text: "Completed",
+			color: "success",
 		},
 		pending: {
-			text: 'Pending',
-			color: 'warning',
+			text: "Pending",
+			color: "warning",
 		},
 	};
 
@@ -97,27 +97,27 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({cryptoOrders}) => {
 
 	const statusOptions = [
 		{
-			id: 'all',
-			name: 'All',
+			id: "all",
+			name: "All",
 		},
 		{
-			id: 'completed',
-			name: 'Completed',
+			id: "completed",
+			name: "Completed",
 		},
 		{
-			id: 'pending',
-			name: 'Pending',
+			id: "pending",
+			name: "Pending",
 		},
 		{
-			id: 'failed',
-			name: 'Failed',
+			id: "failed",
+			name: "Failed",
 		},
 	];
 
 	const handleStatusChange = (e: ChangeEvent<HTMLInputElement>) => {
 		let value: CryptoOrderStatus;
 
-		if (e.target.value !== 'all') {
+		if (e.target.value !== "all") {
 			value = e.target.value as CryptoOrderStatus;
 		}
 
@@ -185,7 +185,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({cryptoOrders}) => {
 							<FormControl fullWidth variant="outlined">
 								<InputLabel>Status</InputLabel>
 								<Select
-									value={filters.status || 'all'}
+									value={filters.status || "all"}
 									// @ts-ignore
 									onChange={handleStatusChange}
 									label="Status"
@@ -253,7 +253,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({cryptoOrders}) => {
 											{cryptoOrder.orderDetails}
 										</Typography>
 										<Typography variant="body2" color="text.secondary" noWrap>
-											{format(cryptoOrder.orderDate, 'MMMM dd yyyy')}
+											{format(cryptoOrder.orderDate, "MMMM dd yyyy")}
 										</Typography>
 									</TableCell>
 									<TableCell>
@@ -302,7 +302,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({cryptoOrders}) => {
 										<Tooltip title="Edit Order" arrow>
 											<IconButton
 												sx={{
-													'&:hover': {
+													"&:hover": {
 														background: theme.colors.primary.lighter,
 													},
 													color: theme.palette.primary.main,
@@ -315,7 +315,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({cryptoOrders}) => {
 										<Tooltip title="Delete Order" arrow>
 											<IconButton
 												sx={{
-													'&:hover': {background: theme.colors.error.lighter},
+													"&:hover": {background: theme.colors.error.lighter},
 													color: theme.palette.error.main,
 												}}
 												color="inherit"

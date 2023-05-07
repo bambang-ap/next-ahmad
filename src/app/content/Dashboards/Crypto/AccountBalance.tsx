@@ -1,4 +1,4 @@
-import TrendingUp from '@mui/icons-material/TrendingUp';
+import TrendingUp from "@mui/icons-material/TrendingUp";
 import {
 	alpha,
 	Avatar,
@@ -14,11 +14,11 @@ import {
 	styled,
 	Typography,
 	useTheme,
-} from '@mui/material';
-import type {ApexOptions} from 'apexcharts';
+} from "@mui/material";
+import type {ApexOptions} from "apexcharts";
 
-import {Text} from '@components';
-import {Chart} from '@prevComp/Chart';
+import {Text} from "@components";
+import {Chart} from "@prevComp/Chart";
 
 const AvatarSuccess = styled(Avatar)(
 	({theme}) => `
@@ -40,7 +40,7 @@ const ListItemAvatarWrapper = styled(ListItemAvatar)(
   padding: ${theme.spacing(0.5)};
   border-radius: 60px;
   background: ${
-		theme.palette.mode === 'dark'
+		theme.palette.mode === "dark"
 			? theme.colors.alpha.trueWhite[30]
 			: alpha(theme.colors.alpha.black[100], 0.07)
 	};
@@ -61,7 +61,7 @@ function AccountBalance() {
 
 	const chartOptions: ApexOptions = {
 		chart: {
-			background: 'transparent',
+			background: "transparent",
 			stacked: false,
 			toolbar: {
 				show: false,
@@ -70,15 +70,15 @@ function AccountBalance() {
 		plotOptions: {
 			pie: {
 				donut: {
-					size: '60%',
+					size: "60%",
 				},
 			},
 		},
-		colors: ['#ff9900', '#1c81c2', '#333', '#5c6ac0'],
+		colors: ["#ff9900", "#1c81c2", "#333", "#5c6ac0"],
 		dataLabels: {
 			enabled: true,
 			formatter(val) {
-				return val + '%';
+				return val + "%";
 			},
 			style: {
 				colors: [theme.colors.alpha.trueWhite[100]],
@@ -111,7 +111,7 @@ function AccountBalance() {
 		fill: {
 			opacity: 1,
 		},
-		labels: ['Bitcoin', 'Ripple', 'Cardano', 'Ethereum'],
+		labels: ["Bitcoin", "Ripple", "Cardano", "Ethereum"],
 		legend: {
 			labels: {
 				colors: theme.colors.alpha.trueWhite[100],
@@ -187,7 +187,7 @@ function AccountBalance() {
 				</Grid>
 				<Grid
 					sx={{
-						position: 'relative',
+						position: "relative",
 					}}
 					display="flex"
 					alignItems="center"
@@ -197,7 +197,7 @@ function AccountBalance() {
 					<Box
 						component="span"
 						sx={{
-							display: {xs: 'none', md: 'inline-block'},
+							display: {xs: "none", md: "inline-block"},
 						}}>
 						<Divider absolute orientation="vertical" />
 					</Box>
@@ -221,7 +221,7 @@ function AccountBalance() {
 								<List
 									disablePadding
 									sx={{
-										width: '100%',
+										width: "100%",
 									}}>
 									<ListItem disableGutters>
 										<ListItemAvatarWrapper>
@@ -232,10 +232,10 @@ function AccountBalance() {
 										</ListItemAvatarWrapper>
 										<ListItemText
 											primary="BTC"
-											primaryTypographyProps={{variant: 'h5', noWrap: true}}
+											primaryTypographyProps={{variant: "h5", noWrap: true}}
 											secondary="Bitcoin"
 											secondaryTypographyProps={{
-												variant: 'subtitle2',
+												variant: "subtitle2",
 												noWrap: true,
 											}}
 										/>
@@ -255,10 +255,10 @@ function AccountBalance() {
 										</ListItemAvatarWrapper>
 										<ListItemText
 											primary="XRP"
-											primaryTypographyProps={{variant: 'h5', noWrap: true}}
+											primaryTypographyProps={{variant: "h5", noWrap: true}}
 											secondary="Ripple"
 											secondaryTypographyProps={{
-												variant: 'subtitle2',
+												variant: "subtitle2",
 												noWrap: true,
 											}}
 										/>
@@ -278,10 +278,10 @@ function AccountBalance() {
 										</ListItemAvatarWrapper>
 										<ListItemText
 											primary="ADA"
-											primaryTypographyProps={{variant: 'h5', noWrap: true}}
+											primaryTypographyProps={{variant: "h5", noWrap: true}}
 											secondary="Cardano"
 											secondaryTypographyProps={{
-												variant: 'subtitle2',
+												variant: "subtitle2",
 												noWrap: true,
 											}}
 										/>
@@ -301,10 +301,10 @@ function AccountBalance() {
 										</ListItemAvatarWrapper>
 										<ListItemText
 											primary="ETH"
-											primaryTypographyProps={{variant: 'h5', noWrap: true}}
+											primaryTypographyProps={{variant: "h5", noWrap: true}}
 											secondary="Ethereum"
 											secondaryTypographyProps={{
-												variant: 'subtitle2',
+												variant: "subtitle2",
 												noWrap: true,
 											}}
 										/>

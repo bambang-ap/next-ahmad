@@ -1,15 +1,15 @@
 // @ts-nocheck
 
-import {FormType} from 'pages/app/kanban';
-import {Control, UseFormReset, useWatch} from 'react-hook-form';
+import {FormType} from "pages/app/kanban";
+import {Control, UseFormReset, useWatch} from "react-hook-form";
 
-import {Button, Input, Table, Text} from '@components';
-import {defaultErrorMutation} from '@constants';
-import {useKanban} from '@hooks';
-import {modalTypeParser} from '@utils';
-import {trpc} from '@utils/trpc';
+import {Button, Input, Table, Text} from "@components";
+import {defaultErrorMutation} from "@constants";
+import {useKanban} from "@hooks";
+import {modalTypeParser} from "@utils";
+import {trpc} from "@utils/trpc";
 
-import {qtyList} from '../ModalChild_po';
+import {qtyList} from "../ModalChild_po";
 
 type RenderItemProps = {
 	control: Control<FormType>;
@@ -21,13 +21,13 @@ export function RenderItem({control, reset}: RenderItemProps) {
 
 	const [idKanban, idSppbIn, kanbanItems = {}, id_po, modalType] = useWatch({
 		control,
-		name: ['id', 'id_sppb_in', 'items', 'id_po', 'type'],
+		name: ["id", "id_sppb_in", "items", "id_po", "type"],
 	});
 	const {mutate: mutateItem} =
 		trpc.kanban.deleteItem.useMutation(defaultErrorMutation);
 	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery(
 		{
-			type: 'sppb_in',
+			type: "sppb_in",
 			where: {id_po},
 		},
 		{enabled: !!id_po},
@@ -57,7 +57,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 
 	return (
 		<Table
-			header={['Kode Item', 'Nama Item', 'Jumlah', 'Action']}
+			header={["Kode Item", "Nama Item", "Jumlah", "Action"]}
 			data={Object.entries(kanbanItems)}
 			renderItem={({Cell, item: [id_item, item]}) => {
 				if (item.id_sppb_in !== idSppbIn) return false;

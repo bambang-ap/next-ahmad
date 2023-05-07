@@ -1,28 +1,28 @@
-import {ModelDefined, Optional, Sequelize} from 'sequelize';
+import {ModelDefined, Optional, Sequelize} from "sequelize";
 
-import initOrmCustomer from './models/customer';
-import initOrmCustomerPO from './models/customer_po';
-import initOrmCustomerPOItem from './models/customer_po_item';
-import initOrmCustomerSPPBIn from './models/customer_sppb_in';
-import initOrmCustomerSPPBOut from './models/customer_sppb_out';
-import initOrmDocument from './models/document';
-import initOrmHardness from './models/hardness';
-import initOrmHardnessKategori from './models/hardness_kategori';
-import initOrmKanban from './models/kanban';
-import initOrmKanbanInstruksi from './models/kanban_instruksi';
-import initOrmKanbanItem from './models/kanban_item';
-import initOrmKendaraan from './models/kendaraan';
-import initOrmMaterial from './models/material';
-import initOrmMaterialKategori from './models/material_kategori';
-import initOrmMenu from './models/menu';
-import initOrmMesin from './models/mesin';
-import initOrmParameter from './models/parameter';
-import initOrmParameterKategori from './models/parameter_kategori';
-import initOrmPOItemSppbIn from './models/po_item_sppb_in';
-import initOrmRole from './models/role';
-import initOrmScan from './models/scan';
-import initOrmUser from './models/user';
-import initOrmCustomerLogin from './models/user_login';
+import initOrmCustomer from "./models/customer";
+import initOrmCustomerPO from "./models/customer_po";
+import initOrmCustomerPOItem from "./models/customer_po_item";
+import initOrmCustomerSPPBIn from "./models/customer_sppb_in";
+import initOrmCustomerSPPBOut from "./models/customer_sppb_out";
+import initOrmDocument from "./models/document";
+import initOrmHardness from "./models/hardness";
+import initOrmHardnessKategori from "./models/hardness_kategori";
+import initOrmKanban from "./models/kanban";
+import initOrmKanbanInstruksi from "./models/kanban_instruksi";
+import initOrmKanbanItem from "./models/kanban_item";
+import initOrmKendaraan from "./models/kendaraan";
+import initOrmMaterial from "./models/material";
+import initOrmMaterialKategori from "./models/material_kategori";
+import initOrmMenu from "./models/menu";
+import initOrmMesin from "./models/mesin";
+import initOrmParameter from "./models/parameter";
+import initOrmParameterKategori from "./models/parameter_kategori";
+import initOrmPOItemSppbIn from "./models/po_item_sppb_in";
+import initOrmRole from "./models/role";
+import initOrmScan from "./models/scan";
+import initOrmUser from "./models/user";
+import initOrmCustomerLogin from "./models/user_login";
 
 export type DefinedModel<
 	T extends {},
@@ -41,14 +41,14 @@ const {
 	DEV_PGSQL_PORT,
 } = process.env;
 
-const isProd = NODE_ENV === 'production';
+const isProd = NODE_ENV === "production";
 
 export const ORM = new Sequelize(
-	'manajemen',
+	"manajemen",
 	isProd ? PROD_PGSQL_USER : DEV_PGSQL_USER,
 	isProd ? PROD_PGSQL_PASSWORD : DEV_PGSQL_PASSWORD,
 	{
-		dialect: 'postgres',
+		dialect: "postgres",
 		port: isProd ? PROD_PGSQL_PORT : DEV_PGSQL_PORT,
 		host: isProd ? PROD_PGSQL_HOST : DEV_PGSQL_HOST,
 		// query: {raw: true},

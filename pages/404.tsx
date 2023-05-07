@@ -1,6 +1,6 @@
-import type {ReactElement} from 'react';
+import type {ReactElement} from "react";
 
-import SearchTwoToneIcon from '@mui/icons-material/SearchTwoTone';
+import SearchTwoToneIcon from "@mui/icons-material/SearchTwoTone";
 import {
 	Box,
 	Button,
@@ -12,10 +12,10 @@ import {
 	OutlinedInput,
 	styled,
 	Typography,
-} from '@mui/material';
-import Head from 'next/head';
+} from "@mui/material";
+import Head from "next/head";
 
-import {BaseLayout} from '@layouts';
+import {BaseLayout} from "@layouts";
 
 const MainContent = styled(Box)(
 	() => `
@@ -73,7 +73,7 @@ function Status404() {
 							</Typography>
 						</Box>
 						<Container maxWidth="sm">
-							<Card sx={{textAlign: 'center', mt: 3, p: 4}}>
+							<Card sx={{textAlign: "center", mt: 3, p: 4}}>
 								<FormControl variant="outlined" fullWidth>
 									<OutlinedInputWrapper
 										type="text"

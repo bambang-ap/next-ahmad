@@ -1,15 +1,15 @@
-import {FormEventHandler, useRef} from 'react';
+import {FormEventHandler, useRef} from "react";
 
-import {useForm} from 'react-hook-form';
+import {useForm} from "react-hook-form";
 
-import {ModalTypePreview} from '@appTypes/app.type';
-import {Button, Modal, ModalRef, TableFilter} from '@components';
-import {defaultErrorMutation} from '@constants';
-import {getLayout} from '@hoc';
-import {useTableFilter} from '@hooks';
-import PoModalChild, {FormType} from '@pageComponent/ModalChild_po';
-import {dateUtils} from '@utils';
-import {trpc} from '@utils/trpc';
+import {ModalTypePreview} from "@appTypes/app.type";
+import {Button, Modal, ModalRef, TableFilter} from "@components";
+import {defaultErrorMutation} from "@constants";
+import {getLayout} from "@hoc";
+import {useTableFilter} from "@hooks";
+import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
+import {dateUtils} from "@utils";
+import {trpc} from "@utils/trpc";
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
@@ -25,21 +25,21 @@ export default function POCustomer() {
 	});
 
 	const {refetch: refetchH} = trpc.customer_po.get.useQuery({
-		type: 'customer_po',
+		type: "customer_po",
 	});
 	const {data, refetch} = trpc.customer_po.getPage.useQuery({
-		type: 'customer_po',
+		type: "customer_po",
 		...formValue,
 	});
 
-	const modalType = watch('type');
-	const isDelete = modalType === 'delete';
+	const modalType = watch("type");
+	const isDelete = modalType === "delete";
 	const {modalTitle} = {
 		get modalTitle() {
-			if (modalType === 'add') return 'Tambah Customer PO';
-			if (modalType === 'edit') return 'Edit Customer PO';
-			if (modalType === 'delete') return 'Hapus Customer PO';
-			return 'Customer PO';
+			if (modalType === "add") return "Tambah Customer PO";
+			if (modalType === "edit") return "Edit Customer PO";
+			if (modalType === "delete") return "Hapus Customer PO";
+			return "Customer PO";
 		},
 	};
 
@@ -54,11 +54,11 @@ export default function POCustomer() {
 			};
 
 			switch (type) {
-				case 'add':
+				case "add":
 					return insertPO.mutate({...rest, po_item}, {onSuccess});
-				case 'edit':
+				case "edit":
 					return updatePO.mutate({id, po_item, ...rest}, {onSuccess});
-				case 'delete':
+				case "delete":
 					return deletePO.mutate(id, {onSuccess});
 				default:
 					return null;
@@ -76,7 +76,7 @@ export default function POCustomer() {
 			<Modal
 				ref={modalRef}
 				title={modalTitle}
-				size={isDelete ? undefined : 'xl'}>
+				size={isDelete ? undefined : "xl"}>
 				<form onSubmit={submit}>
 					<PoModalChild reset={reset} control={control} />
 				</form>
@@ -86,9 +86,9 @@ export default function POCustomer() {
 					form={hookForm}
 					data={data?.rows}
 					pageCount={data?.totalPage}
-					header={['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Action']}
+					header={["Nomor PO", "Customer", "Tanggal", "Due Date", "Action"]}
 					topComponent={
-						<Button onClick={() => showModal('add', {})}>Add</Button>
+						<Button onClick={() => showModal("add", {})}>Add</Button>
 					}
 					renderItem={({item, Cell}) => {
 						const {id, customer, tgl_po, due_date, nomor_po} = item;
@@ -100,11 +100,11 @@ export default function POCustomer() {
 								<Cell>{dateUtils.date(tgl_po)}</Cell>
 								<Cell>{dateUtils.date(due_date)}</Cell>
 								<Cell className="flex gap-x-2">
-									<Button onClick={() => showModal('preview', item)}>
+									<Button onClick={() => showModal("preview", item)}>
 										Preview
 									</Button>
-									<Button onClick={() => showModal('edit', item)}>Edit</Button>
-									<Button onClick={() => showModal('delete', {id})}>
+									<Button onClick={() => showModal("edit", item)}>Edit</Button>
+									<Button onClick={() => showModal("delete", {id})}>
 										Delete
 									</Button>
 								</Cell>

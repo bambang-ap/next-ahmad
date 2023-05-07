@@ -1,12 +1,12 @@
-import {forwardRef, Ref, useImperativeHandle, useRef} from 'react';
+import {forwardRef, Ref, useImperativeHandle, useRef} from "react";
 
-import QrReader, {QRResult} from 'react-qr-scanner';
+import QrReader, {QRResult} from "react-qr-scanner";
 
-import {Modal, ModalProps, ModalRef} from '@components';
+import {Modal, ModalProps, ModalRef} from "@components";
 
 export type ScannerProps = {
 	onRead?: (text: string) => void;
-} & Omit<ModalProps, 'children'>;
+} & Omit<ModalProps, "children">;
 
 export const Scanner = forwardRef(ScannerComponent);
 

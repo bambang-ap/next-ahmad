@@ -1,10 +1,10 @@
-import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
+import {DataTypes, Model, Sequelize, STRING} from "sequelize";
 
-import {TKanbanItem} from '@appTypes/app.zod';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TKanbanItem} from "@appTypes/app.zod";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
-import {unitQtyField} from './customer_po_item';
+import {unitQtyField} from "./customer_po_item";
 
 export class OrmKanbanItem extends Model<TKanbanItem> {}
 

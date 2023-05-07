@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {DataTypes, Model, Sequelize} from "sequelize";
 
-import {TCustomerPO} from '@appTypes/app.type';
-import {defaultExcludeColumn, defaultOrderBy} from '@constants';
-import {TABLES} from '@enum';
+import {TCustomerPO} from "@appTypes/app.type";
+import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {TABLES} from "@enum";
 
 export class OrmCustomerPO extends Model<TCustomerPO> {}
 
@@ -21,8 +21,8 @@ export default function initOrmCustomerPO(sequelize: Sequelize) {
 			defaultScope: {
 				order: [
 					...defaultOrderBy.order,
-					['tgl_po', 'asc'],
-					['nomor_po', 'asc'],
+					["tgl_po", "asc"],
+					["nomor_po", "asc"],
 				],
 				attributes: {
 					exclude: defaultExcludeColumn,

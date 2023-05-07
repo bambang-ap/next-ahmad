@@ -1,6 +1,6 @@
-import ScheduleTwoToneIcon from '@mui/icons-material/ScheduleTwoTone';
-import {Avatar, Box, Card, Divider, styled, Typography} from '@mui/material';
-import {format, formatDistance, subDays, subHours, subMinutes} from 'date-fns';
+import ScheduleTwoToneIcon from "@mui/icons-material/ScheduleTwoTone";
+import {Avatar, Box, Card, Divider, styled, Typography} from "@mui/material";
+import {format, formatDistance, subDays, subHours, subMinutes} from "date-fns";
 
 const DividerWrapper = styled(Divider)(
 	({theme}) => `
@@ -40,14 +40,14 @@ const CardWrapperSecondary = styled(Card)(
 
 function ChatContent() {
 	const user = {
-		name: 'Catherine Pike',
-		avatar: '/static/images/avatars/1.jpg',
+		name: "Catherine Pike",
+		avatar: "/static/images/avatars/1.jpg",
 	};
 
 	return (
 		<Box p={3}>
 			<DividerWrapper>
-				{format(subDays(new Date(), 3), 'MMMM dd yyyy')}
+				{format(subDays(new Date(), 3), "MMMM dd yyyy")}
 			</DividerWrapper>
 
 			<Box
@@ -77,8 +77,8 @@ function ChatContent() {
 						variant="subtitle1"
 						sx={{
 							pt: 1,
-							display: 'flex',
-							alignItems: 'center',
+							display: "flex",
+							alignItems: "center",
 						}}>
 						<ScheduleTwoToneIcon
 							sx={{
@@ -112,8 +112,8 @@ invoices are done.`}
 						variant="subtitle1"
 						sx={{
 							pt: 1,
-							display: 'flex',
-							alignItems: 'center',
+							display: "flex",
+							alignItems: "center",
 						}}>
 						<ScheduleTwoToneIcon
 							sx={{
@@ -137,7 +137,7 @@ invoices are done.`}
 				/>
 			</Box>
 			<DividerWrapper>
-				{format(subDays(new Date(), 5), 'MMMM dd yyyy')}
+				{format(subDays(new Date(), 5), "MMMM dd yyyy")}
 			</DividerWrapper>
 
 			<Box
@@ -162,8 +162,8 @@ invoices are done.`}
 						variant="subtitle1"
 						sx={{
 							pt: 1,
-							display: 'flex',
-							alignItems: 'center',
+							display: "flex",
+							alignItems: "center",
 						}}>
 						<ScheduleTwoToneIcon
 							sx={{
@@ -218,8 +218,8 @@ invoices are done.`}
 						variant="subtitle1"
 						sx={{
 							pt: 1,
-							display: 'flex',
-							alignItems: 'center',
+							display: "flex",
+							alignItems: "center",
 						}}>
 						<ScheduleTwoToneIcon
 							sx={{
@@ -258,8 +258,8 @@ invoices are done.`}
 						variant="subtitle1"
 						sx={{
 							pt: 1,
-							display: 'flex',
-							alignItems: 'center',
+							display: "flex",
+							alignItems: "center",
 						}}>
 						<ScheduleTwoToneIcon
 							sx={{

@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext} from "react";
 
 import {
 	alpha,
@@ -10,15 +10,15 @@ import {
 	lighten,
 	styled,
 	useTheme,
-} from '@mui/material';
-import {signOut} from 'next-auth/react';
+} from "@mui/material";
+import {signOut} from "next-auth/react";
 
-import {SidebarContext} from '@app/contexts/SidebarContext';
-import {Icon, Text} from '@components';
-import {useSession} from '@hooks';
-import Scrollbar from '@prevComp/Scrollbar';
+import {SidebarContext} from "@app/contexts/SidebarContext";
+import {Icon, Text} from "@components";
+import {useSession} from "@hooks";
+import Scrollbar from "@prevComp/Scrollbar";
 
-import SidebarMenu from '../SidebarMenu';
+import SidebarMenu from "../SidebarMenu";
 
 const SidebarWrapper = styled(Box)(
 	({theme}) => `
@@ -90,18 +90,18 @@ function Sidebar() {
 			<SidebarWrapper
 				sx={{
 					display: {
-						xs: 'none',
-						lg: 'inline-block',
+						xs: "none",
+						lg: "inline-block",
 					},
-					position: 'fixed',
+					position: "fixed",
 					left: 0,
 					top: 0,
 					background:
-						theme.palette.mode === 'dark'
-							? alpha(lighten(theme.header.background ?? '', 0.1), 0.5)
+						theme.palette.mode === "dark"
+							? alpha(lighten(theme.header.background ?? "", 0.1), 0.5)
 							: darken(theme.colors.alpha.black[100], 0.5),
 					boxShadow:
-						theme.palette.mode === 'dark' ? theme.sidebar.boxShadow : 'none',
+						theme.palette.mode === "dark" ? theme.sidebar.boxShadow : "none",
 				}}>
 				<RenderSidebar />
 			</SidebarWrapper>
@@ -109,7 +109,7 @@ function Sidebar() {
 				sx={{
 					boxShadow: `${theme.sidebar.boxShadow}`,
 				}}
-				anchor={theme.direction === 'rtl' ? 'right' : 'left'}
+				anchor={theme.direction === "rtl" ? "right" : "left"}
 				open={sidebarToggle}
 				onClose={closeSidebar}
 				variant="temporary"
@@ -117,7 +117,7 @@ function Sidebar() {
 				<SidebarWrapper
 					sx={{
 						background:
-							theme.palette.mode === 'dark'
+							theme.palette.mode === "dark"
 								? theme.colors.alpha.white[100]
 								: darken(theme.colors.alpha.black[100], 0.5),
 					}}>

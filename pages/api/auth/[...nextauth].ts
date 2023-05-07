@@ -1,26 +1,26 @@
-import moment from 'moment';
-import NextAuth, {NextAuthOptions} from 'next-auth';
-import CredentialsProvider from 'next-auth/providers/credentials';
-import {Op} from 'sequelize';
+import moment from "moment";
+import NextAuth, {NextAuthOptions} from "next-auth";
+import CredentialsProvider from "next-auth/providers/credentials";
+import {Op} from "sequelize";
 
-import {TSession, TUserSignIn} from '@appTypes/app.type';
+import {TSession, TUserSignIn} from "@appTypes/app.type";
 import {
 	ORM,
 	OrmUser as UserOrm,
 	ormUserAttributes,
 	ormUserLoginAttributes,
-} from '@database';
-import {TRPCError} from '@trpc/server';
+} from "@database";
+import {TRPCError} from "@trpc/server";
 
-const OrmUser = ORM.define('UserAuth', ...ormUserAttributes());
-const OrmUserLogin = ORM.define('UseLoginrAuth', ...ormUserLoginAttributes());
+const OrmUser = ORM.define("UserAuth", ...ormUserAttributes());
+const OrmUserLogin = ORM.define("UseLoginrAuth", ...ormUserLoginAttributes());
 
 export const authOptions: NextAuthOptions = {
 	secret: process.env.AUTH_SECRET,
-	session: {strategy: 'jwt'},
+	session: {strategy: "jwt"},
 	providers: [
 		CredentialsProvider({
-			type: 'credentials',
+			type: "credentials",
 			credentials: {},
 			async authorize(credential = {}) {
 				let userData: UserOrm | null;
@@ -28,7 +28,7 @@ export const authOptions: NextAuthOptions = {
 				const {email, token, password} = Object.entries(credential).reduce(
 					(ret, [key, value]) => {
 						// @ts-ignore
-						if (value !== 'undefined') ret[key] = value;
+						if (value !== "undefined") ret[key] = value;
 						return ret;
 					},
 					{} as TUserSignIn,
@@ -52,8 +52,8 @@ export const authOptions: NextAuthOptions = {
 
 					if (!hasToken) {
 						throw new TRPCError({
-							code: 'NOT_FOUND',
-							message: 'Token not found',
+							code: "NOT_FOUND",
+							message: "Token not found",
 						});
 					}
 
@@ -63,14 +63,14 @@ export const authOptions: NextAuthOptions = {
 				}
 
 				if (!userData!)
-					throw new TRPCError({code: 'NOT_FOUND', message: 'User not found'});
+					throw new TRPCError({code: "NOT_FOUND", message: "User not found"});
 
 				return userData.dataValues;
 			},
 		}),
 	],
 	pages: {
-		signIn: '/auth/signin',
+		signIn: "/auth/signin",
 	},
 	callbacks: {
 		// @ts-ignore

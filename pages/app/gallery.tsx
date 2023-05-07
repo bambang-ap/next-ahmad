@@ -1,8 +1,8 @@
-import {Divider} from '@mui/material';
+import {Divider} from "@mui/material";
 
-import {Gallery, ImageWithPreview, Text} from '@components';
-import {getLayout} from '@hoc';
-import {trpc} from '@utils/trpc';
+import {Gallery, ImageWithPreview, Text} from "@components";
+import {getLayout} from "@hoc";
+import {trpc} from "@utils/trpc";
 
 GalleryKanban.getLayout = getLayout;
 

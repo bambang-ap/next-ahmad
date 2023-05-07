@@ -1,12 +1,12 @@
-import {FC, ReactNode} from 'react';
+import {FC, ReactNode} from "react";
 
-import {Box, Container, styled} from '@mui/material';
-import PropTypes from 'prop-types';
+import {Box, Container, styled} from "@mui/material";
+import PropTypes from "prop-types";
 
 const PageTitle = styled(Box)(
 	({theme}) => `
         padding: ${theme.spacing(4)};
-`
+`,
 );
 
 interface PageTitleWrapperProps {
@@ -22,7 +22,7 @@ const PageTitleWrapper: FC<PageTitleWrapperProps> = ({children}) => {
 };
 
 PageTitleWrapper.propTypes = {
-	children: PropTypes.node.isRequired
+	children: PropTypes.node.isRequired,
 };
 
 export default PageTitleWrapper;

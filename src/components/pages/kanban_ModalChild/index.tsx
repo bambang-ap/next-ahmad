@@ -1,7 +1,7 @@
-import {useEffect} from 'react';
+import {useEffect} from "react";
 
-import {FormType} from 'pages/app/kanban';
-import {Control, UseFormReset, useWatch} from 'react-hook-form';
+import {FormType} from "pages/app/kanban";
+import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {
 	Button,
@@ -10,12 +10,12 @@ import {
 	InputFile,
 	Select,
 	selectMapper,
-} from '@components';
-import {useKanban} from '@hooks';
-import {modalTypeParser} from '@utils';
+} from "@components";
+import {useKanban} from "@hooks";
+import {modalTypeParser} from "@utils";
 
-import {RenderItem} from './RenderItem';
-import {RenderMesin} from './RenderMesin';
+import {RenderItem} from "./RenderItem";
+import {RenderMesin} from "./RenderMesin";
 
 export function KanbanModalChild({
 	control,
@@ -28,12 +28,12 @@ export function KanbanModalChild({
 		useWatch({
 			control,
 			name: [
-				'id_customer',
-				'id_sppb_in',
-				'temp_id_item',
-				'items',
-				'id_po',
-				'type',
+				"id_customer",
+				"id_sppb_in",
+				"temp_id_item",
+				"items",
+				"id_po",
+				"type",
 			],
 		});
 
@@ -48,7 +48,7 @@ export function KanbanModalChild({
 			reset(({items, id_sppb_in, ...prevValue}) => {
 				return {
 					...prevValue,
-					temp_id_item: '',
+					temp_id_item: "",
 					id_sppb_in,
 					items: {...items, [tempIdItem]: {id_sppb_in}} as typeof items,
 				};
@@ -90,7 +90,7 @@ export function KanbanModalChild({
 					className="flex-1"
 					firstOption="- Pilih Customer -"
 					control={control}
-					data={selectMapper(dataCustomer ?? [], 'id', 'name')}
+					data={selectMapper(dataCustomer ?? [], "id", "name")}
 					fieldName="id_customer"
 					label="Customer"
 				/>
@@ -103,8 +103,8 @@ export function KanbanModalChild({
 						label="PO"
 						data={selectMapper(
 							dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
-							'id',
-							'nomor_po',
+							"id",
+							"nomor_po",
 						)}
 					/>
 				)}
@@ -118,8 +118,8 @@ export function KanbanModalChild({
 						firstOption="- Pilih Surat Jalan -"
 						data={selectMapper(
 							dataSppbIn?.filter(e => e.id_po === id_po) ?? [],
-							'id',
-							'nomor_surat',
+							"id",
+							"nomor_surat",
 						)}
 					/>
 				)}
@@ -135,8 +135,8 @@ export function KanbanModalChild({
 							selectedSppbIn?.items?.filter(
 								e => !Object.keys(kanbanItems).includes(e.id),
 							) ?? [],
-							'id',
-							'itemDetail.name',
+							"id",
+							"itemDetail.name",
 						)}
 					/>
 				)}

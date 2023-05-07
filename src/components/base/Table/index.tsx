@@ -1,14 +1,14 @@
-import {FC, Fragment, useEffect} from 'react';
+import {FC, Fragment, useEffect} from "react";
 
-import {Pagination, TableCellProps} from '@mui/material';
-import {useForm, UseFormReturn} from 'react-hook-form';
+import {Pagination, TableCellProps} from "@mui/material";
+import {useForm, UseFormReturn} from "react-hook-form";
 
-import {TableFormValue} from '@appTypes/app.type';
-import {Button, Input, Select, SelectPropsData} from '@components';
-import {defaultLimit} from '@constants';
-import {classNames} from '@utils';
+import {TableFormValue} from "@appTypes/app.type";
+import {Button, Input, Select, SelectPropsData} from "@components";
+import {defaultLimit} from "@constants";
+import {classNames} from "@utils";
 
-import RootTable from './RootTable';
+import RootTable from "./RootTable";
 
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
 
@@ -26,7 +26,7 @@ export type TableProps<T, Cell = {}> = {
 
 export type TableFilterProps<T> = Omit<
 	TableProps<T, Cells>,
-	'bottomComponent'
+	"bottomComponent"
 > & {
 	form: UseFormReturn<TableFormValue>;
 	pageCount?: number;
@@ -47,7 +47,7 @@ export function TableFilter<T>({
 		reset,
 		handleSubmit,
 	} = useForm({
-		defaultValues: {search: ''},
+		defaultValues: {search: ""},
 	});
 	const formValue = watch();
 
@@ -57,24 +57,24 @@ export function TableFilter<T>({
 	}));
 
 	const doSearch = handleSubmit(({search}) => {
-		setValue('search', search);
+		setValue("search", search);
 	});
 
 	useEffect(() => {
-		setValue('pageTotal', pageCount);
-		if (formValue.page > pageCount) setValue('page', 1);
+		setValue("pageTotal", pageCount);
+		if (formValue.page > pageCount) setValue("page", 1);
 	}, [pageCount]);
 
 	useEffect(() => {
 		reset({search: formValue.search});
 
-		return () => reset({search: ''});
+		return () => reset({search: ""});
 	}, [formValue.search]);
 
 	return (
 		<Table
 			{...props}
-			className={classNames('flex flex-col gap-2', className)}
+			className={classNames("flex flex-col gap-2", className)}
 			topComponent={
 				<div className="px-2 flex justify-between">
 					<div className="flex items-center gap-2">{topComponent}</div>
@@ -101,7 +101,7 @@ export function TableFilter<T>({
 			bottomComponent={
 				<div className="px-2 flex justify-center">
 					<Pagination
-						onChange={(_, v) => setValue('page', v)}
+						onChange={(_, v) => setValue("page", v)}
 						count={Number(formValue?.pageTotal ?? 1)}
 					/>
 				</div>
@@ -124,7 +124,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 	if (!data) return null;
 
 	return (
-		<div className={classNames('w-full', className)}>
+		<div className={classNames("w-full", className)}>
 			{topComponent}
 			<RootTable>
 				{header && (
@@ -132,7 +132,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 						<RootTable.Tr>
 							{header.map(head => {
 								if (!head) return null;
-								if (typeof head === 'string')
+								if (typeof head === "string")
 									return <RootTable.Td key={head}>{head}</RootTable.Td>;
 
 								const [title, colSpan] = head;
