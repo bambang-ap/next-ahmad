@@ -1,14 +1,14 @@
-import {MutableRefObject, useEffect, useRef} from 'react';
+import {Fragment, MutableRefObject, useEffect, useRef} from "react";
 
-import {Control, UseFormSetValue} from 'react-hook-form';
-import {useRecoilValue, useSetRecoilState} from 'recoil';
+import {Control, UseFormSetValue} from "react-hook-form";
+import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 
-import {AllIcon} from '@appComponent/AllIcon';
-import {TMenu, TRole} from '@appTypes/app.type';
-import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
-import {getLayout} from '@hoc';
-import {FormMenu, useMenu} from '@hooks';
-import {atomMenuIconKey} from '@recoil/atoms';
+import {AllIcon} from "@appComponent/AllIcon";
+import {TMenu, TRole} from "@appTypes/app.type";
+import {Button, IconForm, Input, Modal, ModalRef, Table} from "@components";
+import {getLayout} from "@hoc";
+import {FormMenu, useMenu} from "@hooks";
+import {atomMenuChangeOrder, atomMenuIconKey} from "@recoil/atoms";
 
 Menu.getLayout = getLayout;
 
@@ -25,42 +25,50 @@ export default function Menu() {
 		reftechUnMapped,
 	} = useMenu();
 
+	const [changeOrderEnabled, changeOrder] = useRecoilState(atomMenuChangeOrder);
 	const {control, reset, watch, setValue, handleSubmit} = menuForm;
 	const iconKey = useRecoilValue(atomMenuIconKey);
-	// const changeOrder = useSetRecoilState(selectorMappedMenu);
 
 	const iconModalSelectedValue = watch(iconKey);
 
-	const submit = handleSubmit(values => {
-		const bodyParam = unMappedMenu?.reduce<TMenu[]>((acc, menu) => {
-			const {id, ...restMenu} = menu;
-			const {icon, role, title, index} = values[id] as FormMenu[string];
+	function submit(alertShown = true) {
+		handleSubmit(values => {
+			const bodyParam = unMappedMenu?.reduce<TMenu[]>((acc, menu) => {
+				const {id, ...restMenu} = menu;
+				const {icon, role, title, index} = values[id] as FormMenu[string];
 
-			const accepted_role = Object.entries(role)
-				.reduce<string[]>((roles, [key, value]) => {
-					if (value) roles.push(key);
-					return roles;
-				}, [])
-				.join(',');
+				const accepted_role = Object.entries(role)
+					.reduce<string[]>((roles, [key, value]) => {
+						if (value) roles.push(key);
+						return roles;
+					}, [])
+					.join(",");
 
-			acc.push({...restMenu, index, icon, title, id, accepted_role});
+				acc.push({...restMenu, index, icon, title, id, accepted_role});
 
-			return acc;
-		}, []);
+				return acc;
+			}, []);
 
-		mutateMenu(bodyParam ?? [], {
-			onSuccess: () => {
-				refetchMapped();
-				reftechUnMapped();
-				alert('Success');
-			},
-		});
-	});
+			mutateMenu(bodyParam ?? [], {
+				onSuccess: () => {
+					refetchMapped();
+					reftechUnMapped();
+					changeOrder(false);
+					if (alertShown) alert("Success");
+				},
+			});
+		})();
+	}
+
+	function toggleChangeOrder() {
+		changeOrder(prev => !prev);
+		if (changeOrderEnabled) submit(false);
+	}
 
 	useEffect(() => {
 		const formDefaultValue = unMappedMenu?.reduce<FormMenu>(
 			(ret, {id, title, icon, accepted_role, index}) => {
-				const roles = accepted_role.split(',');
+				const roles = accepted_role.split(",");
 				const role =
 					dataRole?.reduce((acc, roleObject) => {
 						return {...acc, [roleObject.id]: roles.includes(roleObject.id)};
@@ -93,14 +101,18 @@ export default function Menu() {
 				</div>
 			</Modal>
 
-			<form onSubmit={submit}>
-				<Button type="submit">Submit</Button>
-				{/* <ReactDragListView
-					onDragEnd={(fromIndex, toIndex) => {
-						changeOrder({fromIndex, toIndex, reset});
-					}}
-					nodeSelector="tr"
-					handleSelector="tr"> */}
+			<form
+				className="flex flex-col gap-2"
+				onSubmit={e => {
+					e.preventDefault();
+					submit();
+				}}>
+				<div className="flex gap-2">
+					<Button onClick={toggleChangeOrder}>
+						{changeOrderEnabled ? `Finish Change Order` : `Change Order`}
+					</Button>
+					<Button type="submit">Submit</Button>
+				</div>
 				<RenderMenu
 					dataRole={dataRole}
 					modalRef={modalRef}
@@ -108,7 +120,6 @@ export default function Menu() {
 					data={mappedMenu}
 					setValue={setValue}
 				/>
-				{/* </ReactDragListView> */}
 			</form>
 		</>
 	);
@@ -125,14 +136,18 @@ const RenderMenu = (props: {
 }) => {
 	const {data, dataRole, noHeader, control, setValue, modalRef} = props;
 
+	const {reOrderMappedMenu} = useMenu();
+
+	const changeOrderEnabled = useRecoilValue(atomMenuChangeOrder);
 	const setKey = useSetRecoilState(atomMenuIconKey);
 
 	return (
 		<Table
 			data={data ?? []}
-			header={noHeader ? undefined : ['Title', 'Icon', 'Role']}
+			header={noHeader ? undefined : ["Title", "Icon", "Role"]}
 			renderItemEach={({item: {subMenu}, Cell}) => {
-				if (!subMenu || (subMenu && subMenu?.length <= 0)) return false;
+				if (changeOrderEnabled || !subMenu || (subMenu && subMenu?.length <= 0))
+					return false;
 
 				return (
 					<Cell colSpan={3}>
@@ -147,10 +162,25 @@ const RenderMenu = (props: {
 					</Cell>
 				);
 			}}
-			renderItem={({item: {id}, Cell}) => {
+			renderItem={({item: {id, parent_id}, Cell}, index) => {
+				function reorder(to: number) {
+					reOrderMappedMenu(index, index + to);
+				}
 				return (
-					<>
-						<Cell className="flex">
+					<Fragment key={id}>
+						<Cell className="flex gap-2">
+							{changeOrderEnabled && !parent_id && (
+								<>
+									<Button onClick={() => reorder(-1)} icon="faArrowUp" />
+									<Button onClick={() => reorder(1)} icon="faArrowDown" />
+									<Input
+										className="flex-1 hidden"
+										control={control}
+										fieldName={`${id}.index`}
+										noLabel
+									/>
+								</>
+							)}
 							<Input
 								className="flex-1"
 								control={control}
@@ -170,7 +200,7 @@ const RenderMenu = (props: {
 						</Cell>
 						<Cell className="flex gap-2">
 							{dataRole?.map(role => {
-								if (role.name === 'admin') return null;
+								if (role.name === "admin") return null;
 
 								return (
 									<Input
@@ -184,7 +214,7 @@ const RenderMenu = (props: {
 								);
 							})}
 						</Cell>
-					</>
+					</Fragment>
 				);
 			}}
 		/>

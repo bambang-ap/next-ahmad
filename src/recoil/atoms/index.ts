@@ -1,33 +1,38 @@
-import {atom} from 'recoil';
+import {atom} from "recoil";
 
-import {TMenu} from '@appTypes/app.zod';
+import {TMenu} from "@appTypes/app.zod";
 
 export const atomSidebarOpen = atom({
-	key: 'atomSidebar',
+	key: "atomSidebar",
 	default: true,
 });
 
 export const atomMenuIconKey = atom({
-	key: 'atomMenuIconKey',
-	default: '',
+	key: "atomMenuIconKey",
+	default: "",
 });
 
 export const atomMappedMenu = atom<TMenu[]>({
-	key: 'atomMappedMenu',
+	key: "atomMappedMenu",
 	default: [],
 });
 
+export const atomMenuChangeOrder = atom({
+	key: "atomMenuChangeOrder",
+	default: false,
+});
+
 export const atomExcludedItem = atom<string[]>({
-	key: 'atomExcludedItem',
+	key: "atomExcludedItem",
 	default: [],
 });
 
 export const atomIncludedItem = atom<string[]>({
-	key: 'atomIncludedItem',
+	key: "atomIncludedItem",
 	default: [],
 });
 
 export const atomUidScan = atom<string[]>({
-	key: 'atomUidScan',
+	key: "atomUidScan",
 	default: [],
 });

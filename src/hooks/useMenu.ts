@@ -1,13 +1,13 @@
-import {useEffect} from 'react';
+import {useEffect} from "react";
 
-import {useForm} from 'react-hook-form';
-import {useRecoilState} from 'recoil';
+import {useForm} from "react-hook-form";
+import {useRecoilState} from "recoil";
 
-import {TMenu, TRole} from '@appTypes/app.type';
-import {defaultErrorMutation} from '@constants';
-import {CRUD_ENABLED} from '@enum';
-import {atomMappedMenu} from '@recoil/atoms';
-import {trpc} from '@utils/trpc';
+import {TMenu, TRole} from "@appTypes/app.type";
+import {defaultErrorMutation} from "@constants";
+import {CRUD_ENABLED} from "@enum";
+import {atomMappedMenu} from "@recoil/atoms";
+import {trpc} from "@utils/trpc";
 
 export type FormMenu = Record<
 	string,
@@ -23,10 +23,10 @@ export function useMenu() {
 	const {mutate: mutateMenu} =
 		trpc.menu.mutate.useMutation(defaultErrorMutation);
 	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
-		{type: 'menu'},
+		{type: "menu"},
 	);
 	const {data: mappedMenu, refetch: refetchMapped} = trpc.menu.get.useQuery({
-		type: 'menu',
+		type: "menu",
 		sorted: true,
 	});
 	const {data: dataRole} = trpc.basic.get.useQuery<TRole, TRole[]>({
@@ -36,10 +36,26 @@ export function useMenu() {
 
 	const menuForm = useForm<FormMenu>();
 
+	function reOrderMappedMenu(from: number, to: number) {
+		setMappedMenu(prev => {
+			const newOrderedMenu = reorderArrayIndex(prev, from, to);
+			return newOrderedMenu;
+		});
+	}
+
 	useEffect(() => {
 		// @ts-ignore
 		setMappedMenu(mappedMenu);
 	}, [mappedMenu]);
+
+	useEffect(() => {
+		menuForm.reset(prev => {
+			return Object.entries(prev).reduce((arr, [key, curr]) => {
+				const index = m.findIndex(e => e.id === key);
+				return {...arr, [key]: {...curr, index}};
+			}, {});
+		});
+	}, [m]);
 
 	return {
 		dataRole,
@@ -49,5 +65,6 @@ export function useMenu() {
 		reftechUnMapped: reftechUnMapped as NoopVoid,
 		refetchMapped: refetchMapped as NoopVoid,
 		mutateMenu,
+		reOrderMappedMenu,
 	};
 }
