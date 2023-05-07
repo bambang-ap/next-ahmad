@@ -3,9 +3,10 @@
  */
 
 module.exports = {
+	mode: "jit",
 	content: [
 		"./public/**/*.html",
-		"./app/**/*.{ts,tsx}",
+		"./pages/app/**/*.{ts,tsx}",
 		"./pages/**/*.{js,ts,jsx,tsx}",
 		"./src/**/*.{js,ts,jsx,tsx}",
 	],

@@ -17,10 +17,14 @@ export default function App() {
 					push(path!);
 				}
 				return (
-					<div key={i} className="flex w-1/4 flex-wrap p-1 rounded-md">
+					<div
+						key={i}
+						className="flex h-[150px] w-1/4 flex-wrap p-1 rounded-md">
 						<div
 							className={classNames(
-								"h-[150px] flex flex-col flex-1 justify-between",
+								"flex flex-col flex-1 justify-between",
+								"bg-cyan-600",
+								"bg-green-600",
 								color,
 							)}>
 							<div className="flex p-4 justify-between items-center">

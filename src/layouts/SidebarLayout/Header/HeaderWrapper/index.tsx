@@ -17,6 +17,7 @@ import {useRouter} from "next/router";
 import {SidebarContext} from "@app/contexts/SidebarContext";
 import {Text} from "@components";
 import {useAuth, useMenu} from "@hooks";
+import {classNames} from "@utils";
 
 const HeaderWrapper = styled(Box)(
 	({theme}) => `
@@ -47,11 +48,12 @@ function Header() {
 	const {sidebarToggle, toggleSidebar} = useContext(SidebarContext);
 
 	const selectedMenu = unMappedMenu?.find(e => e.path === asPath);
+	const title = selectedMenu?.title;
 
 	return (
 		<>
 			<Head>
-				<title>IMI Inventory - {selectedMenu?.title.toUpperCase()}</title>
+				<title>{classNames("IMI Inventory", {[`- ${title}`]: title})}</title>
 			</Head>
 			<HeaderWrapper
 				display="flex"
