@@ -30,6 +30,7 @@ export type {
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 	TDashboard,
+	TDashboardInput,
 	TDocument,
 	THardness,
 	THardnessKategori,

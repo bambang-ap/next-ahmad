@@ -17,12 +17,11 @@ export default function App() {
 					push(path!);
 				}
 				return (
-					<div
-						key={i}
-						className="flex h-[150px] w-1/4 flex-wrap p-1 rounded-md">
+					<div key={i} className="flex w-1/4 flex-wrap p-1 rounded-md">
 						<div
 							className={classNames(
 								"flex flex-col flex-1 justify-between",
+								"h-[150px]",
 								"bg-cyan-600",
 								"bg-green-600",
 								color,

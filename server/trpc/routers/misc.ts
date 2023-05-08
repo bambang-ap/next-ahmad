@@ -2,9 +2,8 @@ import bufferToDataUrl from "buffer-to-data-url";
 import qr, {image_type} from "qr-image";
 import {z} from "zod";
 
-import {tCustomer, TDashboard} from "@appTypes/app.zod";
-import {TABLES} from "@enum";
-import {checkCredentialV2, generateId, getNow, MAPPING_CRUD_ORM} from "@server";
+import {tCustomer} from "@appTypes/app.zod";
+import {generateId, getNow} from "@server";
 import {procedure, router} from "@trpc";
 import {TRPCError} from "@trpc/server";
 
@@ -71,36 +70,6 @@ const miscRouter = {
 			}
 		}),
 	}),
-	dashboard: procedure.query(({ctx}) =>
-		checkCredentialV2(ctx, async (): Promise<Omit<TDashboard, "table">[]> => {
-			const data: TDashboard[] = [
-				{
-					table: TABLES.MESIN,
-					title: "Mesin",
-					path: "/app/mesin",
-					image: "/public/assets/dashboard/mesin.png",
-					className: "bg-cyan-600",
-				},
-				{
-					table: TABLES.CUSTOMER,
-					title: "Customer",
-					path: "/app/customer",
-					image: "/public/assets/dashboard/customer.png",
-					className: "bg-green-600",
-				},
-			];
-
-			return Promise.all(
-				data.map<Promise<Omit<TDashboard, "table">>>(
-					async ({table, image, ...item}) => {
-						// @ts-ignore
-						const count = await MAPPING_CRUD_ORM[table].count();
-						return {...item, count, image: image?.replace("/public", "")};
-					},
-				),
-			);
-		}),
-	),
 };
 
 export default miscRouter;

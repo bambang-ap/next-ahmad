@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 import {defaultLimit} from "@constants";
-import {CRUD_ENABLED, Z_TABLES} from "@enum";
+import {CRUD_ENABLED} from "@enum";
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
@@ -316,12 +316,14 @@ export const tScanTarget = z.union([
 	z.literal("out_barang"),
 ]);
 
-export type TDashboard = z.infer<typeof tDashboard>;
-export const tDashboard = z.object({
-	table: Z_TABLES,
+export type TDashboardInput = z.infer<typeof tDashboardInput>;
+export const tDashboardInput = z.object({
 	title: z.string(),
 	path: z.string().optional(),
 	image: z.string().optional(),
-	count: z.number().optional(),
+	count: z.promise(z.number()),
 	className: z.string().optional(),
 });
+
+export type TDashboard = z.infer<typeof tDashboard>;
+export const tDashboard = tDashboardInput.extend({count: z.number()});
