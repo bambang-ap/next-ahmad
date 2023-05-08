@@ -15,8 +15,8 @@ export class Storage<T> {
 		const isExist = !!this.get();
 		if (!isExist) {
 			const value = this.isPrimitive(defaultValue)
-				? defaultValue
-				: JSON.stringify(defaultValue);
+				? JSON.stringify(defaultValue)
+				: defaultValue;
 			this.set(value as T);
 		}
 	}
@@ -37,7 +37,13 @@ export class Storage<T> {
 		}
 	}
 
-	set(value: T) {
+	set(value: T): void;
+	set(setter: (prevValue: T) => T): void;
+	set(valueOrSetter: any) {
+		let value = valueOrSetter;
+		if (typeof valueOrSetter === "function") {
+			value = valueOrSetter(this.get()!);
+		}
 		try {
 			if (this.primitive) localStorage.setItem(this.key, value as string);
 			else localStorage.setItem(this.key, JSON.stringify(value));

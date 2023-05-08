@@ -8,7 +8,7 @@ import "@total-typescript/ts-reset";
 import "global-methods";
 import "./globals.css";
 
-import type {ReactElement, ReactNode} from "react";
+import {ReactElement, ReactNode, StrictMode} from "react";
 
 import {CacheProvider, EmotionCache} from "@emotion/react";
 import AdapterDateFns from "@mui/lab/AdapterDateFns";
@@ -59,34 +59,36 @@ function App(props: AppProps) {
 	Router.events.on("routeChangeComplete", nProgress.done);
 
 	return (
-		<CacheProvider value={emotionCache}>
-			<Head>
-				<title>IMI Inventory</title>
-				<meta
-					name="viewport"
-					content="width=device-width, initial-scale=1, shrink-to-fit=no"
-				/>
-			</Head>
-			<SidebarProvider>
-				<ThemeProvider>
-					<LocalizationProvider dateAdapter={AdapterDateFns}>
-						<CssBaseline />
-						<QueryClientProvider client={queryClient}>
-							<ReactQueryDevtools />
-							<RecoilRoot>
-								<SessionProvider
-									session={session}
-									refetchInterval={30000}
-									refetchWhenOffline={false}
-									refetchOnWindowFocus={false}>
-									{getLayout(<Component {...pageProps} />)}
-								</SessionProvider>
-							</RecoilRoot>
-						</QueryClientProvider>
-					</LocalizationProvider>
-				</ThemeProvider>
-			</SidebarProvider>
-		</CacheProvider>
+		<StrictMode>
+			<CacheProvider value={emotionCache}>
+				<Head>
+					<title>IMI Inventory</title>
+					<meta
+						name="viewport"
+						content="width=device-width, initial-scale=1, shrink-to-fit=no"
+					/>
+				</Head>
+				<SidebarProvider>
+					<ThemeProvider>
+						<LocalizationProvider dateAdapter={AdapterDateFns}>
+							<CssBaseline />
+							<QueryClientProvider client={queryClient}>
+								<ReactQueryDevtools />
+								<RecoilRoot>
+									<SessionProvider
+										session={session}
+										refetchInterval={30000}
+										refetchWhenOffline={false}
+										refetchOnWindowFocus={false}>
+										{getLayout(<Component {...pageProps} />)}
+									</SessionProvider>
+								</RecoilRoot>
+							</QueryClientProvider>
+						</LocalizationProvider>
+					</ThemeProvider>
+				</SidebarProvider>
+			</CacheProvider>
+		</StrictMode>
 	);
 }
 

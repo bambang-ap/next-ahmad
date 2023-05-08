@@ -43,7 +43,8 @@ declare module "react-qr-scanner" {
 	export type QRReaderProps = {
 		delay?: number;
 		style?: HTMLAttributes<HTMLDivElement>["style"];
-		onScan?: (result: QRResult) => void;
+		onScan: (result: QRResult) => void;
+		onError: (err: any) => void;
 	};
 
 	function QRReader(props: QRReaderProps): JSX.Element;

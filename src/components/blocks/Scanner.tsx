@@ -32,6 +32,7 @@ function ScannerComponent(
 					delay={1000}
 					style={{height: 350, width: 350}}
 					onScan={handleScannerLoad}
+					onError={noopVoid}
 				/>
 			</div>
 		</Modal>

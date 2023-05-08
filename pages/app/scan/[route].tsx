@@ -6,13 +6,15 @@ import {useRecoilState} from "recoil";
 
 import {TDataScan} from "@appTypes/app.type";
 import {TScan, TScanItem, TScanTarget, ZId} from "@appTypes/app.zod";
+import {ScanIds} from "@appTypes/props.type";
 import {Scanner} from "@componentBlocks";
 import {Button, Form, Input, ModalRef} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {ScanDetailKanban} from "@pageComponent/scan_GenerateQR";
-import {atomUidScan} from "@recoil/atoms";
+import {selectorScanIds} from "@recoil/selectors";
 import {scanMapperByStatus} from "@utils";
+import {StorageScan} from "@utils/storage";
 import {trpc} from "@utils/trpc";
 
 Scan.getLayout = getLayout;
@@ -25,17 +27,25 @@ export type FormType = {
 };
 
 export default function Scan() {
-	const [ids, setIds] = useRecoilState(atomUidScan);
 	const {isReady, ...router} = useRouter();
-
 	const {route} = router.query as Route;
 
+	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
+
 	function addNew() {
-		setIds(prev => [...prev, uuid()]);
+		setIds(prev => [...prev, {key: uuid(), id: ""}]);
 	}
 
+	// useEffect(() => {
+	// 	return () => setIds([{key: uuid(), id: ""}]);
+	// }, [route]);
+
 	useEffect(() => {
-		return () => setIds([uuid()]);
+		if (!!route) {
+			const prev = StorageScan.get(route)!.get()!;
+			if (prev.length > 0) setIds(prev?.map(e => ({key: uuid(), id: e})));
+			else setIds([{id: "", key: uuid()}]);
+		}
 	}, [route]);
 
 	if (!isReady) return null;
@@ -44,20 +54,21 @@ export default function Scan() {
 		<div className="flex flex-col gap-2">
 			<Button onClick={addNew}>Tambah</Button>
 			{ids.map(uId => (
-				<RenderScanPage key={uId} id={uId} />
+				<RenderScanPage key={uId.key} data={uId} />
 			))}
 		</div>
 	);
 }
 
-function RenderScanPage({id: uId}: ZId) {
+function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 	const qrcodeRef = useRef<ModalRef>(null);
 	const router = useRouter();
-	const [ids, setIds] = useRecoilState(atomUidScan);
 
 	const {route} = router.query as Route;
-	const {control, watch, handleSubmit, setValue, reset} =
-		useForm<FormTypeScan>();
+	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
+	const {control, watch, handleSubmit, setValue, reset} = useForm<FormTypeScan>(
+		{defaultValues: {id: uId}},
+	);
 
 	const id = watch("id");
 	const currentKey = `status_${route}` as const;
@@ -95,15 +106,25 @@ function RenderScanPage({id: uId}: ZId) {
 	}
 
 	function removeUid() {
+		StorageScan.get(route!)?.set(prev => {
+			const prevSet = new Set(prev);
+			prevSet.delete(id);
+			return [...prevSet];
+		});
 		setIds(prev => {
-			const index = ids.indexOf(uId);
-			if (status) return prev.replace(index, "");
+			const index = ids.findIndex(_id => _id.key === key);
+			if (status) return prev.replace(index, {...prev[index]!, id: ""});
 			return prev.remove(index);
 		});
 	}
 
 	useEffect(() => {
 		if (data) {
+			StorageScan.get(route!)?.set(prev => {
+				const prevSet = new Set(prev);
+				prevSet.add(id);
+				return [...prevSet];
+			});
 			reset(prev => {
 				const {
 					item_finish_good,
@@ -127,7 +148,10 @@ function RenderScanPage({id: uId}: ZId) {
 	}, [data]);
 
 	return (
-		<Form onSubmit={submit} context={{disableSubmit: status, disabled: status}}>
+		<Form
+			onSubmit={submit}
+			className="flex flex-col gap-2 p-2 border"
+			context={{disableSubmit: status, disabled: status}}>
 			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
 			<div className="flex gap-2 items-center">
 				<Input

@@ -23,3 +23,5 @@ export type FormScreenProps<
 	K extends keyof T = "control",
 	T extends UseFormReturn<F> = UseFormReturn<F>,
 > = Partial<Omit<T, K>> & Pick<T, K>;
+
+export type ScanIds = {key: string; id: string};

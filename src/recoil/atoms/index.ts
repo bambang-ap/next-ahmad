@@ -1,6 +1,8 @@
-import {atom} from "recoil";
+import {atom, RecoilState} from "recoil";
 
-import {TMenu} from "@appTypes/app.zod";
+import {TMenu, TScanTarget} from "@appTypes/app.zod";
+import {ScanIds} from "@appTypes/props.type";
+import {ScanTarget} from "@constants";
 
 export const atomSidebarOpen = atom({
 	key: "atomSidebar",
@@ -32,7 +34,15 @@ export const atomIncludedItem = atom<string[]>({
 	default: [],
 });
 
-export const atomUidScan = atom<string[]>({
-	key: "atomUidScan",
-	default: [],
-});
+export const atomUidScan = new Map<
+	TScanTarget | undefined,
+	RecoilState<ScanIds[]>
+>(
+	[undefined, ...ScanTarget].map(target => [
+		target,
+		atom<ScanIds[]>({
+			key: `atomUidScan-${target}`,
+			default: [],
+		}),
+	]),
+);
