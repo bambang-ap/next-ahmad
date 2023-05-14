@@ -15,6 +15,7 @@ import {signOut} from "next-auth/react";
 
 import {SidebarContext} from "@app/contexts/SidebarContext";
 import {Icon, Text} from "@components";
+import {SidebarCollapseOn} from "@constants";
 import {useSession} from "@hooks";
 import Scrollbar from "@prevComp/Scrollbar";
 
@@ -91,7 +92,7 @@ function Sidebar() {
 				sx={{
 					display: {
 						xs: "none",
-						lg: "inline-block",
+						[SidebarCollapseOn]: "inline-block",
 					},
 					position: "fixed",
 					left: 0,

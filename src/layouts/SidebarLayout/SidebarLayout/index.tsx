@@ -3,6 +3,7 @@ import {FC, ReactNode} from "react";
 import {alpha, Box, lighten, useTheme} from "@mui/material";
 import PropTypes from "prop-types";
 
+import {SidebarCollapseOn} from "@constants";
 import Scrollbar from "@prevComp/Scrollbar";
 
 import Header from "../Header/HeaderWrapper";
@@ -50,7 +51,7 @@ export const SidebarLayout: FC<SidebarLayoutProps> = ({children}) => {
 					display: "block",
 					flex: 1,
 					pt: `${theme.header.height}`,
-					[theme.breakpoints.up("lg")]: {
+					[theme.breakpoints.up(SidebarCollapseOn)]: {
 						ml: `${theme.sidebar.width}`,
 					},
 				}}>

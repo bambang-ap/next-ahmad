@@ -16,6 +16,7 @@ import {useRouter} from "next/router";
 
 import {SidebarContext} from "@app/contexts/SidebarContext";
 import {Text} from "@components";
+import {SidebarCollapseOn} from "@constants";
 import {useAuth, useMenu} from "@hooks";
 import {classNames} from "@utils";
 
@@ -87,7 +88,7 @@ function Header() {
 						component="span"
 						sx={{
 							ml: 2,
-							display: {lg: "none", xs: "inline-block"},
+							display: {[SidebarCollapseOn]: "none", xs: "inline-block"},
 						}}>
 						<Tooltip arrow title="Toggle Menu">
 							<IconButton color="primary" onClick={toggleSidebar}>

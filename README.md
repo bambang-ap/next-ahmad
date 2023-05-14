@@ -1,3 +1,7 @@
+NOTE: Untuk master item, hanya bisa di select jadi tidak ada menu master item
+untuk input item, bisa langsung pada saat input PO
+pada saat input PO, bisa lakukan select distinct agar data pada select tidak duplicate
+
 # IMI Inventory
 
 ## Running on Local

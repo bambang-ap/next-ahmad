@@ -1,4 +1,4 @@
-import {TextFieldProps} from "@mui/material";
+import {Breakpoint, TextFieldProps} from "@mui/material";
 import type {OrderItem} from "sequelize";
 import {z} from "zod";
 
@@ -11,6 +11,8 @@ export * from "./sizes";
 
 export const defaultLimit = 10;
 export const qtyList = [1, 2, 3] as const;
+
+export const SidebarCollapseOn: Breakpoint = "sm";
 
 export const ScanTarget: TScanTarget[] = ["produksi", "qc", "finish_good"];
 
