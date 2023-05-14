@@ -87,8 +87,10 @@ export function SPPBOutGenerateQR(props: {
 								<div className="w-[100px] self-end">
 									<img alt="" src="/assets/iso.png" />
 								</div>
-								<Section title="No. Dok">asdf</Section>
-								<Section title="Tgl Efektif">asdf</Section>
+								<div className="flex gap-4 flex-1">
+									<Section title="No. Dok">IMI/FORM/PPC/01-04</Section>
+									<Section title="Tgl Efektif">2 Oktober 2020</Section>
+								</div>
 								<div className="flex gap-4 flex-1">
 									<Section title="Revisi">00</Section>
 									<Section title="Terbit">A</Section>
