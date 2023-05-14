@@ -1,4 +1,4 @@
-import {DataTypes, Model, NUMBER, Sequelize, STRING} from "sequelize";
+import {DataTypes, DECIMAL, Model, Sequelize, STRING} from "sequelize";
 
 import {TPOItem} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
@@ -7,11 +7,11 @@ import {TABLES} from "@enum";
 export class OrmCustomerPOItem extends Model<TPOItem> {}
 
 export const unitQtyField = {
-	qty1: NUMBER,
-	qty2: NUMBER,
-	qty3: NUMBER,
-	qty4: NUMBER,
-	qty5: NUMBER,
+	qty1: DECIMAL,
+	qty2: DECIMAL,
+	qty3: DECIMAL,
+	qty4: DECIMAL,
+	qty5: DECIMAL,
 };
 
 export default function initOrmCustomerPOItem(sequelize: Sequelize) {
@@ -21,7 +21,7 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 			id_po: {type: STRING},
 			name: {type: STRING},
 			kode_item: STRING,
-			harga: NUMBER,
+			harga: DECIMAL,
 			unit1: STRING,
 			unit2: STRING,
 			unit3: STRING,
