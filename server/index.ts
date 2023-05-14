@@ -104,10 +104,10 @@ export async function checkCredentialV2<T>(
 
 export function generateId() {
 	const now = moment();
-	return classNames(
-		now.format("YY MM DD"),
-		now.valueOf().toString().slice(8),
-	).replace(/\s/g, "");
+	return classNames(now.format("YY MM DD"), uuid().slice(-4)).replace(
+		/\s/g,
+		"",
+	);
 }
 
 export async function genInvoice<
