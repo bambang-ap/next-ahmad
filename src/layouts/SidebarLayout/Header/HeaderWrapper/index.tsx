@@ -32,7 +32,7 @@ const HeaderWrapper = styled(Box)(
         position: fixed;
         justify-content: space-between;
         width: 100%;
-        @media (min-width: ${theme.breakpoints.values.lg}px) {
+        @media (min-width: ${theme.breakpoints.values[SidebarCollapseOn]}px) {
             left: ${theme.sidebar.width};
             width: auto;
         }
