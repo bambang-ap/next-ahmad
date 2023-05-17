@@ -3,6 +3,8 @@ import {z} from "zod";
 import {defaultLimit} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 
+const zDecimal = z.string().transform(str => parseFloat(str));
+
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
 	z.literal("add"),
@@ -67,11 +69,11 @@ export const tItemUnit = z.union([
 ]);
 
 const unitQty = {
-	qty1: z.number(),
-	qty2: z.number().nullish(),
-	qty3: z.number().nullish(),
-	qty4: z.number().nullish(),
-	qty5: z.number().nullish(),
+	qty1: zDecimal,
+	qty2: zDecimal.nullish(),
+	qty3: zDecimal.nullish(),
+	qty4: zDecimal.nullish(),
+	qty5: zDecimal.nullish(),
 };
 
 export type TPOItem = z.infer<typeof tPOItem>;
@@ -79,7 +81,7 @@ export const tPOItem = zId.extend({
 	id_po: z.string(),
 	name: z.string(),
 	kode_item: z.string().optional(),
-	harga: z.number(),
+	harga: zDecimal,
 	unit1: tItemUnit,
 	unit2: tItemUnit.nullish(),
 	unit3: tItemUnit.nullish(),

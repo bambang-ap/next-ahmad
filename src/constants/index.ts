@@ -34,7 +34,7 @@ export const formatDateView = "DD/MM/YYYY";
 export const formatFullView = `${formatDateView} - ${formatHour}`;
 
 export const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,100})?$/;
-export const decimalSchema = z.string().regex(decimalRegex).transform(Number);
+export const decimalSchema = z.string().regex(decimalRegex); //.transform(Number);
 
 export const defaultInstruksi: TKanban["list_mesin"][number]["instruksi"][number] =
 	{
