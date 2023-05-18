@@ -11,6 +11,7 @@ export default function initOrmParameter(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			name: {type: DataTypes.STRING},
+			keterangan: {type: DataTypes.STRING},
 			id_kategori: {type: DataTypes.STRING},
 		},
 		{

@@ -121,7 +121,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.HARDNESS,
 		searchKey: "name",
 		table: {
-			header: ["Kategori", "Name", "Action"],
+			header: ["Kategori", "Name", "Keterangan", "Action"],
 			get body(): Body<THardness> {
 				return [
 					[
@@ -132,6 +132,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
 					"name",
+					"keterangan",
 				];
 			},
 		},
@@ -149,6 +150,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
 					{col: "name", label: "Nama"},
+					{col: "keterangan", label: "Keterangan"},
 				];
 			},
 			get edit() {
@@ -267,7 +269,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.PARAMETER,
 		searchKey: "name",
 		table: {
-			header: ["Kategori", "Name", "Action"],
+			header: ["Kategori", "Name", "Keterangan", "Action"],
 			get body(): Body<TParameter> {
 				return [
 					[
@@ -280,6 +282,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 							data?.find?.(e => e.id === item.id_kategori)?.name,
 					],
 					"name",
+					"keterangan",
 				];
 			},
 		},
@@ -299,6 +302,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
 					{col: "name", label: "Nama"},
+					{col: "keterangan", label: "Keterangan"},
 				];
 			},
 			get edit() {
