@@ -64,7 +64,7 @@ const miscRouter = {
 					Object.keys(schema.shape).reduce<MyObject>((ret, key) => {
 						if (key === "id") return ret;
 
-						return {...ret, [key as string]: ""};
+						return {...ret, [key]: ""};
 					}, {}),
 				];
 			}

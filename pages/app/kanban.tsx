@@ -83,9 +83,8 @@ export default function Kanban() {
 					"Action",
 				]}
 				renderItem={({Cell, item}) => {
-					// @ts-ignore
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					const {dataMesin, dataPo, dataSppbIn, ...rest} = item;
+					const {dataPo, dataSppbIn, ...rest} = item;
 					return (
 						<>
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
