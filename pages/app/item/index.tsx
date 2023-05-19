@@ -73,12 +73,12 @@ export default function MasterItem() {
 
 	return (
 		<>
-			<Modal title={modalTitle} ref={modalRef}>
+			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<Form
 					context={{disabled: isPreview, hideButton: isPreview}}
 					onSubmit={submit}
 					className="flex flex-col gap-2">
-					<ModalChild control={control} />
+					<ModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
