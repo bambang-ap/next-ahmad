@@ -305,7 +305,7 @@ export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
 	subMenu: z.lazy(() => tMenu.array()).optional(),
 });
 
-const scanItem = z.tuple([z.string()]).rest(z.number());
+const scanItem = z.tuple([z.string()]).rest(z.number().or(z.string()));
 
 export type TScanItem = z.infer<typeof tScanItem>;
 export const tScanItem = z.object({
