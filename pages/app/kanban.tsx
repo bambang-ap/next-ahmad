@@ -22,12 +22,11 @@ export type FormType = TKanbanUpsert & {
 };
 
 export default function Kanban() {
-	useKanban();
-
 	const modalRef = useRef<ModalRef>(null);
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
-	const {data, refetch} = trpc.kanban.get.useQuery({type: "kanban"});
+
+	const {dataKanban: data, refetchKanban: refetch} = useKanban();
 	const {mutate: mutateUpsert} =
 		trpc.kanban.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =

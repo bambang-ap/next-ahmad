@@ -12,7 +12,9 @@ import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
 export function useKanban() {
-	const {data: dataKanban} = trpc.kanban.get.useQuery({type: "kanban"});
+	const {data: dataKanban, refetch} = trpc.kanban.get.useQuery({
+		type: "kanban",
+	});
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
@@ -60,6 +62,7 @@ export function useKanban() {
 	});
 
 	return {
+		refetchKanban: refetch,
 		dataSppbIn,
 		dataKanban,
 		dataCustomer,

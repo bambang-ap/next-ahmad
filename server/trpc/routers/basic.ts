@@ -2,7 +2,6 @@ import {Op} from "sequelize";
 import {z} from "zod";
 
 import {tableFormValue, uModalType} from "@appTypes/app.zod";
-import {defaultLimit} from "@constants";
 import {wherePages} from "@database";
 import {eOpKeys, Z_CRUD_ENABLED} from "@enum";
 import {generateId, MAPPING_CRUD_ORM, pagingResult} from "@server";
@@ -40,21 +39,15 @@ export const basicWhere = basicWherer.transform(obj => {
 const basicRouters = router({
 	getPage: procedure
 		.input(
-			tableFormValue.partial().extend({
+			z.object({
 				target: Z_CRUD_ENABLED.optional(),
 				where: basicWhere.optional(),
 				searchKey: z.string().or(z.string().array()).optional(),
+				...tableFormValue.shape,
 			}),
 		)
 		.query(async ({input}) => {
-			const {
-				target,
-				where,
-				limit = defaultLimit,
-				page = 1,
-				search,
-				searchKey,
-			} = input;
+			const {target, where, limit, page, search, searchKey} = input;
 
 			if (!target) throw new TRPCError({code: "BAD_REQUEST"});
 

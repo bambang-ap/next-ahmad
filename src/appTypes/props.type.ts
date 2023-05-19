@@ -4,6 +4,8 @@ import {NextPage} from "next";
 import {AppProps} from "next/app";
 import {FieldValues, UseFormReturn} from "react-hook-form";
 
+export type ErrorMessage = {message: string};
+
 export type AppPropsWithLayout = AppProps & {
 	Component: NextPageWithLayout;
 };

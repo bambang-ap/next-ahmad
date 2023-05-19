@@ -1,32 +1,18 @@
-import {Op} from "sequelize";
 import {z} from "zod";
 
-import {TKanban} from "@appTypes/app.zod";
 import {OrmKanban, OrmKanbanItem, OrmScan} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 import {TRPCError} from "@trpc/server";
 
 import {kanbanGet} from "./get";
+import {kanbanImage} from "./image";
 import {kanbanUpsert} from "./upsert";
 
 const kanbanRouters = router({
 	...kanbanGet,
 	...kanbanUpsert,
-	images: procedure.query(({ctx: {req, res}}) => {
-		return checkCredentialV2({req, res}, async () => {
-			const images = await OrmKanban.findAll({
-				where: {image: {[Op.ne]: null}},
-				attributes: ["image", "keterangan"] as (keyof TKanban)[],
-			});
-
-			return images?.map(({dataValues}) => {
-				const {image, keterangan} = dataValues;
-
-				return {image, keterangan};
-			});
-		});
-	}),
+	...kanbanImage,
 	delete: procedure
 		.input(z.string().optional())
 		.mutation(async ({input: id, ctx: {req, res}}) => {

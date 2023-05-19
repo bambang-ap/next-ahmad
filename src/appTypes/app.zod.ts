@@ -20,9 +20,9 @@ export const uModalTypePreview = z.union([uModalType, z.literal("preview")]);
 export type TableFormValue = z.infer<typeof tableFormValue>;
 export const tableFormValue = z.object({
 	search: z.string().optional(),
+	pageTotal: z.number().optional(),
 	page: z.number().optional().default(1),
 	limit: z.number().optional().default(defaultLimit),
-	pageTotal: z.number().optional(),
 });
 
 export type ZId = z.infer<typeof zId>;

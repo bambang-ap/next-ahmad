@@ -24,5 +24,6 @@ export const appRouter = router({
 });
 
 export type AppRouter = typeof appRouter;
+export type AppRouterCaller = ReturnType<AppRouter["createCaller"]>;
 export type RouterInput = inferRouterInputs<AppRouter>;
 export type RouterOutput = inferRouterOutputs<AppRouter>;

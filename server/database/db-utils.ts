@@ -15,7 +15,7 @@ export function wherePages(
 	searchKey?: string | string[],
 	search?: string,
 ): any {
-	if (!searchKey) return undefined;
+	if (!searchKey || !search) return undefined;
 
 	if (!Array.isArray(searchKey)) {
 		return {

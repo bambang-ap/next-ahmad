@@ -17,7 +17,12 @@ import type {
 	TUser,
 } from "./app.zod";
 
-export type {AppRouter, RouterInput, RouterOutput} from "@trpc/routers";
+export type {
+	AppRouter,
+	AppRouterCaller,
+	RouterInput,
+	RouterOutput,
+} from "@trpc/routers";
 export type {
 	BaseMenu,
 	ItemsSppb,
