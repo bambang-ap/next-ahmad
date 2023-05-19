@@ -97,6 +97,7 @@ export function ModalChild({
 							</div>
 							<div className="flex flex-col gap-2">
 								{listKey[index]?.map((id, i) => {
+									// @ts-ignore
 									const selectedItem = data.find(e => e.id === id);
 									return (
 										<div key={id} className="flex gap-2">
