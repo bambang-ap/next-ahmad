@@ -8,16 +8,14 @@ import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
+import {
+	FormType,
+	ModalChildMasterItem,
+} from "@pageComponent/ModalChildMasterItem";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
-import {ModalChild} from "./ModalChild";
-
 MasterItem.getLayout = getLayout;
-
-export type FormType = TMasterItem & {
-	type: ModalTypePreview;
-};
 
 export default function MasterItem() {
 	const modalRef = useRef<ModalRef>(null);
@@ -78,7 +76,7 @@ export default function MasterItem() {
 					context={{disabled: isPreview, hideButton: isPreview}}
 					onSubmit={submit}
 					className="flex flex-col gap-2">
-					<ModalChild reset={reset} control={control} />
+					<ModalChildMasterItem reset={reset} control={control} />
 				</Form>
 			</Modal>
 			<div className="overflow-x-auto w-full">

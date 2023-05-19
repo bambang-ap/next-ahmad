@@ -144,6 +144,7 @@ export function ScanDetailKanban({
 										if (!jumlah) return null;
 
 										const rejectMax =
+											// @ts-ignore
 											jumlah - (formData.item_qc?.[i]?.[num] ?? 0);
 
 										return (
@@ -215,6 +216,7 @@ export function RenderListMesin({data}: {data?: KanbanGetRow["listMesin"]}) {
 													<div
 														className="flex flex-1 flex-col gap-[1px]"
 														key={key}>
+														{/* @ts-ignore */}
 														{values.map(e => {
 															return (
 																<div

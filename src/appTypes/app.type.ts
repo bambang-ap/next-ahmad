@@ -41,6 +41,7 @@ export type {
 	TKanbanItem,
 	TKanbanUpsert,
 	TKendaraan,
+	TMasterItem,
 	TMaterial,
 	TMaterialKategori,
 	TMenu,

@@ -1,17 +1,20 @@
 import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
 
+import {ModalTypePreview, TMasterItem} from "@appTypes/app.type";
 import {Button, Input, Select, selectMapper, Text} from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
-import {FormType} from "./";
+export type FormType = TMasterItem & {
+	type: ModalTypePreview;
+};
 
 type ScopeForm = Record<
 	"material" | "parameter" | "hardness" | "process",
 	string
 >;
 
-export function ModalChild({
+export function ModalChildMasterItem({
 	control,
 	reset,
 }: {
