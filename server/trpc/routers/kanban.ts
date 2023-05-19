@@ -239,7 +239,8 @@ const kanbanRouters = router({
 		.mutation(async ({input: id, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
 				if (!id) {
-					throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});
+					// throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});
+					return {message: "Failed"};
 				}
 
 				await OrmKanbanItem.destroy({where: {id}});

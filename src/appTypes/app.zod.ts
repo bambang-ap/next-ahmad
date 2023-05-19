@@ -3,7 +3,10 @@ import {z} from "zod";
 import {defaultLimit} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 
-const zDecimal = z.string().transform(str => parseFloat(str));
+const zDecimal = z
+	.string()
+	.transform(str => parseFloat(str))
+	.or(z.number());
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
@@ -111,6 +114,18 @@ export const tCustomerPOExtended = tCustomerPO.extend({
 	po_item: z.array(tPOItem).min(1).optional(),
 });
 
+const asd = z.string().array().min(1);
+
+export type TMasterItem = z.infer<typeof tMasterItem>;
+export const tMasterItem = zId.extend({
+	name: z.string(),
+	kode_item: z.string().optional(),
+	material: asd.optional(),
+	parameter: asd.optional(),
+	hardness: asd.optional(),
+	process: asd.optional(),
+});
+
 export type TMesin = z.infer<typeof tMesin>;
 export const tMesin = zId.extend({
 	name: z.string(),
@@ -131,12 +146,12 @@ export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	id_po: z.string(),
 	id_sppb_in: z.string(),
-	keterangan: z.string(),
+	keterangan: z.string().optional(),
 	createdBy: z.string(),
 	updatedBy: z.string(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
-	image: z.string().optional().nullable(),
+	image: z.string().optional().nullish(),
 	doc_id: z.string(),
 	list_mesin: z
 		.object({

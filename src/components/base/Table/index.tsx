@@ -56,9 +56,16 @@ export function TableFilter<T>({
 		value: (i + 1) * defaultLimit,
 	}));
 
+	const searching = formValue.search && formValue.search.length > 0;
+
 	const doSearch = handleSubmit(({search}) => {
 		setValue("search", search);
 	});
+
+	function clearSearch() {
+		reset({search: ""});
+		doSearch();
+	}
 
 	useEffect(() => {
 		setValue("pageTotal", pageCount);
@@ -88,11 +95,17 @@ export function TableFilter<T>({
 						/>
 						<form onSubmit={doSearch} className="flex-1">
 							<Input
-								// type="search"
 								label="Pencarian"
 								fieldName="search"
 								control={searchControl}
-								rightAcc={<Button icon="faSearch" onClick={doSearch} />}
+								rightAcc={
+									<div className="flex gap-2">
+										{searching && (
+											<Button icon="faClose" onClick={clearSearch} />
+										)}
+										<Button icon="faSearch" onClick={doSearch} />
+									</div>
+								}
 							/>
 						</form>
 					</div>

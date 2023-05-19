@@ -2,9 +2,8 @@ import {DataTypes, Model, Sequelize, STRING} from "sequelize";
 
 import {TPOItem} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {ormDecimalType} from "@database";
 import {TABLES} from "@enum";
-
-import {ormDecimalType} from "../db-utils";
 
 export class OrmCustomerPOItem extends Model<TPOItem> {}
 

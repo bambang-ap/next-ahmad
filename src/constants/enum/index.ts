@@ -24,9 +24,8 @@ export enum TABLES {
 	SCAN = "scan",
 	USER = "user_pengguna",
 	USER_LOGIN = "user_login",
+	ITEM = "master_item",
 }
-
-export const Z_TABLES = z.nativeEnum(TABLES);
 
 export enum CRUD_ENABLED {
 	CUSTOMER = "customer",
@@ -45,8 +44,10 @@ export enum CRUD_ENABLED {
 	PARAMETER = "parameter",
 	PARAMETER_KATEGORI = "parameter_kategori",
 	DOCUMENT = "document_number",
+	ITEM = "master_item",
 }
 
+export const Z_TABLES = z.nativeEnum(TABLES);
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);
 
 export const OpKeys = [

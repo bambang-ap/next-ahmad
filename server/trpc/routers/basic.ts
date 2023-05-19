@@ -3,6 +3,7 @@ import {z} from "zod";
 
 import {tableFormValue, uModalType} from "@appTypes/app.zod";
 import {defaultLimit} from "@constants";
+import {wherePages} from "@database";
 import {eOpKeys, Z_CRUD_ENABLED} from "@enum";
 import {generateId, MAPPING_CRUD_ORM, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -42,7 +43,7 @@ const basicRouters = router({
 			tableFormValue.partial().extend({
 				target: Z_CRUD_ENABLED.optional(),
 				where: basicWhere.optional(),
-				searchKey: z.string().optional(),
+				searchKey: z.string().or(z.string().array()).optional(),
 			}),
 		)
 		.query(async ({input}) => {
@@ -61,13 +62,7 @@ const basicRouters = router({
 				limit,
 				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
-				where: searchKey
-					? {
-							[searchKey]: {
-								[Op.iLike]: `%${search}%`,
-							},
-					  }
-					: undefined,
+				where: wherePages(searchKey, search),
 			};
 
 			// @ts-ignore

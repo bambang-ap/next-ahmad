@@ -18,6 +18,7 @@ import {
 	OrmHardnessKategori,
 	OrmKanbanInstruksi,
 	OrmKendaraan,
+	OrmMasterItem,
 	OrmMaterial,
 	OrmMaterialKategori,
 	OrmMesin,
@@ -43,6 +44,7 @@ export const MAPPING_CRUD_ORM = {
 	[CRUD_ENABLED.PARAMETER]: OrmParameter,
 	[CRUD_ENABLED.PARAMETER_KATEGORI]: OrmParameterKategori,
 	[CRUD_ENABLED.DOCUMENT]: OrmDocument,
+	[CRUD_ENABLED.ITEM]: OrmMasterItem,
 };
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
