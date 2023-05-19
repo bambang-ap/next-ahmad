@@ -11,8 +11,8 @@ import {kanbanGet} from "./get";
 import {kanbanUpsert} from "./upsert";
 
 const kanbanRouters = router({
-	get: kanbanGet,
-	upsert: kanbanUpsert,
+	...kanbanGet,
+	...kanbanUpsert,
 	images: procedure.query(({ctx: {req, res}}) => {
 		return checkCredentialV2({req, res}, async () => {
 			const images = await OrmKanban.findAll({
