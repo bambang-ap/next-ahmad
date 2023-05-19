@@ -11,7 +11,10 @@ export function ormDecimalType(fieldName: string) {
 	};
 }
 
-export function wherePages(searchKey?: string | string[], search?: string) {
+export function wherePages(
+	searchKey?: string | string[],
+	search?: string,
+): any {
 	if (!searchKey) return undefined;
 
 	if (!Array.isArray(searchKey)) {
