@@ -30,6 +30,7 @@ export type TableFilterProps<T> = Omit<
 > & {
 	form: UseFormReturn<TableFormValue>;
 	pageCount?: number;
+	disableSearch?: boolean;
 };
 
 export {RootTable};
@@ -39,6 +40,7 @@ export function TableFilter<T>({
 	className,
 	topComponent,
 	pageCount = 1,
+	disableSearch,
 	...props
 }: TableFilterProps<T>) {
 	const {control, watch, setValue} = form;
@@ -87,27 +89,30 @@ export function TableFilter<T>({
 					<div className="flex items-center gap-2">{topComponent}</div>
 					<div className="flex gap-2 w-1/2">
 						<Select
+							className={classNames({["flex-1"]: disableSearch})}
 							disableClear
 							label="Data per halaman"
 							data={selectData}
 							control={control}
 							fieldName="limit"
 						/>
-						<form onSubmit={doSearch} className="flex-1">
-							<Input
-								label="Pencarian"
-								fieldName="search"
-								control={searchControl}
-								rightAcc={
-									<div className="flex gap-2">
-										{searching && (
-											<Button icon="faClose" onClick={clearSearch} />
-										)}
-										<Button icon="faSearch" onClick={doSearch} />
-									</div>
-								}
-							/>
-						</form>
+						{!disableSearch && (
+							<form onSubmit={doSearch} className="flex-1">
+								<Input
+									label="Pencarian"
+									fieldName="search"
+									control={searchControl}
+									rightAcc={
+										<div className="flex gap-2">
+											{searching && (
+												<Button icon="faClose" onClick={clearSearch} />
+											)}
+											<Button icon="faSearch" onClick={doSearch} />
+										</div>
+									}
+								/>
+							</form>
+						)}
 					</div>
 				</div>
 			}

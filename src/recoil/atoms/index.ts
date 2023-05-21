@@ -1,6 +1,7 @@
 import {atom, RecoilState} from "recoil";
 
-import {TMenu, TScanTarget} from "@appTypes/app.zod";
+import {KanbanGetRow} from "@appTypes/app.type";
+import {TableFormValue, TMenu, TScanTarget} from "@appTypes/app.zod";
 import {ScanIds} from "@appTypes/props.type";
 import {ScanTarget} from "@constants";
 
@@ -46,3 +47,13 @@ export const atomUidScan = new Map<
 		}),
 	]),
 );
+
+export const atomKanbanTableForm = atom<TableFormValue | null>({
+	key: "atomDataKanban",
+	default: null,
+});
+
+export const atomDataKanban = atom<KanbanGetRow[] | null>({
+	key: "atomKanbanTableForm",
+	default: null,
+});

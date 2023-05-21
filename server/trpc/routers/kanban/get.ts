@@ -76,6 +76,7 @@ export const kanbanGet = {
 				async (): Promise<KanbanGetRow[]> => {
 					const dataKanban = await OrmKanban.findAll({
 						where,
+						limit: 5,
 						attributes: ["id"],
 						order: [["createdAt", "asc"]],
 					});

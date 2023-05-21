@@ -1,14 +1,16 @@
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useEffect, useRef} from "react";
 
 import {useForm} from "react-hook-form";
+import {useSetRecoilState} from "recoil";
 
 import {ModalTypePreview, TKanbanUpsert} from "@appTypes/app.zod";
-import {Button, Form, Modal, ModalRef, Table} from "@components";
+import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useKanban} from "@hooks";
+import {useTableFilter} from "@hooks";
 import {KanbanGenerateQR} from "@pageComponent/kanban_GenerateQR";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
+import {atomDataKanban} from "@recoil/atoms";
 import {dateUtils, modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -23,10 +25,16 @@ export type FormType = TKanbanUpsert & {
 
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
+	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
+
+	const {formValue, hookForm} = useTableFilter();
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
+	const {data: dataKanbanPage, refetch} = trpc.kanban.getPage.useQuery(
+		formValue!,
+		{enabled: !!formValue},
+	);
 
-	const {dataKanban: data, refetchKanban: refetch} = useKanban();
 	const {mutate: mutateUpsert} =
 		trpc.kanban.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =
@@ -34,6 +42,13 @@ export default function Kanban() {
 
 	const [modalType] = watch(["type"]);
 	const {isPreview, modalTitle} = modalTypeParser(modalType, "Kanban");
+
+	const useEffectDeps = [dataKanbanPage].map(e => {
+		if (!e) return "";
+		// eslint-disable-next-line @typescript-eslint/no-unused-vars
+		const {rows, ...rest} = e;
+		return JSON.stringify(rest);
+	});
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -66,11 +81,18 @@ export default function Kanban() {
 		modalRef.current?.show();
 	}
 
+	useEffect(() => {
+		if (!!dataKanbanPage) setKanbanTableForm(dataKanbanPage?.rows);
+	}, useEffectDeps);
+
 	return (
 		<>
-			<Button onClick={() => showModal("add", {})}>Add</Button>
-			<Table
-				data={data}
+			<TableFilter
+				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
+				disableSearch
+				form={hookForm}
+				data={dataKanbanPage?.rows}
+				pageCount={dataKanbanPage?.totalPage}
 				header={[
 					"Tanggal",
 					"Doc No",
@@ -109,6 +131,7 @@ export default function Kanban() {
 					);
 				}}
 			/>
+
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form
 					onSubmit={submit}

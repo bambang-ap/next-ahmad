@@ -1,3 +1,5 @@
+import {useRecoilValue} from "recoil";
+
 import {
 	TCustomer,
 	THardness,
@@ -9,12 +11,12 @@ import {
 	TParameterKategori,
 } from "@appTypes/app.zod";
 import {CRUD_ENABLED} from "@enum";
+import {atomDataKanban} from "@recoil/atoms";
 import {trpc} from "@utils/trpc";
 
 export function useKanban() {
-	const {data: dataKanban, refetch} = trpc.kanban.get.useQuery({
-		type: "kanban",
-	});
+	const dataKanban = useRecoilValue(atomDataKanban);
+
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
@@ -62,9 +64,8 @@ export function useKanban() {
 	});
 
 	return {
-		refetchKanban: refetch,
-		dataSppbIn,
 		dataKanban,
+		dataSppbIn,
 		dataCustomer,
 		dataMesin,
 		dataInstruksi,
