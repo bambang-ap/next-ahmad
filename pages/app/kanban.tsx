@@ -27,7 +27,7 @@ export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
 	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
 
-	const {formValue, hookForm} = useTableFilter();
+	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<FormType>();
 	const {data: dataKanbanPage, refetch} = trpc.kanban.getPage.useQuery(
