@@ -42,7 +42,7 @@ export default function MasterItem() {
 				case "edit":
 					return mutateUpsert({...body, id}, {onSuccess});
 				case "delete":
-					return mutateDelete(id, {onSuccess});
+					return mutateDelete({id}, {onSuccess});
 				default:
 					return null;
 			}

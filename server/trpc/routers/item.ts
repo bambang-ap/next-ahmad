@@ -1,16 +1,14 @@
-import {z} from "zod";
-
 import {
 	tableFormValue,
 	TKategoriMesin,
 	TMasterItem,
 	tMasterItem,
+	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {OrmKategoriMesin, OrmMasterItem, wherePages} from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
-import {TRPCError} from "@trpc/server";
 
 const itemRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
@@ -49,11 +47,9 @@ const itemRouters = router({
 			});
 		}),
 
-	delete: procedure.input(z.string()).mutation(({ctx, input}) => {
+	delete: procedure.input(zId).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
-			const success = await OrmMasterItem.destroy({where: {id: input}});
-
-			if (success > 0) throw new TRPCError({code: "FORBIDDEN"});
+			await OrmMasterItem.destroy({where: input});
 
 			return Success;
 		});
