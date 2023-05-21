@@ -17,6 +17,7 @@ export enum TABLES {
 	MATERIAL_KATEGORI = "material_kategori",
 	MENU = "menu",
 	MESIN = "mesin",
+	MESIN_KATEGORI = "mesin_kategori",
 	PARAMETER = "parameter",
 	PARAMETER_KATEGORI = "parameter_kategori",
 	PO_ITEM_SPPB_IN = "po_item_sppb_in",
@@ -30,6 +31,7 @@ export enum TABLES {
 export enum CRUD_ENABLED {
 	CUSTOMER = "customer",
 	MESIN = "mesin",
+	MESIN_KATEGORI = "mesin_kategori",
 	KENDARAAN = "kendaraan",
 	ROLE = "role",
 	USER = "user_pengguna",

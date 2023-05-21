@@ -1,25 +1,23 @@
 import {DataTypes, Model, Sequelize} from "sequelize";
 
-import {TMesin} from "@appTypes/app.type";
+import {TKategoriMesin} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
-export class OrmMesin extends Model<TMesin> {}
+export class OrmKategoriMesin extends Model<TKategoriMesin> {}
 
-export default function initOrmMesin(sequelize: Sequelize) {
-	OrmMesin.init(
+export default function initOrmKategoriMesin(sequelize: Sequelize) {
+	OrmKategoriMesin.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			name: {type: DataTypes.STRING},
-			kategori_mesin: {type: DataTypes.STRING},
-			nomor_mesin: {type: DataTypes.STRING},
 		},
 		{
 			sequelize,
-			tableName: TABLES.MESIN,
+			tableName: TABLES.MESIN_KATEGORI,
 			defaultScope: {
 				...defaultOrderBy,
-				order: [["nomor_mesin", "asc"]],
+				order: [["nomor_Kategorimesin", "asc"]],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
@@ -27,5 +25,5 @@ export default function initOrmMesin(sequelize: Sequelize) {
 		},
 	);
 
-	return OrmMesin;
+	return OrmKategoriMesin;
 }

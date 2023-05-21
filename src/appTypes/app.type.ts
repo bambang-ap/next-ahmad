@@ -45,6 +45,7 @@ export type {
 	TKanbanExtended,
 	TKanbanItem,
 	TKanbanUpsert,
+	TKategoriMesin,
 	TKendaraan,
 	TMasterItem,
 	TMaterial,

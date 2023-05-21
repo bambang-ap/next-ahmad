@@ -9,6 +9,7 @@ import {
 	THardness,
 	THardnessKategori,
 	TInstruksiKanban,
+	TKategoriMesin,
 	TKendaraan,
 	TMaterial,
 	TMaterialKategori,
@@ -350,13 +351,36 @@ export const allowedPages: Record<string, AllowedPages> = {
 		table: {
 			header: ["Name", "Nomor Mesin", "Action"],
 			get body(): Body<TMesin> {
-				return ["name", "nomor_mesin"];
+				return [
+					[
+						"kategori_mesin",
+						() =>
+							trpc.basic.get.useQuery({
+								target: CRUD_ENABLED.MESIN_KATEGORI,
+							}),
+						(item: TParameter, data: TKategoriMesin[]) =>
+							data?.find?.(e => e.id === item.id_kategori)?.name,
+					],
+
+					"nomor_mesin",
+				];
 			},
 		},
 		modalField: {
 			get add(): FieldForm<TMesin>[] {
 				return [
-					{col: "name", label: "Nama Mesin"},
+					{
+						col: "kategori_mesin",
+						label: "Pilih Nama",
+						type: "select",
+						firstOption: "- Pilih Nama -",
+						dataQuery: () =>
+							trpc.basic.get.useQuery({
+								target: CRUD_ENABLED.MESIN_KATEGORI,
+							}),
+						dataMapping: (item: TKategoriMesin[]) =>
+							item?.map(({id, name}) => ({value: id, label: name})),
+					},
 					{col: "nomor_mesin", label: "Nomor Mesin"},
 				];
 			},
@@ -369,6 +393,32 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: "Tambah mesin",
 				edit: "Ubah mesin",
 				delete: "Hapus mesin",
+			},
+		},
+	},
+
+	"/app/mesin/kategori": {
+		enumName: CRUD_ENABLED.MESIN_KATEGORI,
+		searchKey: "name",
+		table: {
+			header: ["Name", "Action"],
+			get body(): Body<TMaterialKategori> {
+				return ["name"];
+			},
+		},
+		modalField: {
+			get add(): FieldForm<TMaterialKategori>[] {
+				return [{col: "name", label: "Nama Mesin"}];
+			},
+			get edit() {
+				return this.add;
+			},
+		},
+		text: {
+			modal: {
+				add: "Tambah Nama Mesin",
+				edit: "Ubah Nama Mesin",
+				delete: "Hapus Nama Mesin",
 			},
 		},
 	},

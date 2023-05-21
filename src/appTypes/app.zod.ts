@@ -120,16 +120,37 @@ export type TMasterItem = z.infer<typeof tMasterItem>;
 export const tMasterItem = zId.extend({
 	name: z.string(),
 	kode_item: z.string().optional(),
-	material: asd.optional(),
-	parameter: asd.optional(),
-	hardness: asd.optional(),
-	process: asd.optional(),
+	list_mesin: z
+		.object({
+			id_mesin: z.string().min(1),
+			instruksi: z
+				.object({
+					id_instruksi: z.string().min(1),
+					hardness: z.string().min(1).array().min(1),
+					hardnessKategori: z.string().min(1).array().min(1),
+					material: z.string().min(1).array().min(1),
+					materialKategori: z.string().array().optional(),
+					// materialKategori: z.string().min(1).array().min(1).optional(),
+					parameter: z.string().min(1).array().min(1),
+					parameterKategori: z.string().min(1).array().min(1),
+				})
+				.array()
+				.min(1),
+		})
+		.array()
+		.min(1),
+});
+
+export type TKategoriMesin = z.infer<typeof tKategoriMesin>;
+export const tKategoriMesin = zId.extend({
+	name: z.string().optional(),
 });
 
 export type TMesin = z.infer<typeof tMesin>;
 export const tMesin = zId.extend({
-	name: z.string(),
 	nomor_mesin: z.string(),
+	kategori_mesin: z.string(),
+	name: z.string().optional(),
 });
 
 export type TKendaraan = z.infer<typeof tKendaraan>;
