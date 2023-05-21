@@ -178,8 +178,10 @@ async function parseDetailKanban(
 
 	const docDetail = await OrmDocument.findOne({where: {id: doc_id}});
 
+	const {image, ...restDataValues} = dataValues;
+
 	const objectData: KanbanGetRow = {
-		...dataValues,
+		...restDataValues,
 		// @ts-ignore
 		listMesin,
 		docDetail: docDetail?.dataValues,

@@ -92,7 +92,9 @@ export function ModalChildMasterItem({
 									key={uuid()}
 									label={key.ucwords()}
 									className="flex-1"
-									data={mappedData}
+									data={mappedData?.filter(
+										e => !listKey[index]?.includes(e.value),
+									)}
 									control={scopeControl}
 									fieldName={key}
 								/>

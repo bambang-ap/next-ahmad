@@ -1,3 +1,14 @@
+- Master Mesin -> Dianggap kategori (select distinct by name)
+- Master Item -> Adopsi existing Kanban bagian mesin
+- Master PO
+	- Select item dari master item
+	- Selain Nama Item & Kode Item, harga qty dll input manual
+- Kanban
+	- Tambah nomor kanban (generated e.x. KNB/IMI/001)
+	- Tampilkan data di table hanya yg ada di table tersebut
+	- Jika ingin melihat detail, bisa preview (jadi select join dll bisa efisien)
+	- Input & Edit Bisa select nomor mesin
+
 # Module Inventory Production
 - master menu
   - List menu
