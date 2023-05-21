@@ -114,28 +114,21 @@ export const tCustomerPOExtended = tCustomerPO.extend({
 	po_item: z.array(tPOItem).min(1).optional(),
 });
 
-const asd = z.string().array().min(1);
-
 export type TMasterItem = z.infer<typeof tMasterItem>;
 export const tMasterItem = zId.extend({
-	name: z.string(),
+	name: z.string().optional(),
 	kode_item: z.string().optional(),
-	list_mesin: z
+	kategori_mesin: z.string(),
+	instruksi: z
 		.object({
-			id_mesin: z.string().min(1),
-			instruksi: z
-				.object({
-					id_instruksi: z.string().min(1),
-					hardness: z.string().min(1).array().min(1),
-					hardnessKategori: z.string().min(1).array().min(1),
-					material: z.string().min(1).array().min(1),
-					materialKategori: z.string().array().optional(),
-					// materialKategori: z.string().min(1).array().min(1).optional(),
-					parameter: z.string().min(1).array().min(1),
-					parameterKategori: z.string().min(1).array().min(1),
-				})
-				.array()
-				.min(1),
+			id_instruksi: z.string().min(1),
+			hardness: z.string().min(1).array().min(1),
+			hardnessKategori: z.string().min(1).array().min(1),
+			material: z.string().min(1).array().min(1),
+			materialKategori: z.string().array().optional(),
+			// materialKategori: z.string().min(1).array().min(1).optional(),
+			parameter: z.string().min(1).array().min(1),
+			parameterKategori: z.string().min(1).array().min(1),
 		})
 		.array()
 		.min(1),

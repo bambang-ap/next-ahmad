@@ -1,3 +1,18 @@
+join sequelize:
+
+```typescript
+  OrmKategoriMesin.hasMany(OrmMasterItem, {foreignKey: "id"});
+  OrmMasterItem.belongsTo(OrmKategoriMesin, {foreignKey: "kategori_mesin"});
+
+  const {count, rows} = await OrmMasterItem.findAndCountAll({
+    limit,
+    order: [["id", "asc"]],
+    offset: (page - 1) * limit,
+    where: wherePages([""], search),
+    include: [OrmKategoriMesin],
+  });
+```
+
 - Master Mesin -> Dianggap kategori (select distinct by name)
 - Master Item -> Adopsi existing Kanban bagian mesin
 - Master PO

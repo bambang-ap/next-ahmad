@@ -2,16 +2,16 @@ import {FormEventHandler, useRef} from "react";
 
 import {useForm} from "react-hook-form";
 
-import {ModalTypePreview, PagingResult} from "@appTypes/app.type";
+import {ModalTypePreview} from "@appTypes/app.type";
 import {TMasterItem} from "@appTypes/app.zod";
 import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
-import {CRUD_ENABLED} from "@enum";
+import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
 import {
 	FormType,
 	ModalChildMasterItem,
-} from "@pageComponent/ModalChildMasterItem";
+} from "@pageComponent/item/ModalChildMasterItem";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -21,15 +21,11 @@ export default function MasterItem() {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {formValue, hookForm} = useTableFilter();
-	const {mutate} = trpc.basic.mutate.useMutation<string>();
-	const {data, refetch} = trpc.basic.getPage.useQuery<
-		any,
-		PagingResult<TMasterItem>
-	>({
-		...formValue,
-		searchKey: ["name", "kode_item"],
-		target: CRUD_ENABLED.ITEM,
-	});
+	const {mutate: mutateUpsert} =
+		trpc.item.upsert.useMutation(defaultErrorMutation);
+	const {mutate: mutateDelete} =
+		trpc.item.delete.useMutation(defaultErrorMutation);
+	const {data, refetch} = trpc.item.get.useQuery(formValue);
 
 	const {control, handleSubmit, watch, clearErrors, reset} =
 		useForm<FormType>();
@@ -44,15 +40,9 @@ export default function MasterItem() {
 			switch (type) {
 				case "add":
 				case "edit":
-					return mutate(
-						{type, target: CRUD_ENABLED.ITEM, body: {...body, id}},
-						{onSuccess},
-					);
+					return mutateUpsert({...body, id}, {onSuccess});
 				case "delete":
-					return mutate(
-						{type, target: CRUD_ENABLED.ITEM, body: {id}},
-						{onSuccess},
-					);
+					return mutateDelete(id, {onSuccess});
 				default:
 					return null;
 			}
@@ -84,7 +74,7 @@ export default function MasterItem() {
 					form={hookForm}
 					data={data?.rows}
 					pageCount={data?.totalPage}
-					header={["Nomor", "Nama Item", "Kode Item", "Action"]}
+					header={["Nomor", "Nama Mesin", "Nama Item", "Kode Item", "Action"]}
 					topComponent={
 						<Button onClick={() => showModal("add", {})}>Add</Button>
 					}
@@ -94,6 +84,7 @@ export default function MasterItem() {
 						return (
 							<>
 								<Cell>{index + 1}</Cell>
+								<Cell>{item.OrmKategoriMesin.name}</Cell>
 								<Cell>{name}</Cell>
 								<Cell>{kode_item}</Cell>
 								<Cell className="flex gap-x-2">

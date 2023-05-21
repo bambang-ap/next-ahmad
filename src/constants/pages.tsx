@@ -358,10 +358,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 							trpc.basic.get.useQuery({
 								target: CRUD_ENABLED.MESIN_KATEGORI,
 							}),
-						(item: TParameter, data: TKategoriMesin[]) =>
-							data?.find?.(e => e.id === item.id_kategori)?.name,
+						(item: TMesin, data: TKategoriMesin[]) =>
+							data?.find?.(e => e.id === item.kategori_mesin)?.name,
 					],
-
 					"nomor_mesin",
 				];
 			},

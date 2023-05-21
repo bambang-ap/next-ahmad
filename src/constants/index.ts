@@ -9,6 +9,8 @@ export * from "./colors";
 export * from "./pages";
 export * from "./sizes";
 
+export const Success = {message: "Success"};
+
 export const defaultLimit = 10;
 export const qtyList = [1, 2, 3] as const;
 

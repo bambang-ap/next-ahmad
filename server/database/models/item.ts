@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, JSONB, Model, Sequelize, STRING} from "sequelize";
 
 import {TMasterItem} from "@appTypes/app.zod";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
@@ -12,10 +12,8 @@ export default function initOrmMasterItem(sequelize: Sequelize) {
 			id: {type: DataTypes.STRING, primaryKey: true},
 			name: {type: DataTypes.STRING},
 			kode_item: {type: DataTypes.STRING},
-			material: {type: DataTypes.JSONB},
-			parameter: {type: DataTypes.JSONB},
-			hardness: {type: DataTypes.JSONB},
-			process: {type: DataTypes.JSONB},
+			instruksi: JSONB,
+			kategori_mesin: STRING,
 		},
 		{
 			sequelize,

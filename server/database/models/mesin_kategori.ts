@@ -17,7 +17,7 @@ export default function initOrmKategoriMesin(sequelize: Sequelize) {
 			tableName: TABLES.MESIN_KATEGORI,
 			defaultScope: {
 				...defaultOrderBy,
-				order: [["nomor_Kategorimesin", "asc"]],
+				order: [["name", "asc"]],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
