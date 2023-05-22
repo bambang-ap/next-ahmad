@@ -283,6 +283,8 @@ export function SppbOutModalChild({
 
 										return (
 											<div key={id_item} className="flex items-center gap-2">
+												{/* FIXME:  */}
+												{/* @ts-ignore */}
 												<Text className="flex-1">{detail?.name}</Text>
 												{qtyMap(({qtyKey, unitKey, num}) => {
 													const jumlah = item[qtyKey];

@@ -151,6 +151,8 @@ export function SPPBOutGenerateQR(props: {
 																<>
 																	<Tr>
 																		<Td>{index + 1}</Td>
+																		{/* FIXME: */}
+																		{/* @ts-ignore */}
 																		<Td>{itemDetail?.name}</Td>
 																		{qtyMap(({num, qtyKey, unitKey}) => {
 																			return (

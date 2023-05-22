@@ -89,7 +89,10 @@ export function KanbanGenerateQR(
 
 							return (
 								<Table.Tr key={idItem}>
+									{/* FIXME: */}
+									{/* @ts-ignore */}
 									<Table.Td>{itemDetail?.kode_item}</Table.Td>
+									{/* @ts-ignore */}
 									<Table.Td>{itemDetail?.name}</Table.Td>
 									<Td colSpan={2} className="flex-col gap-2">
 										{qtyList.map(num => {

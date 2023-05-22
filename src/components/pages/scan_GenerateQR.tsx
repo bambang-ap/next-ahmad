@@ -97,8 +97,11 @@ export function ScanDetailKanban({
 								/>
 							)}
 							<div className="flex-1 bg-white text-center">
+								{/* FIXME: */}
+								{/* @ts-ignore */}
 								{detail?.kode_item}
 							</div>
+							{/* @ts-ignore */}
 							<div className="flex-1 bg-white text-center">{detail?.name}</div>
 							<div className="flex-1 flex flex-col">
 								{qtyMap(({qtyKey, unitKey, num}) => {

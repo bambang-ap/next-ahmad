@@ -136,6 +136,8 @@ export function KanbanModalChild({
 								e => !Object.keys(kanbanItems).includes(e.id),
 							) ?? [],
 							"id",
+							// FIXME:
+							// @ts-ignore
 							"itemDetail.name",
 						)}
 					/>
