@@ -70,7 +70,7 @@ export function KanbanGenerateQR(
 							</Td>
 							<Td colSpan={2} className="flex-col gap-2">
 								<Text>created by : {sppb.dataCreatedBy?.name}</Text>
-								<Text>customer : {sppb.dataPo?.customer?.name}</Text>
+								<Text>customer : {sppb.dataPo?.OrmCustomer?.name}</Text>
 							</Td>
 						</Tr>
 					</Table>

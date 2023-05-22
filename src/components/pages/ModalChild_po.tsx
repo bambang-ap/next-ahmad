@@ -7,7 +7,14 @@ import {
 	TCustomerPOExtended,
 } from "@appTypes/app.type";
 import {TItemUnit} from "@appTypes/app.zod";
-import {Button, Input, Select, SelectPropsData, Table} from "@components";
+import {
+	Button,
+	Input,
+	Select,
+	selectMapper,
+	SelectPropsData,
+	Table,
+} from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
@@ -42,6 +49,10 @@ export default function PoModalChild({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 
+	const {data: dataMasterItem} = trpc.item.get.useQuery({
+		limit: 10000,
+	});
+
 	const {
 		field: {onChange: onChangePoItem},
 	} = useController({control, name: "po_item"});
@@ -62,6 +73,8 @@ export default function PoModalChild({
 			return [...tableHeader, "Action"];
 		},
 	};
+
+	const selectedMasterItemIds = poItem.map(e => e.master_item_id);
 
 	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
 		label: name,
@@ -129,30 +142,31 @@ export default function PoModalChild({
 
 			{poItem && poItem.length > 0 && (
 				<Table
-					className="max-h-72 overflow-y-auto"
-					header={headerTable}
 					data={poItem}
-					renderItem={({Cell}, index) => {
+					header={headerTable}
+					className="max-h-72 overflow-y-auto"
+					renderItem={({item, Cell}, index) => {
+						const listItems =
+							dataMasterItem?.rows.filter(
+								e =>
+									e.id === item.master_item_id ||
+									!selectedMasterItemIds.includes(e.id),
+							) ?? [];
+						const selectedItem = dataMasterItem?.rows.find(
+							e => e.id === item.master_item_id,
+						);
+
 						return (
 							<>
 								<Cell>
-									<Input
+									<Select
 										className="flex-1"
-										disabled={isPreview}
 										control={control}
-										fieldName={`po_item.${index}.name`}
-										label="Nama Item"
+										data={selectMapper(listItems, "id", "name")}
+										fieldName={`po_item.${index}.master_item_id`}
 									/>
 								</Cell>
-								<Cell>
-									<Input
-										className="flex-1"
-										disabled={isPreview}
-										control={control}
-										fieldName={`po_item.${index}.kode_item`}
-										label="Kode Item"
-									/>
-								</Cell>
+								<Cell>{selectedItem?.kode_item}</Cell>
 								<Cell>
 									<Input
 										className="flex-1"

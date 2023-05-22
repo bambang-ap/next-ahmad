@@ -91,7 +91,13 @@ export default function POCustomer() {
 						<Button onClick={() => showModal("add", {})}>Add</Button>
 					}
 					renderItem={({item, Cell}) => {
-						const {id, customer, tgl_po, due_date, nomor_po} = item;
+						const {
+							id,
+							OrmCustomer: customer,
+							tgl_po,
+							due_date,
+							nomor_po,
+						} = item;
 
 						return (
 							<>

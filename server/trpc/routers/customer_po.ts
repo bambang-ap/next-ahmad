@@ -1,4 +1,4 @@
-import {Op} from "sequelize";
+import {Includeable, Op} from "sequelize";
 import {z} from "zod";
 
 import {PagingResult, UQtyList} from "@appTypes/app.type";
@@ -25,7 +25,7 @@ import {appRouter} from ".";
 
 type GetPage = PagingResult<GetPageRows>;
 type GetPageRows = TCustomerPO & {
-	customer?: TCustomer;
+	OrmCustomer?: TCustomer;
 	isClosed?: boolean;
 	po_item: (TPOItem & {isClosed?: boolean})[];
 };
@@ -60,8 +60,10 @@ const customer_poRouters = router({
 			const {id: idPo, limit = defaultLimit, page = 1, search} = input;
 
 			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
+				const include: Includeable = OrmCustomer;
 				const limitation = {
 					limit,
+					include,
 					offset: (page - 1) * limit,
 					where: {
 						...(search && {
@@ -73,16 +75,15 @@ const customer_poRouters = router({
 				};
 
 				const {count, rows: allPO} = await OrmCustomerPO.findAndCountAll(
-					idPo ? {where: {id: idPo}} : limitation,
+					idPo ? {where: {id: idPo}, include} : limitation,
 				);
 				const joinedPOPromises = allPO.map<Promise<GetPage["rows"][number]>>(
-					async ({dataValues}) => {
+					async po => {
+						const dataValues = po.toJSON() as TCustomerPO & {
+							OrmCustomer?: TCustomer;
+						};
 						const poItem = await OrmCustomerPOItem.findAll({
 							where: {id_po: dataValues.id},
-						});
-
-						const customer = await OrmCustomer.findOne({
-							where: {id: dataValues.id_customer},
 						});
 
 						const itemInSppbIn = poItem.map(async ({dataValues: item}) => {
@@ -122,7 +123,7 @@ const customer_poRouters = router({
 						return {
 							...dataValues,
 							po_item,
-							customer: customer?.dataValues,
+							// customer: customer?.dataValues,
 							isClosed: !po_item.find(e => e.isClosed === false),
 						};
 					},

@@ -39,7 +39,7 @@ export function ScanDetailKanban({
 					created by : {kanban.dataCreatedBy?.name}
 				</div>
 				<div className="flex-1 bg-white text-center">
-					customer : {kanban.dataPo?.customer?.name}
+					customer : {kanban.dataPo?.OrmCustomer?.name}
 				</div>
 			</div>
 			<div className="flex gap-[1px]">
