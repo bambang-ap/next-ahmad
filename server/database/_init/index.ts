@@ -32,7 +32,7 @@ export const ORM = new Sequelize(
 		host: isProd ? PROD_PGSQL_HOST : DEV_PGSQL_HOST,
 		// query: {raw: true},
 		// logging: false,
-		logging: true,
+		logging: isProd ? false : true,
 	},
 );
 
