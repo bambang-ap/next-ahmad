@@ -1,7 +1,7 @@
 import {Includeable, Op} from "sequelize";
 import {z} from "zod";
 
-import {PagingResult, UQtyList} from "@appTypes/app.type";
+import {PagingResult, TMasterItem, UQtyList} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	TCustomer,
@@ -16,6 +16,7 @@ import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
+	OrmMasterItem,
 	OrmPOItemSppbIn,
 } from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
@@ -27,7 +28,7 @@ type GetPage = PagingResult<GetPageRows>;
 type GetPageRows = TCustomerPO & {
 	OrmCustomer?: TCustomer;
 	isClosed?: boolean;
-	po_item: (TPOItem & {isClosed?: boolean})[];
+	po_item: (TPOItem & {OrmMasterItem: TMasterItem} & {isClosed?: boolean})[];
 };
 
 const customer_poRouters = router({
@@ -84,6 +85,7 @@ const customer_poRouters = router({
 						};
 						const poItem = await OrmCustomerPOItem.findAll({
 							where: {id_po: dataValues.id},
+							include: OrmMasterItem,
 						});
 
 						const itemInSppbIn = poItem.map(async ({dataValues: item}) => {
@@ -113,7 +115,7 @@ const customer_poRouters = router({
 							);
 
 							return {
-								...item,
+								...(item as TPOItem & {OrmMasterItem: TMasterItem}),
 								isClosed: !Object.values(closed).includes(false),
 							};
 						});
@@ -123,7 +125,6 @@ const customer_poRouters = router({
 						return {
 							...dataValues,
 							po_item,
-							// customer: customer?.dataValues,
 							isClosed: !po_item.find(e => e.isClosed === false),
 						};
 					},

@@ -157,7 +157,7 @@ export function SppbInModalChild({
 					if (excludedItem.includes(item.id)) {
 						return (
 							<RenderReAddItem Cell={Cell} onClick={() => includeItem(item.id)}>
-								{item.kode_item}
+								{item.OrmMasterItem.kode_item}
 							</RenderReAddItem>
 						);
 					}
@@ -169,7 +169,7 @@ export function SppbInModalChild({
 							<RenderReAddItem
 								Cell={Cell}
 								onClick={() => includeItemEdit(item.id)}>
-								{item.kode_item}
+								{item.OrmMasterItem.kode_item}
 							</RenderReAddItem>
 						);
 					}
@@ -208,8 +208,9 @@ export function SppbInModalChild({
 								defaultValue={selectedSppbItem?.id}
 								fieldName={`po_item.${index}.id`}
 							/>
-							<Cell>{item.kode_item}</Cell>
-							<Cell>{item.name}</Cell>
+
+							<Cell>{item.OrmMasterItem.kode_item}</Cell>
+							<Cell>{item.OrmMasterItem.name}</Cell>
 
 							{qtyList.map(num => {
 								const unit = item[`unit${num}`];
