@@ -81,9 +81,8 @@ const unitQty = {
 
 export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
+	master_item_id: z.string(),
 	id_po: z.string(),
-	name: z.string(),
-	kode_item: z.string().optional(),
 	harga: zDecimal,
 	unit1: tItemUnit,
 	unit2: tItemUnit.nullish(),
@@ -136,7 +135,7 @@ export const tMasterItem = zId.extend({
 
 export type TKategoriMesin = z.infer<typeof tKategoriMesin>;
 export const tKategoriMesin = zId.extend({
-	name: z.string().optional(),
+	name: z.string(),
 });
 
 export type TMesin = z.infer<typeof tMesin>;

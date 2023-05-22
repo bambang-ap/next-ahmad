@@ -14,9 +14,6 @@ const itemRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, search} = input;
 		return checkCredentialV2(ctx, async () => {
-			OrmKategoriMesin.hasMany(OrmMasterItem, {foreignKey: "id"});
-			OrmMasterItem.belongsTo(OrmKategoriMesin, {foreignKey: "kategori_mesin"});
-
 			const {count, rows} = await OrmMasterItem.findAndCountAll({
 				limit,
 				order: [["id", "asc"]],
@@ -27,7 +24,7 @@ const itemRouters = router({
 
 			const data = rows.map(row => {
 				const json = row.toJSON() as TMasterItem & {
-					OrmKategoriMesin: TKategoriMesin;
+					OrmKategoriMesin?: TKategoriMesin;
 				};
 				return json;
 			});

@@ -20,9 +20,8 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_po: {type: STRING},
-			name: {type: STRING},
-			kode_item: STRING,
 			harga: ormDecimalType("harga"),
+			master_item_id: STRING,
 			unit1: STRING,
 			unit2: STRING,
 			unit3: STRING,
