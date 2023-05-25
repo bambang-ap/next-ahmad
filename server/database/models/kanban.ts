@@ -4,7 +4,10 @@ import {TKanban} from "@appTypes/app.zod";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
-export class OrmKanban extends Model<TKanban> {}
+export class OrmKanban extends Model<TKanban> {
+	static _aliasCreatedBy = "dataCreatedBy";
+	static _aliasUpdatedBy = "dataUpdatedBy";
+}
 
 export default function initOrmKanban(sequelize: Sequelize) {
 	OrmKanban.init(
@@ -16,8 +19,9 @@ export default function initOrmKanban(sequelize: Sequelize) {
 			createdBy: DataTypes.STRING,
 			updatedBy: DataTypes.STRING,
 			image: DataTypes.STRING,
-			doc_id: DataTypes.STRING,
+			nomor_kanban: DataTypes.STRING,
 			list_mesin: DataTypes.JSONB,
+			doc_id: DataTypes.STRING,
 		},
 		{
 			sequelize,

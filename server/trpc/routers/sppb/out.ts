@@ -27,6 +27,7 @@ import {appRouter} from "..";
 type GetPage = PagingResult<TCustomerSPPBOut>;
 
 const sppbOutRouters = router({
+	getInvoice: procedure.query(() => genInvoice(OrmCustomerSPPBOut, "SJ/IMI")),
 	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
 		// const routerCaller = appRouter.createCaller(ctx);
 		return checkCredentialV2(
@@ -64,9 +65,6 @@ const sppbOutRouters = router({
 
 			return pagingResult(count, page, limit, allDataSppbIn);
 		});
-	}),
-	getInvoice: procedure.query(() => {
-		return genInvoice(OrmCustomerSPPBOut, "SJ/IMI");
 	}),
 	getFg: procedure.query(({ctx: {req, res}}) => {
 		const routerCaller = appRouter.createCaller({req, res});

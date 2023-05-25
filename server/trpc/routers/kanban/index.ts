@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 import {OrmKanban, OrmKanbanItem, OrmScan} from "@database";
-import {checkCredentialV2} from "@server";
+import {checkCredentialV2, genInvoice} from "@server";
 import {procedure, router} from "@trpc";
 import {TRPCError} from "@trpc/server";
 
@@ -13,6 +13,7 @@ const kanbanRouters = router({
 	...kanbanGet,
 	...kanbanUpsert,
 	...kanbanImage,
+	getInvoice: procedure.query(() => genInvoice(OrmKanban, "KNB/IMI")),
 	delete: procedure
 		.input(z.string().optional())
 		.mutation(async ({input: id, ctx: {req, res}}) => {

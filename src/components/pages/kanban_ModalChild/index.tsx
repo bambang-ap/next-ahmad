@@ -13,9 +13,9 @@ import {
 } from "@components";
 import {useKanban} from "@hooks";
 import {modalTypeParser} from "@utils";
+import {trpc} from "@utils/trpc";
 
 import {RenderItem} from "./RenderItem";
-import {RenderMesin} from "./RenderMesin";
 
 export function KanbanModalChild({
 	control,
@@ -24,24 +24,39 @@ export function KanbanModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const [idCustomer, idSppbIn, tempIdItem, kanbanItems = {}, id_po, modalType] =
-		useWatch({
-			control,
-			name: [
-				"id_customer",
-				"id_sppb_in",
-				"temp_id_item",
-				"items",
-				"id_po",
-				"type",
-			],
-		});
+	const [
+		listMesin = [],
+		idCustomer,
+		idSppbIn,
+		tempIdItem,
+		kanbanItems = {},
+		id_po,
+		modalType,
+	] = useWatch({
+		control,
+		name: [
+			"list_mesin",
+			"id_customer",
+			"id_sppb_in",
+			"temp_id_item",
+			"items",
+			"id_po",
+			"type",
+		],
+	});
 
 	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
+	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
 
 	const {isPreview, isDelete} = modalTypeParser(modalType);
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
+
+	function addMesin() {
+		reset(({list_mesin = [], ...prev}) => {
+			return {...prev, list_mesin: [...list_mesin, ""]};
+		});
+	}
 
 	useEffect(() => {
 		if (tempIdItem) {
@@ -66,6 +81,14 @@ export function KanbanModalChild({
 					control={control}
 					fieldName="keterangan"
 					label="Keterangan"
+				/>
+				<Input
+					disabled
+					className="flex-1"
+					control={control}
+					defaultValue={nomorKanban}
+					fieldName="nomor_kanban"
+					label="Nomor Kanban"
 				/>
 
 				{isPreview ? (
@@ -148,9 +171,24 @@ export function KanbanModalChild({
 				<RenderItem control={control} reset={reset} />
 			</div>
 
-			<div className="max-h-[250px] overflow-y-auto flex flex-col gap-2">
+			{/* <div className="max-h-[250px] overflow-y-auto flex flex-col gap-2">
 				<RenderMesin control={control} reset={reset} />
-			</div>
+			</div> */}
+
+			<Button onClick={addMesin}>Add Mesin</Button>
+
+			{listMesin.map((_mesinId, i) => {
+				return (
+					<>
+						<Select
+							className="flex-1"
+							control={control}
+							fieldName={`list_mesin.${i}`}
+							label="Keterangan"
+						/>
+					</>
+				);
+			})}
 
 			{!isPreview && <Button type="submit">Submit</Button>}
 		</div>
