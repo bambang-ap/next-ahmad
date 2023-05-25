@@ -80,26 +80,27 @@ export const kanbanGet = {
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const routerCaller = appRouter.createCaller(ctx);
 
-		return checkCredentialV2(
-			ctx,
-			async (): Promise<PagingResult<KanbanGetRow>> => {
-				const {limit, page, search} = input;
+		return checkCredentialV2(ctx, async (): Promise<PagingResult<TKanban>> => {
+			const {limit, page, search} = input;
 
-				const {count, rows} = await OrmKanban.findAndCountAll({
-					limit,
-					order: [["id", "asc"]],
-					offset: (page - 1) * limit,
-					where: wherePages("id", search),
-					attributes: ["id"],
-				});
+			const {count, rows} = await OrmKanban.findAndCountAll({
+				limit,
+				order: [["id", "asc"]],
+				offset: (page - 1) * limit,
+				where: wherePages("nomor_kanban", search),
+			});
 
-				const detailedKanban = await Promise.all(
-					rows.map(e => routerCaller.kanban.detail(e.dataValues.id)),
-				);
+			// const detailedKanban = await Promise.all(
+			// 	rows.map(e => routerCaller.kanban.detail(e.dataValues.id)),
+			// );
 
-				return pagingResult(count, page, limit, detailedKanban.filter(Boolean));
-			},
-		);
+			return pagingResult(
+				count,
+				page,
+				limit,
+				rows.map(e => e.dataValues),
+			);
+		});
 	}),
 	get: procedure
 		.input(
@@ -207,7 +208,7 @@ async function parseDetailKanban(
 		...restDataValues,
 		dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
 		get id_customer() {
-			return this.dataPo?.id_customer;
+			return this.OrmCustomerPO?.id_customer;
 		},
 		get items() {
 			return dataItems.reduce<KanbanGetRow["items"]>((ret, e) => {

@@ -2,19 +2,11 @@ import {qtyList} from "@constants";
 import type {RouterOutput} from "@trpc/routers";
 
 import type {
-	TDocument,
-	THardness,
-	THardnessKategori,
-	TInstruksiKanban,
+	TCustomer,
+	TCustomerPO,
 	TKanban,
 	TKanbanUpsert,
-	TMaterial,
-	TMaterialKategori,
-	TMesin,
-	TParameter,
-	TParameterKategori,
 	TScan,
-	TUser,
 } from "./app.zod";
 
 export type {
@@ -83,18 +75,19 @@ export type PagingResult<T> = {
 export type KanbanGetRow = TKanban & {
 	id_customer?: string;
 	items: TKanbanUpsert["items"];
+	OrmCustomerPO?: TCustomerPO & {OrmCustomer: TCustomer};
 	dataSppbIn?: RouterOutput["sppb"]["in"]["get"][number];
-	dataPo?: RouterOutput["customer_po"]["get"][number];
-	docDetail?: TDocument;
-	dataCreatedBy?: TUser;
-	dataUpdatedBy?: TUser;
-	listMesin?: {
-		dataMesin?: TMesin;
-		instruksi: {
-			dataInstruksi?: TInstruksiKanban;
-			parameter: ((TParameter & {kategori?: TParameterKategori}) | undefined)[];
-			material: ((TMaterial & {kategori?: TMaterialKategori}) | undefined)[];
-			hardness: ((THardness & {kategori?: THardnessKategori}) | undefined)[];
-		}[];
-	}[];
+	// dataPo?: RouterOutput["customer_po"]["get"][number];
+	// docDetail?: TDocument;
+	// dataCreatedBy?: TUser;
+	// dataUpdatedBy?: TUser;
+	// listMesin?: {
+	// 	dataMesin?: TMesin;
+	// 	instruksi: {
+	// 		dataInstruksi?: TInstruksiKanban;
+	// 		parameter: ((TParameter & {kategori?: TParameterKategori}) | undefined)[];
+	// 		material: ((TMaterial & {kategori?: TMaterialKategori}) | undefined)[];
+	// 		hardness: ((THardness & {kategori?: THardnessKategori}) | undefined)[];
+	// 	}[];
+	// }[];
 };

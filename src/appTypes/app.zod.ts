@@ -168,7 +168,7 @@ export const tKanban = zId.extend({
 	updatedAt: z.string().optional(),
 	image: z.string().optional().nullish(),
 	doc_id: z.string(),
-	list_mesin: z.record(z.string().array().min(1)),
+	list_mesin: z.record(z.string().min(1).array().min(1)),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;

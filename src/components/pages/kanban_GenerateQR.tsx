@@ -1,4 +1,3 @@
-import {RouterOutput} from "@appTypes/app.type";
 import {Button, RootTable as Table, Text} from "@components";
 import {dateUtils, generatePDF} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -7,13 +6,12 @@ import {qtyList} from "./ModalChild_po";
 
 const {Td, Tr} = Table;
 
-export function KanbanGenerateQR(
-	props: RouterOutput["kanban"]["get"][number] & {
-		className?: string;
-		transform?: boolean;
-		withButton?: boolean;
-	},
-) {
+export function KanbanGenerateQR(props: {
+	idKanban: string;
+	className?: string;
+	transform?: boolean;
+	withButton?: boolean;
+}) {
 	const tagId = `data-${props.id}`;
 
 	const {
@@ -33,6 +31,8 @@ export function KanbanGenerateQR(
 		{input: id},
 		{enabled: !!id},
 	);
+
+	return null;
 
 	return (
 		<>

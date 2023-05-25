@@ -1,6 +1,6 @@
 import {atom, RecoilState} from "recoil";
 
-import {KanbanGetRow} from "@appTypes/app.type";
+import {TKanban} from "@appTypes/app.type";
 import {TableFormValue, TMenu, TScanTarget} from "@appTypes/app.zod";
 import {ScanIds} from "@appTypes/props.type";
 import {ScanTarget} from "@constants";
@@ -53,7 +53,7 @@ export const atomKanbanTableForm = atom<TableFormValue | null>({
 	default: null,
 });
 
-export const atomDataKanban = atom<KanbanGetRow[] | null>({
+export const atomDataKanban = atom<TKanban[] | null>({
 	key: "atomKanbanTableForm",
 	default: null,
 });

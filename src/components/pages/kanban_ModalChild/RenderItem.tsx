@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import {FormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
@@ -34,6 +32,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 		},
 		{enabled: !!id_po},
 	);
+
 	const {data: itemDetails = []} = trpc.kanban.itemDetail.useQuery<
 		any,
 		ItemDetail[]
@@ -50,7 +49,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 			(ret, e) => {
 				qtyList.forEach(num => {
 					const keyQty = `qty${num}` as const;
-					Object.entries(e.items).forEach(([key, val]) => {
+					Object.entries(e.items ?? {}).forEach(([key, val]) => {
 						if (!ret[key]) ret[key] = {};
 						if (!ret[key][keyQty]) ret[key][keyQty] = 0;
 						ret[key][keyQty] += val[keyQty];
@@ -94,7 +93,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 				if (item.id_sppb_in !== idSppbIn) return false;
 
 				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
-				const selectedItem = selectedKanban?.items[id_item];
+				const selectedItem = selectedKanban?.items?.[id_item];
 				const detailItem = itemDetails[index] as ItemDetail;
 
 				return (

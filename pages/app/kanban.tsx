@@ -54,7 +54,6 @@ export default function Kanban() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(async ({type, callbacks, list_mesin = {}, ...rest}) => {
-			return console.log(list_mesin);
 			if (callbacks) callbacks.forEach(callback => callback());
 
 			switch (type) {
@@ -90,34 +89,20 @@ export default function Kanban() {
 		<>
 			<TableFilter
 				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
-				disableSearch
 				form={hookForm}
 				data={dataKanbanPage?.rows}
 				pageCount={dataKanbanPage?.totalPage}
-				header={[
-					"Tanggal",
-					"Doc No",
-					"Nomor PO",
-					"Nomor Surat Jalan",
-					"Customer",
-					"Created By",
-					"Keterangan",
-					"Action",
-				]}
+				header={["Tanggal", "Nomor Kanban", "Keterangan", "Action"]}
 				renderItem={({Cell, item}) => {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					const {dataPo, dataSppbIn, ...rest} = item;
+					const {...rest} = item;
 					return (
 						<>
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
-							<Cell>{item.docDetail?.doc_no}</Cell>
-							<Cell>{item.dataPo?.nomor_po}</Cell>
-							<Cell>{item.dataSppbIn?.nomor_surat}</Cell>
-							<Cell>{item.dataPo?.OrmCustomer?.name}</Cell>
-							<Cell>{item.dataCreatedBy?.name}</Cell>
+							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell className="flex gap-x-2">
-								<KanbanGenerateQR {...item} />
+								<KanbanGenerateQR idKanban={item.id} />
 								<Button
 									icon="faMagnifyingGlass"
 									onClick={() => showModal("preview", rest)}

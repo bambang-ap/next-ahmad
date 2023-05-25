@@ -27,11 +27,18 @@ export function RenderMesin({
 
 	function deleteMesin(index: number) {
 		reset(({list_mesin, ...prev}) => {
+			const asd = list_mesin[idItem]!;
+
+			if (asd.length <= 1) {
+				alert("Minimal ada 1 mesin");
+				return {...prev, list_mesin};
+			}
+
 			return {
 				...prev,
 				list_mesin: {
 					...list_mesin,
-					[idItem]: list_mesin[idItem]!.remove(index),
+					[idItem]: asd.remove(index),
 				},
 			};
 		});

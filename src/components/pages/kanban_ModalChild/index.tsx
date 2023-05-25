@@ -24,21 +24,35 @@ export function KanbanModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const [idCustomer, idSppbIn, tempIdItem, kanbanItems = {}, id_po, modalType] =
-		useWatch({
-			control,
-			name: [
-				"id_customer",
-				"id_sppb_in",
-				"temp_id_item",
-				"items",
-				"id_po",
-				"type",
-			],
-		});
+	const [
+		idKanban,
+		idCustomer,
+		idSppbIn,
+		tempIdItem,
+		kanbanItems = {},
+		id_po,
+		modalType,
+	] = useWatch({
+		control,
+		name: [
+			"id",
+			"id_customer",
+			"id_sppb_in",
+			"temp_id_item",
+			"items",
+			"id_po",
+			"type",
+		],
+	});
 
 	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
 	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
+	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
+		enabled: !!idKanban,
+		onSuccess(r) {
+			reset(prev => ({...prev, ...r}));
+		},
+	});
 
 	const {isPreview, isDelete} = modalTypeParser(modalType);
 
@@ -52,16 +66,21 @@ export function KanbanModalChild({
 					temp_id_item: "",
 					id_sppb_in,
 					items: {...items, [tempIdItem]: {id_sppb_in}} as typeof items,
-					list_mesin: {...list_mesin, [tempIdItem]: [""]} as typeof list_mesin,
+					list_mesin: {
+						...list_mesin,
+						[tempIdItem]: [null],
+					} as typeof list_mesin,
 				};
 			});
 		}
 	}, [tempIdItem]);
 
+	if (!detailKanban) return null;
+
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
 	return (
-		<div className="flex flex-col gap-2">
+		<div key={detailKanban?.id} className="flex flex-col gap-2">
 			<div className="flex gap-2">
 				<Input
 					className="flex-1"
@@ -96,6 +115,7 @@ export function KanbanModalChild({
 
 			<div className="flex gap-2">
 				<Select
+					key={idCustomer}
 					disabled={isPreview}
 					className="flex-1"
 					firstOption="- Pilih Customer -"
