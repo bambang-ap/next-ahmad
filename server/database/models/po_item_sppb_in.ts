@@ -13,6 +13,7 @@ export default function initOrmPOItemSppbIn(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_item: STRING,
+			master_item_id: STRING,
 			id_sppb_in: STRING,
 			...unitQtyField,
 		},

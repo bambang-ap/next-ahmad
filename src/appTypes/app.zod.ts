@@ -96,6 +96,7 @@ export type TPOItemSppbIn = z.infer<typeof tPOItemSppbIn>;
 export const tPOItemSppbIn = zId.extend({
 	id_sppb_in: z.string(),
 	id_item: z.string(),
+	master_item_id: z.string(),
 	...unitQty,
 });
 
@@ -174,6 +175,7 @@ export type TKanbanItem = z.infer<typeof tKanbanItem>;
 export const tKanbanItem = zId.extend({
 	id_kanban: z.string(),
 	id_item: z.string(),
+	master_item_id: z.string(),
 	...unitQty,
 });
 

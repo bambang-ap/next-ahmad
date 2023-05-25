@@ -205,6 +205,13 @@ export function SppbInModalChild({
 								className="hidden"
 								control={control}
 								shouldUnregister
+								defaultValue={item.master_item_id}
+								fieldName={`po_item.${index}.master_item_id`}
+							/>
+							<Input
+								className="hidden"
+								control={control}
+								shouldUnregister
 								defaultValue={selectedSppbItem?.id}
 								fieldName={`po_item.${index}.id`}
 							/>

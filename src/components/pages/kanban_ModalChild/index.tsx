@@ -47,6 +47,11 @@ export function KanbanModalChild({
 
 	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
 	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
+	const {data: itemDetails} = trpc.kanban.itemDetail.useQuery(
+		Object.entries(kanbanItems ?? {}).map(([, item]) => item.master_item_id),
+	);
+
+	console.log(itemDetails);
 
 	const {isPreview, isDelete} = modalTypeParser(modalType);
 

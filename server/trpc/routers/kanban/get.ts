@@ -13,8 +13,7 @@ import {
 	OrmDocument,
 	OrmKanban,
 	OrmKanbanItem,
-	OrmKategoriMesin,
-	OrmMesin,
+	OrmMasterItem,
 	OrmUser,
 	wherePages,
 } from "@database";
@@ -23,7 +22,14 @@ import {procedure} from "@trpc";
 import {appRouter} from "@trpc/routers";
 
 export const kanbanGet = {
-	getDetailKanban: procedure.input(z.string()).query(({ctx, input: id}) => {
+	itemDetail: procedure.input(z.string().array()).query(({ctx, input}) => {
+		console.log({input});
+		return checkCredentialV2(ctx, async () => {
+			const e = await OrmMasterItem.findAll({where: {id: input}});
+			return e.map(item => item.dataValues);
+		});
+	}),
+	detail: procedure.input(z.string()).query(({ctx, input: id}) => {
 		const routerCaller = appRouter.createCaller(ctx);
 
 		return checkCredentialV2(ctx, async (): Promise<KanbanGetRow | null> => {
@@ -59,7 +65,7 @@ export const kanbanGet = {
 				});
 
 				const detailedKanban = await Promise.all(
-					rows.map(e => routerCaller.kanban.getDetailKanban(e.dataValues.id)),
+					rows.map(e => routerCaller.kanban.detail(e.dataValues.id)),
 				);
 
 				return pagingResult(count, page, limit, detailedKanban.filter(Boolean));
@@ -85,9 +91,7 @@ export const kanbanGet = {
 						order: [["createdAt", "asc"]],
 					});
 					const detailedKanban = await Promise.all(
-						dataKanban.map(e =>
-							routerCaller.kanban.getDetailKanban(e.dataValues.id),
-						),
+						dataKanban.map(e => routerCaller.kanban.detail(e.dataValues.id)),
 					);
 
 					return detailedKanban.filter(Boolean);
@@ -187,9 +191,5 @@ async function parseDetailKanban(
 		},
 	};
 
-	const listAvailableMesin = await OrmKategoriMesin.findOne({
-		include: [{model: OrmMesin, as: OrmKategoriMesin._alias}],
-	});
-
-	return {...objectData, listAvailableMesin};
+	return objectData;
 }

@@ -67,6 +67,13 @@ export function RenderItem({control, reset}: RenderItemProps) {
 
 				return (
 					<>
+						<Input
+							className="hidden"
+							control={control}
+							shouldUnregister
+							defaultValue={rowItem?.master_item_id}
+							fieldName={`items.${id_item}.master_item_id`}
+						/>
 						<Cell>{rowItem?.itemDetail?.kode_item}</Cell>
 						<Cell>{rowItem?.itemDetail?.name}</Cell>
 						<Cell>
