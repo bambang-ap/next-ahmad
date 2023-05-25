@@ -1,3 +1,6 @@
+// FIXME:
+// @ts-nocheck
+
 import {FormTypeScan} from "pages/app/scan/[route]";
 import {Control, useWatch} from "react-hook-form";
 

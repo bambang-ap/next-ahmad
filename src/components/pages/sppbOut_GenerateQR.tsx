@@ -1,3 +1,6 @@
+// FIXME:
+// @ts-nocheck
+
 import {PropsWithChildren} from "react";
 
 import {Button, RootTable as Table, Text as Txt, TextProps} from "@components";

@@ -1,3 +1,5 @@
+// @ts-nocheck
+
 import {Button, RootTable as Table, Text} from "@components";
 import {dateUtils, generatePDF} from "@utils";
 import {trpc} from "@utils/trpc";

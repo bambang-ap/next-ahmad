@@ -45,6 +45,8 @@ export function ModalChildMasterItem({
 				fieldName="kategori_mesin"
 				data={selectMapper(data ?? [], "id", "name")}
 			/>
+			{/* FIXME: */}
+			{/* @ts-ignore */}
 			<RenderProcess control={control} reset={reset} />
 			<Button type="submit">Submit</Button>
 		</>

@@ -78,8 +78,6 @@ export const kanbanGet = {
 		});
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const routerCaller = appRouter.createCaller(ctx);
-
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<TKanban>> => {
 			const {limit, page, search} = input;
 
@@ -134,8 +132,7 @@ async function parseDetailKanban(
 	dataValues: TKanban,
 	routerCaller: AppRouterCaller,
 ) {
-	const {id_po, id_sppb_in, createdBy, updatedBy, list_mesin, doc_id} =
-		dataValues;
+	const {id_sppb_in} = dataValues;
 
 	const dataItems = await OrmKanbanItem.findAll({
 		where: {id_kanban: dataValues.id},
@@ -145,63 +142,7 @@ async function parseDetailKanban(
 		where: {id: id_sppb_in},
 	});
 
-	// const listMesin = await Promise.all(
-	// 	list_mesin.map(async mesin => {
-	// 		const dataMesin = await OrmMesin.findOne({
-	// 			where: {id: mesin.id_mesin},
-	// 		});
-
-	// 		const instruksi = mesin.instruksi.map(async instruksi => {
-	// 			const dataInstruksi = await OrmKanbanInstruksi.findOne({
-	// 				where: {id: instruksi.id_instruksi},
-	// 			});
-
-	// 			const parameterData = instruksi.parameter.map(async id => {
-	// 				const data = await OrmParameter.findOne({where: {id}});
-	// 				const kategori = await OrmParameterKategori.findOne({
-	// 					where: {id: data?.dataValues.id_kategori},
-	// 				});
-	// 				return {
-	// 					...data?.dataValues,
-	// 					kategori: kategori?.dataValues,
-	// 				};
-	// 			});
-	// 			const materialData = instruksi.material.map(async id => {
-	// 				const data = await OrmMaterial.findOne({where: {id}});
-	// 				const kategori = await OrmMaterialKategori.findOne({
-	// 					where: {id: data?.dataValues.id_kategori},
-	// 				});
-	// 				return {
-	// 					...data?.dataValues,
-	// 					kategori: kategori?.dataValues,
-	// 				};
-	// 			});
-	// 			const hardnessData = instruksi.hardness.map(async id => {
-	// 				const data = await OrmHardness.findOne({where: {id}});
-	// 				const kategori = await OrmHardnessKategori.findOne({
-	// 					where: {id: data?.dataValues.id_kategori},
-	// 				});
-	// 				return {
-	// 					...data?.dataValues,
-	// 					kategori: kategori?.dataValues,
-	// 				};
-	// 			});
-
-	// 			return {
-	// 				dataInstruksi: dataInstruksi?.dataValues,
-	// 				parameter: await Promise.all(parameterData),
-	// 				material: await Promise.all(materialData),
-	// 				hardness: await Promise.all(hardnessData),
-	// 			};
-	// 		});
-
-	// 		return {
-	// 			dataMesin: dataMesin?.dataValues,
-	// 			instruksi: await Promise.all(instruksi),
-	// 		};
-	// 	}),
-	// );
-
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const {image, ...restDataValues} = dataValues;
 
 	const objectData: KanbanGetRow = {
