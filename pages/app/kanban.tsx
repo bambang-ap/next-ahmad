@@ -53,7 +53,8 @@ export default function Kanban() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(async ({type, callbacks, list_mesin = [], ...rest}) => {
+		handleSubmit(async ({type, callbacks, list_mesin = {}, ...rest}) => {
+			return console.log(list_mesin);
 			if (callbacks) callbacks.forEach(callback => callback());
 
 			switch (type) {

@@ -4,6 +4,8 @@ import {NextPage} from "next";
 import {AppProps} from "next/app";
 import {FieldValues, UseFormReturn} from "react-hook-form";
 
+import {TKategoriMesin, TMasterItem, TMesin} from "./app.type";
+
 export type ErrorMessage = {message: string};
 
 export type AppPropsWithLayout = AppProps & {
@@ -27,3 +29,10 @@ export type FormScreenProps<
 > = Partial<Omit<T, K>> & Pick<T, K>;
 
 export type ScanIds = {key: string; id: string};
+
+export type ItemDetail =
+	| (TMasterItem & {
+			OrmKategoriMesin: TKategoriMesin;
+			availableMesins: TMesin[];
+	  })
+	| undefined;

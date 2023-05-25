@@ -24,53 +24,35 @@ export function KanbanModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const [
-		listMesin = [],
-		idCustomer,
-		idSppbIn,
-		tempIdItem,
-		kanbanItems = {},
-		id_po,
-		modalType,
-	] = useWatch({
-		control,
-		name: [
-			"list_mesin",
-			"id_customer",
-			"id_sppb_in",
-			"temp_id_item",
-			"items",
-			"id_po",
-			"type",
-		],
-	});
+	const [idCustomer, idSppbIn, tempIdItem, kanbanItems = {}, id_po, modalType] =
+		useWatch({
+			control,
+			name: [
+				"id_customer",
+				"id_sppb_in",
+				"temp_id_item",
+				"items",
+				"id_po",
+				"type",
+			],
+		});
 
 	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
 	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
-	const {data: itemDetails} = trpc.kanban.itemDetail.useQuery(
-		Object.entries(kanbanItems ?? {}).map(([, item]) => item.master_item_id),
-	);
-
-	console.log(itemDetails);
 
 	const {isPreview, isDelete} = modalTypeParser(modalType);
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
 
-	function addMesin() {
-		reset(({list_mesin = [], ...prev}) => {
-			return {...prev, list_mesin: [...list_mesin, ""]};
-		});
-	}
-
 	useEffect(() => {
 		if (tempIdItem) {
-			reset(({items, id_sppb_in, ...prevValue}) => {
+			reset(({items, id_sppb_in, list_mesin, ...prevValue}) => {
 				return {
 					...prevValue,
 					temp_id_item: "",
 					id_sppb_in,
 					items: {...items, [tempIdItem]: {id_sppb_in}} as typeof items,
+					list_mesin: {...list_mesin, [tempIdItem]: [""]} as typeof list_mesin,
 				};
 			});
 		}
@@ -154,10 +136,11 @@ export function KanbanModalChild({
 
 				{idSppbIn && (
 					<Select
+						key={tempIdItem}
 						className="flex-1"
 						control={control}
 						fieldName="temp_id_item"
-						label="Item"
+						label="Tambah Item"
 						firstOption="- Tambah Item -"
 						data={selectMapper(
 							selectedSppbIn?.items?.filter(
@@ -175,25 +158,6 @@ export function KanbanModalChild({
 			<div className="max-h-[250px] overflow-y-auto flex flex-col gap-2">
 				<RenderItem control={control} reset={reset} />
 			</div>
-
-			{/* <div className="max-h-[250px] overflow-y-auto flex flex-col gap-2">
-				<RenderMesin control={control} reset={reset} />
-			</div> */}
-
-			<Button onClick={addMesin}>Add Mesin</Button>
-
-			{listMesin.map((_mesinId, i) => {
-				return (
-					<>
-						<Select
-							className="flex-1"
-							control={control}
-							fieldName={`list_mesin.${i}`}
-							label="Keterangan"
-						/>
-					</>
-				);
-			})}
 
 			{!isPreview && <Button type="submit">Submit</Button>}
 		</div>

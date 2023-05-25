@@ -5,15 +5,19 @@ import {
 	KanbanGetRow,
 	PagingResult,
 	TKanban,
+	TMasterItem,
 } from "@appTypes/app.type";
 import {tableFormValue, tKanban} from "@appTypes/app.zod";
+import {ItemDetail} from "@appTypes/props.type";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmDocument,
 	OrmKanban,
 	OrmKanbanItem,
+	OrmKategoriMesin,
 	OrmMasterItem,
+	OrmMesin,
 	OrmUser,
 	wherePages,
 } from "@database";
@@ -22,13 +26,38 @@ import {procedure} from "@trpc";
 import {appRouter} from "@trpc/routers";
 
 export const kanbanGet = {
-	itemDetail: procedure.input(z.string().array()).query(({ctx, input}) => {
-		console.log({input});
-		return checkCredentialV2(ctx, async () => {
-			const e = await OrmMasterItem.findAll({where: {id: input}});
-			return e.map(item => item.dataValues);
-		});
-	}),
+	itemDetail: procedure
+		.input(z.string().or(z.string().array()))
+		.query(({ctx, input}) => {
+			return checkCredentialV2(ctx, async () => {
+				if (!Array.isArray(input)) {
+					const listMasterItem = await OrmMasterItem.findOne({
+						where: {id: input},
+						include: [OrmKategoriMesin],
+					});
+
+					return parseItem(listMasterItem?.dataValues);
+				}
+
+				const listMasterItem = await OrmMasterItem.findAll({
+					where: {id: input},
+					include: [OrmKategoriMesin],
+				});
+
+				return Promise.all(listMasterItem.map(e => parseItem(e.dataValues)));
+
+				async function parseItem(data?: TMasterItem) {
+					const item = data as ItemDetail;
+					const availableMesins = (
+						await OrmMesin.findAll({
+							where: {kategori_mesin: item?.OrmKategoriMesin.id},
+						})
+					).map(e => e.dataValues);
+
+					return {...item, availableMesins};
+				}
+			});
+		}),
 	detail: procedure.input(z.string()).query(({ctx, input: id}) => {
 		const routerCaller = appRouter.createCaller(ctx);
 

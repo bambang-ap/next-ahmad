@@ -11,6 +11,8 @@ import {FormType} from "./ModalChildMasterItem";
 type RenderMesinProps = {
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
+	// control: Control<Pick<FormType, "instruksi">>;
+	// 	reset: UseFormReset<Pick<FormType, "instruksi">>;
 };
 
 export function RenderMesin({control, reset}: RenderMesinProps) {

@@ -3,6 +3,7 @@
 import {FormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
+import {ItemDetail} from "@appTypes/props.type";
 import {Button, Input, Table, Text} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {useKanban} from "@hooks";
@@ -10,6 +11,7 @@ import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {qtyList} from "../ModalChild_po";
+import {RenderMesin} from "./RenderMesin";
 
 type RenderItemProps = {
 	control: Control<FormType>;
@@ -32,6 +34,10 @@ export function RenderItem({control, reset}: RenderItemProps) {
 		},
 		{enabled: !!id_po},
 	);
+	const {data: itemDetails = []} = trpc.kanban.itemDetail.useQuery<
+		any,
+		ItemDetail[]
+	>(Object.entries(kanbanItems ?? {}).map(([, e]) => e.master_item_id));
 
 	const {isPreview, isPreviewEdit} = modalTypeParser(modalType);
 
@@ -55,15 +61,41 @@ export function RenderItem({control, reset}: RenderItemProps) {
 			{},
 		);
 
+	function addMesin(id_item: string) {
+		reset(({list_mesin, ...prev}) => {
+			const e = list_mesin[id_item] ?? [];
+			return {
+				...prev,
+				list_mesin: {...list_mesin, [id_item]: [...e, ""]},
+			};
+		});
+	}
+
 	return (
 		<Table
 			header={["Kode Item", "Nama Item", "Jumlah", "Action"]}
 			data={Object.entries(kanbanItems)}
-			renderItem={({Cell, item: [id_item, item]}) => {
+			renderItemEach={({Cell, item: [id_item]}, index) => {
+				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
+
+				return (
+					<Cell colSpan={4} className="flex flex-col gap-2">
+						<RenderMesin
+							index={index}
+							reset={reset}
+							control={control}
+							masterId={rowItem?.master_item_id}
+							idItem={id_item}
+						/>
+					</Cell>
+				);
+			}}
+			renderItem={({Cell, item: [id_item, item]}, index) => {
 				if (item.id_sppb_in !== idSppbIn) return false;
 
 				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
 				const selectedItem = selectedKanban?.items[id_item];
+				const detailItem = itemDetails[index] as ItemDetail;
 
 				return (
 					<>
@@ -74,8 +106,8 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							defaultValue={rowItem?.master_item_id}
 							fieldName={`items.${id_item}.master_item_id`}
 						/>
-						<Cell>{rowItem?.itemDetail?.kode_item}</Cell>
-						<Cell>{rowItem?.itemDetail?.name}</Cell>
+						<Cell>{detailItem?.kode_item}</Cell>
+						<Cell>{detailItem?.OrmKategoriMesin.name}</Cell>
 						<Cell>
 							<div className="flex gap-2">
 								{qtyList.map(num => {
@@ -119,7 +151,8 @@ export function RenderItem({control, reset}: RenderItemProps) {
 								})}
 							</div>
 						</Cell>
-						<Cell>
+						<Cell className="flex gap-2">
+							<Button onClick={() => addMesin(id_item)}>Add Mesin</Button>
 							{!isPreview && (
 								<Button
 									onClick={() => {
