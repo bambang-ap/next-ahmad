@@ -8,14 +8,15 @@ import {useAdditionalData} from "@hooks";
 
 import {FormType} from "./ModalChildMasterItem";
 
-type RenderMesinProps = {
-	control: Control<FormType>;
-	reset: UseFormReset<FormType>;
-	// control: Control<Pick<FormType, "instruksi">>;
-	// 	reset: UseFormReset<Pick<FormType, "instruksi">>;
+export type ProcessForm = Pick<FormType, "instruksi">;
+export type RenderProcessProps = {
+	// control: Control<FormType>;
+	// reset: UseFormReset<FormType>;
+	control: Control<ProcessForm>;
+	reset: UseFormReset<ProcessForm>;
 };
 
-export function RenderMesin({control, reset}: RenderMesinProps) {
+export function RenderProcess({control, reset}: RenderProcessProps) {
 	const [instruksis = []] = useWatch({
 		control,
 		name: ["instruksi"],

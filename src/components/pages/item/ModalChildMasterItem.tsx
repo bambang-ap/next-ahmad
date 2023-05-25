@@ -9,7 +9,7 @@ import {Button, Input, Select, selectMapper, Text} from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
-import {RenderMesin} from "./RenderProcess";
+import {RenderProcess} from "./RenderProcess";
 
 export type FormType = TMasterItem & {
 	type: ModalTypePreview;
@@ -45,7 +45,7 @@ export function ModalChildMasterItem({
 				fieldName="kategori_mesin"
 				data={selectMapper(data ?? [], "id", "name")}
 			/>
-			<RenderMesin control={control} reset={reset} />
+			<RenderProcess control={control} reset={reset} />
 			<Button type="submit">Submit</Button>
 		</>
 	);

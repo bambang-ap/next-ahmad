@@ -75,12 +75,10 @@ export function KanbanModalChild({
 		}
 	}, [tempIdItem]);
 
-	if (!detailKanban) return null;
-
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
 	return (
-		<div key={detailKanban?.id} className="flex flex-col gap-2">
+		<div key={detailKanban?.id} className="flex flex-col gap-2 max-h-[600px]">
 			<div className="flex gap-2">
 				<Input
 					className="flex-1"
@@ -175,7 +173,7 @@ export function KanbanModalChild({
 				)}
 			</div>
 
-			<div className="max-h-[250px] overflow-y-auto flex flex-col gap-2">
+			<div className="flex-1 overflow-y-auto flex flex-col gap-2">
 				<RenderItem control={control} reset={reset} />
 			</div>
 
