@@ -37,7 +37,6 @@ export default function MasterItem() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(async ({type, id, ...body}) => {
-			return console.log(body);
 			switch (type) {
 				case "add":
 				case "edit":
