@@ -13,6 +13,33 @@ join sequelize:
   });
 ```
 
+```sql
+
+
+
+pg_dump -U postgres --schema-only manajemen > schema.sql
+
+pg_dump --insert --data-only -U postgres -d manajemen \
+-t customer \
+-t document_number \
+-t hardness \
+-t hardness_kategori \
+-t instruksi_kanban \
+-t kendaraan \
+-t material \
+-t material_kategori \
+-t material_kategori \
+-t menu \
+-t mesin \
+-t mesin_kategori \
+-t parameter \
+-t parameter_kategori \
+-t role \
+-t user_pengguna \
+-t user_login > data.sql
+
+```
+
 - Master Mesin -> Dianggap kategori (select distinct by name)
 - Master Item -> Adopsi existing Kanban bagian mesin
 - Master PO
