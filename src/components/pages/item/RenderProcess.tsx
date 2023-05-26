@@ -5,21 +5,21 @@ import {TMasterItem} from "@appTypes/app.type";
 import {Button, Select, selectMapper} from "@components";
 import {defaultInstruksi} from "@constants";
 import {useAdditionalData} from "@hooks";
+import {formData} from "@utils";
 
 import {FormType} from "./ModalChildMasterItem";
 
 export type ProcessForm = Pick<FormType, "instruksi">;
 export type RenderProcessProps = {
-	// control: Control<FormType>;
-	// reset: UseFormReset<FormType>;
+	idKat: string;
 	control: Control<ProcessForm>;
 	reset: UseFormReset<ProcessForm>;
 };
 
-export function RenderProcess({control, reset}: RenderProcessProps) {
+export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 	const [instruksis = []] = useWatch({
 		control,
-		name: ["instruksi"],
+		name: [`instruksi.${idKat}`],
 	});
 
 	const {
@@ -32,7 +32,7 @@ export function RenderProcess({control, reset}: RenderProcessProps) {
 		hardnessData,
 	} = useAdditionalData();
 
-	const instruksiIds = instruksis.map(e => e.id_instruksi);
+	const instruksiIds = instruksis?.map(e => e.id_instruksi) ?? [];
 
 	const dataItemMapper = {
 		material: materialData,
@@ -46,8 +46,8 @@ export function RenderProcess({control, reset}: RenderProcessProps) {
 		material: materialKategori,
 	};
 
-	function updateInstruksi(instruksi: TMasterItem["instruksi"]) {
-		reset(prev => ({...prev, instruksi}));
+	function updateInstruksi(instruksi: TMasterItem["instruksi"][string]) {
+		reset(prev => formData(prev).set(`instruksi.${idKat}`, instruksi));
 	}
 
 	function addInstruksi() {
@@ -109,7 +109,7 @@ export function RenderProcess({control, reset}: RenderProcessProps) {
 										control={control}
 										className="flex-1"
 										label="Proses"
-										fieldName={`instruksi.${ii}.id_instruksi`}
+										fieldName={`instruksi.${idKat}.${ii}.id_instruksi`}
 										data={selectMapper(
 											filteredDataInstruksi ?? [],
 											"id",
@@ -168,7 +168,7 @@ export function RenderProcess({control, reset}: RenderProcessProps) {
 																	className="flex-1"
 																	control={control}
 																	label={`Kategori ${key.ucfirst()}`}
-																	fieldName={`instruksi.${ii}.${key}Kategori.${iii}`}
+																	fieldName={`instruksi.${idKat}.${ii}.${key}Kategori.${iii}`}
 																	data={selectMapper(
 																		kategoriItemMapper[key] ?? [],
 																		"id",
@@ -183,7 +183,7 @@ export function RenderProcess({control, reset}: RenderProcessProps) {
 																className="flex-1"
 																control={control}
 																label={key.ucfirst()}
-																fieldName={`instruksi.${ii}.${key}.${iii}`}
+																fieldName={`instruksi.${idKat}.${ii}.${key}.${iii}`}
 															/>
 															<Button
 																onClick={() => removeItem(key, iii)}

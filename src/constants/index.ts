@@ -2,7 +2,7 @@ import {Breakpoint, TextFieldProps} from "@mui/material";
 import type {OrderItem} from "sequelize";
 import {z} from "zod";
 
-import {AppRouter, TKanban, TScanTarget} from "@appTypes/app.type";
+import {AppRouter, TMasterItem, TScanTarget} from "@appTypes/app.type";
 import {TRPCClientError} from "@trpc/client";
 
 export * from "./colors";
@@ -38,18 +38,15 @@ export const formatFullView = `${formatDateView} - ${formatHour}`;
 export const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,100})?$/;
 export const decimalSchema = z.string().regex(decimalRegex); //.transform(Number);
 
-// FIXME:
-// @ts-ignore
-export const defaultInstruksi: TKanban["list_mesin"][number]["instruksi"][number] =
-	{
-		hardness: [""],
-		id_instruksi: "",
-		material: [""],
-		parameter: [""],
-		hardnessKategori: [""],
-		parameterKategori: [""],
-		materialKategori: [""],
-	};
+export const defaultInstruksi: TMasterItem["instruksi"][string][number] = {
+	hardness: [""],
+	id_instruksi: "",
+	material: [""],
+	parameter: [""],
+	hardnessKategori: [""],
+	parameterKategori: [""],
+	materialKategori: [""],
+};
 
 export const defaultTextFieldProps: TextFieldProps = {
 	// InputLabelProps: { shrink: true },

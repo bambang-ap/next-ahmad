@@ -84,7 +84,7 @@ export default function MasterItem() {
 						return (
 							<>
 								<Cell>{index + 1}</Cell>
-								<Cell>{item?.OrmKategoriMesin?.name}</Cell>
+								<Cell>{item.nameMesins.join(", ")}</Cell>
 								<Cell>{name}</Cell>
 								<Cell>{kode_item}</Cell>
 								<Cell className="flex gap-x-2">

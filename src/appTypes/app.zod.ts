@@ -118,20 +118,24 @@ export type TMasterItem = z.infer<typeof tMasterItem>;
 export const tMasterItem = zId.extend({
 	name: z.string().optional(),
 	kode_item: z.string().optional(),
-	kategori_mesin: z.string(),
-	instruksi: z
-		.object({
-			id_instruksi: z.string().min(1),
-			hardness: z.string().min(1).array().min(1),
-			hardnessKategori: z.string().min(1).array().min(1),
-			material: z.string().min(1).array().min(1),
-			materialKategori: z.string().array().optional(),
-			// materialKategori: z.string().min(1).array().min(1).optional(),
-			parameter: z.string().min(1).array().min(1),
-			parameterKategori: z.string().min(1).array().min(1),
-		})
-		.array()
-		.min(1),
+	// FIXME: Remove
+	kategori_mesin: z.string().nullish(),
+	kategori_mesinn: z.string().array(),
+	instruksi: z.record(
+		z
+			.object({
+				id_instruksi: z.string().min(1),
+				hardness: z.string().min(1).array().min(1),
+				hardnessKategori: z.string().min(1).array().min(1),
+				material: z.string().min(1).array().min(1),
+				materialKategori: z.string().array().optional(),
+				// materialKategori: z.string().min(1).array().min(1).optional(),
+				parameter: z.string().min(1).array().min(1),
+				parameterKategori: z.string().min(1).array().min(1),
+			})
+			.array()
+			.min(1),
+	),
 });
 
 export type TKategoriMesin = z.infer<typeof tKategoriMesin>;

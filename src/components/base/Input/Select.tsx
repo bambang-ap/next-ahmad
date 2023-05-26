@@ -27,7 +27,7 @@ export type SelectProps = {
 
 export const Select = withReactFormController(SelectComponent);
 
-export function selectMapper<T extends {}>(
+export function selectMapper<T extends FieldValues>(
 	data: T[],
 	value: FieldPath<T>,
 	label?: FieldPath<T>,

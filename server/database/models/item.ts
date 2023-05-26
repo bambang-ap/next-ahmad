@@ -1,4 +1,4 @@
-import {DataTypes, JSONB, Model, Sequelize, STRING} from "sequelize";
+import {ARRAY, DataTypes, JSONB, Model, Sequelize, STRING} from "sequelize";
 
 import {TMasterItem} from "@appTypes/app.zod";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
@@ -13,6 +13,7 @@ export default function initOrmMasterItem(sequelize: Sequelize) {
 			name: {type: DataTypes.STRING},
 			kode_item: {type: DataTypes.STRING},
 			instruksi: JSONB,
+			kategori_mesinn: ARRAY(STRING),
 			kategori_mesin: STRING,
 		},
 		{

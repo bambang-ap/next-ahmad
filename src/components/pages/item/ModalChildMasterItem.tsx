@@ -7,6 +7,7 @@ import {
 } from "@appTypes/app.type";
 import {Button, Input, Select, selectMapper, Text} from "@components";
 import {CRUD_ENABLED} from "@enum";
+import {formData} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {RenderProcess} from "./RenderProcess";
@@ -25,7 +26,10 @@ export function ModalChildMasterItem({
 	const {data} = trpc.basic.get.useQuery<any, TKategoriMesin[]>({
 		target: CRUD_ENABLED.MESIN_KATEGORI,
 	});
-	const modalType = useWatch({control, name: "type"});
+	const [modalType, kategoriMesin = []] = useWatch({
+		control,
+		name: ["type", "kategori_mesinn"],
+	});
 
 	if (modalType === "delete") {
 		return (
@@ -40,14 +44,53 @@ export function ModalChildMasterItem({
 		<>
 			<Input control={control} fieldName="name" />
 			<Input control={control} fieldName="kode_item" />
-			<Select
-				control={control}
-				fieldName="kategori_mesin"
-				data={selectMapper(data ?? [], "id", "name")}
-			/>
-			{/* FIXME: */}
-			{/* @ts-ignore */}
-			<RenderProcess control={control} reset={reset} />
+
+			<Button
+				onClick={() =>
+					reset(prev =>
+						formData(prev).set("kategori_mesinn", [
+							...(prev.kategori_mesinn ?? []),
+							"",
+						]),
+					)
+				}>
+				Add
+			</Button>
+
+			{kategoriMesin?.map((kategori, i) => {
+				return (
+					<div key={kategori} className="flex gap-2">
+						<div className="flex items-start w-1/6 gap-2">
+							<Select
+								key={kategori}
+								control={control}
+								className="flex-1"
+								fieldName={`kategori_mesinn.${i}`}
+								data={selectMapper(data ?? [], "id", "name").filter(
+									e => e.value === kategori || !kategoriMesin.includes(e.value),
+								)}
+							/>
+							<Button
+								onClick={() =>
+									reset(prev => {
+										delete prev.instruksi[prev.kategori_mesinn[i]!];
+										return formData(prev).set(
+											"kategori_mesinn",
+											prev.kategori_mesinn.remove(i),
+										);
+									})
+								}>
+								Delete
+							</Button>
+						</div>
+						<div className="flex-1">
+							{/* @ts-ignore */}
+							<RenderProcess idKat={kategori} control={control} reset={reset} />
+						</div>
+					</div>
+				);
+			})}
+
 			<Button type="submit">Submit</Button>
 		</>
 	);

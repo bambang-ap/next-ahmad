@@ -1,19 +1,15 @@
 import {z} from "zod";
 
-import {
-	tableFormValue,
-	TKategoriMesin,
-	TMasterItem,
-	tMasterItem,
-	zId,
-} from "@appTypes/app.zod";
+import {tableFormValue, TMasterItem, tMasterItem, zId} from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {OrmKategoriMesin, OrmMasterItem, wherePages} from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
-type Y = TMasterItem & {
-	OrmKategoriMesin?: TKategoriMesin;
+
+type GetItem = TMasterItem & {
+	nameMesins: string[];
 };
+
 const itemRouters = router({
 	detail: procedure.input(z.string()).query(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
@@ -22,7 +18,7 @@ const itemRouters = router({
 				include: [OrmKategoriMesin],
 			});
 
-			return item?.toJSON() as Y;
+			return item?.toJSON() as GetItem;
 		});
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
@@ -33,15 +29,20 @@ const itemRouters = router({
 				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
 				where: wherePages([""], search),
-				include: [OrmKategoriMesin],
 			});
 
-			const data = rows.map(row => {
-				const json = row.toJSON() as Y;
-				return json;
+			const data = rows.map(async row => {
+				const json = row.toJSON() as GetItem;
+				const listMesinKategori = await OrmKategoriMesin.findAll({
+					where: {id: json.kategori_mesinn},
+				});
+				return {
+					...json,
+					nameMesins: listMesinKategori.map(e => e.dataValues.name),
+				};
 			});
 
-			return pagingResult(count, page, limit, data);
+			return pagingResult(count, page, limit, await Promise.all(data));
 		});
 	}),
 

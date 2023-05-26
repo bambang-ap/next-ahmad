@@ -2,7 +2,10 @@ import {ReactNode} from "react";
 
 import classnames from "clsx";
 import jsPDF from "jspdf";
+import clone from "just-clone";
 import moment from "moment";
+import objectPath from "object-path";
+import {FieldPath, FieldValues} from "react-hook-form";
 
 import {ModalTypePreview, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
@@ -132,6 +135,21 @@ export function generatePDF(id: string, filename = "a4") {
 			document.save(`${filename}.pdf`);
 		},
 	});
+}
+
+export function formData<T extends FieldValues, P extends FieldPath<T>>(
+	obj: T,
+) {
+	return {
+		get(path: P) {
+			return objectPath.get(obj, path);
+		},
+		set(path: P, value: T[P]) {
+			const clonedObj = clone(obj);
+			objectPath.set(clonedObj, path, value);
+			return clonedObj;
+		},
+	};
 }
 
 function convertDate(date?: string) {
