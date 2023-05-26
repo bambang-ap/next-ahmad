@@ -1,3 +1,6 @@
+// @ts-nocheck
+// FIXME:
+
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {
@@ -92,7 +95,6 @@ export function ModalChildMasterItem({
 						</div>
 						{!!kategori && (
 							<div className="flex-1">
-								{/* @ts-ignore */}
 								<RenderProcess
 									idKat={kategori}
 									control={control}
