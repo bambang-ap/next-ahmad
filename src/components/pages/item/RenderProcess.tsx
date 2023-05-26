@@ -17,10 +17,12 @@ export type RenderProcessProps = {
 };
 
 export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
-	const [instruksis = []] = useWatch({
+	const [instruksiObj = {}] = useWatch({
 		control,
-		name: [`instruksi.${idKat}`],
+		name: [`instruksi`],
 	});
+
+	const instruksis = instruksiObj[idKat] ?? [];
 
 	const {
 		dataInstruksi,
@@ -47,7 +49,10 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 	};
 
 	function updateInstruksi(instruksi: TMasterItem["instruksi"][string]) {
-		reset(prev => formData(prev).set(`instruksi.${idKat}`, instruksi));
+		reset(prev => {
+			const newData = formData(prev).set(`instruksi.${idKat}`, instruksi);
+			return newData;
+		});
 	}
 
 	function addInstruksi() {

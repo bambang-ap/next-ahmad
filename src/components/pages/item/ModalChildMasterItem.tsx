@@ -7,7 +7,7 @@ import {
 } from "@appTypes/app.type";
 import {Button, Input, Select, selectMapper, Text} from "@components";
 import {CRUD_ENABLED} from "@enum";
-import {formData} from "@utils";
+import {classNames, formData} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {RenderProcess} from "./RenderProcess";
@@ -54,13 +54,17 @@ export function ModalChildMasterItem({
 						]),
 					)
 				}>
-				Add
+				Add Kategori Mesin
 			</Button>
 
 			{kategoriMesin?.map((kategori, i) => {
 				return (
 					<div key={kategori} className="flex gap-2">
-						<div className="flex items-start w-1/6 gap-2">
+						<div
+							className={classNames("flex items-start gap-2", {
+								"w-1/6": !!kategori,
+								"flex-1": !kategori,
+							})}>
 							<Select
 								key={kategori}
 								control={control}
@@ -73,6 +77,9 @@ export function ModalChildMasterItem({
 							<Button
 								onClick={() =>
 									reset(prev => {
+										prev.instruksi = prev.instruksi ?? {
+											[prev.kategori_mesinn[i]!]: [],
+										};
 										delete prev.instruksi[prev.kategori_mesinn[i]!];
 										return formData(prev).set(
 											"kategori_mesinn",
@@ -83,10 +90,16 @@ export function ModalChildMasterItem({
 								Delete
 							</Button>
 						</div>
-						<div className="flex-1">
-							{/* @ts-ignore */}
-							<RenderProcess idKat={kategori} control={control} reset={reset} />
-						</div>
+						{!!kategori && (
+							<div className="flex-1">
+								{/* @ts-ignore */}
+								<RenderProcess
+									idKat={kategori}
+									control={control}
+									reset={reset}
+								/>
+							</div>
+						)}
 					</div>
 				);
 			})}
