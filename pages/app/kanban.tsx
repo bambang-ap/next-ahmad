@@ -82,6 +82,8 @@ export default function Kanban() {
 	}
 
 	useEffect(() => {
+		// FIXME:
+		// @ts-ignore
 		if (!!dataKanbanPage) setKanbanTableForm(dataKanbanPage?.rows);
 	}, useEffectDeps);
 

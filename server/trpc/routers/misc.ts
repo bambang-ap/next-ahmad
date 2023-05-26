@@ -11,7 +11,9 @@ const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
 	now: procedure.query(getNow),
-	generateId: procedure.query(generateId),
+	generateId: procedure
+		.input(z.string().optional())
+		.query(({input}) => generateId(input)),
 	qr: procedure
 		.input(
 			qrInput.or(
