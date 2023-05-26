@@ -6,6 +6,7 @@ import {
 	PagingResult,
 	TKanban,
 	TMasterItem,
+	TMesin,
 } from "@appTypes/app.type";
 import {tableFormValue, tKanban} from "@appTypes/app.zod";
 import {ItemDetail} from "@appTypes/props.type";
@@ -26,6 +27,12 @@ import {procedure} from "@trpc";
 import {appRouter} from "@trpc/routers";
 
 export const kanbanGet = {
+	availableMesins: procedure.input(z.string()).query(({ctx, input}) => {
+		return checkCredentialV2(ctx, async (): Promise<TMesin[]> => {
+			const mesins = await OrmMesin.findAll({where: {kategori_mesin: input}});
+			return mesins.map(e => e.dataValues);
+		});
+	}),
 	itemDetail: procedure
 		.input(z.string().or(z.string().array()))
 		.query(({ctx, input}) => {

@@ -165,7 +165,7 @@ export const tKanban = zId.extend({
 	id_po: z.string(),
 	nomor_kanban: z.string(),
 	id_sppb_in: z.string(),
-	keterangan: z.string().optional(),
+	keterangan: z.string().nullish(),
 	createdBy: z.string(),
 	updatedBy: z.string(),
 	createdAt: z.string().optional(),

@@ -56,16 +56,6 @@ export function RenderItem({control, reset}: RenderItemProps) {
 			{},
 		);
 
-	function addMesin(id_item: string) {
-		reset(({list_mesin, ...prev}) => {
-			const e = list_mesin[id_item] ?? [];
-			return {
-				...prev,
-				list_mesin: {...list_mesin, [id_item]: [...e, ""]},
-			};
-		});
-	}
-
 	return (
 		<Table
 			header={["Kode Item", "Nama Item", "Jumlah", "Action"]}
@@ -100,7 +90,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							defaultValue={rowItem?.master_item_id}
 							fieldName={`items.${id_item}.master_item_id`}
 						/>
-						<Asd m={rowItem?.master_item_id} Cell={Cell} />
+						<DetailItem idItem={rowItem?.master_item_id} Cell={Cell} />
 						<Cell>
 							<div className="flex gap-2">
 								{qtyList.map(num => {
@@ -145,7 +135,6 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							</div>
 						</Cell>
 						<Cell className="flex gap-2">
-							<Button onClick={() => addMesin(id_item)}>Add Mesin</Button>
 							{!isPreview && (
 								<Button
 									onClick={() => {
@@ -169,13 +158,13 @@ export function RenderItem({control, reset}: RenderItemProps) {
 	);
 }
 
-function Asd({m, Cell}: {m: string; Cell: Cells}) {
-	const {data} = trpc.item.detail.useQuery(m);
+function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells}) {
+	const {data} = trpc.item.detail.useQuery(idItem);
 
 	return (
 		<>
 			<Cell>{data?.kode_item}</Cell>
-			<Cell>{data?.nameMesins.join(", ")}</Cell>
+			<Cell>{data?.name}</Cell>
 		</>
 	);
 }
