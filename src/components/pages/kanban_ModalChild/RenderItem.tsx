@@ -3,7 +3,6 @@
 import {FormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
-import {ItemDetail} from "@appTypes/props.type";
 import {Button, Input, Table, Text} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {useKanban} from "@hooks";
@@ -34,11 +33,6 @@ export function RenderItem({control, reset}: RenderItemProps) {
 		},
 		{enabled: !!id_po},
 	);
-
-	const {data: itemDetails = []} = trpc.kanban.itemDetail.useQuery<
-		any,
-		ItemDetail[]
-	>(Object.entries(kanbanItems ?? {}).map(([, e]) => e.master_item_id));
 
 	const {isPreview, isPreviewEdit} = modalTypeParser(modalType);
 
@@ -91,12 +85,11 @@ export function RenderItem({control, reset}: RenderItemProps) {
 					</Cell>
 				);
 			}}
-			renderItem={({Cell, item: [id_item, item]}, index) => {
+			renderItem={({Cell, item: [id_item, item]}) => {
 				if (item.id_sppb_in !== idSppbIn) return false;
 
 				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
 				const selectedItem = selectedKanban?.items?.[id_item];
-				const detailItem = itemDetails[index] as ItemDetail;
 
 				return (
 					<>
@@ -107,8 +100,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							defaultValue={rowItem?.master_item_id}
 							fieldName={`items.${id_item}.master_item_id`}
 						/>
-						<Cell>{detailItem?.kode_item}</Cell>
-						<Cell>{detailItem?.OrmKategoriMesin.name}</Cell>
+						<Asd m={rowItem?.master_item_id} Cell={Cell} />
 						<Cell>
 							<div className="flex gap-2">
 								{qtyList.map(num => {
@@ -174,5 +166,16 @@ export function RenderItem({control, reset}: RenderItemProps) {
 				);
 			}}
 		/>
+	);
+}
+
+function Asd({m, Cell}: {m: string; Cell: Cells}) {
+	const {data} = trpc.item.detail.useQuery(m);
+
+	return (
+		<>
+			<Cell>{data?.kode_item}</Cell>
+			<Cell>{data?.nameMesins.join(", ")}</Cell>
+		</>
 	);
 }

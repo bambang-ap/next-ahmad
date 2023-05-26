@@ -136,6 +136,7 @@ async function parseDetailKanban(
 
 	const dataItems = await OrmKanbanItem.findAll({
 		where: {id_kanban: dataValues.id},
+		include: [OrmMasterItem],
 	});
 	const dataSppbIn = await routerCaller.sppb.in.get({
 		type: "sppb_in",
@@ -152,13 +153,13 @@ async function parseDetailKanban(
 			return this.OrmCustomerPO?.id_customer;
 		},
 		get items() {
-			return dataItems.reduce<KanbanGetRow["items"]>((ret, e) => {
+			return dataItems.reduce((ret, e) => {
 				ret[e.dataValues.id_item] = {
 					...e.dataValues,
 					id_sppb_in: this.dataSppbIn?.id,
 				};
 				return ret;
-			}, {});
+			}, {} as KanbanGetRow["items"]);
 		},
 	};
 

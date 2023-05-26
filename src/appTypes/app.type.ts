@@ -6,6 +6,7 @@ import type {
 	TCustomerPO,
 	TKanban,
 	TKanbanUpsert,
+	TMasterItem,
 	TScan,
 } from "./app.zod";
 
@@ -74,7 +75,7 @@ export type PagingResult<T> = {
 
 export type KanbanGetRow = TKanban & {
 	id_customer?: string;
-	items: TKanbanUpsert["items"];
+	items: TKanbanUpsert["items"] & {OrmMasterItem: TMasterItem};
 	OrmCustomerPO?: TCustomerPO & {OrmCustomer: TCustomer};
 	dataSppbIn?: RouterOutput["sppb"]["in"]["get"][number];
 	// dataPo?: RouterOutput["customer_po"]["get"][number];

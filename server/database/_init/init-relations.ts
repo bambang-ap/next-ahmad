@@ -6,6 +6,7 @@ import {OrmCustomerPOItem} from "../models/customer_po_item";
 import {OrmDocument} from "../models/document";
 import {OrmMasterItem} from "../models/item";
 import {OrmKanban} from "../models/kanban";
+import {OrmKanbanItem} from "../models/kanban_item";
 import {OrmMesin} from "../models/mesin";
 import {OrmKategoriMesin} from "../models/mesin_kategori";
 import {OrmUser} from "../models/user";
@@ -47,6 +48,7 @@ export function initRelations() {
 		"kategori_mesin",
 		OrmKategoriMesin._alias,
 	);
+	relation(OrmMasterItem, OrmKanbanItem, "id", "master_item_id");
 	relation(OrmCustomer, OrmCustomerPO, "id", "id_customer");
 	relation(OrmCustomerPO, OrmKanban, "id", "id_po");
 	relation(OrmDocument, OrmKanban, "id", "doc_id");

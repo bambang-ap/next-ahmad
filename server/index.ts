@@ -106,9 +106,9 @@ export async function checkCredentialV2<T>(
 	return callback(session);
 }
 
-export function generateId() {
+export function generateId(id?: string) {
 	const now = moment();
-	return classNames(now.format("YY MM DD"), uuid().slice(-4)).replace(
+	return classNames(id, now.format("YY MM DD"), uuid().slice(-4)).replace(
 		/\s/g,
 		"",
 	);

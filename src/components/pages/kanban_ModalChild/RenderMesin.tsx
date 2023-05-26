@@ -84,6 +84,8 @@ export function RenderMesin({
 function Asd({itemDetail}: {itemDetail: ItemDetail}) {
 	const {control, reset} = useForm<ProcessForm>();
 
+	console.log(itemDetail);
+
 	useEffect(() => {
 		if (!!itemDetail?.instruksi) reset({instruksi: itemDetail.instruksi});
 	}, [!!itemDetail?.instruksi]);
