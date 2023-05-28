@@ -22,6 +22,7 @@ import {
 import {classNames} from "@utils";
 
 export type InputProps = {
+	byPassValue?: string;
 	hidden?: boolean;
 	placeholder?: string;
 	label?: string;
@@ -39,12 +40,13 @@ export type InputProps = {
 
 export const Input = withReactFormController(InputComponent);
 
-function InputComponent<F extends FieldValues>(
+export function InputComponent<F extends FieldValues>(
 	props: ControlledComponentProps<F, InputProps>,
 ) {
 	let restProps: MyObject<any> = {};
 	const theme = useTheme();
 	const {
+		byPassValue,
 		hidden,
 		type = "text",
 		label: labelProps,
@@ -198,7 +200,7 @@ function InputComponent<F extends FieldValues>(
 							},
 						}}
 						placeholder={placeholder}
-						value={value ?? ""}
+						value={byPassValue ?? value ?? ""}
 						onChange={onChangeEvent}
 						InputProps={{
 							endAdornment,

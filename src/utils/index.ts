@@ -129,11 +129,14 @@ export function generatePDF(id: string, filename = "a4") {
 	const doc = new jsPDF({unit: "mm", orientation: "p", format: paperA4});
 	const element = document.getElementById(id)!;
 
-	doc.html(element, {
-		html2canvas: {scale: paperA4[0] / element.clientWidth},
-		callback(document) {
-			document.save(`${filename}.pdf`);
-		},
+	return new Promise<void>(resolve => {
+		doc.html(element, {
+			html2canvas: {scale: paperA4[0] / element.clientWidth},
+			async callback(document) {
+				await document.save(`${filename}.pdf`, {returnPromise: true});
+				resolve();
+			},
+		});
 	});
 }
 

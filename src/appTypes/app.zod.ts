@@ -185,7 +185,7 @@ export const tKanbanItem = zId.extend({
 
 /** key property of items is id_item */
 const tKanbanUpsertItem = tKanbanItem
-	.extend({id_sppb_in: z.string().nullish()})
+	.extend({id_sppb_in: z.string().nullish(), OrmMasterItem: tMasterItem})
 	.partial({id: true, id_kanban: true});
 
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;

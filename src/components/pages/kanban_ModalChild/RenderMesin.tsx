@@ -44,7 +44,7 @@ export function RenderMesin(props: RenderMesinProps) {
 	);
 }
 
-function RenderKategori({
+export function RenderKategori({
 	index,
 	katMesin,
 	itemDetail,

@@ -152,7 +152,7 @@ export function KanbanModalChild({
 					/>
 				)}
 
-				{idSppbIn && (
+				{!isPreview && idSppbIn && (
 					<Select
 						key={tempIdItem}
 						className="flex-1"

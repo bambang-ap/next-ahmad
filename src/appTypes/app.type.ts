@@ -4,10 +4,11 @@ import type {RouterOutput} from "@trpc/routers";
 import type {
 	TCustomer,
 	TCustomerPO,
+	TDocument,
 	TKanban,
 	TKanbanUpsert,
-	TMasterItem,
 	TScan,
+	TUser,
 } from "./app.zod";
 
 export type {
@@ -75,13 +76,14 @@ export type PagingResult<T> = {
 
 export type KanbanGetRow = TKanban & {
 	id_customer?: string;
-	items: TKanbanUpsert["items"] & {OrmMasterItem: TMasterItem};
+	items: TKanbanUpsert["items"];
 	OrmCustomerPO?: TCustomerPO & {OrmCustomer: TCustomer};
+	OrmDocument?: TDocument;
 	dataSppbIn?: RouterOutput["sppb"]["in"]["get"][number];
 	// dataPo?: RouterOutput["customer_po"]["get"][number];
 	// docDetail?: TDocument;
-	// dataCreatedBy?: TUser;
-	// dataUpdatedBy?: TUser;
+	dataCreatedBy?: TUser;
+	dataUpdatedBy?: TUser;
 	// listMesin?: {
 	// 	dataMesin?: TMesin;
 	// 	instruksi: {

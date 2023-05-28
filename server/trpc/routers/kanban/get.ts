@@ -95,10 +95,6 @@ export const kanbanGet = {
 				where: wherePages("nomor_kanban", search),
 			});
 
-			// const detailedKanban = await Promise.all(
-			// 	rows.map(e => routerCaller.kanban.detail(e.dataValues.id)),
-			// );
-
 			return pagingResult(
 				count,
 				page,
@@ -151,7 +147,8 @@ async function parseDetailKanban(
 	});
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	const {image, ...restDataValues} = dataValues;
+	// const {image, ...restDataValues} = dataValues;
+	const {...restDataValues} = dataValues;
 
 	const objectData: KanbanGetRow = {
 		...restDataValues,
@@ -161,6 +158,7 @@ async function parseDetailKanban(
 		},
 		get items() {
 			return dataItems.reduce((ret, e) => {
+				// @ts-ignore
 				ret[e.dataValues.id_item] = {
 					...e.dataValues,
 					id_sppb_in: this.dataSppbIn?.id,

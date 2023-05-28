@@ -9,6 +9,7 @@ import {
 	withReactFormController,
 } from "@formController";
 
+import {InputComponent} from ".";
 import {FormContext} from "../Form";
 
 export type SelectPropsData<T extends string = string> = {
@@ -62,7 +63,20 @@ function SelectComponent<F extends FieldValues>({
 
 	const label = !noLabel && (labelProps || name);
 
+	const isDisabled = formContext?.disabled ?? disabled;
 	const selectedValue = data.find(e => e.value === value);
+
+	if (isDisabled) {
+		return (
+			<InputComponent
+				byPassValue={selectedValue?.label}
+				noLabel={noLabel}
+				label={label as string}
+				controller={controller}
+				className={className}
+			/>
+		);
+	}
 
 	return (
 		<div className={className}>
@@ -70,7 +84,7 @@ function SelectComponent<F extends FieldValues>({
 				disableClearable={disableClear}
 				disablePortal
 				options={data}
-				disabled={formContext?.disabled ?? disabled}
+				disabled={isDisabled}
 				defaultValue={selectedValue}
 				onChange={(_, option) => onChange(option?.value)}
 				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}

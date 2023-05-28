@@ -22,6 +22,7 @@ export type ModalProps = {
 	visible?: boolean;
 	renderFooter?: false | (() => JSX.Element);
 	size?: DialogProps["maxWidth"];
+	onVisibleChange?: (visible: boolean) => void;
 };
 
 export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
@@ -31,6 +32,7 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	const {
 		children,
 		title,
+		onVisibleChange,
 		renderFooter,
 		visible: initVisible = false,
 		size: modalSize,
@@ -52,7 +54,14 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 		},
 	};
 
-	useImperativeHandle(ref, () => ({visible, show, hide}), [visible]);
+	useImperativeHandle(
+		ref,
+		() => {
+			onVisibleChange?.(visible);
+			return {visible, show, hide};
+		},
+		[visible],
+	);
 
 	if (!visible) return null;
 
