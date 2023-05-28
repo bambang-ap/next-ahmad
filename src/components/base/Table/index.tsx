@@ -3,12 +3,12 @@ import {FC, Fragment, useEffect} from "react";
 import {Pagination, TableCellProps} from "@mui/material";
 import {useForm, UseFormReturn} from "react-hook-form";
 
-import {TableFormValue} from "@appTypes/app.type";
+import {PagingResult, TableFormValue} from "@appTypes/app.type";
 import {Button, Input, Select, SelectPropsData} from "@components";
 import {defaultLimit} from "@constants";
 import {classNames} from "@utils";
 
-import RootTable from "./RootTable";
+import TableRoot from "./TableRoot";
 
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
 
@@ -26,39 +26,38 @@ export type TableProps<T, Cell = {}> = {
 
 export type TableFilterProps<T> = Omit<
 	TableProps<T, Cells>,
-	"bottomComponent"
+	"bottomComponent" | "data"
 > & {
+	data?: PagingResult<T>;
 	form: UseFormReturn<TableFormValue>;
-	pageCount?: number;
 	disableSearch?: boolean;
 };
 
-export {RootTable};
+export {TableRoot as RootTable};
 
 export function TableFilter<T>({
+	data,
 	form,
 	className,
 	topComponent,
-	pageCount = 1,
 	disableSearch,
 	...props
 }: TableFilterProps<T>) {
 	const {control, watch, setValue} = form;
+	const {rows = [], totalPage: pageCount = 1} = data ?? {};
+
 	const {
-		control: searchControl,
 		reset,
 		handleSubmit,
-	} = useForm({
-		defaultValues: {search: ""},
-	});
-	const formValue = watch();
+		control: searchControl,
+	} = useForm({defaultValues: {search: ""}});
 
+	const formValue = watch();
+	const searching = formValue.search && formValue.search.length > 0;
 	const selectData = Array.from({length: 10}).map<SelectPropsData>((_, i) => ({
 		// @ts-ignore
 		value: (i + 1) * defaultLimit,
 	}));
-
-	const searching = formValue.search && formValue.search.length > 0;
 
 	const doSearch = handleSubmit(({search}) => {
 		setValue("search", search);
@@ -83,6 +82,7 @@ export function TableFilter<T>({
 	return (
 		<Table
 			{...props}
+			data={rows}
 			className={classNames("flex flex-col gap-2", className)}
 			topComponent={
 				<div className="px-2 flex justify-between">
@@ -141,48 +141,47 @@ export function Table<T>(props: TableProps<T, Cells>) {
 
 	if (!data) return null;
 
+	const {TBody, THead, Td, Tr} = TableRoot;
+
 	return (
 		<div className={classNames("w-full", className)}>
 			{topComponent}
-			<RootTable>
+			<TableRoot>
 				{header && (
-					<RootTable.THead>
-						<RootTable.Tr>
+					<THead>
+						<Tr>
 							{header.map(head => {
 								if (!head) return null;
-								if (typeof head === "string")
-									return <RootTable.Td key={head}>{head}</RootTable.Td>;
+								if (typeof head === "string") return <Td key={head}>{head}</Td>;
 
 								const [title, colSpan] = head;
 								return (
-									<RootTable.Td colSpan={colSpan} key={title}>
+									<Td colSpan={colSpan} key={title}>
 										{title}
-									</RootTable.Td>
+									</Td>
 								);
 							})}
-						</RootTable.Tr>
-					</RootTable.THead>
+						</Tr>
+					</THead>
 				)}
-				<RootTable.TBody>
+				<TBody>
 					{data.mmap((item, index) => {
-						const itemWithCell = {...item, Cell: RootTable.Td};
+						const itemWithCell = {...item, Cell: Td};
 						const renderEach = renderItemEach?.(itemWithCell, index);
 						const renderItemRow = renderItem?.(itemWithCell, index);
 
 						return (
 							<Fragment key={index}>
-								<RootTable.Tr className={classNames({hidden: !renderItemRow})}>
+								<Tr className={classNames({hidden: !renderItemRow})}>
 									{renderItemRow}
-								</RootTable.Tr>
+								</Tr>
 
-								{renderEach && renderItemEach && (
-									<RootTable.Tr>{renderEach}</RootTable.Tr>
-								)}
+								{renderEach && renderItemEach && <Tr>{renderEach}</Tr>}
 							</Fragment>
 						);
 					})}
-				</RootTable.TBody>
-			</RootTable>
+				</TBody>
+			</TableRoot>
 			{bottomComponent}
 		</div>
 	);

@@ -75,9 +75,8 @@ export default function SPPBIN() {
 	return (
 		<>
 			<TableFilter
+				data={data}
 				form={hookForm}
-				data={data?.rows}
-				pageCount={data?.totalPage}
 				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
 				header={[
 					"Tanggal Surat Jalan",

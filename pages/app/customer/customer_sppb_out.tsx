@@ -57,9 +57,8 @@ export default function SPPBOUT() {
 	return (
 		<>
 			<TableFilter
+				data={data}
 				form={hookForm}
-				data={data?.rows}
-				pageCount={data?.totalPage}
 				header={["Nomor Surat", "Kendaraan", "Customer", "Action"]}
 				topComponent={
 					<Button

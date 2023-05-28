@@ -90,11 +90,10 @@ export default function Kanban() {
 	return (
 		<>
 			<TableFilter
-				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
 				form={hookForm}
-				data={dataKanbanPage?.rows}
-				pageCount={dataKanbanPage?.totalPage}
+				data={dataKanbanPage}
 				header={["Tanggal", "Nomor Kanban", "Keterangan", "Action"]}
+				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
 				renderItem={({Cell, item}) => {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const {...rest} = item;

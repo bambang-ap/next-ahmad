@@ -91,9 +91,8 @@ const RenderPage = ({path}: {path: string}) => {
 			<div className="overflow-x-auto w-full">
 				<TableFilter
 					form={hookForm}
+					data={dataTable}
 					header={table?.header}
-					data={dataTable?.rows ?? []}
-					pageCount={dataTable?.totalPage}
 					topComponent={
 						<>
 							<Button onClick={() => showModal("add", {})}>Add</Button>

@@ -71,9 +71,8 @@ export default function MasterItem() {
 			</Modal>
 			<div className="overflow-x-auto w-full">
 				<TableFilter
+					data={data}
 					form={hookForm}
-					data={data?.rows}
-					pageCount={data?.totalPage}
 					header={["Nomor", "Nama Mesin", "Nama Item", "Kode Item", "Action"]}
 					topComponent={
 						<Button onClick={() => showModal("add", {})}>Add</Button>

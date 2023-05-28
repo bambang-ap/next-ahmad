@@ -29,15 +29,15 @@ const StyledCell = ({
 	);
 };
 
-const Table = Object.assign(RootTable, {
+const Table = Object.assign(TableRoot, {
 	THead: TableHead,
 	TBody: TableBody,
 	Tr: TableRow,
 	Td: StyledCell,
 });
 
-RootTable.displayName = "Table";
-function RootTable({children, ...rest}: TableProps) {
+TableRoot.displayName = "Table";
+function TableRoot({children, ...rest}: TableProps) {
 	return (
 		<TableContainer component={Paper}>
 			<TableMUI {...rest}>{children}</TableMUI>
