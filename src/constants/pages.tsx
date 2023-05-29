@@ -88,11 +88,19 @@ export const allowedPages: Record<string, AllowedPages> = {
 		enumName: CRUD_ENABLED.DOCUMENT,
 		searchKey: "doc_no",
 		table: {
-			header: ["Dibuat Pada", "Dirubah Pada", "Name", "Keterangan", "Action"],
+			header: [
+				"Dibuat Pada",
+				"Dirubah Pada",
+				"Tanggal Efektif",
+				"Name",
+				"Keterangan",
+				"Action",
+			],
 			get body(): Body<TDocument> {
 				return [
 					item => dateUtils.full(item.createdAt)!,
 					item => dateUtils.full(item.updatedAt)!,
+					item => dateUtils.date(item.tgl_efektif)!,
 					"doc_no",
 					"keterangan",
 				];
@@ -102,6 +110,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 			get add(): FieldForm<TDocument>[] {
 				return [
 					{col: "doc_no", label: "Document Number"},
+					{col: "tgl_efektif", label: "Document Number", type: "date"},
 					{col: "keterangan", label: "Keterangan"},
 				];
 			},

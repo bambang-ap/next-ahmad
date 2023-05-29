@@ -11,6 +11,7 @@ export default function initOrmDocument(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			doc_no: {type: DataTypes.STRING},
+			tgl_efektif: {type: DataTypes.STRING},
 			keterangan: {type: DataTypes.STRING},
 		},
 		{

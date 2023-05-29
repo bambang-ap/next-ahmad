@@ -286,6 +286,7 @@ export const tParameterKategori = zId.extend({
 export type TDocument = z.infer<typeof tDocument>;
 export const tDocument = zId.extend({
 	doc_no: z.string(),
+	tgl_efektif: z.string(),
 	keterangan: z.string().optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
