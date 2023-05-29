@@ -3,7 +3,9 @@
 
 import {PropsWithChildren} from "react";
 
+import {TInstruksiKanban} from "@appTypes/app.type";
 import {Button, RootTable as Table, Text as Txt, TextProps} from "@components";
+import {CRUD_ENABLED} from "@enum";
 import {useSppbOut} from "@hooks";
 import {dateUtils, generatePDF, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -54,8 +56,8 @@ export function SPPBOutGenerateQR(props: {
 	const {
 		id,
 		withButton = true,
-		// className = "",
-		className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
 
 	const {dataFg} = useSppbOut();
@@ -66,6 +68,8 @@ export function SPPBOutGenerateQR(props: {
 	// );
 
 	const {data: detail} = trpc.sppb.out.getDetail.useQuery(id, {enabled: !!id});
+
+	const doc = dataFg?.[0]?.kanban.OrmDocument;
 
 	function showPdf() {
 		generatePDF(tagId, "sppb_out");
@@ -91,12 +95,14 @@ export function SPPBOutGenerateQR(props: {
 									<img alt="" src="/assets/iso.png" />
 								</div>
 								<div className="flex gap-4 flex-1">
-									<Section title="No. Dok">IMI/FORM/PPC/01-04</Section>
-									<Section title="Tgl Efektif">2 Oktober 2020</Section>
+									<Section title="No. Dok">{doc?.doc_no}</Section>
 								</div>
+								<Section title="Tgl Efektif">
+									{dateUtils.date(doc?.tgl_efektif)}
+								</Section>
 								<div className="flex gap-4 flex-1">
-									<Section title="Revisi">00</Section>
-									<Section title="Terbit">A</Section>
+									<Section title="Revisi">{doc?.revisi}</Section>
+									<Section title="Terbit">{doc?.terbit}</Section>
 								</div>
 							</div>
 						</div>
@@ -150,13 +156,16 @@ export function SPPBOutGenerateQR(props: {
 																selectedSppbIn?.kanban.dataSppbIn?.items?.find(
 																	eItem => eItem.id === id_item,
 																) ?? {};
+															const kanban = selectedSppbIn?.kanban;
+															const masterItem =
+																kanban?.items[id_item]?.OrmMasterItem;
 															return (
 																<>
 																	<Tr>
 																		<Td>{index + 1}</Td>
 																		{/* FIXME: */}
 																		{/* @ts-ignore */}
-																		<Td>{itemDetail?.name}</Td>
+																		<Td>{masterItem?.name}</Td>
 																		{qtyMap(({num, qtyKey, unitKey}) => {
 																			return (
 																				<Td key={num}>
@@ -164,26 +173,20 @@ export function SPPBOutGenerateQR(props: {
 																				</Td>
 																			);
 																		})}
-																		<Td>
-																			{
-																				selectedSppbIn?.kanban.dataSppbIn
-																					?.lot_no
-																			}
-																		</Td>
+																		<Td>{kanban.dataSppbIn?.lot_no}</Td>
 																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
-																		<Td>
-																			{selectedSppbIn?.kanban.dataPo?.nomor_po}
-																		</Td>
+																		<Td>{kanban?.OrmCustomerPO?.nomor_po}</Td>
 																		<Td className="flex-col gap-2">
-																			{selectedSppbIn?.kanban.listMesin?.map(
-																				m => {
-																					return m.instruksi.map(ins => (
-																						<Text key={ins.dataInstruksi?.id}>
-																							{ins.dataInstruksi?.name}
-																						</Text>
-																					));
-																				},
-																			)}
+																			{masterItem?.kategori_mesinn?.map(m => {
+																				return masterItem.instruksi[m].map(
+																					ins => (
+																						<DetailProcess
+																							key={ins.id_instruksi}
+																							id={ins.id_instruksi}
+																						/>
+																					),
+																				);
+																			})}
 																		</Td>
 																	</Tr>
 																</>
@@ -214,4 +217,13 @@ export function SPPBOutGenerateQR(props: {
 			</div>
 		</>
 	);
+}
+
+function DetailProcess({id}: {id: string}) {
+	const {data} = trpc.basic.get.useQuery<any, TInstruksiKanban[]>({
+		target: CRUD_ENABLED.INSTRUKSI_KANBAN,
+		where: {id},
+	});
+
+	return <Text>{data?.[0]?.name}</Text>;
 }

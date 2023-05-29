@@ -92,7 +92,9 @@ export const allowedPages: Record<string, AllowedPages> = {
 				"Dibuat Pada",
 				"Dirubah Pada",
 				"Tanggal Efektif",
-				"Name",
+				"Nomor Dokumen",
+				"Revisi",
+				"Terbit",
 				"Keterangan",
 				"Action",
 			],
@@ -102,6 +104,8 @@ export const allowedPages: Record<string, AllowedPages> = {
 					item => dateUtils.full(item.updatedAt)!,
 					item => dateUtils.date(item.tgl_efektif)!,
 					"doc_no",
+					"revisi",
+					"terbit",
 					"keterangan",
 				];
 			},
@@ -112,6 +116,8 @@ export const allowedPages: Record<string, AllowedPages> = {
 					{col: "doc_no", label: "Document Number"},
 					{col: "tgl_efektif", label: "Document Number", type: "date"},
 					{col: "keterangan", label: "Keterangan"},
+					{col: "revisi", label: "Revisi"},
+					{col: "terbit", label: "Terbit"},
 				];
 			},
 			get edit() {

@@ -9,6 +9,7 @@ import {OrmKanban} from "../models/kanban";
 import {OrmKanbanItem} from "../models/kanban_item";
 import {OrmMesin} from "../models/mesin";
 import {OrmKategoriMesin} from "../models/mesin_kategori";
+import {OrmPOItemSppbIn} from "../models/po_item_sppb_in";
 import {OrmUser} from "../models/user";
 
 function relation<M extends object, B extends object>(
@@ -40,6 +41,7 @@ function relation<M extends object, B extends object>(
 
 export function initRelations() {
 	relation(OrmMasterItem, OrmCustomerPOItem, "id", "master_item_id");
+	relation(OrmMasterItem, OrmKanbanItem, "id", "master_item_id");
 	relation(OrmKategoriMesin, OrmMasterItem, "id", "kategori_mesin");
 	relation(
 		OrmKategoriMesin,
@@ -48,9 +50,10 @@ export function initRelations() {
 		"kategori_mesin",
 		OrmKategoriMesin._alias,
 	);
-	relation(OrmMasterItem, OrmKanbanItem, "id", "master_item_id");
 	relation(OrmCustomer, OrmCustomerPO, "id", "id_customer");
 	relation(OrmCustomerPO, OrmKanban, "id", "id_po");
+	relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "id_item");
+	relation(OrmPOItemSppbIn, OrmKanbanItem, "id", "id_item");
 	relation(OrmDocument, OrmKanban, "id", "doc_id");
 	relation(OrmUser, OrmKanban, "id", [
 		["createdBy", OrmKanban._aliasCreatedBy],

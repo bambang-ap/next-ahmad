@@ -241,7 +241,9 @@ export const tCustomerSPPBOut = zId.extend({
 				.object({
 					id_sppb_in: z.string(),
 					// customer_no_lot: z.string(),
-					items: z.record(tKanbanUpsertItem.omit({id_item: true})),
+					items: z.record(
+						tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
+					),
 				})
 				.array(),
 		})
@@ -287,6 +289,8 @@ export type TDocument = z.infer<typeof tDocument>;
 export const tDocument = zId.extend({
 	doc_no: z.string(),
 	tgl_efektif: z.string(),
+	revisi: z.string().nullish(),
+	terbit: z.string().nullish(),
 	keterangan: z.string().optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),

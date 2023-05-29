@@ -232,6 +232,7 @@ export function SppbOutModalChild({
 								selectedSppbIn?.kanban.items ?? {},
 							);
 							const lot_no = selectedSppbIn?.kanban?.dataSppbIn?.lot_no;
+
 							return (
 								<>
 									<div className="flex gap-2 items-center">
@@ -275,6 +276,7 @@ export function SppbOutModalChild({
 										</Button>
 									</div>
 									{listItems.map(([id_item, item]) => {
+										const masterItemDetail = item.OrmMasterItem;
 										const detail =
 											selectedSppbIn?.kanban.dataSppbIn?.items?.find(
 												e => e.id === id_item,
@@ -282,9 +284,18 @@ export function SppbOutModalChild({
 
 										return (
 											<div key={id_item} className="flex items-center gap-2">
+												<Input
+													control={control}
+													className="hidden"
+													defaultValue={masterItemDetail.id}
+													fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
+												/>
 												{/* FIXME:  */}
 												{/* @ts-ignore */}
-												<Text className="flex-1">{detail?.name}</Text>
+												<Text className="flex-1">{masterItemDetail?.name}</Text>
+												<Text className="flex-1">
+													{masterItemDetail?.kode_item}
+												</Text>
 												{qtyMap(({qtyKey, unitKey, num}) => {
 													const jumlah = item[qtyKey];
 
@@ -292,12 +303,14 @@ export function SppbOutModalChild({
 
 													return (
 														<Input
-															className="flex-1 bg-white"
 															key={jumlah}
-															label={`Qty ${num}`}
 															type="decimal"
+															className="flex-1 bg-white"
+															label={`Qty ${num}`}
 															// @ts-ignore
 															defaultValue={jumlah}
+															rightAcc={<Text>{detail?.[unitKey]}</Text>}
+															fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
 															control={control}
 															rules={{
 																max: {
@@ -305,8 +318,6 @@ export function SppbOutModalChild({
 																	message: `max is ${jumlah}`,
 																},
 															}}
-															rightAcc={<Text>{detail?.[unitKey]}</Text>}
-															fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
 														/>
 													);
 												})}
