@@ -56,8 +56,8 @@ export function SPPBOutGenerateQR(props: {
 	const {
 		id,
 		withButton = true,
-		className = "",
-		// className = "h-0 overflow-hidden -z-10 fixed",
+		// className = "",
+		className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
 
 	const {dataFg} = useSppbOut();
@@ -173,7 +173,7 @@ export function SPPBOutGenerateQR(props: {
 																				</Td>
 																			);
 																		})}
-																		<Td>{kanban.dataSppbIn?.lot_no}</Td>
+																		<Td>{kanban?.dataSppbIn?.lot_no}</Td>
 																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
 																		<Td>{kanban?.OrmCustomerPO?.nomor_po}</Td>
 																		<Td className="flex-col gap-2">
