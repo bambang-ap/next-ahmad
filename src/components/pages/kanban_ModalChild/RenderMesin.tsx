@@ -71,6 +71,7 @@ export function RenderKategori({
 			<Select
 				className={classNames("w-1/6", {"mt-4": !!hasSelected})}
 				fieldName={name}
+				label="Mesin"
 				control={parentProps.control}
 				data={selectMapper(availableMesins, "id", "nomor_mesin")}
 			/>
