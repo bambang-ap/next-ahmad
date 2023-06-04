@@ -1,5 +1,6 @@
-import {useRef} from "react";
+import {FormEventHandler, useRef} from "react";
 
+import {MutateOptions} from "@tanstack/react-query";
 import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
 
 import {ModalTypePreview, TCustomerSPPBOut} from "@appTypes/app.type";
@@ -31,24 +32,31 @@ export default function SPPBOUT() {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {formValue, hookForm} = useTableFilter();
-	const {control, watch, reset, handleSubmit} = useForm<FormValue>();
-	const {mutate} = trpc.sppb.out.upsert.useMutation();
+	const {control, watch, reset, handleSubmit, clearErrors} =
+		useForm<FormValue>();
+	const {mutate: mutateUpsert} = trpc.sppb.out.upsert.useMutation();
+	const {mutate: mutateDelete} = trpc.sppb.out.delete.useMutation();
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
 	const [modalType] = watch(["type"]);
 	const {modalTitle, isPreview} = modalTypeParser(modalType);
 
-	const submit = handleSubmit(values => {
-		// return console.log(values);
-		mutate(values, {
-			...defaultErrorMutation,
-			onSuccess() {
-				refetch();
-				modalRef.current?.hide();
-			},
-		});
-	});
+	const submit: FormEventHandler<HTMLFormElement> = e => {
+		e.preventDefault();
+		clearErrors();
+		handleSubmit(({type, ...values}) => {
+			const callbackOpt: MutateOptions<any, any, any> = {
+				...defaultErrorMutation,
+				onSuccess() {
+					refetch();
+					modalRef.current?.hide();
+				},
+			};
 
+			if (type === "delete") mutateDelete({id: values.id}, callbackOpt);
+			else mutateUpsert(values, callbackOpt);
+		})();
+	};
 	function showModal({type, ...rest}: Partial<FormValue>) {
 		reset({...rest, type});
 		modalRef.current?.show();
@@ -102,9 +110,9 @@ export default function SPPBOUT() {
 			/>
 			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<Form
-					className="flex flex-col gap-2 max-h-[600px] overflow-y-auto"
 					onSubmit={submit}
-					context={{disabled: isPreview, hideButton: isPreview}}>
+					context={{disabled: isPreview, hideButton: isPreview}}
+					className="flex flex-col gap-2 max-h-[600px] overflow-y-auto">
 					<SppbOutModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>

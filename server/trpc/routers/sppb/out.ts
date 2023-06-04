@@ -9,6 +9,7 @@ import {
 	TCustomerSPPBOut,
 	tCustomerSPPBOut,
 	TScan,
+	zId,
 } from "@appTypes/app.zod";
 import {
 	OrmCustomer,
@@ -126,6 +127,13 @@ const sppbOutRouters = router({
 				return {message: "Success"};
 			});
 		}),
+	delete: procedure.input(zId).mutation(({ctx: {req, res}, input}) => {
+		return checkCredentialV2({req, res}, async () => {
+			await OrmCustomerSPPBOut.destroy({where: input});
+
+			return {message: "Success"};
+		});
+	}),
 });
 
 export default sppbOutRouters;
