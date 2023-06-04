@@ -195,6 +195,7 @@ export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban
 	.partial({id: true, doc_id: true, createdBy: true, updatedBy: true})
 	.extend({
+		id_customer: z.string(),
 		items: z.record(tKanbanUpsertItem),
 	});
 
@@ -237,20 +238,25 @@ export const tCustomerSPPBOut = zId.extend({
 	date: z.string(),
 	id_kendaraan: z.string(),
 	id_customer: z.string(),
-	po: z
-		.object({
-			id_po: z.string(),
-			sppb_in: z
-				.object({
-					id_sppb_in: z.string(),
-					// customer_no_lot: z.string(),
-					items: z.record(
-						tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
-					),
-				})
-				.array(),
-		})
-		.array(),
+	po:
+		// z.tuple([
+		// id_customer
+		// z.string(),
+		z
+			.object({
+				id_po: z.string(),
+				sppb_in: z
+					.object({
+						id_sppb_in: z.string(),
+						// customer_no_lot: z.string(),
+						items: z.record(
+							tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
+						),
+					})
+					.array(),
+			})
+			.array(),
+	// ]),
 });
 
 export type TMaterial = z.infer<typeof tMaterial>;
@@ -329,6 +335,7 @@ export const tScanItem = z.object({
 export type TScan = z.infer<typeof tScan>;
 export const tScan = zId.extend({
 	...tScanItem.shape,
+	id_customer: z.string(),
 	lot_no_imi: z.string().min(1),
 	id_kanban: z.string(),
 	status_produksi: z.boolean().optional(),

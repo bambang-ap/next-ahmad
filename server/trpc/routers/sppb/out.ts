@@ -66,14 +66,15 @@ const sppbOutRouters = router({
 			return pagingResult(count, page, limit, allDataSppbIn);
 		});
 	}),
-	getFg: procedure.query(({ctx: {req, res}}) => {
-		const routerCaller = appRouter.createCaller({req, res});
+	getFg: procedure
+		.input(z.string().optional())
+		.query(({input, ctx: {req, res}}) => {
+			type YY = TScan & {kanban: KanbanGetRow};
+			const routerCaller = appRouter.createCaller({req, res});
 
-		return checkCredentialV2(
-			{req, res},
-			async (): Promise<(TScan & {kanban: KanbanGetRow})[]> => {
+			return checkCredentialV2({req, res}, async (): Promise<YY[]> => {
 				const dataScan = await OrmScan.findAll({
-					where: {status_finish_good: true},
+					where: {status_finish_good: true, id_customer: input},
 				});
 
 				const dataScanPromise = dataScan.map(async ({dataValues}) => {
@@ -85,10 +86,34 @@ const sppbOutRouters = router({
 					return {...dataValues, kanban: {...kanban!}};
 				});
 
-				return Promise.all(dataScanPromise);
-			},
-		);
-	}),
+				const promisedData = await Promise.all(dataScanPromise);
+
+				return promisedData.reduce((ret, cur) => {
+					const index = ret.findIndex(
+						e => e.kanban.id_sppb_in === cur.kanban.id_sppb_in,
+					);
+
+					if (index < 0) ret.push(cur);
+					else {
+						const prevItems = ret[index]?.kanban.items;
+						const nextItems = cur.kanban.items;
+						const prevListMesin = ret[index]?.kanban.list_mesin;
+						const nextListMesin = cur.kanban.list_mesin;
+						ret[index] = {
+							...ret[index],
+							...cur,
+							kanban: {
+								...cur.kanban,
+								items: {...prevItems, ...nextItems},
+								list_mesin: {...prevListMesin, ...nextListMesin},
+							},
+						};
+					}
+
+					return ret;
+				}, [] as YY[]);
+			});
+		}),
 	upsert: procedure
 		.input(tCustomerSPPBOut.partial({id: true}))
 		.mutation(({ctx: {req, res}, input}) => {

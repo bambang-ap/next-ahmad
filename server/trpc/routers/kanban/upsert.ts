@@ -30,7 +30,11 @@ export const kanbanUpsert = {
 				await OrmScan.findOrCreate({
 					where: {id_kanban: createdKanban.dataValues.id},
 					// @ts-ignore
-					defaults: {id_kanban: createdKanban.dataValues.id, id: generateId()},
+					defaults: {
+						id: generateId(),
+						id_customer: input.id_customer,
+						id_kanban: createdKanban.dataValues.id,
+					},
 				});
 
 				const itemPromises = Object.entries(kanban_items)?.map(

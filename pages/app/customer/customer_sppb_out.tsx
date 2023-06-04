@@ -119,10 +119,11 @@ export function SppbOutModalChild({
 	reset: UseFormReset<FormValue>;
 	control: Control<FormValue>;
 }) {
-	const {dataCustomer, dataFg, dataKendaraan, invoiceId} = useSppbOut();
-
 	const formData = useWatch({control});
 
+	const {dataCustomer, dataFg, dataKendaraan, invoiceId} = useSppbOut(
+		formData.id_customer,
+	);
 	const {isDelete} = modalTypeParser(formData.type);
 
 	const selectedCustomer = dataCustomer.find(
@@ -131,6 +132,7 @@ export function SppbOutModalChild({
 	const availableSppbIn = dataFg.filter(
 		e => !!formData?.po?.find(y => y.id_po === e.kanban?.id_po),
 	);
+
 	const dataAvailablePo = selectMapper(
 		dataFg.filter(
 			e => e.kanban.dataSppbIn?.detailPo?.id_customer === formData.id_customer,
@@ -185,6 +187,13 @@ export function SppbOutModalChild({
 			</Button>
 
 			{formData.po?.map((po, i) => {
+				const availablePo = dataAvailablePo.filter(
+					e =>
+						e.value === formData.po![i]!.id_po ||
+						!formData.po!.map(y => y.id_po).includes(e.value),
+				);
+				const availablePoMap = new Map(availablePo.map(u => [u.value, u]));
+
 				return (
 					<>
 						<div className="flex gap-2">
@@ -194,11 +203,7 @@ export function SppbOutModalChild({
 								label="PO"
 								control={control}
 								fieldName={`po.${i}.id_po`}
-								data={dataAvailablePo.filter(
-									e =>
-										e.value === formData.po![i]!.id_po ||
-										!formData.po!.map(y => y.id_po).includes(e.value),
-								)}
+								data={[...availablePoMap.values()]}
 							/>
 
 							<Button
@@ -228,10 +233,24 @@ export function SppbOutModalChild({
 							const selectedSppbIn = availableSppbIn.find(
 								e => sppb?.id_sppb_in === e.kanban?.dataSppbIn?.id,
 							);
+
 							const listItems = Object.entries(
 								selectedSppbIn?.kanban.items ?? {},
 							);
 							const lot_no = selectedSppbIn?.kanban?.dataSppbIn?.lot_no;
+
+							const availableSJ = selectMapper(
+								availableSppbIn,
+								"kanban.dataSppbIn.id",
+								"kanban.dataSppbIn.nomor_surat",
+							).filter(
+								e =>
+									e.value === po.sppb_in?.[ii]?.id_sppb_in ||
+									!po.sppb_in?.map(y => y.id_sppb_in).includes(e.value),
+							);
+							const availableSJMap = new Map(
+								availableSJ.map(u => [u.value, u]),
+							);
 
 							return (
 								<>
@@ -242,15 +261,7 @@ export function SppbOutModalChild({
 											key={`${formData.id_customer}${formData.po?.[i]?.id_po}`}
 											fieldName={`po.${i}.sppb_in.${ii}.id_sppb_in`}
 											label="Surat Jalan Masuk"
-											data={selectMapper(
-												availableSppbIn,
-												"kanban.dataSppbIn.id",
-												"kanban.dataSppbIn.nomor_surat",
-											).filter(
-												e =>
-													e.value === po.sppb_in?.[ii]?.id_sppb_in ||
-													!po.sppb_in?.map(y => y.id_sppb_in).includes(e.value),
-											)}
+											data={[...availableSJMap.values()]}
 										/>
 										<div className="flex flex-col">
 											{/* <Input control={control} fieldName={`po.${i}.sppb_in.${ii}.customer_no_lot`} /> */}
@@ -287,7 +298,7 @@ export function SppbOutModalChild({
 												<Input
 													control={control}
 													className="hidden"
-													defaultValue={masterItemDetail.id}
+													defaultValue={masterItemDetail?.id}
 													fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
 												/>
 												{/* FIXME:  */}

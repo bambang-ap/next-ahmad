@@ -14,6 +14,7 @@ export default function initOrmScan(sequelize: Sequelize) {
 			lot_no_imi: DataTypes.STRING,
 			status_produksi: DataTypes.BOOLEAN,
 			status_qc: DataTypes.BOOLEAN,
+			id_customer: DataTypes.BOOLEAN,
 			status_finish_good: DataTypes.BOOLEAN,
 			status_out_barang: DataTypes.BOOLEAN,
 			item_finish_good: DataTypes.JSON,
