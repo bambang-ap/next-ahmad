@@ -26,6 +26,7 @@ import {z} from "zod";
 import {appRouter} from "..";
 
 type GetPage = PagingResult<TCustomerSPPBOut>;
+type YY = TScan & {kanban: KanbanGetRow};
 
 const sppbOutRouters = router({
 	getInvoice: procedure.query(() => genInvoice(OrmCustomerSPPBOut, "SJ/IMI")),
@@ -69,11 +70,10 @@ const sppbOutRouters = router({
 	}),
 	getFg: procedure
 		.input(z.string().optional())
-		.query(({input, ctx: {req, res}}) => {
-			type YY = TScan & {kanban: KanbanGetRow};
+		.query(({input, ctx: {req, res}}): Promise<YY[]> => {
 			const routerCaller = appRouter.createCaller({req, res});
 
-			return checkCredentialV2({req, res}, async (): Promise<YY[]> => {
+			return checkCredentialV2({req, res}, async () => {
 				const dataScan = await OrmScan.findAll({
 					where: {status_finish_good: true, id_customer: input},
 				});

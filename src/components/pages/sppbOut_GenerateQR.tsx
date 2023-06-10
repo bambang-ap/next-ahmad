@@ -5,6 +5,7 @@ import {PropsWithChildren} from "react";
 
 import {TInstruksiKanban} from "@appTypes/app.type";
 import {Button, RootTable as Table, Text as Txt, TextProps} from "@components";
+import {IMIConst} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {useSppbOut} from "@hooks";
 import {dateUtils, generatePDF, qtyMap} from "@utils";
@@ -56,11 +57,9 @@ export function SPPBOutGenerateQR(props: {
 	const {
 		id,
 		withButton = true,
-		// className = "",
-		className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
-
-	const {dataFg} = useSppbOut();
 
 	// const {data: qrImage} = trpc.qr.useQuery<any, string>(
 	// 	{input: id},
@@ -68,6 +67,7 @@ export function SPPBOutGenerateQR(props: {
 	// );
 
 	const {data: detail} = trpc.sppb.out.getDetail.useQuery(id, {enabled: !!id});
+	const {dataFg} = useSppbOut(detail?.id_customer);
 
 	const doc = dataFg?.[0]?.kanban.OrmDocument;
 
@@ -84,11 +84,11 @@ export function SPPBOutGenerateQR(props: {
 					<div className="flex flex-col gap-2 p-4 border border-black">
 						<div className="flex justify-between">
 							<div className="flex flex-1 flex-col">
-								<Text className="font-extrabold">PT. INDOHEAT METAL INTI</Text>
-								<Text>Jl. Desa Anggadita, Kec. Klari</Text>
-								<Text>Karawang, Jawa Barat 41371</Text>
-								<Section title="Phone">(0267) 432168</Section>
-								<Section title="Fax">(0267) 432268</Section>
+								<Text className="font-extrabold">{IMIConst.name}</Text>
+								<Text>{IMIConst.address1}</Text>
+								<Text>{IMIConst.address2}</Text>
+								<Section title="Phone">{IMIConst.phone}</Section>
+								<Section title="Fax">{IMIConst.fax}</Section>
 							</div>
 							<div className="flex flex-1 flex-col">
 								<div className="w-[100px] self-end">
@@ -138,6 +138,7 @@ export function SPPBOutGenerateQR(props: {
 								<Td>Lot No Customer</Td>
 								<Td>Lot No IMI</Td>
 								<Td>No PO</Td>
+								<Td>No SPPB In</Td>
 								<Td>Proses</Td>
 							</Tr>
 
@@ -176,6 +177,12 @@ export function SPPBOutGenerateQR(props: {
 																		<Td>{kanban?.dataSppbIn?.lot_no}</Td>
 																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
 																		<Td>{kanban?.OrmCustomerPO?.nomor_po}</Td>
+																		<Td>
+																			{
+																				selectedSppbIn?.kanban.dataSppbIn
+																					?.nomor_surat
+																			}
+																		</Td>
 																		<Td className="flex-col gap-2">
 																			{masterItem?.kategori_mesinn?.map(m => {
 																				return masterItem.instruksi[m].map(

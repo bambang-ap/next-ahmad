@@ -9,6 +9,14 @@ export * from "./colors";
 export * from "./pages";
 export * from "./sizes";
 
+export const IMIConst = {
+	name: "PT. INDOHEAT METAL INTI",
+	address1: "Jl. Desa Anggadita, Kec. Klari",
+	address2: "Karawang, Jawa Barat 41371",
+	phone: "(0267) 432168",
+	fax: "(0267) 432268",
+};
+
 export const Success = {message: "Success"};
 
 export const defaultLimit = 10;
