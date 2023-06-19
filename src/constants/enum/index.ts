@@ -1,5 +1,15 @@
 import {z} from "zod";
 
+export enum PO_STATUS {
+	A = "PO",
+	B = "SPPB In",
+	C = "Kanban",
+	D = "Produksi",
+	E = "QC",
+	F = "Finish Good",
+	G = "SPPB Out",
+}
+
 export enum TABLES {
 	CUSTOMER = "customer",
 	CUSTOMER_PO = "po",

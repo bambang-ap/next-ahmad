@@ -12,6 +12,7 @@ import {
 } from "@appTypes/app.zod";
 import {defaultLimit, qtyList} from "@constants";
 import {
+	getCurrentPOStatus,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -19,6 +20,7 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 } from "@database";
+import {PO_STATUS} from "@enum";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 
@@ -26,6 +28,7 @@ import {appRouter} from ".";
 
 type GetPage = PagingResult<GetPageRows>;
 type GetPageRows = TCustomerPO & {
+	status: PO_STATUS;
 	OrmCustomer?: TCustomer;
 	isClosed?: boolean;
 	po_item: (TPOItem & {OrmMasterItem: TMasterItem} & {isClosed?: boolean})[];
@@ -122,9 +125,12 @@ const customer_poRouters = router({
 
 						const po_item = await Promise.all(itemInSppbIn);
 
+						const status = getCurrentPOStatus(po.dataValues.id);
+
 						return {
 							...dataValues,
 							po_item,
+							status,
 							isClosed: !po_item.find(e => e.isClosed === false),
 						};
 					},

@@ -85,17 +85,25 @@ export default function POCustomer() {
 				<TableFilter
 					data={data}
 					form={hookForm}
-					header={["Nomor PO", "Customer", "Tanggal", "Due Date", "Action"]}
+					header={[
+						"Nomor PO",
+						"Customer",
+						"Tanggal",
+						"Due Date",
+						"Status",
+						"Action",
+					]}
 					topComponent={
 						<Button onClick={() => showModal("add", {})}>Add</Button>
 					}
 					renderItem={({item, Cell}) => {
 						const {
 							id,
-							OrmCustomer: customer,
 							tgl_po,
+							status,
 							due_date,
 							nomor_po,
+							OrmCustomer: customer,
 						} = item;
 
 						return (
@@ -104,6 +112,7 @@ export default function POCustomer() {
 								<Cell>{customer?.name}</Cell>
 								<Cell>{dateUtils.date(tgl_po)}</Cell>
 								<Cell>{dateUtils.date(due_date)}</Cell>
+								<Cell>{status}</Cell>
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal("preview", item)}>
 										Preview

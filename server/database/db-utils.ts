@@ -1,5 +1,7 @@
 import {DECIMAL, Op} from "sequelize";
 
+import {PO_STATUS} from "@enum";
+
 export function ormDecimalType(fieldName: string) {
 	return {
 		type: DECIMAL,
@@ -34,4 +36,9 @@ export function wherePages(
 			};
 		}),
 	};
+}
+
+export function getCurrentPOStatus(idPo: string): PO_STATUS {
+	console.log({idPo});
+	return PO_STATUS.A;
 }
