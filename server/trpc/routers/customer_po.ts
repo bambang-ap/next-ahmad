@@ -125,7 +125,7 @@ const customer_poRouters = router({
 
 						const po_item = await Promise.all(itemInSppbIn);
 
-						const status = getCurrentPOStatus(po.dataValues.id);
+						const status = await getCurrentPOStatus(po.dataValues.id);
 
 						return {
 							...dataValues,
