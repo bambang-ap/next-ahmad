@@ -2,6 +2,7 @@ import {FormEventHandler, useRef} from "react";
 
 import {useForm} from "react-hook-form";
 
+import ExportData from "@appComponent/ExportData";
 import {ModalTypePreview, TCustomer, TUpsertSppbIn} from "@appTypes/app.type";
 import {Button, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
@@ -77,7 +78,19 @@ export default function SPPBIN() {
 			<TableFilter
 				data={data}
 				form={hookForm}
-				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
+				topComponent={
+					<>
+						<Button onClick={() => showModal("add", {})}>Add</Button>
+						<ExportData
+							names={["SPPB In"]}
+							useQuery={() => trpc.sppb.in.get.useQuery({type: "sppb_in"})}
+							dataMapper={dataSppbIn => {
+								if (!dataSppbIn) return [];
+								return dataSppbIn?.map(({detailPo, items, ...rest}) => rest);
+							}}
+						/>
+					</>
+				}
 				header={[
 					"Tanggal Surat Jalan",
 					"Nomor PO",

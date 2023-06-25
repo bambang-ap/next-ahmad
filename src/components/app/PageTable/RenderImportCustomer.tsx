@@ -1,11 +1,10 @@
 import {useEffect, useRef, useState} from "react";
 
-import * as XLSX from "xlsx";
-
 import {TCustomer} from "@appTypes/app.type";
 import {Button, Modal, ModalRef, Table} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {CRUD_ENABLED} from "@enum";
+import {exportData, importData} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
@@ -15,6 +14,10 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 
 	const {data: exampleData} = trpc.exampleData.get.useQuery("customer");
 	const {mutate} = trpc.basic.mutate.useMutation(defaultErrorMutation);
+
+	function downloadExampleData() {
+		exportData(exampleData, ["example-customer"]);
+	}
 
 	async function mutateInsert(force?: boolean): Promise<any> {
 		if (!jsonData) return;
@@ -42,37 +45,10 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 		}
 	}
 
-	function downloadExampleData() {
-		if (!exampleData) return;
+	useEffect(() => {
+		importData<TCustomer>(file).then(y => setJsonData(y));
+	}, [file]);
 
-		const sheetName = "Sheet 1";
-		const workbook = XLSX.utils.book_new();
-		workbook.SheetNames.push(sheetName);
-		workbook.Sheets[sheetName] = XLSX.utils.json_to_sheet(exampleData);
-		XLSX.writeFile(workbook, `example-customer.xlsx`);
-	}
-
-	function convertToJson() {
-		if (!file) return;
-
-		const fileReader = new FileReader();
-		fileReader.onload = event => {
-			const data = event.target?.result;
-
-			const workbook = XLSX.read(data, {type: "binary"});
-
-			Object.values(workbook.Sheets).forEach((sheet, i) => {
-				if (i > 0) return;
-
-				const rowObject = XLSX.utils.sheet_to_json(sheet);
-				setJsonData(rowObject as TCustomer[]);
-			});
-		};
-
-		fileReader.readAsBinaryString(file);
-	}
-
-	useEffect(convertToJson, [file]);
 	useEffect(() => {
 		if (!modalRef.current?.visible) setJsonData(undefined);
 	}, [modalRef.current?.visible]);

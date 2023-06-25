@@ -6,6 +6,7 @@ import clone from "just-clone";
 import moment from "moment";
 import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
+import * as XLSX from "xlsx";
 
 import {ModalTypePreview, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
@@ -144,6 +145,42 @@ export function generatePDF(id: string, filename = "a4") {
 				resolve();
 			},
 		});
+	});
+}
+
+export function exportData<T extends object>(
+	data?: T[],
+	names?: [filename?: string, sheetName?: string],
+) {
+	if (!data) return;
+
+	const [filename = "data", sheetName = "Sheet 1"] = names ?? [];
+
+	const workbook = XLSX.utils.book_new();
+	workbook.SheetNames.push(sheetName);
+	workbook.Sheets[sheetName] = XLSX.utils.json_to_sheet(data);
+	XLSX.writeFile(workbook, `${filename}.xlsx`);
+}
+
+export function importData<T extends object>(file?: File) {
+	return new Promise<T[] | undefined>(resolve => {
+		if (!file) return resolve(undefined);
+
+		const fileReader = new FileReader();
+		fileReader.onload = event => {
+			const data = event.target?.result;
+
+			const workbook = XLSX.read(data, {type: "binary"});
+
+			Object.values(workbook.Sheets).forEach((sheet, i) => {
+				if (i > 0) return;
+
+				const rowObject = XLSX.utils.sheet_to_json(sheet);
+				resolve(rowObject as T[]);
+			});
+		};
+
+		fileReader.readAsBinaryString(file);
 	});
 }
 
