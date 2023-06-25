@@ -23,6 +23,8 @@ import initOrmParameterKategori from "../models/parameter_kategori";
 import initOrmPOItemSppbIn from "../models/po_item_sppb_in";
 import initOrmRole from "../models/role";
 import initOrmScan from "../models/scan";
+import initOrmSupplier from "../models/supplier";
+import initOrmSupplierItem from "../models/supplier_item";
 import initOrmUser from "../models/user";
 import initOrmCustomerLogin from "../models/user_login";
 
@@ -52,6 +54,8 @@ export function initOrm(ORM: Sequelize) {
 	initOrmKendaraan(ORM);
 	initOrmDocument(ORM);
 	initOrmMasterItem(ORM);
+	initOrmSupplier(ORM);
+	initOrmSupplierItem(ORM);
 
 	return Promise.resolve();
 }

@@ -432,6 +432,36 @@ CREATE TABLE public.scan (
 ALTER TABLE public.scan OWNER TO postgres;
 
 --
+-- Name: supplier; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.supplier (
+    id character varying(47) NOT NULL,
+    name character varying(100) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.supplier OWNER TO postgres;
+
+--
+-- Name: supplier_item; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.supplier_item (
+    id character varying(47) NOT NULL,
+    id_supplier character varying(47) NOT NULL,
+    code_item character varying(100) NOT NULL,
+    name_item character varying(100) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.supplier_item OWNER TO postgres;
+
+--
 -- Name: user_login; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -661,6 +691,22 @@ ALTER TABLE ONLY public.scan
 
 ALTER TABLE ONLY public.customer_sppb_out
     ADD CONSTRAINT sppb_out_pk PRIMARY KEY (id);
+
+
+--
+-- Name: supplier_item supplier_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.supplier_item
+    ADD CONSTRAINT supplier_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supplier supplier_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.supplier
+    ADD CONSTRAINT supplier_pkey PRIMARY KEY (id);
 
 
 --

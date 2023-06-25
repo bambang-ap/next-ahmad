@@ -55,6 +55,8 @@ export type {
 	TScanItem,
 	TScanTarget,
 	TSession,
+	TSupplier,
+	TSupplierItem,
 	TUpsertSppbIn,
 	TUser,
 	TUserLogin,

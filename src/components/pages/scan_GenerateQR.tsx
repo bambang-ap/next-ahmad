@@ -1,5 +1,3 @@
-// FIXME:
-// @ts-nocheckd
 import {useEffect, useState} from "react";
 
 import {FormType} from "pages/app/kanban";

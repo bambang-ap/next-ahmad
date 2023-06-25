@@ -11,6 +11,8 @@ export enum PO_STATUS {
 }
 
 export enum TABLES {
+	SUPPLIER = "supplier",
+	SUPPLIER_ITEM = "supplier_item",
 	CUSTOMER = "customer",
 	CUSTOMER_PO = "po",
 	CUSTOMER_PO_ITEM = "po_itemm",
@@ -39,6 +41,8 @@ export enum TABLES {
 }
 
 export enum CRUD_ENABLED {
+	SUPPLIER = "supplier",
+	SUPPLIER_ITEM = "supplier_item",
 	CUSTOMER = "customer",
 	MESIN = "mesin",
 	MESIN_KATEGORI = "mesin_kategori",
