@@ -28,6 +28,15 @@ function enabled(target: TScanTarget, dataScan?: TDataScan) {
 }
 
 const scanRouters = router({
+	editNotes: procedure
+		.input(tScan.pick({id: true, notes: true}).partial())
+		.mutation(({ctx, input: {id, notes}}) => {
+			return checkCredentialV2(ctx, async () => {
+				const u = await OrmScan.update({notes}, {where: {id_kanban: id}});
+				console.log(u);
+				return {message: "Success"};
+			});
+		}),
 	get: procedure
 		.input(zId.extend({target: tScanTarget}))
 		.query(async ({input: {id, target}, ctx: {req, res}}) => {

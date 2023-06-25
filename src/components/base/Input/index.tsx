@@ -28,6 +28,8 @@ export type InputProps = {
 	label?: string;
 	noLabel?: boolean;
 	disabled?: boolean;
+	multiline?: boolean;
+	forceEditable?: boolean;
 	type?:
 		| "number"
 		| "decimal"
@@ -59,6 +61,8 @@ export function InputComponent<F extends FieldValues>(
 		rightAcc: endAdornment,
 		leftAcc: startAdornment,
 		appliedRules,
+		multiline,
+		forceEditable,
 	} = props;
 
 	const formContext = useContext(FormContext);
@@ -202,6 +206,7 @@ export function InputComponent<F extends FieldValues>(
 				<div className={classNames({hidden}, className)}>
 					<TextField
 						{...defaultTextFieldProps}
+						multiline={multiline}
 						InputLabelProps={{
 							...defaultTextFieldProps.InputLabelProps,
 							// shrink: type === 'date' ? true : undefined,
@@ -210,7 +215,7 @@ export function InputComponent<F extends FieldValues>(
 						fullWidth
 						label={label}
 						type={type}
-						disabled={isDisabled}
+						disabled={forceEditable ? false : isDisabled}
 						sx={{
 							"& .MuiInputBase-input.Mui-disabled": {
 								WebkitTextFillColor: "#000000",

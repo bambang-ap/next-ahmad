@@ -424,7 +424,8 @@ CREATE TABLE public.scan (
     item_out_barang json DEFAULT '[]'::json,
     lot_no_imi character varying(100),
     item_qc_reject json DEFAULT '[]'::json,
-    id_customer character varying(47)
+    id_customer character varying(47),
+    notes text
 );
 
 

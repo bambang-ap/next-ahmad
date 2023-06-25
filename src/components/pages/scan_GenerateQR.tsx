@@ -14,7 +14,14 @@ import {
 } from "@appTypes/app.type";
 import {Input, Text} from "@components";
 import {useSession} from "@hooks";
-import {dateUtils, prevDataScan, qtyMap, scanMapperByStatus} from "@utils";
+import {
+	dateUtils,
+	prevDataScan,
+	qtyMap,
+	scanMapperByStatus,
+	typingCallback,
+} from "@utils";
+import {trpc} from "@utils/trpc";
 
 import {RenderMesin} from "./kanban_ModalChild/RenderMesin";
 
@@ -27,9 +34,10 @@ export function ScanDetailKanban({
 	status?: boolean;
 	control: Control<FormTypeScan>;
 }) {
-	const {data} = useSession();
+	const {id, notes, ...formData} = useWatch({control});
 
-	const formData = useWatch({control});
+	const {data} = useSession();
+	const {mutate: editNotes} = trpc.scan.editNotes.useMutation();
 
 	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
 
@@ -37,6 +45,12 @@ export function ScanDetailKanban({
 
 	const fieldKey = `item_${route}` as const;
 	const isQC = route === "qc";
+
+	useEffect(() => {
+		typingCallback(() => {
+			editNotes({notes, id});
+		}, 1000);
+	}, [id, notes]);
 
 	return (
 		<div className="bg-slate-700 p-[1px] flex flex-col gap-[1px]">
@@ -71,6 +85,14 @@ export function ScanDetailKanban({
 					control={control}
 					fieldName="lot_no_imi"
 					label="Nomor Lot IMI"
+				/>
+				<Input
+					multiline
+					forceEditable
+					className="flex-1 bg-white"
+					control={control}
+					fieldName="notes"
+					label="Notes"
 				/>
 			</div>
 

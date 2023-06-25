@@ -21,7 +21,10 @@ Scan.getLayout = getLayout;
 
 type Route = {route: TScanTarget};
 
-export type FormTypeScan = Pick<TScan, keyof TScanItem | "lot_no_imi" | "id">;
+export type FormTypeScan = Pick<
+	TScan,
+	keyof TScanItem | "lot_no_imi" | "id" | "notes"
+>;
 export type FormType = {
 	form: ZId[];
 };
@@ -133,9 +136,11 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 					item_qc,
 					lot_no_imi,
 					item_qc_reject,
+					notes,
 				} = data;
 				return {
 					...prev,
+					notes,
 					item_qc_reject,
 					lot_no_imi,
 					item_finish_good,
@@ -151,7 +156,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 		<Form
 			onSubmit={submit}
 			className="flex flex-col gap-2 p-2 border"
-			contedxt={{disableSubmit: status, disabled: status}}>
+			context={{disableSubmit: status, disabled: status}}>
 			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
 			<div className="flex gap-2 items-center">
 				<Input

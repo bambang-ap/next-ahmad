@@ -16,14 +16,21 @@ import {
 	qtyList,
 } from "@constants";
 
+type Qty = typeof qtyList[number];
+
+let typingTimer: NodeJS.Timeout;
+
+export function typingCallback(callback: () => void, timeout = 500) {
+	clearTimeout(typingTimer);
+	typingTimer = setTimeout(callback, timeout);
+}
+
 export const classNames = classnames;
 export const dateUtils = {
 	full: convertFull,
 	hour: convertHour,
 	date: convertDate,
 };
-
-type Qty = typeof qtyList[number];
 
 export function qtyMap(
 	callback: (value: {

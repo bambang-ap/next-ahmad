@@ -21,6 +21,7 @@ export default function initOrmScan(sequelize: Sequelize) {
 			item_out_barang: DataTypes.JSON,
 			item_produksi: DataTypes.JSON,
 			item_qc: DataTypes.JSON,
+			notes: DataTypes.TEXT,
 		},
 		{
 			sequelize,
