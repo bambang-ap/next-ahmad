@@ -19,8 +19,13 @@ type BasicWherer = z.infer<typeof basicWherer>;
 const basicWherer = z.record(
 	basicUnion.or(z.record(eOpKeys, basicUnion)).optional(),
 );
+export const basicWhere = basicWherer.or(z.string()).transform(obj => {
+	try {
+		if (typeof obj === "string") return JSON.parse(obj);
+	} catch (err) {
+		return undefined;
+	}
 
-export const basicWhere = basicWherer.transform(obj => {
 	return Object.entries(obj).reduce<BasicWherer>((ret, [key, val]) => {
 		if (typeof val === "object") {
 			return {

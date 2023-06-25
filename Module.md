@@ -106,6 +106,8 @@ pg_dump --insert --data-only -U postgres -d manajemen \
     - DO Suplier
 - Report master (Dashboard) (based on user role)
 
+- Scan data dari item masih kosong
+
 
 
 NOTE: 

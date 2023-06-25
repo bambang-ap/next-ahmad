@@ -151,7 +151,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 		<Form
 			onSubmit={submit}
 			className="flex flex-col gap-2 p-2 border"
-			context={{disableSubmit: status, disabled: status}}>
+			contedxt={{disableSubmit: status, disabled: status}}>
 			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
 			<div className="flex gap-2 items-center">
 				<Input
