@@ -3,6 +3,7 @@ import {FormEventHandler, useRef} from "react";
 import {MutateOptions} from "@tanstack/react-query";
 import {useForm} from "react-hook-form";
 
+import ExportData from "@appComponent/ExportData";
 import {ModalTypePreview, TCustomerSPPBOut} from "@appTypes/app.type";
 import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
@@ -69,15 +70,27 @@ export default function SPPBOUT() {
 				form={hookForm}
 				header={["Nomor Surat", "Kendaraan", "Customer", "Action"]}
 				topComponent={
-					<Button
-						onClick={() =>
-							showModal({
-								type: "add",
-								po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
-							})
-						}>
-						Add
-					</Button>
+					<>
+						<Button
+							onClick={() =>
+								showModal({
+									type: "add",
+									po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
+								})
+							}>
+							Add
+						</Button>
+						<ExportData
+							names={["SPPB Out"]}
+							useQuery={() =>
+								trpc.sppb.out.get.useQuery({limit: 9999, page: 1})
+							}
+							dataMapper={(dataSppbOut: TCustomerSPPBOut[]) => {
+								if (!dataSppbOut) return [];
+								return dataSppbOut?.map(({po, ...rest}) => rest);
+							}}
+						/>
+					</>
 				}
 				renderItem={({Cell, item}) => {
 					const {id, id_kendaraan, id_customer} = item;
