@@ -83,8 +83,10 @@ export default function SPPBOUT() {
 						<ExportData
 							names={["SPPB Out"]}
 							useQuery={() =>
+								// @ts-ignore
 								trpc.sppb.out.get.useQuery({limit: 9999, page: 1})
 							}
+							// @ts-ignore
 							dataMapper={(dataSppbOut: TCustomerSPPBOut[]) => {
 								if (!dataSppbOut) return [];
 								return dataSppbOut?.map(({po, ...rest}) => rest);

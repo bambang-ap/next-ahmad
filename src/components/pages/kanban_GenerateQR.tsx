@@ -47,7 +47,6 @@ export function KanbanGenerateQR({
 	const {
 		className = "h-0 overflow-hidden -z-10 fixed",
 		// className = "",
-		transform = true,
 		withButton = true,
 	} = props;
 
