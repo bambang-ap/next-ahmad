@@ -5,8 +5,8 @@
 	"scripts": {
 		"export": "next export",
 		"format": "prettier --write \"./**/*.{ts,tsx,js,jsx,json}\" --config ./.prettierrc.js",
-		"server": "git restore .; git pull; yarn; yarn build; pm2 kill; yarn deploy",
-		"deploy": "pm2 start \"npm run start\" --watch --name \"IMI Inventory\"",
+		"server": "git restore .; git pull; yarn; yarn build; npx pm2 kill; yarn deploy",
+		"deploy": "npx pm2 start \"npm run start\" --watch --name \"IMI Inventory\"",
 		"build": "next lint --fix; next build",
 		"start": "next start --port 80",
 		"dev": "next dev --port 1234",
@@ -102,6 +102,7 @@
 		"eslint-plugin-tailwindcss": "3.7.1",
 		"eslint-plugin-testing-library": "5.9.1",
 		"next-transpile-modules": "9.0.0",
+		"pm2": "^5.3.0",
 		"postcss": "8.4.20",
 		"prettier": "2.8.1",
 		"prettier-plugin-organize-imports": "3.2.1",
