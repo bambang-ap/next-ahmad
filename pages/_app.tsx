@@ -27,6 +27,7 @@ import {RecoilRoot} from "recoil";
 
 import {SidebarProvider} from "@app/contexts/SidebarContext";
 import ThemeProvider from "@app/theme/ThemeProvider";
+import {isProd} from "@constants";
 import {createEmotionCache} from "@hoc";
 import {trpc} from "@utils/trpc";
 
@@ -73,7 +74,7 @@ function App(props: AppProps) {
 						<LocalizationProvider dateAdapter={AdapterDateFns}>
 							<CssBaseline />
 							<QueryClientProvider client={queryClient}>
-								<ReactQueryDevtools />
+								{!isProd && <ReactQueryDevtools />}
 								<RecoilRoot>
 									<SessionProvider
 										session={session}

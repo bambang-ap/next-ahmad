@@ -1,5 +1,7 @@
 import {ModelDefined, Optional, Sequelize} from "sequelize";
 
+import {isProd} from "@constants";
+
 import {initOrm} from "./init-orm";
 import {initRelations} from "./init-relations";
 
@@ -19,8 +21,6 @@ const {
 	PROD_PGSQL_PORT,
 	DEV_PGSQL_PORT,
 } = process.env;
-
-const isProd = NODE_ENV === "production";
 
 export const ORM = new Sequelize(
 	"manajemen",
