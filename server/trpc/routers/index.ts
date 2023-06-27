@@ -10,10 +10,12 @@ import menuRouters from "./menu";
 import miscRouter from "./misc";
 import scanRouters from "./scan";
 import sppbRouters from "./sppb";
+import supplierRouters from "./supplier";
 import user_loginRouters from "./user_login";
 
 export const appRouter = router({
 	...miscRouter,
+	supplier: supplierRouters,
 	menu: menuRouters,
 	item: itemRouters,
 	basic: basicRouters,

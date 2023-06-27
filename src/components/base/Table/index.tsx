@@ -17,7 +17,11 @@ export type Cells = {Cell: FC<TableCellProps>};
 export type TableProps<T, Cell = {}> = {
 	data?: T[];
 	className?: string;
-	header?: (string | false | [title: string, colSpan: number])[];
+	header?: OptionalUnion<
+		// Empty String
+		"∂",
+		string | false | [title: string, colSpan: number]
+	>[];
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
 	topComponent?: JSX.Element;
@@ -151,6 +155,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 					<THead>
 						<Tr>
 							{header.map(head => {
+								if (head === "∂") return <Td key={head} />;
 								if (!head) return null;
 								if (typeof head === "string") return <Td key={head}>{head}</Td>;
 

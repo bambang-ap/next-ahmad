@@ -18,7 +18,7 @@ import {
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
-const selectUnitData = [
+export const selectUnitData = [
 	{value: "pcs"},
 	{value: "kg"},
 	{value: "box"},

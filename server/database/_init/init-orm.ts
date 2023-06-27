@@ -25,6 +25,7 @@ import initOrmRole from "../models/role";
 import initOrmScan from "../models/scan";
 import initOrmSupplier from "../models/supplier";
 import initOrmSupplierItem from "../models/supplier_item";
+import initOrmSupplierPO from "../models/supplier_po";
 import initOrmUser from "../models/user";
 import initOrmCustomerLogin from "../models/user_login";
 
@@ -56,6 +57,7 @@ export function initOrm(ORM: Sequelize) {
 	initOrmMasterItem(ORM);
 	initOrmSupplier(ORM);
 	initOrmSupplierItem(ORM);
+	initOrmSupplierPO(ORM);
 
 	return Promise.resolve();
 }

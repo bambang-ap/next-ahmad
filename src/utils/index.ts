@@ -99,8 +99,6 @@ export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
 		isPreviewEdit,
 		get modalTitle() {
 			switch (type) {
-				case "add":
-					return `Tambah ${pageName}`;
 				case "edit":
 					return `Ubah ${pageName}`;
 				case "preview":
@@ -108,7 +106,7 @@ export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
 				case "delete":
 					return `Hapus ${pageName}`;
 				default:
-					return "";
+					return `Tambah ${pageName}`;
 			}
 		},
 	};

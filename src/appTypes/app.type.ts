@@ -57,6 +57,7 @@ export type {
 	TSession,
 	TSupplier,
 	TSupplierItem,
+	TSupplierPO,
 	TUpsertSppbIn,
 	TUser,
 	TUserLogin,

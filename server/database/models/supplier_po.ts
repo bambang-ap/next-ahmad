@@ -1,23 +1,21 @@
 import {DataTypes, Model, Sequelize} from "sequelize";
 
-import {TSupplierItem} from "@appTypes/app.type";
+import {TSupplierPO} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
-export class OrmSupplierItem extends Model<TSupplierItem> {}
+export class OrmSupplierPO extends Model<TSupplierPO> {}
 
-export default function initOrmSupplierItem(sequelize: Sequelize) {
-	OrmSupplierItem.init(
+export default function initOrmSupplierPO(sequelize: Sequelize) {
+	OrmSupplierPO.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_supplier: {type: DataTypes.STRING},
-			code_item: {type: DataTypes.STRING},
-			name_item: {type: DataTypes.STRING},
-			harga: {type: DataTypes.NUMBER},
+			items: {type: DataTypes.JSONB},
 		},
 		{
 			sequelize,
-			tableName: TABLES.SUPPLIER_ITEM,
+			tableName: TABLES.SUPPLIER_PO,
 			defaultScope: {
 				...defaultOrderBy,
 				attributes: {
@@ -27,5 +25,5 @@ export default function initOrmSupplierItem(sequelize: Sequelize) {
 		},
 	);
 
-	return OrmSupplierItem;
+	return OrmSupplierPO;
 }

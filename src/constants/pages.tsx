@@ -612,7 +612,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	"/app/global/supplier": {
+	"/app/supplier": {
 		enumName: CRUD_ENABLED.SUPPLIER,
 		searchKey: "name",
 		table: {
@@ -638,11 +638,11 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	"/app/global/supplier/item": {
+	"/app/supplier/item": {
 		enumName: CRUD_ENABLED.SUPPLIER_ITEM,
 		searchKey: "name_item" as keyof TSupplierItem,
 		table: {
-			header: ["Suplier", "Kode Item", "Nama Item", "Action"],
+			header: ["Suplier", "Kode Item", "Nama Item", "Harga Item", "Action"],
 			get body(): Body<TSupplierItem> {
 				return [
 					[
@@ -653,6 +653,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 					],
 					"code_item",
 					"name_item",
+					"harga",
 				];
 			},
 		},
@@ -671,6 +672,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 					},
 					{col: "code_item", label: "Kode Item"},
 					{col: "name_item", label: "Name Item"},
+					{col: "harga", label: "Harga Item", type: "decimal"},
 				];
 			},
 			get edit() {

@@ -375,6 +375,20 @@ export const tSupplierItem = zId.extend({
 	id_supplier: z.string(),
 	code_item: z.string().optional(),
 	name_item: z.string().optional(),
+	harga: z.number().optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
+});
+
+export type TSupplierPO = z.infer<typeof tSupplierPO>;
+export const tSupplierPO = zId.extend({
+	id_supplier: z.string(),
+	/** Key of items is ID Item from tSupplierItem */
+	items: z.record(
+		z.string(),
+		z.object({
+			qty: z.number(),
+			unit: z.string(),
+		}),
+	),
 });

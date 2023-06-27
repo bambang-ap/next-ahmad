@@ -11,7 +11,9 @@
 		"start": "next start --port 80",
 		"dev": "next dev --port 1234",
 		"next-lint": "next lint",
-		"lint": "eslint --ext=jsx,ts,tsx"
+		"lint": "eslint --ext=jsx,ts,tsx",
+		"dump:schema": "pg_dump -U postgres --schema-only manajemen > schema.sql",
+		"dump:data": "pg_dump --insert --data-only -U postgres -d manajemen -t customer -t document_number -t hardness -t hardness_kategori -t instruksi_kanban -t kendaraan -t material -t material_kategori -t material_kategori -t menu -t mesin -t mesin_kategori -t parameter -t parameter_kategori -t role -t user_pengguna -t user_login > data.sql"
 	},
 	"dependencies": {
 		"@emotion/cache": "11.7.1",
