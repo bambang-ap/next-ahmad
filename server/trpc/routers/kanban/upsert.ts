@@ -23,7 +23,7 @@ export const kanbanUpsert = {
 					...rest,
 					createdBy: createdBy ?? session.user?.id!,
 					updatedBy: session.user?.id!,
-					id: id || generateId(),
+					id: id || generateId("KNB"),
 					doc_id: doc_id || docData.dataValues.id,
 				});
 
@@ -31,7 +31,7 @@ export const kanbanUpsert = {
 					where: {id_kanban: createdKanban.dataValues.id},
 					// @ts-ignore
 					defaults: {
-						id: generateId(),
+						id: generateId("SCAN"),
 						id_customer: input.id_customer,
 						id_kanban: createdKanban.dataValues.id,
 					},
@@ -44,7 +44,7 @@ export const kanbanUpsert = {
 						return OrmKanbanItem.upsert({
 							...restItemKanban,
 							id_item,
-							id: idItemKanban ?? generateId(),
+							id: idItemKanban ?? generateId("KNBI"),
 							id_kanban: createdKanban.dataValues.id,
 						});
 					},

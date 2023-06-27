@@ -57,7 +57,7 @@ const itemRouters = router({
 	upsert: procedure
 		.input(tMasterItem.partial({id: true}))
 		.mutation(({ctx, input}) => {
-			const {id = generateId(), ...body} = input;
+			const {id = generateId("MI"), ...body} = input;
 			return checkCredentialV2(ctx, async () => {
 				await OrmMasterItem.upsert({id, ...body});
 

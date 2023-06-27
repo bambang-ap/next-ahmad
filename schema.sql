@@ -174,11 +174,11 @@ CREATE TABLE public.kanban_item (
     id character varying(47) NOT NULL,
     id_item character varying(47) NOT NULL,
     id_kanban character varying(47) NOT NULL,
-    qty1 integer,
-    qty2 integer,
-    qty3 integer,
-    qty4 integer,
-    qty5 integer,
+    qty1 numeric,
+    qty2 numeric,
+    qty3 numeric,
+    qty4 numeric,
+    qty5 numeric,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     master_item_id character varying(47)
@@ -352,11 +352,11 @@ CREATE TABLE public.po_item_sppb_in (
     id character varying(47) NOT NULL,
     id_item character varying(47) NOT NULL,
     id_sppb_in character varying(47) NOT NULL,
-    qty1 integer,
-    qty2 integer,
-    qty3 integer,
-    qty4 integer,
-    qty5 integer,
+    qty1 numeric,
+    qty2 numeric,
+    qty3 numeric,
+    qty4 numeric,
+    qty5 numeric,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     master_item_id character varying(47)
@@ -455,11 +455,27 @@ CREATE TABLE public.supplier_item (
     code_item character varying(100) NOT NULL,
     name_item character varying(100) NOT NULL,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    harga numeric
 );
 
 
 ALTER TABLE public.supplier_item OWNER TO postgres;
+
+--
+-- Name: supplier_po; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.supplier_po (
+    id character varying(47) NOT NULL,
+    id_supplier character varying(47) NOT NULL,
+    items json DEFAULT '{}'::json,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.supplier_po OWNER TO postgres;
 
 --
 -- Name: user_login; Type: TABLE; Schema: public; Owner: postgres
@@ -707,6 +723,14 @@ ALTER TABLE ONLY public.supplier_item
 
 ALTER TABLE ONLY public.supplier
     ADD CONSTRAINT supplier_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supplier_po supplier_po_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.supplier_po
+    ADD CONSTRAINT supplier_po_pkey PRIMARY KEY (id);
 
 
 --

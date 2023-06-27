@@ -121,7 +121,7 @@ const sppbOutRouters = router({
 			return checkCredentialV2({req, res}, async () => {
 				await OrmCustomerSPPBOut.upsert({
 					...input,
-					id: input.id ?? generateId(),
+					id: input.id ?? generateId("SPPBO"),
 				});
 
 				return {message: "Success"};

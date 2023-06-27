@@ -106,7 +106,12 @@ const basicRouters = router({
 				case "edit":
 					return orm.update(rest, {where: {id}});
 				default:
-					return orm.create({...rest, id: generateId()});
+					const idFirst = target
+						?.split("_")
+						.map(e => e[0])
+						.join("")
+						.toUpperCase();
+					return orm.create({...rest, id: generateId(idFirst)});
 			}
 		}),
 });

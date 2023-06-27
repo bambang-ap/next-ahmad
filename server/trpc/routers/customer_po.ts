@@ -152,12 +152,12 @@ const customer_poRouters = router({
 				const {po_item, ...body} = input;
 				const {dataValues: createdPo} = await OrmCustomerPO.create({
 					...body,
-					id: generateId(),
+					id: generateId("PO"),
 				});
 				const poItemPromises = po_item?.map(item =>
 					OrmCustomerPOItem.create({
 						...item,
-						id: generateId(),
+						id: generateId("POI"),
 						id_po: createdPo.id,
 					}),
 				);
@@ -187,7 +187,7 @@ const customer_poRouters = router({
 
 					return OrmCustomerPOItem.upsert({
 						...item,
-						id: itemId || generateId(),
+						id: itemId || generateId("POI"),
 						id_po: input.id,
 					});
 				});
