@@ -223,7 +223,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 									data={selectUnitData}
 								/>
 							</Cell>
-							<Cell>{selectedItem?.harga * item.qty}</Cell>
+							<Cell>{(selectedItem?.harga ?? 0) * (item?.qty ?? 0)}</Cell>
 							<Cell>
 								<Button onClick={() => removeItem(id_item)} icon="faTrash" />
 							</Cell>

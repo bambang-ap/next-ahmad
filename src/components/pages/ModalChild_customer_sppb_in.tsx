@@ -134,6 +134,7 @@ export function SppbInModalChild({
 				header={[
 					"Kode Item",
 					"Nama Item",
+					// @ts-ignore
 					["Jumlah", qtyList.length],
 					!isPreview && "Action",
 				]}
