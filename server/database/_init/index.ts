@@ -11,7 +11,6 @@ export type DefinedModel<
 > = ModelDefined<T, Optional<T, K>>;
 
 const {
-	NODE_ENV,
 	PROD_PGSQL_USER,
 	PROD_PGSQL_PASSWORD,
 	PROD_PGSQL_HOST,
