@@ -375,7 +375,7 @@ export const tSupplierItem = zId.extend({
 	id_supplier: z.string(),
 	code_item: z.string().optional(),
 	name_item: z.string().optional(),
-	harga: z.number().optional(),
+	harga: zDecimal.optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });
@@ -387,7 +387,7 @@ export const tSupplierPO = zId.extend({
 	items: z.record(
 		z.string(),
 		z.object({
-			qty: z.number(),
+			qty: zDecimal,
 			unit: z.string(),
 		}),
 	),

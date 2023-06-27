@@ -17,9 +17,11 @@ import {
 	Select,
 	selectMapper,
 	Table,
+	TableFilter,
 } from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
+import {useTableFilter} from "@hooks";
 import {selectUnitData} from "@pageComponent/ModalChild_po";
 import {classNames, modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -35,38 +37,102 @@ type ModalChildProps = {
 export default function POSupplier() {
 	const modalRef = useRef<ModalRef>(null);
 
+	const {formValue, hookForm} = useTableFilter();
+	const {data} = trpc.supplier.po.get.useQuery(formValue);
+	const {mutate: mutateUpsert} = trpc.supplier.po.upsert.useMutation();
+	const {mutate: mutateDelete} = trpc.supplier.po.delete.useMutation();
+
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
 	const {type: modalType} = watch();
 
-	const {modalTitle} = modalTypeParser(modalType, "PO Supplier");
+	const {modalTitle, isPreview} = modalTypeParser(modalType, "PO Supplier");
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		clearErrors();
 		e.preventDefault();
-		handleSubmit(values => {})();
+		handleSubmit(({type, ...body}) => {
+			switch (type) {
+				case "delete":
+					return mutateDelete(body.id);
+				case "add":
+				case "edit":
+					return mutateUpsert(body);
+				default:
+					return;
+			}
+		})();
 	};
 
-	function showModal({type, ...form}: Partial<FormType>) {
+	function showModal(form: Partial<FormType>) {
 		modalRef.current?.show();
+		reset(form);
 	}
 
 	return (
 		<>
-			<Button onClick={() => showModal({type: "add"})}>Add</Button>
-
 			<Modal
-				visible
 				ref={modalRef}
 				title={modalTitle}
 				onVisibleChange={visible => {
 					if (!visible) reset({});
 				}}>
-				<Form onSubmit={submit} className="gap-2 flex flex-col">
+				<Form
+					onSubmit={submit}
+					className="gap-2 flex flex-col"
+					context={{disabled: isPreview, hideButton: isPreview}}>
 					<ModalChildPOSupplier control={control} reset={reset} />
-					<Button>Submit</Button>
 				</Form>
 			</Modal>
+
+			<TableFilter
+				data={data}
+				form={hookForm}
+				header={["Nama Supplier", "Items", "Action"]}
+				topComponent={
+					<Button onClick={() => showModal({type: "add"})}>Add</Button>
+				}
+				renderItem={({Cell, item}) => {
+					const {OrmItem, OrmSupplier, items, id} = item;
+					return (
+						<>
+							<Cell>{OrmSupplier.name}</Cell>
+							<Cell>
+								<Table
+									data={Object.entries(items)}
+									renderItem={({item: [id_item, dataItem]}) => {
+										const selectedItem = OrmItem[id_item];
+										return (
+											<div className="flex gap-2" key={id_item}>
+												<Cell>{selectedItem?.code_item}</Cell>
+												<Cell>{selectedItem?.name_item}</Cell>
+												<Cell>{selectedItem?.harga}</Cell>
+												<Cell>{dataItem.qty}</Cell>
+												<Cell>{dataItem.unit}</Cell>
+												<Cell>{dataItem.qty * (selectedItem?.harga ?? 0)}</Cell>
+											</div>
+										);
+									}}
+								/>
+							</Cell>
+							<Cell className="flex gap-2">
+								<Button
+									icon="faMagnifyingGlass"
+									onClick={() => showModal({type: "preview", ...item})}
+								/>
+								<Button
+									icon="faEdit"
+									onClick={() => showModal({type: "edit", ...item})}
+								/>
+								<Button
+									icon="faTrash"
+									onClick={() => showModal({type: "delete", id})}
+								/>
+							</Cell>
+						</>
+					);
+				}}
+			/>
 		</>
 	);
 }
@@ -81,6 +147,8 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 		target: CRUD_ENABLED.SUPPLIER_ITEM,
 		where: {id_supplier: formData.id_supplier} as Partial<TSupplierItem>,
 	});
+
+	const {isDelete, isPreview} = modalTypeParser(formData.type);
 
 	const selectedItems = dataItem.reduce((ret, item) => {
 		return {...ret, [item.id]: item};
@@ -105,6 +173,8 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 		});
 	}, [formData.tempIdItem]);
 
+	if (isDelete) return <Button type="submit">Delete</Button>;
+
 	return (
 		<>
 			<div className="flex gap-2">
@@ -118,7 +188,9 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 					control={control}
 					fieldName="tempIdItem"
 					key={formData.tempIdItem}
-					className={classNames("flex-1", {hidden: !formData.id_supplier})}
+					className={classNames("flex-1", {
+						hidden: !formData.id_supplier || isPreview,
+					})}
 					data={selectMapper(dataItem, "id", "code_item").filter(
 						data => !Object.keys(formData.items ?? {}).includes(data.value),
 					)}
@@ -160,7 +232,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 				}}
 			/>
 
-			{Object.entries(formData.items ?? {}).map(([id_item, item]) => {})}
+			<Button type="submit">Submit</Button>
 		</>
 	);
 }

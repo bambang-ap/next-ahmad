@@ -10,6 +10,9 @@ import {OrmKanbanItem} from "../models/kanban_item";
 import {OrmMesin} from "../models/mesin";
 import {OrmKategoriMesin} from "../models/mesin_kategori";
 import {OrmPOItemSppbIn} from "../models/po_item_sppb_in";
+import {OrmSupplier} from "../models/supplier";
+import {OrmSupplierItem} from "../models/supplier_item";
+import {OrmSupplierPO} from "../models/supplier_po";
 import {OrmUser} from "../models/user";
 
 function relation<M extends object, B extends object>(
@@ -60,4 +63,7 @@ export function initRelations() {
 		["updatedBy", OrmKanban._aliasUpdatedBy],
 	]);
 	// relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "kategori_mesin");
+
+	relation(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
+	relation(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
 }

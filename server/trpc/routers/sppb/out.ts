@@ -61,7 +61,12 @@ const sppbOutRouters = router({
 		const {limit, page, search = ""} = input;
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
+				limit,
+				attributes: ["id"],
+				order: [["id", "asc"]],
+				offset: (page - 1) * limit,
 				where: {invoice_no: {[Op.iLike]: `%${search}%`}},
+				// where: wherePages([""], search),
 			});
 			const allDataSppbIn = data.map(e => e.dataValues);
 
