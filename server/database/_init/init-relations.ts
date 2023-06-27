@@ -3,10 +3,12 @@ import {Model, ModelStatic} from "sequelize";
 import {OrmCustomer} from "../models/customer";
 import {OrmCustomerPO} from "../models/customer_po";
 import {OrmCustomerPOItem} from "../models/customer_po_item";
+import {OrmCustomerSPPBOut} from "../models/customer_sppb_out";
 import {OrmDocument} from "../models/document";
 import {OrmMasterItem} from "../models/item";
 import {OrmKanban} from "../models/kanban";
 import {OrmKanbanItem} from "../models/kanban_item";
+import {OrmKendaraan} from "../models/kendaraan";
 import {OrmMesin} from "../models/mesin";
 import {OrmKategoriMesin} from "../models/mesin_kategori";
 import {OrmPOItemSppbIn} from "../models/po_item_sppb_in";
@@ -54,6 +56,8 @@ export function initRelations() {
 		OrmKategoriMesin._alias,
 	);
 	relation(OrmCustomer, OrmCustomerPO, "id", "id_customer");
+	relation(OrmCustomer, OrmCustomerSPPBOut, "id", "id_customer");
+	relation(OrmKendaraan, OrmCustomerSPPBOut, "id", "id_kendaraan");
 	relation(OrmCustomerPO, OrmKanban, "id", "id_po");
 	relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "id_item");
 	relation(OrmPOItemSppbIn, OrmKanbanItem, "id", "id_item");

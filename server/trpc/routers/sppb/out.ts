@@ -1,3 +1,6 @@
+// FIXME:
+// @ts-nocheck
+
 import {
 	KanbanGetRow,
 	PagingResult,
@@ -6,14 +9,20 @@ import {
 } from "@appTypes/app.type";
 import {
 	tableFormValue,
+	tCustomerPO,
+	tCustomerSPPBIn,
 	TCustomerSPPBOut,
 	tCustomerSPPBOut,
+	tCustomerSPPBOutSppbIn,
 	TScan,
 	zId,
 } from "@appTypes/app.zod";
 import {
 	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
+	OrmKanban,
 	OrmKendaraan,
 	OrmScan,
 } from "@database";
@@ -25,44 +34,81 @@ import {z} from "zod";
 
 import {appRouter} from "..";
 
+type A = z.infer<typeof a>;
+const a = z
+	.object({
+		id_po: z.string(),
+		sppb_in: tCustomerSPPBOutSppbIn
+			.extend({
+				// lot_no_imi: z.string(),
+				dataSppbIn: tCustomerSPPBIn.nullish(),
+			})
+			.array(),
+		dataPo: tCustomerPO.nullish(),
+	})
+	.array();
+
 type GetPage = PagingResult<TCustomerSPPBOut>;
 type YY = TScan & {kanban: KanbanGetRow};
+type KJ = Omit<TCustomerSPPBOut, "po"> & {
+	OrmKendaraan: TKendaraan;
+	OrmCustomer: TCustomer;
+	po: A;
+};
 
 const sppbOutRouters = router({
 	getInvoice: procedure.query(() => genInvoice(OrmCustomerSPPBOut, "SJ/IMI")),
 	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
 		// const routerCaller = appRouter.createCaller(ctx);
-		return checkCredentialV2(
-			ctx,
-			async (): Promise<
-				TCustomerSPPBOut & {
-					data: {customer?: TCustomer; kendaraan?: TKendaraan};
-				}
-			> => {
-				const data = (await OrmCustomerSPPBOut.findOne({where: {id: input}}))!;
-				// @ts-ignore
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const {id_customer, id_kendaraan, po: listPo} = data?.dataValues!;
+		return checkCredentialV2(ctx, async (): Promise<KJ> => {
+			const data = (await OrmCustomerSPPBOut.findOne({
+				where: {id: input},
+				include: [OrmCustomer, OrmKendaraan],
+			}))!;
 
-				const customer = (await OrmCustomer.findOne({where: {id: id_customer}}))
-					?.dataValues;
-				const kendaraan = (
-					await OrmKendaraan.findOne({where: {id: id_kendaraan}})
-				)?.dataValues;
+			const detailPo = data.dataValues.po.map(async ({id_po, sppb_in}) => {
+				const dataPo = await OrmCustomerPO.findOne({where: {id: id_po}});
+
+				const dataSppbIn = sppb_in.map(async ({id_sppb_in, items}) => {
+					const sppbInData = await OrmCustomerSPPBIn.findOne({
+						where: {id: id_sppb_in},
+					});
+
+					const kanban = await OrmKanban.findOne({
+						attributes: ["id"],
+						where: {id_sppb_in},
+					});
+
+					const lot_no_imi = (
+						await OrmScan.findOne({where: {id_kanban: kanban?.dataValues.id}})
+					)?.dataValues.lot_no_imi;
+
+					return {
+						items,
+						id_sppb_in,
+						lot_no_imi,
+						dataSppbIn: sppbInData?.dataValues,
+					};
+				});
 
 				return {
-					...data?.dataValues,
-					data: {customer, kendaraan},
+					id_po,
+					sppb_in: await Promise.all(dataSppbIn),
+					dataPo: dataPo?.dataValues,
 				};
-			},
-		);
+			});
+
+			return {
+				...data?.dataValues,
+				po: await Promise.all(detailPo),
+			};
+		});
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, search = ""} = input;
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
 				limit,
-				attributes: ["id"],
 				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
 				where: {invoice_no: {[Op.iLike]: `%${search}%`}},

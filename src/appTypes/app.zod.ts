@@ -65,6 +65,7 @@ export const tCustomer = zId.extend({
 export type TItemUnit = z.infer<typeof tItemUnit>;
 export const tItemUnit = z.union([
 	z.literal("pcs"),
+	z.literal("drum"),
 	z.literal("kg"),
 	z.literal("box"),
 	z.literal("set"),
@@ -232,31 +233,26 @@ export const tUpsertSppbIn = tCustomerSPPBIn.extend({
 	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
 });
 
+export const tCustomerSPPBOutPoItems = z.record(
+	tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
+);
+export const tCustomerSPPBOutSppbIn = z.object({
+	id_sppb_in: z.string(),
+	items: tCustomerSPPBOutPoItems,
+	// customer_no_lot: z.string(),
+});
+export const tCustomerSPPBOutPo = z.object({
+	id_po: z.string(),
+	sppb_in: tCustomerSPPBOutSppbIn.array(),
+});
+
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	invoice_no: z.string(),
 	date: z.string(),
 	id_kendaraan: z.string(),
 	id_customer: z.string(),
-	po:
-		// z.tuple([
-		// id_customer
-		// z.string(),
-		z
-			.object({
-				id_po: z.string(),
-				sppb_in: z
-					.object({
-						id_sppb_in: z.string(),
-						// customer_no_lot: z.string(),
-						items: z.record(
-							tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
-						),
-					})
-					.array(),
-			})
-			.array(),
-	// ]),
+	po: tCustomerSPPBOutPo.array(),
 });
 
 export type TMaterial = z.infer<typeof tMaterial>;

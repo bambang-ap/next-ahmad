@@ -20,6 +20,7 @@ import {trpc} from "@utils/trpc";
 
 export const selectUnitData = [
 	{value: "pcs"},
+	{value: "drum"},
 	{value: "kg"},
 	{value: "box"},
 	{value: "set"},

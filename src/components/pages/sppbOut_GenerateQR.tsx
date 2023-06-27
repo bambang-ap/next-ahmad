@@ -1,5 +1,5 @@
 // FIXME:
-// @ts-nocheck
+// @ts-nochecks
 
 import {PropsWithChildren} from "react";
 
@@ -113,17 +113,15 @@ export function SPPBOutGenerateQR(props: {
 									{dateUtils.date(detail?.date)}
 								</Section>
 								<Section title="No. D.O.">{detail?.invoice_no}</Section>
-								<Section title="Kendaraan">
-									{detail?.data.kendaraan?.name}
-								</Section>
+								<Section title="Kendaraan">{detail?.OrmKendaraan.name}</Section>
 								<Section title="No. Pol."></Section>
 								<Text>
 									Harap diterima dengan baik barang-barang dibawah ini
 								</Text>
 							</div>
 							<div className="flex-1 border border-black p-4">
-								<Text>Kepada : {detail?.data.customer?.name}</Text>
-								<Text>di {detail?.data.customer?.alamat}</Text>
+								<Text>Kepada : {detail?.OrmCustomer.name}</Text>
+								<Text>di {detail?.OrmCustomer.alamat}</Text>
 							</div>
 						</div>
 					</div>
@@ -174,17 +172,13 @@ export function SPPBOutGenerateQR(props: {
 																				</Td>
 																			);
 																		})}
-																		<Td>{kanban?.dataSppbIn?.lot_no}</Td>
+																		<Td>{e?.dataSppbIn?.lot_no}</Td>
 																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
-																		<Td>{kanban?.OrmCustomerPO?.nomor_po}</Td>
-																		<Td>
-																			{
-																				selectedSppbIn?.kanban.dataSppbIn
-																					?.nomor_surat
-																			}
-																		</Td>
+																		<Td>{po?.dataPo?.nomor_po}</Td>
+																		<Td>{e?.dataSppbIn?.nomor_surat}</Td>
 																		<Td className="flex-col gap-2">
 																			{masterItem?.kategori_mesinn?.map(m => {
+																				// @ts-ignore
 																				return masterItem.instruksi[m].map(
 																					ins => (
 																						<DetailProcess
@@ -210,7 +204,7 @@ export function SPPBOutGenerateQR(props: {
 					</div>
 					<div className="flex justify-between gap-2 p-4 border border-black">
 						<Sign>Penerima,</Sign>
-						<Sign>Kemananan,</Sign>
+						<Sign>Keamanan,</Sign>
 						<Sign>Mengetahui,</Sign>
 						<Sign>Pembuat,</Sign>
 					</div>
