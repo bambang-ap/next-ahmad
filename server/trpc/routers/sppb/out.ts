@@ -17,6 +17,7 @@ import {
 	TScan,
 	zId,
 } from "@appTypes/app.zod";
+import {Success} from "@constants";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -175,14 +176,14 @@ const sppbOutRouters = router({
 					id: input.id ?? generateId("SPPBO"),
 				});
 
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 	delete: procedure.input(zId).mutation(({ctx: {req, res}, input}) => {
 		return checkCredentialV2({req, res}, async () => {
 			await OrmCustomerSPPBOut.destroy({where: input});
 
-			return {message: "Success"};
+			return Success;
 		});
 	}),
 });

@@ -7,6 +7,7 @@ import {
 	TSupplierPO,
 } from "@appTypes/app.type";
 import {tableFormValue, tSupplierPO} from "@appTypes/app.zod";
+import {Success} from "@constants";
 import {OrmSupplier, OrmSupplierItem, OrmSupplierPO} from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -54,14 +55,14 @@ const supplierPoRouters = router({
 
 				await OrmSupplierPO.upsert({...body, id: id || generateId("SP_PO")});
 
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 	delete: procedure.input(z.string()).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
 			await OrmSupplierPO.destroy({where: {id: input}});
 
-			return {message: "Success"};
+			return Success;
 		});
 	}),
 });

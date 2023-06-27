@@ -6,6 +6,7 @@ import {
 	tScanTarget,
 	zId,
 } from "@appTypes/app.zod";
+import {Success} from "@constants";
 import {OrmScan} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
@@ -32,9 +33,9 @@ const scanRouters = router({
 		.input(tScan.pick({id: true, notes: true}).partial())
 		.mutation(({ctx, input: {id, notes}}) => {
 			return checkCredentialV2(ctx, async () => {
-				const u = await OrmScan.update({notes}, {where: {id_kanban: id}});
-				console.log(u);
-				return {message: "Success"};
+				await OrmScan.update({notes}, {where: {id_kanban: id}});
+
+				return Success;
 			});
 		}),
 	get: procedure
@@ -105,7 +106,7 @@ const scanRouters = router({
 						{where: {id_kanban: id}},
 					);
 
-					return {message: "Success"};
+					return Success;
 				},
 			);
 		}),

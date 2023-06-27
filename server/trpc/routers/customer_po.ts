@@ -10,7 +10,7 @@ import {
 	TPOItem,
 	tPOItem,
 } from "@appTypes/app.zod";
-import {defaultLimit, qtyList} from "@constants";
+import {defaultLimit, qtyList, Success} from "@constants";
 import {
 	getCurrentPOStatus,
 	OrmCustomer,
@@ -162,7 +162,7 @@ const customer_poRouters = router({
 					}),
 				);
 				await Promise.all(poItemPromises ?? []);
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 
@@ -206,7 +206,7 @@ const customer_poRouters = router({
 				await Promise.all(poItemPromises);
 				await Promise.all(excludeItem.map(e => e.destroy()));
 
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 
@@ -225,7 +225,7 @@ const customer_poRouters = router({
 				await OrmCustomerSPPBIn.destroy({where: {id_po: id}});
 				await OrmCustomerPOItem.destroy({where: {id_po: id}});
 				await OrmCustomerPO.destroy({where: {id}});
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 });

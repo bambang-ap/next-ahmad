@@ -1,5 +1,6 @@
 import {z} from "zod";
 
+import {Success} from "@constants";
 import {OrmKanban, OrmKanbanItem, OrmScan} from "@database";
 import {checkCredentialV2, genInvoice} from "@server";
 import {procedure, router} from "@trpc";
@@ -26,7 +27,7 @@ const kanbanRouters = router({
 				await OrmKanbanItem.destroy({where: {id_kanban: id}});
 				await OrmKanban.destroy({where: {id}});
 
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 	deleteItem: procedure
@@ -40,7 +41,7 @@ const kanbanRouters = router({
 
 				await OrmKanbanItem.destroy({where: {id}});
 
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 });

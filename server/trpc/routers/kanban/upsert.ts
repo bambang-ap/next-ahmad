@@ -1,4 +1,5 @@
 import {tKanbanUpsert} from "@appTypes/app.zod";
+import {Success} from "@constants";
 import {OrmDocument, OrmKanban, OrmKanbanItem, OrmScan} from "@database";
 import {checkCredentialV2, generateId} from "@server";
 import {procedure} from "@trpc";
@@ -50,7 +51,7 @@ export const kanbanUpsert = {
 					},
 				);
 				await Promise.all(itemPromises);
-				return {message: "Success"};
+				return Success;
 			});
 		}),
 };
