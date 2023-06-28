@@ -59,8 +59,8 @@ export const defaultInstruksi: TMasterItem["instruksi"][string][number] = {
 };
 
 export const defaultTextFieldProps: TextFieldProps = {
-	// InputLabelProps: { shrink: true },
-	variant: "filled",
+	InputLabelProps: {shrink: true, sx: {paddingBottom: 1}},
+	variant: "outlined",
 };
 
 export const defaultErrorMutation: {onError: any} = {

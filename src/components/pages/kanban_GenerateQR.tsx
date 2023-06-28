@@ -76,7 +76,6 @@ export function KanbanGenerateQR({
 	}
 
 	useEffect(() => {
-		// FIXME: Saat print, bagian input jadi hitam
 		genPdf();
 	}, [visible, !!data]);
 
@@ -92,7 +91,7 @@ export function KanbanGenerateQR({
 					<Text>Harap Tunggu...</Text>
 				</div>
 				<div className={className}>
-					<div id={tagId} className="flex flex-col gap-2 p-4 w-[800px]">
+					<div id={tagId} className="flex flex-col gap-2 p-4 w-[1000px]">
 						<Table>
 							<Tr>
 								<Td colSpan={2}>

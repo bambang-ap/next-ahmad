@@ -8,6 +8,7 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from "@formController";
+import {classNames} from "@utils";
 
 import {InputComponent} from ".";
 import {FormContext} from "../Form";
@@ -79,7 +80,7 @@ function SelectComponent<F extends FieldValues>({
 	}
 
 	return (
-		<div className={className}>
+		<div className={classNames("pt-2", className)}>
 			<Autocomplete
 				disableClearable={disableClear}
 				disablePortal

@@ -203,7 +203,7 @@ export function InputComponent<F extends FieldValues>(
 			};
 
 			return (
-				<div className={classNames({hidden}, className)}>
+				<div className={classNames({hidden}, "pt-2", className)}>
 					<TextField
 						{...defaultTextFieldProps}
 						multiline={multiline}
