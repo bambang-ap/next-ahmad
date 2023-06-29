@@ -1,11 +1,10 @@
-// @ts-nocheckd
+// @ts-nocheck
 
 import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {Button, Input, Table, Text} from "@components";
 import {defaultErrorMutation} from "@constants";
-import {useKanban} from "@hooks";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -18,8 +17,6 @@ type RenderItemProps = {
 };
 
 export function RenderItem({control, reset}: RenderItemProps) {
-	const {dataKanban} = useKanban();
-
 	const [idKanban, idSppbIn, kanbanItems = {}, id_po, modalType] = useWatch({
 		control,
 		name: ["id", "id_sppb_in", "items", "id_po", "type"],

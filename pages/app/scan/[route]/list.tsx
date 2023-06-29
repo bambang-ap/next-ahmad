@@ -180,11 +180,7 @@ function RenderData({
 	);
 }
 
-function RenderItem({
-	item: [id_item, item],
-}: {
-	item: [string, TKanbanUpsertItem];
-}) {
+function RenderItem({item: [, item]}: {item: [string, TKanbanUpsertItem]}) {
 	const masterItem = item.OrmMasterItem;
 
 	const process = Object.values(masterItem?.instruksi ?? {})?.[0];
