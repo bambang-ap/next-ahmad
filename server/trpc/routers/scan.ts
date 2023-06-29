@@ -1,4 +1,6 @@
-import {TDataScan, TScan} from "@appTypes/app.type";
+import {literal} from "sequelize";
+
+import {PagingResult, TDataScan, TDocument, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	tScan,
@@ -8,11 +10,14 @@ import {
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
-import {OrmScan} from "@database";
+import {OrmDocument, OrmKanban, OrmScan} from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
+
+export type ScanList = TScan & {number: string; OrmDocument: TDocument};
+type ListResult = PagingResult<ScanList>;
 
 function enabled(target: TScanTarget, dataScan?: TDataScan) {
 	switch (target) {
@@ -43,17 +48,32 @@ const scanRouters = router({
 		.input(tableFormValue.extend({target: tScanTarget}))
 		.query(({ctx, input}) => {
 			const {limit, page, target} = input;
-			return checkCredentialV2(ctx, async () => {
+			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
 				const {count, rows: data} = await OrmScan.findAndCountAll({
 					limit,
-					attributes: ["id_kanban"] as keyof TScan[],
+					attributes: [
+						"id_kanban",
+						[literal("ROW_NUMBER() OVER (ORDER BY id)"), "number"],
+					],
 					order: [["id", "asc"]],
 					offset: (page - 1) * limit,
 					where: {[`status_${target}`]: true},
 				});
-				const allDataScan = data.map(e => e.dataValues);
+				const allDataScan = data.map(async ({dataValues}) => {
+					const kanban = await OrmKanban.findOne({
+						attributes: [],
+						include: [OrmDocument],
+						where: {id: dataValues.id_kanban},
+					});
+					return {...dataValues, ...kanban?.dataValues};
+				});
 
-				return pagingResult(count, page, limit, allDataScan);
+				return pagingResult(
+					count,
+					page,
+					limit,
+					(await Promise.all(allDataScan)) as ScanList[],
+				);
 			});
 		}),
 	get: procedure

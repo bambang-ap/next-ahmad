@@ -17,7 +17,7 @@ import {OrmSupplierItem} from "../models/supplier_item";
 import {OrmSupplierPO} from "../models/supplier_po";
 import {OrmUser} from "../models/user";
 
-function relation<M extends object, B extends object>(
+function oneToMany<M extends object, B extends object>(
 	sourceOrm: ModelStatic<Model<M>>,
 	targetOrm: ModelStatic<Model<B>>,
 	sourceForeignKey: keyof M | [foreignKey: keyof M, alias: string][],
@@ -45,29 +45,29 @@ function relation<M extends object, B extends object>(
 }
 
 export function initRelations() {
-	relation(OrmMasterItem, OrmCustomerPOItem, "id", "master_item_id");
-	relation(OrmMasterItem, OrmKanbanItem, "id", "master_item_id");
-	relation(OrmKategoriMesin, OrmMasterItem, "id", "kategori_mesin");
-	relation(
+	oneToMany(OrmMasterItem, OrmCustomerPOItem, "id", "master_item_id");
+	oneToMany(OrmMasterItem, OrmKanbanItem, "id", "master_item_id");
+	oneToMany(OrmKategoriMesin, OrmMasterItem, "id", "kategori_mesin");
+	oneToMany(
 		OrmKategoriMesin,
 		OrmMesin,
 		"id",
 		"kategori_mesin",
 		OrmKategoriMesin._alias,
 	);
-	relation(OrmCustomer, OrmCustomerPO, "id", "id_customer");
-	relation(OrmCustomer, OrmCustomerSPPBOut, "id", "id_customer");
-	relation(OrmKendaraan, OrmCustomerSPPBOut, "id", "id_kendaraan");
-	relation(OrmCustomerPO, OrmKanban, "id", "id_po");
-	relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "id_item");
-	relation(OrmPOItemSppbIn, OrmKanbanItem, "id", "id_item");
-	relation(OrmDocument, OrmKanban, "id", "doc_id");
-	relation(OrmUser, OrmKanban, "id", [
+	oneToMany(OrmCustomer, OrmCustomerPO, "id", "id_customer");
+	oneToMany(OrmCustomer, OrmCustomerSPPBOut, "id", "id_customer");
+	oneToMany(OrmKendaraan, OrmCustomerSPPBOut, "id", "id_kendaraan");
+	oneToMany(OrmCustomerPO, OrmKanban, "id", "id_po");
+	oneToMany(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "id_item");
+	oneToMany(OrmPOItemSppbIn, OrmKanbanItem, "id", "id_item");
+	oneToMany(OrmDocument, OrmKanban, "id", "doc_id");
+	oneToMany(OrmUser, OrmKanban, "id", [
 		["createdBy", OrmKanban._aliasCreatedBy],
 		["updatedBy", OrmKanban._aliasUpdatedBy],
 	]);
 	// relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "kategori_mesin");
 
-	relation(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
-	relation(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
+	oneToMany(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
+	oneToMany(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
 }

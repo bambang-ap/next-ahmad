@@ -49,14 +49,32 @@ export function qtyMap(
 
 export function scanMapperByStatus(
 	target: TScanTarget,
-): [jumlah?: string, jumlahNext?: string, submitText?: string] {
+): [
+	jumlah?: string,
+	jumlahNext?: string,
+	submitText?: string,
+	form?: string,
+	cardName?: string,
+] {
 	switch (target) {
 		case "produksi":
-			return ["Jumlah planning", "Jumlah Produksi", "send to QC"];
+			return [
+				"Jumlah planning",
+				"Jumlah Produksi",
+				"send to QC",
+				"PROD",
+				"KARTU PRODUKSI",
+			];
 		case "qc":
-			return ["Jumlah produksi", "Jumlah QC", "Send to Finish Good"];
+			return [
+				"Jumlah produksi",
+				"Jumlah QC",
+				"Send to Finish Good",
+				"QC",
+				"KARTU QC",
+			];
 		case "finish_good":
-			return ["Jumlah qc", "Jumlah FG", "Diterima"];
+			return ["Jumlah qc", "Jumlah FG", "Diterima", "FG", "KARTU BARANG OK"];
 		default:
 			return [];
 	}

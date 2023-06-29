@@ -185,13 +185,14 @@ export const tKanbanItem = zId.extend({
 });
 
 /** key property of items is id_item */
-const tKanbanUpsertItem = tKanbanItem
+export const tKanbanUpsertItem = tKanbanItem
 	.extend({
 		id_sppb_in: z.string().nullish(),
 		OrmMasterItem: tMasterItem.optional(),
 	})
 	.partial({id: true, id_kanban: true});
 
+export type TKanbanUpsertItem = z.infer<typeof tKanbanUpsertItem>;
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban
 	.partial({id: true, doc_id: true, createdBy: true, updatedBy: true})
