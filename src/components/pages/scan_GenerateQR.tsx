@@ -1,6 +1,6 @@
 import {useEffect, useState} from "react";
 
-import {FormType} from "pages/app/kanban";
+import {KanbanFormType} from "pages/app/kanban";
 import {FormTypeScan} from "pages/app/scan/[route]";
 import {Control, useForm, useWatch} from "react-hook-form";
 
@@ -232,7 +232,7 @@ function RenderListMesin({
 	list_mesin: KanbanGetRow["list_mesin"];
 }) {
 	const [keyMesin, setKeyMesin] = useState(uuid());
-	const {control, reset} = useForm<FormType>({
+	const {control, reset} = useForm<KanbanFormType>({
 		defaultValues: {list_mesin},
 	});
 

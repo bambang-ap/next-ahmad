@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import {FormType} from "pages/app/kanban";
+import {KanbanFormType} from "pages/app/kanban";
 import {
 	Control,
 	FieldPath,
@@ -18,8 +18,8 @@ import {trpc} from "@utils/trpc";
 type RenderMesinProps = {
 	masterId: string;
 	idItem: string;
-	control: Control<FormType>;
-	reset: UseFormReset<FormType>;
+	control: Control<KanbanFormType>;
+	reset: UseFormReset<KanbanFormType>;
 };
 
 export function RenderMesin(props: RenderMesinProps) {
@@ -55,7 +55,7 @@ export function RenderKategori({
 	itemDetail: TMasterItem;
 	parentProps: RenderMesinProps;
 }) {
-	const name: FieldPath<FormType> = `list_mesin.${parentProps.idItem}.${index}`;
+	const name: FieldPath<KanbanFormType> = `list_mesin.${parentProps.idItem}.${index}`;
 	const hasSelected = useWatch({control: parentProps.control, name});
 
 	const {control, reset} = useForm<ProcessForm>();

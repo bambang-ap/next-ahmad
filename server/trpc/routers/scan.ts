@@ -1,5 +1,6 @@
-import {TDataScan} from "@appTypes/app.type";
+import {TDataScan, TScan} from "@appTypes/app.type";
 import {
+	tableFormValue,
 	tScan,
 	tScanItem,
 	TScanTarget,
@@ -8,7 +9,7 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {OrmScan} from "@database";
-import {checkCredentialV2} from "@server";
+import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
@@ -36,6 +37,23 @@ const scanRouters = router({
 				await OrmScan.update({notes}, {where: {id_kanban: id}});
 
 				return Success;
+			});
+		}),
+	list: procedure
+		.input(tableFormValue.extend({target: tScanTarget}))
+		.query(({ctx, input}) => {
+			const {limit, page, target} = input;
+			return checkCredentialV2(ctx, async () => {
+				const {count, rows: data} = await OrmScan.findAndCountAll({
+					limit,
+					attributes: ["id_kanban"] as keyof TScan[],
+					order: [["id", "asc"]],
+					offset: (page - 1) * limit,
+					where: {[`status_${target}`]: true},
+				});
+				const allDataScan = data.map(e => e.dataValues);
+
+				return pagingResult(count, page, limit, allDataScan);
 			});
 		}),
 	get: procedure

@@ -1,4 +1,4 @@
-import {useContext} from "react";
+import {useContext, useEffect} from "react";
 
 import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
 import MenuTwoToneIcon from "@mui/icons-material/MenuTwoTone";
@@ -13,11 +13,13 @@ import {
 } from "@mui/material";
 import Head from "next/head";
 import {useRouter} from "next/router";
+import {useRecoilState} from "recoil";
 
 import {SidebarContext} from "@app/contexts/SidebarContext";
 import {Text} from "@components";
 import {SidebarCollapseOn} from "@constants";
 import {useAuth, useMenu} from "@hooks";
+import {atomHeaderTitle} from "@recoil/atoms";
 import {classNames} from "@utils";
 
 const HeaderWrapper = styled(Box)(
@@ -43,13 +45,18 @@ function Header() {
 	useAuth();
 
 	const theme = useTheme();
+	const [titleAtom, setTitle] = useRecoilState(atomHeaderTitle);
 
 	const {asPath} = useRouter();
 	const {unMappedMenu} = useMenu();
 	const {sidebarToggle, toggleSidebar} = useContext(SidebarContext);
 
 	const selectedMenu = unMappedMenu?.find(e => e.path === asPath);
-	const title = selectedMenu?.title;
+	const title = selectedMenu?.title ?? titleAtom;
+
+	useEffect(() => {
+		if (!!selectedMenu?.title) setTitle("");
+	}, [selectedMenu?.title]);
 
 	return (
 		<>
@@ -74,7 +81,7 @@ function Header() {
 									0.1,
 							  )}`,
 				}}>
-				<Text className="flex-1">{selectedMenu?.title.toUpperCase()}</Text>
+				<Text className="flex-1">{title?.toUpperCase()}</Text>
 				{/* <Stack
 				direction="row"
 				divider={<Divider orientation="vertical" flexItem />}

@@ -12,6 +12,7 @@ import {Button, Form, Input, ModalRef} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {ScanDetailKanban} from "@pageComponent/scan_GenerateQR";
+import Scrollbar from "@prevComp/Scrollbar";
 import {selectorScanIds} from "@recoil/selectors";
 import {scanMapperByStatus} from "@utils";
 import {StorageScan} from "@utils/storage";
@@ -19,7 +20,7 @@ import {trpc} from "@utils/trpc";
 
 Scan.getLayout = getLayout;
 
-type Route = {route: TScanTarget};
+export type Route = {route: TScanTarget};
 
 export type FormTypeScan = Pick<
 	TScan,
@@ -30,13 +31,17 @@ export type FormType = {
 };
 
 export default function Scan() {
-	const {isReady, ...router} = useRouter();
+	const {isReady, asPath, push, ...router} = useRouter();
 	const {route} = router.query as Route;
 
 	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
 
 	function addNew() {
 		setIds(prev => [...prev, {key: uuid(), id: ""}]);
+	}
+
+	function navigateListData() {
+		push(`${asPath}/list`);
 	}
 
 	// useEffect(() => {
@@ -54,11 +59,21 @@ export default function Scan() {
 	if (!isReady) return null;
 
 	return (
-		<div className="flex flex-col gap-2">
-			<Button onClick={addNew}>Tambah</Button>
-			{ids.map(uId => (
-				<RenderScanPage key={uId.key} data={uId} />
-			))}
+		<div className="flex flex-col gap-2 h-full">
+			<div className="flex gap-2">
+				<Button className="flex-1" icon="faPlus" onClick={addNew}>
+					Tambah
+				</Button>
+				<Button className="flex-1" icon="faList" onClick={navigateListData}>
+					List Data
+				</Button>
+			</div>
+
+			<Scrollbar>
+				{ids.map(uId => (
+					<RenderScanPage key={uId.key} data={uId} />
+				))}
+			</Scrollbar>
 		</div>
 	);
 }

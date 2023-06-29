@@ -1,6 +1,6 @@
 import {Fragment, useEffect, useRef, useState} from "react";
 
-import {FormType} from "pages/app/kanban";
+import {KanbanFormType} from "pages/app/kanban";
 import {useForm} from "react-hook-form";
 
 import {
@@ -34,7 +34,7 @@ export function KanbanGenerateQR({
 
 	const [visible, setVisible] = useState(false);
 
-	const {reset, control} = useForm<FormType>();
+	const {reset, control} = useForm<KanbanFormType>();
 
 	const {data} = trpc.kanban.detail.useQuery(idKanban, {
 		enabled: !!idKanban && visible,

@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import {FormType} from "pages/app/kanban";
+import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {
@@ -21,8 +21,8 @@ export function KanbanModalChild({
 	control,
 	reset,
 }: {
-	control: Control<FormType>;
-	reset: UseFormReset<FormType>;
+	control: Control<KanbanFormType>;
+	reset: UseFormReset<KanbanFormType>;
 }) {
 	const [
 		idKanban,

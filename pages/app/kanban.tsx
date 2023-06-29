@@ -17,7 +17,7 @@ import {trpc} from "@utils/trpc";
 
 Kanban.getLayout = getLayout;
 
-export type FormType = TKanbanUpsert & {
+export type KanbanFormType = TKanbanUpsert & {
 	type: ModalTypePreview;
 	id_customer: string;
 	temp_id_item: string;
@@ -30,7 +30,7 @@ export default function Kanban() {
 
 	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, clearErrors, handleSubmit} =
-		useForm<FormType>();
+		useForm<KanbanFormType>();
 	const {data: dataKanbanPage, refetch} = trpc.kanban.getPage.useQuery(
 		formValue!,
 		{enabled: !!formValue},
@@ -76,7 +76,7 @@ export default function Kanban() {
 
 	function showModal(
 		type: ModalTypePreview,
-		initValue?: Partial<Omit<FormType, "type">>,
+		initValue?: Partial<Omit<KanbanFormType, "type">>,
 	) {
 		reset({...initValue, type});
 		modalRef.current?.show();

@@ -1,6 +1,6 @@
-// @ts-nocheck
+// @ts-nocheckd
 
-import {FormType} from "pages/app/kanban";
+import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {Button, Input, Table, Text} from "@components";
@@ -13,8 +13,8 @@ import {qtyList} from "../ModalChild_po";
 import {RenderMesin} from "./RenderMesin";
 
 type RenderItemProps = {
-	control: Control<FormType>;
-	reset: UseFormReset<FormType>;
+	control: Control<KanbanFormType>;
+	reset: UseFormReset<KanbanFormType>;
 };
 
 export function RenderItem({control, reset}: RenderItemProps) {
@@ -37,10 +37,15 @@ export function RenderItem({control, reset}: RenderItemProps) {
 	const {isPreview, isPreviewEdit} = modalTypeParser(modalType);
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
-	const selectedKanban = dataKanban?.find(e => e.id === idKanban);
+	// const selectedKanban = dataKanban?.find(e => e.id === idKanban);
+	const {data: selectedKanban} = trpc.kanban.detail.useQuery(idKanban);
+	const {data: selectedKanbans = []} = trpc.kanban.get.useQuery({
+		type: "kanban",
+		where: {id_sppb_in: idSppbIn},
+	});
 
-	const itemsInSelectedKanban = dataKanban
-		?.filter(e => e.id_sppb_in === idSppbIn)
+	const itemsInSelectedKanban = selectedKanbans
+		// dataKanban?.filter(e => e.id_sppb_in === idSppbIn)
 		.reduce<Record<string, Record<`qty${typeof qtyList[number]}`, number>>>(
 			(ret, e) => {
 				qtyList.forEach(num => {
