@@ -1,5 +1,6 @@
 import {z} from "zod";
 
+import {zId} from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {OrmKanban, OrmKanbanItem, OrmScan} from "@database";
 import {checkCredentialV2, genInvoice} from "@server";
@@ -16,8 +17,8 @@ const kanbanRouters = router({
 	...kanbanImage,
 	getInvoice: procedure.query(() => genInvoice(OrmKanban, "KNB/IMI")),
 	delete: procedure
-		.input(z.string().optional())
-		.mutation(async ({input: id, ctx: {req, res}}) => {
+		.input(zId.partial())
+		.mutation(async ({input: {id}, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
 				if (!id) {
 					throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});

@@ -62,7 +62,7 @@ export default function Kanban() {
 				case "edit":
 					return mutateUpsert({...rest, list_mesin}, {onSuccess});
 				case "delete":
-					return mutateDelete(rest.id, {onSuccess});
+					return mutateDelete({id: rest.id}, {onSuccess});
 				default:
 					return null;
 			}

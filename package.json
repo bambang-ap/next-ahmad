@@ -6,7 +6,7 @@
 		"export": "next export",
 		"format": "prettier --write \"./**/*.{ts,tsx,js,jsx,json}\" --config ./.prettierrc.js",
 		"server": "git restore .; git pull; yarn; yarn build; npx pm2 kill; yarn deploy",
-		"deploy": "npx pm2 start \"npm run start\" --watch --name \"IMI Inventory\"",
+		"deploy": "npx pm2 start \"npm run start\" --watch --name \"IMI Inventory\"; npx pm2 save",
 		"build": "next lint --fix; next build",
 		"start": "next start --port 80",
 		"dev": "next dev --port 1234",
