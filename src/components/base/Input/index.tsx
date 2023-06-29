@@ -106,10 +106,13 @@ export function InputComponent<F extends FieldValues>(
 	switch (type) {
 		case "date": {
 			return (
-				<div className={className}>
+				<div className={classNames("pt-2", className)}>
 					<TextField
 						{...defaultTextFieldProps}
-						InputLabelProps={{shrink: true}}
+						InputLabelProps={{
+							...defaultTextFieldProps.InputLabelProps,
+							// shrink: type === 'date' ? true : undefined,
+						}}
 						className="cursor-pointer w-full"
 						error={!!errorMessage}
 						fullWidth
@@ -141,6 +144,7 @@ export function InputComponent<F extends FieldValues>(
 						<LocalizationProvider dateAdapter={AdapterMoment}>
 							<CalendarPicker
 								date={moment(value)}
+								allowSameDateSelection
 								onChange={date => {
 									modalRef.current?.hide();
 									onChange(date?.format(formatDate));
