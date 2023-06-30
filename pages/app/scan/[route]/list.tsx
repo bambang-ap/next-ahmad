@@ -20,6 +20,7 @@ import {
 	TableFilter,
 	Text,
 } from "@components";
+import {qtyList} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useKanban, useTableFilter} from "@hooks";
@@ -110,13 +111,13 @@ function RenderData({
 }: PropsWithChildren<MMapValue<ScanList> & Cells & Route>) {
 	const {data} = trpc.kanban.detail.useQuery(item.id_kanban as string);
 
-	const document = item.OrmDocument;
+	// const document = item.OrmDocument;
 	const tagId = `SCAN-${item.id_kanban}`;
 	const items = Object.entries(data?.items ?? {});
-	const [, , , formName, cardName] = scanMapperByStatus(route);
-	const formId = ["IMI", "FORM", formName, item.number]
-		.filter(Boolean)
-		.join("/");
+	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
+	// const formId = ["IMI", "FORM", formName, item.number]
+	// 	.filter(Boolean)
+	// 	.join("/");
 
 	function printData() {
 		generatePDF(tagId, `${route}-${item.id_kanban}`);
@@ -132,7 +133,7 @@ function RenderData({
 				{route === "qc" && (
 					<>
 						<Button icon="faPrint" onClick={printData} />
-						<div className="h-0 overflow-hidden -z-10 fixed">
+						<div classNdame="h-0 overflow-hidden -z-10 fixed">
 							<div
 								id={tagId}
 								className={classNames(
@@ -153,17 +154,14 @@ function RenderData({
 									</div>
 									<div className={classNames("flex flex-col flex-1", gap)}>
 										<div className="bg-white flex justify-center flex-1 p-2">
-											<Text className="self-center">{formId}</Text>
+											<Text className="self-center">IMI/FORM/QC/01-14</Text>
+											{/* <Text className="self-center">{formId}</Text> */}
 										</div>
 										<div className="bg-white flex justify-center flex-1 p-1">
-											<Text className="self-center">
-												Revisi : {document.revisi}
-											</Text>
+											<Text className="self-center">Revisi : 0</Text>
 										</div>
 										<div className="bg-white flex justify-center flex-1 p-1">
-											<Text className="self-center">
-												Terbit : {document.terbit}
-											</Text>
+											<Text className="self-center">Terbit : A</Text>
 										</div>
 									</div>
 								</div>
@@ -186,11 +184,29 @@ function RenderData({
 	);
 }
 
-function RenderItem({item: [, item]}: {item: [string, TKanbanUpsertItem]}) {
+function RenderItem({
+	item: [id_item, item],
+}: {
+	item: [string, TKanbanUpsertItem];
+}) {
 	const masterItem = item.OrmMasterItem;
 
 	const process = Object.values(masterItem?.instruksi ?? {})?.[0];
 	const detailProcess = process?.[0];
+
+	const {data: dataKanban} = trpc.kanban.detail.useQuery(
+		item.id_kanban as string,
+	);
+
+	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({
+		type: "sppb_in",
+		where: {id: dataKanban?.id_sppb_in},
+	});
+
+	const {data: dataPo} = trpc.customer_po.get.useQuery({
+		type: "customer_po",
+		id: dataKanban?.id_po,
+	});
 
 	const {data: processData} = trpc.basic.get.useQuery<any, TInstruksiKanban[]>({
 		target: CRUD_ENABLED.INSTRUKSI_KANBAN,
@@ -214,6 +230,14 @@ function RenderItem({item: [, item]}: {item: [string, TKanbanUpsertItem]}) {
 		} as Partial<TParameter>),
 	});
 
+	const selectedItem = dataPo?.[0]?.po_item.find(poItem => {
+		return (
+			poItem.id ===
+			dataSppbIn?.[0]?.items?.find(sppbInItem => sppbInItem.id === item.id_item)
+				?.id_item
+		);
+	});
+
 	return (
 		<>
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
@@ -226,6 +250,19 @@ function RenderItem({item: [, item]}: {item: [string, TKanbanUpsertItem]}) {
 			</Wrapper>
 			<Wrapper title="Parameter">
 				{parameterData?.map(e => e.name).join(", ")}
+			</Wrapper>
+			<Wrapper title="Jumlah">
+				{qtyList
+					.map(num => {
+						const qty = item[`qty${num}`];
+						const unit = selectedItem?.[`unit${num}`];
+
+						if (!qty) return null;
+
+						return `${qty} ${unit}`;
+					})
+					.filter(Boolean)
+					.join(", ")}
 			</Wrapper>
 
 			<div className={classNames("flex h-16", gap)}>
