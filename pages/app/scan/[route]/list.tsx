@@ -230,16 +230,18 @@ function RenderItem({
 		} as Partial<TParameter>),
 	});
 
+	const selectedSppbIn = dataSppbIn?.[0];
 	const selectedItem = dataPo?.[0]?.po_item.find(poItem => {
 		return (
 			poItem.id ===
-			dataSppbIn?.[0]?.items?.find(sppbInItem => sppbInItem.id === item.id_item)
+			selectedSppbIn?.items?.find(sppbInItem => sppbInItem.id === item.id_item)
 				?.id_item
 		);
 	});
 
 	return (
 		<>
+			<Wrapper title="SPPB In">{selectedSppbIn?.nomor_surat}</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
 			<Wrapper title="Material">
