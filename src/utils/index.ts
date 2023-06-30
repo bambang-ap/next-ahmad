@@ -71,7 +71,7 @@ export function scanMapperByStatus(
 				"Jumlah QC",
 				"Send to Finish Good",
 				"QC",
-				"KARTU QC",
+				"KARTU BARANG OK",
 			];
 		case "finish_good":
 			return ["Jumlah qc", "Jumlah FG", "Diterima", "FG", "KARTU BARANG OK"];

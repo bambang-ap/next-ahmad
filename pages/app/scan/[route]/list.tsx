@@ -129,52 +129,58 @@ function RenderData({
 			<Cell>{data?.keterangan}</Cell>
 			<Cell className="flex gap-2">
 				{children}
-				<Button icon="faPrint" onClick={printData} />
-				<div className="h-0 overflow-hidden -z-10 fixed">
-					<div
-						id={tagId}
-						className={classNames(
-							"flex flex-col w-[500px] bg-gray-500",
-							gap,
-							padding,
-						)}>
-						<div className={classNames("flex", gap)}>
-							<div className="bg-white flex justify-center flex-1 p-2">
-								<Text className="self-center text-4xl text-center">IMI</Text>
-							</div>
-							<div className="bg-white flex justify-center flex-1 p-2">
-								<Text className="self-center text-xl text-center">
-									{cardName}
-								</Text>
-							</div>
-							<div className={classNames("flex flex-col flex-1", gap)}>
-								<div className="bg-white flex justify-center flex-1 p-2">
-									<Text className="self-center">{formId}</Text>
+				{route === "qc" && (
+					<>
+						<Button icon="faPrint" onClick={printData} />
+						<div className="h-0 overflow-hidden -z-10 fixed">
+							<div
+								id={tagId}
+								className={classNames(
+									"flex flex-col w-[500px] bg-gray-500",
+									gap,
+									padding,
+								)}>
+								<div className={classNames("flex", gap)}>
+									<div className="bg-white flex justify-center flex-1 p-2">
+										<Text className="self-center text-4xl text-center">
+											IMI
+										</Text>
+									</div>
+									<div className="bg-white flex justify-center flex-1 p-2">
+										<Text className="self-center text-xl text-center">
+											{cardName}
+										</Text>
+									</div>
+									<div className={classNames("flex flex-col flex-1", gap)}>
+										<div className="bg-white flex justify-center flex-1 p-2">
+											<Text className="self-center">{formId}</Text>
+										</div>
+										<div className="bg-white flex justify-center flex-1 p-1">
+											<Text className="self-center">
+												Revisi : {document.revisi}
+											</Text>
+										</div>
+										<div className="bg-white flex justify-center flex-1 p-1">
+											<Text className="self-center">
+												Terbit : {document.terbit}
+											</Text>
+										</div>
+									</div>
 								</div>
-								<div className="bg-white flex justify-center flex-1 p-1">
-									<Text className="self-center">
-										Revisi : {document.revisi}
-									</Text>
-								</div>
-								<div className="bg-white flex justify-center flex-1 p-1">
-									<Text className="self-center">
-										Terbit : {document.terbit}
-									</Text>
-								</div>
+
+								<Wrapper title="Customer">
+									{data?.OrmCustomerPO?.OrmCustomer.name}
+								</Wrapper>
+								<Wrapper title="Tgl / Bln / Thn">
+									{dateUtils.date(data?.createdAt)}
+								</Wrapper>
+								{items.map(item => (
+									<RenderItem key={item[0]} item={item} />
+								))}
 							</div>
 						</div>
-
-						<Wrapper title="Customer">
-							{data?.OrmCustomerPO?.OrmCustomer.name}
-						</Wrapper>
-						<Wrapper title="Tgl / Bln / Thn">
-							{dateUtils.date(data?.createdAt)}
-						</Wrapper>
-						{items.map(item => (
-							<RenderItem key={item[0]} item={item} />
-						))}
-					</div>
-				</div>
+					</>
+				)}
 			</Cell>
 		</>
 	);
