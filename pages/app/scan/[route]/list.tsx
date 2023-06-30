@@ -136,7 +136,7 @@ function RenderData({
 							<div
 								id={tagId}
 								className={classNames(
-									"flex flex-col w-[500px] bg-gray-500",
+									"flex flex-col w-[500px] bg-black",
 									gap,
 									padding,
 								)}>
@@ -256,6 +256,6 @@ function Wrapper({
 	);
 }
 
-const spacing = 2;
+const spacing = 1;
 const gap = `gap-[${spacing}px]`;
 const padding = `p-[${spacing}px]`;
