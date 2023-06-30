@@ -267,7 +267,7 @@ function RenderItem({
 					.join(", ")}
 			</Wrapper>
 
-			<div className={classNames("flex h-16", gap)}>
+			<div className={classNames("flex min-h-[64px]", gap)}>
 				<div className="bg-white flex justify-center flex-1 p-2">
 					<Text className="self-center">LINE-PROCESS</Text>
 				</div>
