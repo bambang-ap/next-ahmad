@@ -133,7 +133,7 @@ function RenderData({
 				{route === "qc" && (
 					<>
 						<Button icon="faPrint" onClick={printData} />
-						<div classNdame="h-0 overflow-hidden -z-10 fixed">
+						<div className="h-0 overflow-hidden -z-10 fixed">
 							<div
 								id={tagId}
 								className={classNames(
