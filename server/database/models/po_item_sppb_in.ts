@@ -15,6 +15,7 @@ export default function initOrmPOItemSppbIn(sequelize: Sequelize) {
 			id_item: STRING,
 			master_item_id: STRING,
 			id_sppb_in: STRING,
+			lot_no: STRING,
 			...unitQtyField,
 		},
 		{

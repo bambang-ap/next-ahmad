@@ -98,6 +98,7 @@ export const tPOItemSppbIn = zId.extend({
 	id_sppb_in: z.string(),
 	id_item: z.string(),
 	master_item_id: z.string(),
+	lot_no: z.string().optional(),
 	...unitQty,
 });
 
@@ -181,6 +182,7 @@ export const tKanbanItem = zId.extend({
 	id_kanban: z.string(),
 	id_item: z.string(),
 	master_item_id: z.string(),
+	id_item_po: z.string(),
 	...unitQty,
 });
 
@@ -221,7 +223,7 @@ export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
 	nomor_surat: z.string(),
 	id_po: z.string(),
-	lot_no: z.string().optional(),
+	// lot_no: z.string().optional(),
 	tgl: z.string(),
 });
 

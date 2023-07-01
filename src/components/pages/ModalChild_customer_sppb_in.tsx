@@ -27,10 +27,12 @@ export function SppbInModalChild({
 }: FormScreenProps<FormType, "control" | "reset">) {
 	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
-	const [modalType, idSppbIn, idPo, idCustomer] = useWatch({
+	const [modalType, idSppbIn, idPo, idCustomer, itemsInPo] = useWatch({
 		control,
-		name: ["type", "id", "id_po", "id_customer"],
+		name: ["type", "id", "id_po", "id_customer", "items"],
 	});
+
+	console.log(useWatch({control}));
 
 	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: "sppb_in"});
 	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -111,14 +113,14 @@ export function SppbInModalChild({
 					placeholder="Nomor surat jalan"
 					label="Nomor Surat"
 				/>
-				<Input
+				{/* <Input
 					className="flex-1"
 					disabled={isPreview}
 					control={control}
 					fieldName="lot_no"
 					placeholder="Nomor Lot"
 					label="Nomor Lot"
-				/>
+				/> */}
 				<Input
 					className="flex-1"
 					disabled={isPreview}
@@ -134,6 +136,7 @@ export function SppbInModalChild({
 				header={[
 					"Kode Item",
 					"Nama Item",
+					"Nomor Lot",
 					// @ts-ignore
 					["Jumlah", qtyList.length],
 					!isPreview && "Action",
@@ -219,6 +222,15 @@ export function SppbInModalChild({
 
 							<Cell>{item.OrmMasterItem.kode_item}</Cell>
 							<Cell>{item.OrmMasterItem.name}</Cell>
+							<Cell>
+								<Input
+									className="flex-1"
+									label="Nomor Lot"
+									control={control}
+									defaultValue={itemsInPo?.[index]?.lot_no}
+									fieldName={`po_item.${index}.lot_no`}
+								/>
+							</Cell>
 
 							{qtyList.map(num => {
 								const unit = item[`unit${num}`];

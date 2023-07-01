@@ -10,13 +10,15 @@ import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
+import {SppbInRows} from "@trpc/routers/sppb/in";
 import {dateUtils} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type FormType = {
 	type: ModalTypePreview;
 	id_customer?: string;
-} & TUpsertSppbIn;
+} & TUpsertSppbIn &
+	Partial<Pick<SppbInRows, "items">>;
 
 SPPBIN.getLayout = getLayout;
 

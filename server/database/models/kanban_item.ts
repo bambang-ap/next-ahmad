@@ -14,6 +14,7 @@ export default function initOrmKanbanItem(sequelize: Sequelize) {
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_item: STRING,
 			master_item_id: STRING,
+			id_item_po: STRING,
 			id_kanban: STRING,
 			...unitQtyField,
 		},
