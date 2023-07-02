@@ -4,14 +4,14 @@ import {useForm} from "react-hook-form";
 
 import ExportData from "@appComponent/ExportData";
 import {ModalTypePreview, TCustomer, TUpsertSppbIn} from "@appTypes/app.type";
-import {Button, Modal, ModalRef, TableFilter} from "@components";
+import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
 import {SppbInRows} from "@trpc/routers/sppb/in";
-import {dateUtils} from "@utils";
+import {dateUtils, modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type FormType = {
@@ -43,14 +43,8 @@ export default function SPPBIN() {
 		trpc.sppb.in.delete.useMutation(defaultErrorMutation);
 
 	const modalType = watch("type");
-	const modalTitle =
-		modalType === "add"
-			? `add SPPB In`
-			: modalType === "edit"
-			? `edit SPPB In`
-			: modalType === "preview"
-			? `preview SPPB In`
-			: `delete SPPB In`;
+
+	const {isPreview, modalTitle} = modalTypeParser(modalType, "SPPB In");
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -98,7 +92,6 @@ export default function SPPBIN() {
 					"Nomor PO",
 					"Customer",
 					"Nomor Surat Jalan",
-					"Nomor Lot",
 					"Action",
 				]}
 				renderItem={({Cell, item}) => {
@@ -114,7 +107,6 @@ export default function SPPBIN() {
 								}
 							</Cell>
 							<Cell>{item.nomor_surat}</Cell>
-							<Cell>{item.lot_no}</Cell>
 							<Cell className="flex gap-2">
 								<Button onClick={() => showModal("preview", item)}>
 									Preview
@@ -130,9 +122,11 @@ export default function SPPBIN() {
 			/>
 
 			<Modal size="xl" title={modalTitle} ref={modalRef}>
-				<form onSubmit={submit}>
+				<Form
+					context={{disabled: isPreview, hideButton: isPreview}}
+					onSubmit={submit}>
 					<SppbInModalChild reset={reset} control={control} />
-				</form>
+				</Form>
 			</Modal>
 		</>
 	);

@@ -9,6 +9,10 @@ export * from "./colors";
 export * from "./pages";
 export * from "./sizes";
 
+export const spacing = 1;
+export const gap = `gap-[${spacing}px]`;
+export const padding = `p-[${spacing}px]`;
+
 export const IMIConst = {
 	name: "PT. INDOHEAT METAL INTI",
 	address1: "Jl. Desa Anggadita, Kec. Klari",

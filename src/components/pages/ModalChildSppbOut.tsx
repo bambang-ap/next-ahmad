@@ -1,7 +1,8 @@
 import {FormValue} from "pages/app/customer/customer_sppb_out";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
-import {Button, Input, Select, selectMapper, Text} from "@components";
+import {Wrapper} from "@appComponent/Wrapper";
+import {Button, Input, Select, selectMapper, Table, Text} from "@components";
 import {useSppbOut} from "@hooks";
 import {modalTypeParser, qtyMap} from "@utils";
 
@@ -60,9 +61,9 @@ export function SppbOutModalChild({
 			/>
 			{selectedCustomer && (
 				<>
-					<div>Alamat : {selectedCustomer.alamat}</div>
-					<div>No telp : {selectedCustomer.no_telp}</div>
-					<div>UP : {selectedCustomer.up}</div>
+					<Wrapper title="Alamat">{selectedCustomer.alamat}</Wrapper>
+					<Wrapper title="No telp">{selectedCustomer.no_telp}</Wrapper>
+					<Wrapper title="UP">{selectedCustomer.up}</Wrapper>
 				</>
 			)}
 
@@ -130,7 +131,6 @@ export function SppbOutModalChild({
 							const listItems = Object.entries(
 								selectedSppbIn?.kanban.items ?? {},
 							);
-							const lot_no = selectedSppbIn?.kanban?.dataSppbIn?.lot_no;
 
 							const availableSJ = selectMapper(
 								availableSppbIn,
@@ -157,8 +157,6 @@ export function SppbOutModalChild({
 											data={[...availableSJMap.values()]}
 										/>
 										<div className="flex flex-col">
-											{/* <Input control={control} fieldName={`po.${i}.sppb_in.${ii}.customer_no_lot`} /> */}
-											{lot_no && <div>no lot customer : {lot_no}</div>}
 											{availableSppbIn?.[0]?.lot_no_imi && (
 												<div>
 													no lot imi : {availableSppbIn?.[0]?.lot_no_imi}
@@ -179,57 +177,70 @@ export function SppbOutModalChild({
 											Delete Surat Jalan
 										</Button>
 									</div>
-									{listItems.map(([id_item, item]) => {
-										const masterItemDetail = item.OrmMasterItem;
-										const detail =
-											selectedSppbIn?.kanban.dataSppbIn?.items?.find(
-												e => e.id === id_item,
-											)?.itemDetail;
+									<Table
+										data={listItems}
+										header={["Kode Item", "Nama Item", "Nomor Lot", "Jumlah"]}
+										renderItem={({Cell, item: [id_item, item]}) => {
+											const masterItemDetail = item.OrmMasterItem;
+											const sppbInItem =
+												selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+													e => e.id === id_item,
+												);
 
-										return (
-											<div key={id_item} className="flex items-center gap-2">
-												<Input
-													control={control}
-													className="hidden"
-													defaultValue={masterItemDetail?.id}
-													fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
-												/>
-												{/* FIXME:  */}
-												{/* @ts-ignore */}
-												<Text className="flex-1">{masterItemDetail?.name}</Text>
-												<Text className="flex-1">
-													{masterItemDetail?.kode_item}
-												</Text>
-												{qtyMap(({qtyKey, unitKey, num}) => {
-													const jumlah = item[qtyKey];
+											const {itemDetail: detail, lot_no} = sppbInItem ?? {};
 
-													if (!jumlah) return null;
+											return (
+												<>
+													<Input
+														control={control}
+														className="hidden"
+														defaultValue={masterItemDetail?.id}
+														fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
+													/>
+													<Cell>
+														<Text className="flex-1">
+															{masterItemDetail?.name}
+														</Text>
+													</Cell>
+													<Cell>
+														<Text className="flex-1">
+															{masterItemDetail?.kode_item}
+														</Text>
+													</Cell>
+													<Cell>
+														<Text className="flex-1">{lot_no}</Text>
+													</Cell>
+													<Cell className="flex gap-2">
+														{qtyMap(({qtyKey, unitKey, num}) => {
+															const jumlah = item[qtyKey];
 
-													return (
-														<Input
-															key={jumlah}
-															type="decimal"
-															className="flex-1 bg-white"
-															label={`Qty ${num}`}
-															// @ts-ignore
-															defaultValue={jumlah}
-															rightAcc={<Text>{detail?.[unitKey]}</Text>}
-															fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
-															control={control}
-															rules={{
-																max: {
-																	value: jumlah,
-																	message: `max is ${jumlah}`,
-																},
-															}}
-														/>
-													);
-												})}
-											</div>
-										);
-									})}
-									{/* @ts-ignore */}
-									{/* <RenderListMesin data={selectedSppbIn?.kanban.listMesin} /> */}
+															if (!jumlah) return null;
+
+															return (
+																<Input
+																	key={jumlah}
+																	type="decimal"
+																	className="flex-1 bg-white"
+																	label={`Qty ${num}`}
+																	// @ts-ignore
+																	defaultValue={jumlah}
+																	rightAcc={<Text>{detail?.[unitKey]}</Text>}
+																	fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
+																	control={control}
+																	rules={{
+																		max: {
+																			value: jumlah,
+																			message: `max is ${jumlah}`,
+																		},
+																	}}
+																/>
+															);
+														})}
+													</Cell>
+												</>
+											);
+										}}
+									/>
 								</>
 							);
 						})}

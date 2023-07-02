@@ -60,7 +60,13 @@ export function RenderItem({control, reset}: RenderItemProps) {
 
 	return (
 		<Table
-			header={["Kode Item", "Nama Item", "Jumlah", "Action"]}
+			header={[
+				"Kode Item",
+				"Nama Item",
+				"Nomor Lot",
+				"Jumlah",
+				!isPreview && "Action",
+			]}
 			data={Object.entries(kanbanItems)}
 			renderItemEach={({Cell, item: [id_item]}, index) => {
 				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
@@ -100,6 +106,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							fieldName={`items.${id_item}.id_item_po`}
 						/>
 						<DetailItem idItem={rowItem?.master_item_id} Cell={Cell} />
+						<Cell>{rowItem?.lot_no}</Cell>
 						<Cell>
 							<div className="flex gap-2">
 								{qtyList.map(num => {

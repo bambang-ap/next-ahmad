@@ -5,6 +5,7 @@ import {KanbanFormType} from "pages/app/kanban";
 import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
+import {Wrapper} from "@appComponent/Wrapper";
 import {
 	THardness,
 	TInstruksiKanban,
@@ -275,19 +276,6 @@ function RenderItem({item: [, item]}: {item: [string, TKanbanUpsertItem]}) {
 				<div className={classNames("bg-white flex flex-col flex-1", gap)} />
 			</div>
 		</>
-	);
-}
-
-function Wrapper({
-	title,
-	children,
-}: Partial<Record<"title" | "children", string | null>>) {
-	return (
-		<div className={classNames("flex", gap)}>
-			<Text className={classNames("bg-white w-1/4 p-2")}>{title}</Text>
-			<Text className={classNames("bg-white p-2 px-4")}>:</Text>
-			<Text className={classNames("bg-white flex-1 p-2")}>{children}</Text>
-		</div>
 	);
 }
 

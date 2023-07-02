@@ -223,7 +223,6 @@ export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
 	nomor_surat: z.string(),
 	id_po: z.string(),
-	// lot_no: z.string().optional(),
 	tgl: z.string(),
 });
 

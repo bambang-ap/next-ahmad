@@ -3,6 +3,7 @@ import {Fragment, useEffect, useRef, useState} from "react";
 import {KanbanFormType} from "pages/app/kanban";
 import {useForm} from "react-hook-form";
 
+import {Wrapper} from "@appComponent/Wrapper";
 import {
 	Button,
 	Form,
@@ -99,44 +100,54 @@ export function KanbanGenerateQR({
 								</Td>
 								<Td colSpan={2} className="flex-col gap-2">
 									<div className="p-2 border rounded-md">
-										<Text>Doc no : {docDetail?.doc_no}</Text>
-										<Text>Keterangan : {docDetail?.keterangan}</Text>
+										<Wrapper title="Doc no">{docDetail?.doc_no}</Wrapper>
+										<Wrapper title="Keterangan">
+											{docDetail?.keterangan}
+										</Wrapper>
 									</div>
-									<Text>tgl kanban : {dateUtils.full(createdAt)}</Text>
-									<Text>tgl sj masuk : {dateUtils.date(dataSppbIn?.tgl)}</Text>
+									<Wrapper title="Tgl Kanban">
+										{dateUtils.full(createdAt)}
+									</Wrapper>
+									<Wrapper title="Tgl SPPB In">
+										{dateUtils.date(dataSppbIn?.tgl)}
+									</Wrapper>
 								</Td>
 							</Tr>
 							<Tr>
-								<Td colSpan={2} className="flex-col gap-2">
-									<Text>no po : {OrmCustomerPO?.nomor_po}</Text>
-									<Text>no sj masuk : {dataSppbIn?.nomor_surat}</Text>
-									<Text>no cust lot : {dataSppbIn?.lot_no}</Text>
-								</Td>
-								<Td colSpan={2} className="flex-col gap-2">
-									<Text>created by : {dataCreatedBy?.name}</Text>
-									<Text>customer : {OrmCustomerPO?.OrmCustomer.name}</Text>
+								<Td colSpan={4} className="flex-col gap-2">
+									<Wrapper title="Nomor PO">{OrmCustomerPO?.nomor_po}</Wrapper>
+									<Wrapper title="Nomor SPPB In">
+										{dataSppbIn?.nomor_surat}
+									</Wrapper>
+									<Wrapper title="Created By">{dataCreatedBy?.name}</Wrapper>
+									<Wrapper title="Customer">
+										{OrmCustomerPO?.OrmCustomer.name}
+									</Wrapper>
 								</Td>
 							</Tr>
 						</Table>
 
 						<Table>
-							<Table.Tr>
-								<Table.Td>kode_item</Table.Td>
-								<Table.Td>name</Table.Td>
-								<Table.Td colSpan={qtyList.length}>Jumlah</Table.Td>
-							</Table.Tr>
+							<Tr>
+								<Td>Kode Item</Td>
+								<Td>Nama Item</Td>
+								<Td>Nomor Lot</Td>
+								<Td colSpan={qtyList.length}>Jumlah</Td>
+							</Tr>
 
 							{Object.entries(items).map(([, item]) => {
 								const {id: idItem, OrmMasterItem, id_item} = item;
-								const itemDetail = dataSppbIn?.items?.find(
+								const itemSppbIn = dataSppbIn?.items?.find(
 									e => e.id === id_item,
-								)?.itemDetail;
+								);
+								const {itemDetail, lot_no} = itemSppbIn ?? {};
 
 								return (
 									<Fragment key={idItem}>
-										<Table.Tr>
-											<Table.Td>{OrmMasterItem?.kode_item}</Table.Td>
-											<Table.Td>{OrmMasterItem?.name}</Table.Td>
+										<Tr>
+											<Td>{OrmMasterItem?.kode_item}</Td>
+											<Td>{OrmMasterItem?.name}</Td>
+											<Td>{lot_no}</Td>
 											<Td colSpan={2} className="flex-col gap-2">
 												{qtyList.map(num => {
 													const qtyKey = `qty${num}` as const;
@@ -152,9 +163,9 @@ export function KanbanGenerateQR({
 													);
 												})}
 											</Td>
-										</Table.Tr>
-										<Table.Tr>
-											<Table.Td colSpan={3}>
+										</Tr>
+										<Tr>
+											<Td colSpan={3}>
 												<Form className="bg-white" context={{disabled: true}}>
 													<RenderMesin
 														reset={reset}
@@ -163,8 +174,8 @@ export function KanbanGenerateQR({
 														idItem={id_item}
 													/>
 												</Form>
-											</Table.Td>
-										</Table.Tr>
+											</Td>
+										</Tr>
 									</Fragment>
 								);
 							})}

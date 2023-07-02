@@ -57,8 +57,8 @@ export function SPPBOutGenerateQR(props: {
 	const {
 		id,
 		withButton = true,
-		// className = "",
-		className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
 
 	// const {data: qrImage} = trpc.qr.useQuery<any, string>(
@@ -133,7 +133,7 @@ export function SPPBOutGenerateQR(props: {
 								{qtyList.map(num => (
 									<Td key={num}>Qty</Td>
 								))}
-								<Td>Lot No Customer</Td>
+								<Td>Lot No</Td>
 								<Td>Lot No IMI</Td>
 								<Td>No PO</Td>
 								<Td>No SPPB In</Td>
@@ -151,7 +151,7 @@ export function SPPBOutGenerateQR(props: {
 												<>
 													{Object.entries(e.items).map(
 														([id_item, item], index) => {
-															const {itemDetail} =
+															const {itemDetail, lot_no} =
 																selectedSppbIn?.kanban.dataSppbIn?.items?.find(
 																	eItem => eItem.id === id_item,
 																) ?? {};
@@ -162,8 +162,6 @@ export function SPPBOutGenerateQR(props: {
 																<>
 																	<Tr>
 																		<Td>{index + 1}</Td>
-																		{/* FIXME: */}
-																		{/* @ts-ignore */}
 																		<Td>{masterItem?.name}</Td>
 																		{qtyMap(({num, qtyKey, unitKey}) => {
 																			return (
@@ -172,7 +170,7 @@ export function SPPBOutGenerateQR(props: {
 																				</Td>
 																			);
 																		})}
-																		<Td>{e?.dataSppbIn?.lot_no}</Td>
+																		<Td>{lot_no}</Td>
 																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
 																		<Td>{po?.dataPo?.nomor_po}</Td>
 																		<Td>{e?.dataSppbIn?.nomor_surat}</Td>

@@ -40,10 +40,7 @@ const a = z
 	.object({
 		id_po: z.string(),
 		sppb_in: tCustomerSPPBOutSppbIn
-			.extend({
-				// lot_no_imi: z.string(),
-				dataSppbIn: tCustomerSPPBIn.nullish(),
-			})
+			.extend({dataSppbIn: tCustomerSPPBIn.nullish()})
 			.array(),
 		dataPo: tCustomerPO.nullish(),
 	})
