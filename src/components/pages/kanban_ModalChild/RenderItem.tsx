@@ -1,4 +1,4 @@
-// @ts-nocheckf
+// @ts-nocheck
 
 import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
