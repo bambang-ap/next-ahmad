@@ -13,7 +13,8 @@
 		"next-lint": "next lint",
 		"lint": "eslint --ext=jsx,ts,tsx",
 		"dump:schema": "pg_dump -U postgres --schema-only manajemen > schema.sql",
-		"dump:data": "pg_dump --insert --data-only -U postgres -d manajemen -t customer -t document_number -t hardness -t hardness_kategori -t instruksi_kanban -t kendaraan -t material -t material_kategori -t material_kategori -t menu -t mesin -t mesin_kategori -t parameter -t parameter_kategori -t role -t user_pengguna -t user_login -t master_item > data.sql"
+		"dump:data": "pg_dump --insert --data-only -U postgres -d manajemen -t customer -t document_number -t hardness -t hardness_kategori -t instruksi_kanban -t kendaraan -t material -t material_kategori -t material_kategori -t menu -t mesin -t mesin_kategori -t parameter -t parameter_kategori -t role -t user_pengguna -t user_login -t master_item > data.sql",
+		"dump:data:server": "pg_dump --insert --data-only --host=103.84.206.3 -U postgres -d manajemen > dataServer.sql"
 	},
 	"dependencies": {
 		"@emotion/cache": "11.7.1",

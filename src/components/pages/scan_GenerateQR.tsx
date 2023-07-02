@@ -75,9 +75,6 @@ export function ScanDetailKanban({
 				</div>
 			</div>
 			<div className="flex gap-[1px]">
-				<div className="flex-1 bg-white text-center">
-					Lot no : {kanban.dataSppbIn?.lot_no}
-				</div>
 				<Input
 					className="flex-1 bg-white"
 					control={control}
