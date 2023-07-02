@@ -181,7 +181,8 @@ CREATE TABLE public.kanban_item (
     qty5 numeric,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    master_item_id character varying(47)
+    master_item_id character varying(47),
+    id_item_po character varying(47)
 );
 
 
@@ -359,7 +360,8 @@ CREATE TABLE public.po_item_sppb_in (
     qty5 numeric,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    master_item_id character varying(47)
+    master_item_id character varying(47),
+    lot_no character varying(100)
 );
 
 
