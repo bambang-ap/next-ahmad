@@ -1,4 +1,4 @@
-// @ts-nocheck
+// @ts-nocheckf
 
 import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
@@ -64,7 +64,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 			data={Object.entries(kanbanItems)}
 			renderItemEach={({Cell, item: [id_item]}, index) => {
 				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
-				console.log(rowItem);
+
 				return (
 					<Cell colSpan={4} className="flex flex-col gap-2">
 						<RenderMesin
@@ -92,13 +92,13 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							defaultValue={rowItem?.master_item_id}
 							fieldName={`items.${id_item}.master_item_id`}
 						/>
-						{/* <Input
-							// className="hidden"
+						<Input
+							className="hidden"
 							control={control}
 							shouldUnregister
-							defaultValue={rowItem?.master_item_id}
-							fieldName={`items.${id_item}.master_item_id`}
-						/> */}
+							defaultValue={rowItem?.id_item}
+							fieldName={`items.${id_item}.id_item_po`}
+						/>
 						<DetailItem idItem={rowItem?.master_item_id} Cell={Cell} />
 						<Cell>
 							<div className="flex gap-2">

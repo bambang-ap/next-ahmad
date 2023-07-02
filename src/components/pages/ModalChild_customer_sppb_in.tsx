@@ -32,8 +32,6 @@ export function SppbInModalChild({
 		name: ["type", "id", "id_po", "id_customer", "items"],
 	});
 
-	console.log(useWatch({control}));
-
 	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: "sppb_in"});
 	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
