@@ -14,6 +14,7 @@ import {
 	selectMapper,
 	SelectPropsData,
 	Table,
+	TableProps,
 } from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
@@ -59,13 +60,14 @@ export default function PoModalChild({
 		field: {onChange: onChangePoItem},
 	} = useController({control, name: "po_item"});
 
-	const {headerTable, isPreview} = {
+	const {headerTable, isPreview, nameColspan} = {
+		nameColspan: 2,
 		get isPreview() {
 			return modalType === "preview";
 		},
 		get headerTable() {
-			const tableHeader = [
-				"Name",
+			const tableHeader: TableProps<any>["header"] = [
+				["Nama", this.nameColspan],
 				"Kode Item",
 				"Harga",
 				...qtyList.map(num => `Jumlah ${num}`),
@@ -76,7 +78,7 @@ export default function PoModalChild({
 		},
 	};
 
-	const selectedMasterItemIds = poItem.map(e => e.master_item_id);
+	// const selectedMasterItemIds = poItem.map(e => e.master_item_id);
 
 	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
 		label: name,
@@ -148,19 +150,20 @@ export default function PoModalChild({
 					header={headerTable}
 					className="max-h-72 overflow-y-auto"
 					renderItem={({item, Cell}, index) => {
-						const listItems =
-							dataMasterItem?.rows.filter(
-								e =>
-									e.id === item.master_item_id ||
-									!selectedMasterItemIds.includes(e.id),
-							) ?? [];
+						// const listItems =
+						// 	dataMasterItem?.rows.filter(
+						// 		e =>
+						// 			e.id === item.master_item_id ||
+						// 			!selectedMasterItemIds.includes(e.id),
+						// 	) ?? [];
+						const listItems = dataMasterItem?.rows ?? [];
 						const selectedItem = dataMasterItem?.rows.find(
 							e => e.id === item.master_item_id,
 						);
 
 						return (
 							<>
-								<Cell>
+								<Cell colSpan={nameColspan}>
 									<Select
 										className="flex-1"
 										control={control}
