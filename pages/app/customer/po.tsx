@@ -47,7 +47,6 @@ export default function POCustomer() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, id, po_item = [], ...rest}) => {
-			return console.log({...rest, po_item});
 			const onSuccess = () => {
 				modalRef.current?.hide();
 				refetch();
