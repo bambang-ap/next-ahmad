@@ -31,7 +31,8 @@ export default function SPPBOUT() {
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
 	const [modalType] = watch(["type"]);
-	const {modalTitle, isPreview} = modalTypeParser(modalType);
+	const {modalTitle, isPreview, isDelete, isEdit, isAdd} =
+		modalTypeParser(modalType);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -62,6 +63,8 @@ export default function SPPBOUT() {
 					context={{disabled: isPreview, hideButton: isPreview}}
 					className="flex flex-col gap-2 max-h-[600px] overflow-y-auto">
 					<SppbOutModalChild reset={reset} control={control} />
+
+					{(isAdd || isEdit) && <Button type="submit">Submit</Button>}
 				</Form>
 			</Modal>
 

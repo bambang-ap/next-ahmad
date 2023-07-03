@@ -105,6 +105,7 @@ export function copyToClipboard(str: string) {
 }
 
 export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
+	const isAdd = type === "add";
 	const isEdit = type === "edit";
 	const isPreview = type === "preview";
 	const isDelete = type === "delete";
@@ -113,6 +114,7 @@ export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
 	return {
 		isEdit,
 		isPreview,
+		isAdd,
 		isDelete,
 		isPreviewEdit,
 		get modalTitle() {

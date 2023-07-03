@@ -198,6 +198,12 @@ export function SppbOutModalChild({
 														defaultValue={masterItemDetail?.id}
 														fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
 													/>
+													<Input
+														control={control}
+														className="hidden"
+														defaultValue={sppbInItem?.id_item}
+														fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
+													/>
 													<Cell>
 														<Text className="flex-1">
 															{masterItemDetail?.name}
@@ -248,8 +254,6 @@ export function SppbOutModalChild({
 					</>
 				);
 			})}
-
-			<Button type="submit">Submit</Button>
 		</>
 	);
 }
