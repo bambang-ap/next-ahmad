@@ -31,8 +31,7 @@ export default function SPPBOUT() {
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
 	const [modalType] = watch(["type"]);
-	const {modalTitle, isPreview, isDelete, isEdit, isAdd} =
-		modalTypeParser(modalType);
+	const {modalTitle, isPreview, isEdit, isAdd} = modalTypeParser(modalType);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
