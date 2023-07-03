@@ -3,7 +3,7 @@
 import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
-import {Button, Input, Table, Text} from "@components";
+import {Button, Cells, Input, Table, Text} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -57,6 +57,19 @@ export function RenderItem({control, reset}: RenderItemProps) {
 			},
 			{},
 		);
+
+	function deleteItem(id_item: string, id?: string) {
+		reset(({items, list_mesin, callbacks = [], ...prevValue}) => {
+			delete items[id_item];
+			delete list_mesin[id_item];
+			return {
+				...prevValue,
+				items,
+				list_mesin,
+				callbacks: [...callbacks, () => mutateItem(id)],
+			};
+		});
+	}
 
 	return (
 		<Table
@@ -152,17 +165,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 						</Cell>
 						<Cell className="flex gap-2">
 							{!isPreview && (
-								<Button
-									onClick={() => {
-										reset(({items, callbacks = [], ...prevValue}) => {
-											delete items[id_item];
-											return {
-												...prevValue,
-												items,
-												callbacks: [...callbacks, () => mutateItem(item.id)],
-											};
-										});
-									}}>
+								<Button onClick={() => deleteItem(id_item, item.id)}>
 									Delete
 								</Button>
 							)}
@@ -174,7 +177,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 	);
 }
 
-function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells}) {
+function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells["Cell"]}) {
 	const {data} = trpc.item.detail.useQuery(idItem);
 
 	return (
