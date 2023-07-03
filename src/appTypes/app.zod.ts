@@ -70,6 +70,7 @@ export const tItemUnit = z.union([
 	z.literal("box"),
 	z.literal("set"),
 	z.literal("carton"),
+	z.literal("pallet"),
 ]);
 
 const unitQty = {

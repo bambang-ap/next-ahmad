@@ -44,6 +44,7 @@ export function SppbOutModalChild({
 				control={control}
 				label="Nomor Surat"
 				fieldName="invoice_no"
+				key={invoiceId}
 				defaultValue={invoiceId}
 			/>
 			<Input type="date" control={control} fieldName="date" label="Tanggal" />

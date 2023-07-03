@@ -46,7 +46,9 @@ export function KanbanModalChild({
 	});
 
 	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
-	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
+	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery(undefined, {
+		refetchInterval: 5000,
+	});
 	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
 		enabled: !!idKanban,
 		onSuccess(r) {
@@ -90,6 +92,7 @@ export function KanbanModalChild({
 					disabled
 					className="flex-1"
 					control={control}
+					key={nomorKanban}
 					defaultValue={nomorKanban}
 					fieldName="nomor_kanban"
 					label="Nomor Kanban"

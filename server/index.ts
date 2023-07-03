@@ -118,12 +118,17 @@ export function generateId(id?: string) {
 	);
 }
 
-export async function genInvoice<
-	T extends ModelStatic<Model>,
-	P extends string,
->(orm: T, prefix: P, length = 5): Promise<`${P}/${string}`> {
-	const count = await orm.count();
-	const countString = (count + 1).toString().padStart(length, "0");
+export async function genInvoice<T extends object, P extends string>(
+	orm: ModelStatic<Model<T>>,
+	prefix: P,
+	counter: (data?: Model<T>["dataValues"]) => string | undefined,
+	length = 5,
+): Promise<`${P}/${string}`> {
+	const count = await orm.findOne({order: [["createdAt", "DESC"]]});
+	const counterResult = counter(count?.dataValues)?.replace(/[^0-9.]/g, "");
+	const countString = (parseInt(counterResult ?? "0") + 1)
+		.toString()
+		.padStart(length, "0");
 	return `${prefix}/${countString}`;
 }
 

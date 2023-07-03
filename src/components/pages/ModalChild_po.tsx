@@ -25,6 +25,7 @@ export const selectUnitData = [
 	{value: "box"},
 	{value: "set"},
 	{value: "carton"},
+	{value: "pallet"},
 ] as SelectPropsData<TItemUnit>[];
 
 export type UQtyList = `qty${typeof qtyList[number]}`;

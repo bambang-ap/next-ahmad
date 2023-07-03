@@ -3,7 +3,9 @@ import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
 export function useSppbOut(idCustomer?: string) {
-	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();
+	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery(undefined, {
+		refetchInterval: 5000,
+	});
 	const {data: dataFg = []} = trpc.sppb.out.getFg.useQuery(idCustomer, {
 		enabled: !!idCustomer,
 	});

@@ -5,10 +5,13 @@ import {checkCredentialV2, generateId} from "@server";
 import {procedure} from "@trpc";
 import {TRPCError} from "@trpc/server";
 
+import {appRouter} from "../";
+
 export const kanbanUpsert = {
 	upsert: procedure
 		.input(tKanbanUpsert)
 		.mutation(async ({input, ctx: {req, res}}) => {
+			const routerCaller = appRouter.createCaller({req, res});
 			return checkCredentialV2({req, res}, async session => {
 				const docData = await OrmDocument.findOne();
 
@@ -20,8 +23,10 @@ export const kanbanUpsert = {
 				}
 
 				const {id, doc_id, items: kanban_items, createdBy, ...rest} = input;
+				const nomor_kanban = await routerCaller.kanban.getInvoice();
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
+					nomor_kanban,
 					createdBy: createdBy ?? session.user?.id!,
 					updatedBy: session.user?.id!,
 					id: id || generateId("KNB"),
