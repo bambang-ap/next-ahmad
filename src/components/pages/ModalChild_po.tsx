@@ -61,7 +61,7 @@ export default function PoModalChild({
 	} = useController({control, name: "po_item"});
 
 	const {headerTable, isPreview, nameColspan} = {
-		nameColspan: 2,
+		nameColspan: 3,
 		get isPreview() {
 			return modalType === "preview";
 		},
