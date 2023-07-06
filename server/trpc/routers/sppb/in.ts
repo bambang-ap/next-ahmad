@@ -102,7 +102,7 @@ const sppbInRouters = router({
 						...data.dataValues,
 						detailPo: detailPo?.dataValues,
 						items: await Promise.all(promiseItemDetails),
-					};
+					} as SppbInRows;
 				});
 
 				const allDataSppbIn = await Promise.all(promises);
