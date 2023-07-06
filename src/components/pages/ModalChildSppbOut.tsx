@@ -157,13 +157,6 @@ export function SppbOutModalChild({
 											label="Surat Jalan Masuk"
 											data={[...availableSJMap.values()]}
 										/>
-										<div className="flex flex-col">
-											{availableSppbIn?.[0]?.lot_no_imi && (
-												<div>
-													no lot imi : {availableSppbIn?.[0]?.lot_no_imi}
-												</div>
-											)}
-										</div>
 										<Button
 											onClick={() => {
 												reset(prev => {
@@ -180,7 +173,13 @@ export function SppbOutModalChild({
 									</div>
 									<Table
 										data={listItems}
-										header={["Kode Item", "Nama Item", "Nomor Lot", "Jumlah"]}
+										header={[
+											"Kode Item",
+											"Nama Item",
+											"Nomor Lot",
+											"Nomor Lot IMI",
+											"Jumlah",
+										]}
 										renderItem={({Cell, item: [id_item, item]}) => {
 											const masterItemDetail = item.OrmMasterItem;
 											const sppbInItem =
@@ -207,6 +206,7 @@ export function SppbOutModalChild({
 													<Cell>{masterItemDetail?.name}</Cell>
 													<Cell>{masterItemDetail?.kode_item}</Cell>
 													<Cell>{lot_no}</Cell>
+													<Cell>{item.lot_no_imi}</Cell>
 													<Cell className="flex gap-2">
 														{qtyMap(({qtyKey, unitKey, num}) => {
 															const jumlah = item[qtyKey];

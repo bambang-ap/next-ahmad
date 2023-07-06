@@ -188,6 +188,7 @@ export const tKanbanItem = zId.extend({
 	...unitQty,
 });
 
+export type TKanbanUpsertItem = z.infer<typeof tKanbanUpsertItem>;
 /** key property of items is id_item */
 export const tKanbanUpsertItem = tKanbanItem
 	.extend({
@@ -196,7 +197,6 @@ export const tKanbanUpsertItem = tKanbanItem
 	})
 	.partial({id: true, id_kanban: true});
 
-export type TKanbanUpsertItem = z.infer<typeof tKanbanUpsertItem>;
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban
 	.partial({id: true, doc_id: true, createdBy: true, updatedBy: true})
@@ -329,7 +329,7 @@ export const tScanItem = z.object({
 	item_qc: scanItem.array().optional(),
 	item_qc_reject: scanItem.array().optional(),
 	item_finish_good: scanItem.array().optional(),
-	item_out_barang: scanItem.array().optional(),
+	// item_out_barang: scanItem.array().optional(),
 });
 
 export type TScan = z.infer<typeof tScan>;
@@ -341,7 +341,7 @@ export const tScan = zId.extend({
 	status_produksi: z.boolean().optional(),
 	status_qc: z.boolean().optional(),
 	status_finish_good: z.boolean().optional(),
-	status_out_barang: z.boolean().optional(),
+	// status_out_barang: z.boolean().optional(),
 	notes: z.string().optional(),
 });
 
@@ -350,7 +350,7 @@ export const tScanTarget = z.union([
 	z.literal("produksi"),
 	z.literal("qc"),
 	z.literal("finish_good"),
-	z.literal("out_barang"),
+	// z.literal("out_barang"),
 ]);
 
 export type TDashboardInput = z.infer<typeof tDashboardInput>;

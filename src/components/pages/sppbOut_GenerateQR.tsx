@@ -57,8 +57,8 @@ export function SPPBOutGenerateQR(props: {
 	const {
 		id,
 		withButton = true,
-		// className = "",
-		className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
 
 	// const {data: qrImage} = trpc.qr.useQuery<any, string>(
@@ -151,11 +151,12 @@ export function SPPBOutGenerateQR(props: {
 												<>
 													{Object.entries(e.items).map(
 														([id_item, item], index) => {
-															const {itemDetail, lot_no} =
+															const {id, itemDetail, lot_no} =
 																selectedSppbIn?.kanban.dataSppbIn?.items?.find(
 																	eItem => eItem.id === id_item,
 																) ?? {};
 															const kanban = selectedSppbIn?.kanban;
+
 															const masterItem =
 																kanban?.items[id_item]?.OrmMasterItem;
 															return (
@@ -171,7 +172,7 @@ export function SPPBOutGenerateQR(props: {
 																			);
 																		})}
 																		<Td>{lot_no}</Td>
-																		<Td>{selectedSppbIn?.lot_no_imi}</Td>
+																		<Td>{kanban?.items?.[id!]?.lot_no_imi}</Td>
 																		<Td>{po?.dataPo?.nomor_po}</Td>
 																		<Td>{e?.dataSppbIn?.nomor_surat}</Td>
 																		<Td className="flex-col gap-2">

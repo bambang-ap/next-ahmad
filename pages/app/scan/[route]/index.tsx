@@ -146,7 +146,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 			reset(prev => {
 				const {
 					item_finish_good,
-					item_out_barang,
+					// item_out_barang,
 					item_produksi,
 					item_qc,
 					lot_no_imi,
@@ -159,7 +159,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 					item_qc_reject,
 					lot_no_imi,
 					item_finish_good,
-					item_out_barang,
+					// item_out_barang,
 					item_produksi,
 					item_qc,
 				};

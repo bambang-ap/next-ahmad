@@ -1,10 +1,8 @@
-// FIXME:
-// @ts-nocheck
-
 import {
 	KanbanGetRow,
 	PagingResult,
 	TCustomer,
+	TKanbanUpsertItem,
 	TKendaraan,
 } from "@appTypes/app.type";
 import {
@@ -47,7 +45,11 @@ const a = z
 	.array();
 
 type GetPage = PagingResult<TCustomerSPPBOut>;
-type YY = TScan & {kanban: KanbanGetRow};
+type YY = TScan & {
+	kanban: Omit<KanbanGetRow, "items"> & {
+		items: MyObject<TKanbanUpsertItem & {lot_no_imi?: string}>;
+	};
+};
 type KJ = Omit<TCustomerSPPBOut, "po"> & {
 	OrmKendaraan: TKendaraan;
 	OrmCustomer: TCustomer;
@@ -98,6 +100,7 @@ const sppbOutRouters = router({
 				};
 			});
 
+			// @ts-ignore
 			return {
 				...data?.dataValues,
 				po: await Promise.all(detailPo),
@@ -127,6 +130,14 @@ const sppbOutRouters = router({
 			return checkCredentialV2({req, res}, async () => {
 				const dataScan = await OrmScan.findAll({
 					where: {status_finish_good: true, id_customer: input},
+					attributes: {
+						exclude: [
+							"item_produksi",
+							"item_qc",
+							"status_produksi",
+							"status_qc",
+						] as (keyof TScan)[],
+					},
 				});
 
 				const dataScanPromise = dataScan.map(async ({dataValues}) => {
@@ -140,27 +151,34 @@ const sppbOutRouters = router({
 
 				const promisedData = await Promise.all(dataScanPromise);
 
+				function calllasl(asd: YY, cur: YY): YY {
+					const nextItemsMap = new Map(
+						Object.entries(cur.kanban.items).map(([a, b]) => {
+							return [a, {...b, lot_no_imi: cur.lot_no_imi}];
+						}),
+					);
+					const prevItems = asd?.kanban.items;
+					const nextItems = Object.fromEntries(nextItemsMap);
+					const prevListMesin = asd?.kanban.list_mesin;
+					const nextListMesin = cur.kanban.list_mesin;
+					return {
+						...asd,
+						...cur,
+						kanban: {
+							...cur.kanban,
+							items: {...prevItems, ...nextItems},
+							list_mesin: {...prevListMesin, ...nextListMesin},
+						},
+					};
+				}
+
 				return promisedData.reduce((ret, cur) => {
 					const index = ret.findIndex(
 						e => e.kanban.id_sppb_in === cur.kanban.id_sppb_in,
 					);
 
-					if (index < 0) ret.push(cur);
-					else {
-						const prevItems = ret[index]?.kanban.items;
-						const nextItems = cur.kanban.items;
-						const prevListMesin = ret[index]?.kanban.list_mesin;
-						const nextListMesin = cur.kanban.list_mesin;
-						ret[index] = {
-							...ret[index],
-							...cur,
-							kanban: {
-								...cur.kanban,
-								items: {...prevItems, ...nextItems},
-								list_mesin: {...prevListMesin, ...nextListMesin},
-							},
-						};
-					}
+					if (index < 0) ret.push(calllasl(cur, cur));
+					else ret[index] = calllasl(ret[index]!, cur);
 
 					return ret;
 				}, [] as YY[]);
