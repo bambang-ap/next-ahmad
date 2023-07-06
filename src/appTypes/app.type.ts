@@ -79,6 +79,7 @@ export type PagingResult<T> = {
 };
 
 export type KanbanGetRow = TKanban & {
+	dataScan?: TScan;
 	id_customer?: string;
 	items: TKanbanUpsert["items"];
 	OrmCustomerPO?: TCustomerPO & {OrmCustomer: TCustomer};

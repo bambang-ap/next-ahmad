@@ -19,6 +19,7 @@ import {
 	OrmKategoriMesin,
 	OrmMasterItem,
 	OrmMesin,
+	OrmScan,
 	OrmUser,
 	wherePages,
 } from "@database";
@@ -135,7 +136,7 @@ async function parseDetailKanban(
 	dataValues: TKanban,
 	routerCaller: AppRouterCaller,
 ) {
-	const {id_sppb_in} = dataValues;
+	const {id_sppb_in, id} = dataValues;
 
 	const dataItems = await OrmKanbanItem.findAll({
 		where: {id_kanban: dataValues.id},
@@ -145,6 +146,7 @@ async function parseDetailKanban(
 		type: "sppb_in",
 		where: {id: id_sppb_in},
 	});
+	const dataScan = await OrmScan.findOne({where: {id_kanban: id}});
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	// const {image, ...restDataValues} = dataValues;
@@ -152,6 +154,7 @@ async function parseDetailKanban(
 
 	const objectData: KanbanGetRow = {
 		...restDataValues,
+		dataScan: dataScan?.dataValues,
 		dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
 		get id_customer() {
 			return this.OrmCustomerPO?.id_customer;

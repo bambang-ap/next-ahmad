@@ -6,6 +6,7 @@ import "@fontsource/roboto/500.css";
 import "@fontsource/roboto/700.css";
 import "@total-typescript/ts-reset";
 import "global-methods";
+import "moment/locale/id";
 import "./globals.css";
 
 import {ReactElement, ReactNode, StrictMode} from "react";
