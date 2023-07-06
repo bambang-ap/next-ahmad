@@ -5,6 +5,7 @@ import {
 	PagingResult,
 	TCustomerPO,
 	TCustomerSPPBIn,
+	TMasterItem,
 	TPOItem,
 	TPOItemSppbIn,
 } from "@appTypes/app.type";
@@ -19,6 +20,7 @@ import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
+	OrmMasterItem,
 	OrmPOItemSppbIn,
 } from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
@@ -29,7 +31,9 @@ import {appRouter} from "..";
 type GetPage = PagingResult<SppbInRows>;
 export type SppbInRows = TCustomerSPPBIn & {
 	detailPo?: TCustomerPO;
-	items?: (TPOItemSppbIn & {itemDetail?: TPOItem})[];
+	items?: (TPOItemSppbIn & {
+		itemDetail?: TPOItem & {OrmMasterItem: TMasterItem};
+	})[];
 };
 
 const sppbInRouters = router({
@@ -88,6 +92,7 @@ const sppbInRouters = router({
 					const promiseItemDetails = items.map(async item => {
 						const itemDetail = await OrmCustomerPOItem.findOne({
 							where: {id: item.dataValues.id_item},
+							include: [OrmMasterItem],
 						});
 
 						return {...item.dataValues, itemDetail: itemDetail?.dataValues};

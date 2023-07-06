@@ -46,9 +46,7 @@ export function KanbanModalChild({
 	});
 
 	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
-	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery(undefined, {
-		refetchInterval: 5000,
-	});
+	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
 	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
 		enabled: !!idKanban,
 		onSuccess(r) {
@@ -59,6 +57,9 @@ export function KanbanModalChild({
 	const {isPreview, isDelete} = modalTypeParser(modalType);
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
+	const itemsInSppbIn = selectedSppbIn?.items?.filter(
+		e => !Object.keys(kanbanItems).includes(e.id),
+	);
 
 	useEffect(() => {
 		if (tempIdItem) {
@@ -163,15 +164,9 @@ export function KanbanModalChild({
 						fieldName="temp_id_item"
 						label="Tambah Item"
 						firstOption="- Tambah Item -"
-						data={selectMapper(
-							selectedSppbIn?.items?.filter(
-								e => !Object.keys(kanbanItems).includes(e.id),
-							) ?? [],
-							"id",
-							// FIXME:
-							// @ts-ignore
-							"itemDetail.name",
-						)}
+						data={selectMapper(itemsInSppbIn ?? [], "id", [
+							"itemDetail.OrmMasterItem.name",
+						])}
 					/>
 				)}
 			</div>

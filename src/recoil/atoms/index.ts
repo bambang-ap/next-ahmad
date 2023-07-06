@@ -59,6 +59,6 @@ export const atomDataKanban = atom<KanbanGetRow[] | null>({
 });
 
 export const atomHeaderTitle = atom<string>({
-	key: "atomKanbanTableForm",
+	key: "atomHeaderTitle",
 	default: "",
 });

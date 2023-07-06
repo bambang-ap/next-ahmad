@@ -204,19 +204,9 @@ export function SppbOutModalChild({
 														defaultValue={sppbInItem?.id_item}
 														fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
 													/>
-													<Cell>
-														<Text className="flex-1">
-															{masterItemDetail?.name}
-														</Text>
-													</Cell>
-													<Cell>
-														<Text className="flex-1">
-															{masterItemDetail?.kode_item}
-														</Text>
-													</Cell>
-													<Cell>
-														<Text className="flex-1">{lot_no}</Text>
-													</Cell>
+													<Cell>{masterItemDetail?.name}</Cell>
+													<Cell>{masterItemDetail?.kode_item}</Cell>
+													<Cell>{lot_no}</Cell>
 													<Cell className="flex gap-2">
 														{qtyMap(({qtyKey, unitKey, num}) => {
 															const jumlah = item[qtyKey];
