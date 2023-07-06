@@ -154,14 +154,21 @@ const customer_poRouters = router({
 					...body,
 					id: generateId("PO"),
 				});
-				const poItemPromises = po_item?.map(item =>
-					OrmCustomerPOItem.create({
+				po_item.forEach(async item => {
+					await OrmCustomerPOItem.create({
 						...item,
 						id: generateId("POI"),
 						id_po: createdPo.id,
-					}),
-				);
-				await Promise.all(poItemPromises ?? []);
+					});
+				});
+				// const poItemPromises = po_item?.map(item =>
+				// 	OrmCustomerPOItem.create({
+				// 		...item,
+				// 		id: generateId("POI"),
+				// 		id_po: createdPo.id,
+				// 	}),
+				// );
+				// await Promise.all(poItemPromises ?? []);
 				return Success;
 			});
 		}),
