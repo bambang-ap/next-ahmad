@@ -15,6 +15,7 @@ export default function initOrmMasterItem(sequelize: Sequelize) {
 			instruksi: JSONB,
 			kategori_mesinn: ARRAY(STRING),
 			kategori_mesin: STRING,
+			keterangan: STRING,
 		},
 		{
 			sequelize,

@@ -119,11 +119,12 @@ export const tCustomerPOExtended = tCustomerPO.extend({
 
 export type TMasterItem = z.infer<typeof tMasterItem>;
 export const tMasterItem = zId.extend({
-	name: z.string().optional(),
-	kode_item: z.string().optional(),
+	name: z.string().nullish(),
+	kode_item: z.string().nullish(),
 	// FIXME: Remove
 	kategori_mesin: z.string().nullish(),
 	kategori_mesinn: z.string().array(),
+	keterangan: z.string().nullish(),
 	instruksi: z.record(
 		z
 			.object({

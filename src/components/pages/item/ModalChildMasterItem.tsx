@@ -47,6 +47,7 @@ export function ModalChildMasterItem({
 		<>
 			<Input control={control} fieldName="name" />
 			<Input control={control} fieldName="kode_item" />
+			<Input control={control} fieldName="keterangan" />
 
 			<Button
 				onClick={() =>

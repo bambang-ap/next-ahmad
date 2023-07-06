@@ -73,12 +73,19 @@ export default function MasterItem() {
 				<TableFilter
 					data={data}
 					form={hookForm}
-					header={["Nomor", "Nama Mesin", "Nama Item", "Kode Item", "Action"]}
+					header={[
+						"Nomor",
+						"Nama Mesin",
+						"Nama Item",
+						"Kode Item",
+						"Keterangan",
+						"Action",
+					]}
 					topComponent={
 						<Button onClick={() => showModal("add", {})}>Add</Button>
 					}
 					renderItem={({item, Cell}, index) => {
-						const {id, name, kode_item} = item;
+						const {id, name, kode_item, keterangan} = item;
 
 						return (
 							<>
@@ -86,6 +93,7 @@ export default function MasterItem() {
 								<Cell>{item.nameMesins.join(", ")}</Cell>
 								<Cell>{name}</Cell>
 								<Cell>{kode_item}</Cell>
+								<Cell>{keterangan}</Cell>
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal("preview", item)}>
 										Preview
