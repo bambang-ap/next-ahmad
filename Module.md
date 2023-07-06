@@ -127,3 +127,6 @@ NOTE: buat printout kanban
         qty
         intruksi_kanban
         data mesin
+
+- Design Kanban Printout
+- 
