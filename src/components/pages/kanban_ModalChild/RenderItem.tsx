@@ -3,6 +3,7 @@
 import {KanbanFormType} from "pages/app/kanban";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
+import {Wrapper} from "@appComponent/Wrapper";
 import {Button, Cells, Input, Table, Text} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {modalTypeParser} from "@utils";
@@ -81,11 +82,16 @@ export function RenderItem({control, reset}: RenderItemProps) {
 				!isPreview && "Action",
 			]}
 			data={Object.entries(kanbanItems)}
-			renderItemEach={({Cell, item: [id_item]}, index) => {
+			renderItemEach={({Cell, item: [id_item, item]}, index) => {
 				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
-
+				const {keterangan} = item.OrmMasterItem ?? {};
 				return (
-					<Cell colSpan={4} className="flex flex-col gap-2">
+					<Cell colSpan={5} className="flex flex-col gap-2">
+						{!!keterangan && (
+							<Wrapper title="Keterangan">
+								{item.OrmMasterItem?.keterangan}
+							</Wrapper>
+						)}
 						<RenderMesin
 							index={index}
 							reset={reset}
