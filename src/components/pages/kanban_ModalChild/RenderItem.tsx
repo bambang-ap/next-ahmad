@@ -50,7 +50,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 					Object.entries(e.items ?? {}).forEach(([key, val]) => {
 						if (!ret[key]) ret[key] = {};
 						if (!ret[key][keyQty]) ret[key][keyQty] = 0;
-						ret[key][keyQty] += val[keyQty];
+						ret[key][keyQty] += parseFloat(val[keyQty] ?? 0);
 					});
 				});
 				return ret;
@@ -128,13 +128,22 @@ export function RenderItem({control, reset}: RenderItemProps) {
 
 									if (!rowItem?.[keyQty]) return null;
 
-									const maxValue = rowItem?.[keyQty];
+									const maxValue = parseFloat(rowItem?.[keyQty] ?? 0);
 									const currentQty = selectedItem?.[keyQty] ?? 0;
-									const calculatedQty =
-										itemsInSelectedKanban?.[id_item]?.[keyQty] ?? 0;
+
+									const calculatedQty = parseFloat(
+										itemsInSelectedKanban?.[id_item]?.[keyQty] ?? 0,
+									);
 									const defaultValue = isPreviewEdit
 										? maxValue - calculatedQty + currentQty
 										: maxValue - calculatedQty;
+
+									console.log({
+										maxValue,
+										currentQty,
+										calculatedQty,
+										defaultValue,
+									});
 
 									return (
 										<div className="flex-1" key={`${rowItem.id}${num}`}>
