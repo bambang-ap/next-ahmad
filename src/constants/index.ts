@@ -47,6 +47,7 @@ export const formatHour = "HH:mm:ss";
 export const formatFull = `${formatDate} - ${formatHour}`;
 
 export const formatDateView = "DD/MM/YYYY";
+export const formatDateStringView = "D MMMM YYYY";
 export const formatFullView = `${formatDateView} - ${formatHour}`;
 
 export const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,100})?$/;

@@ -8,17 +8,24 @@ import {
 	TMasterItem,
 	TMesin,
 } from "@appTypes/app.type";
-import {tableFormValue, tKanban} from "@appTypes/app.zod";
+import {tableFormValue, tKanban, tMasterItem} from "@appTypes/app.zod";
 import {ItemDetail} from "@appTypes/props.type";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmDocument,
+	OrmHardness,
+	OrmHardnessKategori,
 	OrmKanban,
+	OrmKanbanInstruksi,
 	OrmKanbanItem,
 	OrmKategoriMesin,
 	OrmMasterItem,
+	OrmMaterial,
+	OrmMaterialKategori,
 	OrmMesin,
+	OrmParameter,
+	OrmParameterKategori,
 	OrmScan,
 	OrmUser,
 	wherePages,
@@ -129,6 +136,55 @@ export const kanbanGet = {
 					return detailedKanban.filter(Boolean);
 				},
 			);
+		}),
+	mesinProcess: procedure
+		.input(
+			z.object({
+				process: tMasterItem.shape.instruksi.optional(),
+				selectedMesin: z.string().array().optional(),
+			}),
+		)
+		.query(({ctx, input: {process, selectedMesin}}) => {
+			return checkCredentialV2(ctx, async () => {
+				const listMesin = await OrmMesin.findAll({where: {id: selectedMesin}});
+				const selectedProcess = listMesin?.map(mesin => {
+					return process?.[mesin.dataValues?.kategori_mesin];
+				});
+
+				const processMapper = selectedProcess.map(async process => {
+					const result = process?.map(async p => {
+						const {hardness, id_instruksi, material, parameter} = p;
+
+						const prcs = await OrmKanbanInstruksi.findOne({
+							where: {id: id_instruksi},
+						});
+
+						const hdns = await OrmHardness.findAll({
+							where: {id: hardness},
+							include: [OrmHardnessKategori],
+						});
+						const mtrl = await OrmMaterial.findAll({
+							where: {id: material},
+							include: [OrmMaterialKategori],
+						});
+						const prmtr = await OrmParameter.findAll({
+							where: {id: parameter},
+							include: [OrmParameterKategori],
+						});
+
+						return {
+							process: prcs,
+							hardness: hdns,
+							material: mtrl,
+							parameter: prmtr,
+						};
+					});
+
+					return Promise.all(result);
+				});
+
+				return Promise.all(processMapper);
+			});
 		}),
 };
 

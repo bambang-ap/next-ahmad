@@ -129,4 +129,4 @@ NOTE: buat printout kanban
         data mesin
 
 - Design Kanban Printout
-- 
+- Export yg bisa di export

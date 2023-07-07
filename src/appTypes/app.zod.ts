@@ -303,6 +303,7 @@ export const tDocument = zId.extend({
 	keterangan: z.string().optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
+	target: z.literal("kanban").or(z.literal("qc")).nullish(),
 });
 
 export type BaseMenu = z.infer<typeof baseTMenu>;

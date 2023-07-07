@@ -10,6 +10,7 @@ import * as XLSX from "xlsx";
 
 import {ModalTypePreview, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
+	formatDateStringView,
 	formatDateView,
 	formatFullView,
 	formatHour,
@@ -31,6 +32,7 @@ export const dateUtils = {
 	full: convertFull,
 	hour: convertHour,
 	date: convertDate,
+	dateS: convertDateS,
 };
 
 export function qtyMap(
@@ -222,6 +224,12 @@ export function formData<T extends FieldValues, P extends FieldPath<T>>(
 			return clonedObj;
 		},
 	};
+}
+
+function convertDateS(date?: string) {
+	if (!date) return null;
+
+	return moment(date).format(formatDateStringView);
 }
 
 function convertDate(date?: string) {

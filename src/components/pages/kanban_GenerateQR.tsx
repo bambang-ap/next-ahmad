@@ -1,25 +1,26 @@
-import {Fragment, useEffect, useRef, useState} from "react";
+import {TdHTMLAttributes, useEffect, useRef, useState} from "react";
 
+import moment from "moment";
 import {KanbanFormType} from "pages/app/kanban";
 import {useForm} from "react-hook-form";
 
-import {Wrapper} from "@appComponent/Wrapper";
+import {KanbanGetRow, TKanbanUpsertItem} from "@appTypes/app.type";
 import {
 	Button,
-	Form,
 	Icon,
 	Modal,
 	ModalRef,
 	RootTable as Table,
 	Text,
 } from "@components";
-import {qtyList} from "@constants";
-import {dateUtils, generatePDF} from "@utils";
+import {classNames, dateUtils, generatePDF} from "@utils";
 import {trpc} from "@utils/trpc";
 
-import {RenderMesin} from "./kanban_ModalChild/RenderMesin";
+const {Tr, Td} = Table;
 
-const {Td, Tr} = Table;
+function Ttd({className, ...props}: TdHTMLAttributes<HTMLTableCellElement>) {
+	return <td {...props} className={classNames("border flex-1", className)} />;
+}
 
 export function KanbanGenerateQR({
 	idKanban,
@@ -46,22 +47,12 @@ export function KanbanGenerateQR({
 	);
 
 	const {
-		className = "h-0 overflow-hidden -z-10 fixed",
-		// className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
 		withButton = true,
 	} = props;
 
-	const {
-		OrmDocument: docDetail,
-		OrmCustomerPO,
-		dataCreatedBy,
-		items = {},
-		dataSppbIn,
-		image,
-		createdAt,
-
-		keterangan,
-	} = data ?? {};
+	const {items = {}} = data ?? {};
 
 	function showModal() {
 		modalRef.current?.show();
@@ -77,7 +68,7 @@ export function KanbanGenerateQR({
 	}
 
 	useEffect(() => {
-		genPdf();
+		// genPdf();
 	}, [visible, !!data]);
 
 	useEffect(() => {
@@ -92,113 +83,160 @@ export function KanbanGenerateQR({
 					<Text>Harap Tunggu...</Text>
 				</div>
 				<div className={className}>
-					<div id={tagId} className="flex flex-col gap-2 p-4 w-[1000px]">
-						<Table>
-							<Tr>
-								<Td colSpan={2}>
-									<img src={qrImage} alt="" />
-								</Td>
-								<Td colSpan={2} className="flex-col gap-2">
-									<div className="p-2 border rounded-md">
-										<Wrapper title="Doc no">{docDetail?.doc_no}</Wrapper>
-										<Wrapper title="Keterangan">
-											{docDetail?.keterangan}
-										</Wrapper>
-									</div>
-									<Wrapper title="Tgl Kanban">
-										{dateUtils.full(createdAt)}
-									</Wrapper>
-									<Wrapper title="Tgl SPPB In">
-										{dateUtils.date(dataSppbIn?.tgl)}
-									</Wrapper>
-								</Td>
-							</Tr>
-							<Tr>
-								<Td colSpan={4} className="flex-col gap-2">
-									<Wrapper title="Nomor PO">{OrmCustomerPO?.nomor_po}</Wrapper>
-									<Wrapper title="Nomor SPPB In">
-										{dataSppbIn?.nomor_surat}
-									</Wrapper>
-									<Wrapper title="Created By">{dataCreatedBy?.name}</Wrapper>
-									<Wrapper title="Customer">
-										{OrmCustomerPO?.OrmCustomer.name}
-									</Wrapper>
-								</Td>
-							</Tr>
-						</Table>
-
-						<Table>
-							<Tr>
-								<Td>Kode Item</Td>
-								<Td>Nama Item</Td>
-								<Td>Nomor Lot</Td>
-								<Td colSpan={qtyList.length}>Jumlah</Td>
-							</Tr>
-
-							{Object.entries(items).map(([, item]) => {
-								const {id: idItem, OrmMasterItem, id_item} = item;
-								const itemSppbIn = dataSppbIn?.items?.find(
-									e => e.id === id_item,
-								);
-								const {itemDetail, lot_no} = itemSppbIn ?? {};
-
-								return (
-									<Fragment key={idItem}>
-										<Tr>
-											<Td>{OrmMasterItem?.kode_item}</Td>
-											<Td>{OrmMasterItem?.name}</Td>
-											<Td>{lot_no}</Td>
-											<Td colSpan={2} className="flex-col gap-2">
-												{qtyList.map(num => {
-													const qtyKey = `qty${num}` as const;
-													const unitKey = `unit${num}` as const;
-													const qty = item[qtyKey];
-
-													if (!qty) return null;
-
-													return (
-														<Text key={num}>
-															{qty} {itemDetail?.[unitKey]}
-														</Text>
-													);
-												})}
-											</Td>
-										</Tr>
-										<Tr>
-											<Td colSpan={3}>
-												<Form className="bg-white" context={{disabled: true}}>
-													<RenderMesin
-														reset={reset}
-														control={control}
-														masterId={item.master_item_id}
-														idItem={id_item}
-													/>
-												</Form>
-											</Td>
-										</Tr>
-									</Fragment>
-								);
-							})}
-						</Table>
-
-						<Table>
-							<Tr>
-								<Td colSpan={4}>Keterangan : {keterangan}</Td>
-							</Tr>
-							{image && (
-								<Tr>
-									<Td colSpan={4} className="flex justify-center">
-										<div className="w-1/2">
-											<img alt="" src={image} />
-										</div>
-									</Td>
-								</Tr>
-							)}
-						</Table>
+					<div id={tagId} className="flex flex-col gap-2 p-4 w-[500px]">
+						{Object.entries(items).map(item => {
+							return (
+								<Asd key={item[0]} data={data} qrImage={qrImage} item={item} />
+							);
+						})}
 					</div>
 				</div>
 			</Modal>
 			{withButton && <Button icon="faPrint" onClick={showModal} />}
+		</>
+	);
+}
+
+type Props = {
+	qrImage?: string;
+	data?: KanbanGetRow | null;
+	item: [string, TKanbanUpsertItem];
+};
+
+function useAsd({data, item: [id_item, item]}: Omit<Props, "qrImage">) {
+	const process = item.OrmMasterItem?.instruksi;
+	const selectedMesin = data?.list_mesin?.[id_item];
+
+	const {data: dataMesinProcess} = trpc.kanban.mesinProcess.useQuery({
+		process,
+		selectedMesin,
+	});
+
+	console.log(dataMesinProcess);
+}
+
+function Asd({data, qrImage, item: dataItem}: Props) {
+	const [id_item, item] = dataItem;
+	const {
+		OrmDocument: docDetail,
+		OrmCustomerPO,
+		dataCreatedBy,
+		dataSppbIn,
+		image,
+		createdAt,
+		keterangan,
+		list_mesin,
+	} = data ?? {};
+
+	const itemSppbIn = dataSppbIn?.items?.find(e => e.id === id_item);
+	const dateKanban = `Tgl Kanban ${moment(createdAt).format(
+		"D MMMM YYYY - HH.mm.ss",
+	)}`;
+
+	const {itemDetail, lot_no} = itemSppbIn ?? {};
+	const {qty1, qty2, qty3, qty4, id: idItem, OrmMasterItem: masterItem} = item;
+	const {unit1, unit2, unit3, unit4} = itemDetail ?? {};
+	const [class1, class2, class3, class4] = [
+		classNames({
+			["text-white"]: !qty1 || !unit1,
+		}),
+		classNames({
+			["text-white"]: !qty2 || !unit2,
+		}),
+		classNames({
+			["text-white"]: !qty3 || !unit3,
+		}),
+		classNames({
+			["text-white"]: !qty4 || !unit4,
+		}),
+	];
+
+	const e = useAsd({data, item: dataItem});
+
+	// console.log({u, list_mesin, listMesin, id_item, selectedMesin});
+
+	return (
+		<>
+			<table className="w-full table-fixed">
+				<tr className="border-0">
+					<Ttd rowSpan={2}>IMI</Ttd>
+					<Ttd rowSpan={2} colSpan={3}>
+						PROCESSING CARD
+					</Ttd>
+					<Ttd colSpan={2}>{docDetail?.doc_no}</Ttd>
+				</tr>
+				<tr>
+					<Ttd>{dateUtils.dateS(docDetail?.tgl_efektif)}</Ttd>
+					<Ttd>Rev {docDetail?.revisi}</Ttd>
+				</tr>
+				<tr>
+					<Ttd>Customer</Ttd>
+					<Ttd colSpan={2}>{OrmCustomerPO?.OrmCustomer.name}</Ttd>
+					<Ttd>HARDNESS</Ttd>
+					<Ttd colSpan={2}>PARAMETER</Ttd>
+				</tr>
+				<tr>
+					<Ttd>Purchase Order No</Ttd>
+					<Ttd colSpan={2}>{OrmCustomerPO?.nomor_po}</Ttd>
+					<Ttd></Ttd>
+					<Ttd></Ttd>
+					<Ttd></Ttd>
+				</tr>
+				<tr>
+					<Ttd>Delivery Order No</Ttd>
+					<Ttd colSpan={2}>{dataSppbIn?.nomor_surat}</Ttd>
+					<Ttd></Ttd>
+					<Ttd></Ttd>
+					<Ttd></Ttd>
+				</tr>
+				<tr>
+					<Ttd>Incoming Date</Ttd>
+					<Ttd colSpan={2}>{moment(dataSppbIn?.tgl).format("D MMMM YYYY")}</Ttd>
+					<Ttd></Ttd>
+					<Ttd></Ttd>
+					<Ttd></Ttd>
+				</tr>
+				<tr>
+					<Ttd>Part No</Ttd>
+					<Ttd colSpan={2}>{masterItem?.kode_item}</Ttd>
+					<Ttd colSpan={2}>PROCESS</Ttd>
+					<Ttd>MATERIAL</Ttd>
+				</tr>
+				<tr>
+					<Ttd>Part Name</Ttd>
+					<Ttd colSpan={2}>{masterItem?.name}</Ttd>
+					<Ttd rowSpan={2} colSpan={2}>
+						(process)
+					</Ttd>
+					<Ttd rowSpan={2}>(material)</Ttd>
+				</tr>
+				<tr>
+					<Ttd>Lot Customer</Ttd>
+					<Ttd colSpan={2}>{lot_no}</Ttd>
+				</tr>
+				<tr>
+					<Ttd>Mesin</Ttd>
+					<Ttd colSpan={2}>(nomor mesin)</Ttd>
+					<Ttd rowSpan={3}>Keterangan : {keterangan}</Ttd>
+					<Ttd rowSpan={3}>{image && <img alt="" src={image} />}</Ttd>
+					<Ttd rowSpan={3}>
+						<img src={qrImage} alt="" />
+					</Ttd>
+				</tr>
+				<tr>
+					<Ttd rowSpan={2}>Qty / Jumlah</Ttd>
+					<Ttd className={class1}>{`${qty1} ${unit1}`}</Ttd>
+					<Ttd className={class2}>{`${qty2} ${unit2}`}</Ttd>
+				</tr>
+				<tr>
+					<Ttd className={class3}>{`${qty3} ${unit3}`}</Ttd>
+					<Ttd className={class4}>{`${qty4} ${unit4}`}</Ttd>
+				</tr>
+			</table>
+			<div className="flex justify-between">
+				<Text>{dateKanban}</Text>
+				<Text>{`Created by : ${dataCreatedBy?.name}`}</Text>
+			</div>
 		</>
 	);
 }

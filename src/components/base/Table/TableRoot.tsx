@@ -12,16 +12,14 @@ import {
 
 import {classNames} from "@utils";
 
+export type StyledCellProps = GetProps<typeof StyledTableCell>;
+
 const StyledTableCell = styled(TableCell)(({valign}) => ({
 	padding: 8,
 	verticalAlign: valign,
 }));
 
-const StyledCell = ({
-	children,
-	className,
-	...rest
-}: GetProps<typeof StyledTableCell>) => {
+const StyledCell = ({children, className, ...rest}: StyledCellProps) => {
 	return (
 		<StyledTableCell {...rest}>
 			<div className={classNames("flex", className)}>{children}</div>

@@ -15,6 +15,7 @@ export default function initOrmDocument(sequelize: Sequelize) {
 			terbit: {type: DataTypes.STRING},
 			tgl_efektif: {type: DataTypes.STRING},
 			keterangan: {type: DataTypes.STRING},
+			// target: STRING,
 		},
 		{
 			sequelize,

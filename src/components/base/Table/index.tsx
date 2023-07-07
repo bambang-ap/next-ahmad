@@ -10,6 +10,9 @@ import {classNames} from "@utils";
 
 import TableRoot from "./TableRoot";
 
+export * from "./TableRoot";
+export {TableRoot as RootTable};
+
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
 
 export type Cells = {Cell: FC<TableCellProps>};
@@ -36,8 +39,6 @@ export type TableFilterProps<T> = Omit<
 	form: UseFormReturn<TableFormValue>;
 	disableSearch?: boolean;
 };
-
-export {TableRoot as RootTable};
 
 export function TableFilter<T>({
 	data,
