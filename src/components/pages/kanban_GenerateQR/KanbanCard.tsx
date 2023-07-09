@@ -68,7 +68,7 @@ function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 	)}`;
 
 	const {itemDetail, lot_no} = itemSppbIn ?? {};
-	const {qty1, qty2, qty3, qty4, id: idItem, OrmMasterItem: masterItem} = item;
+	const {qty1, qty2, qty3, qty4, OrmMasterItem: masterItem} = item;
 	const {unit1, unit2, unit3, unit4} = itemDetail ?? {};
 	const [class1, class2, class3, class4] = [
 		classNames({
