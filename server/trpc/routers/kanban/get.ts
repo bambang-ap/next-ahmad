@@ -4,9 +4,17 @@ import {
 	AppRouterCaller,
 	KanbanGetRow,
 	PagingResult,
+	THardness,
+	THardnessKategori,
+	TInstruksiKanban,
 	TKanban,
+	TKategoriMesin,
 	TMasterItem,
+	TMaterial,
+	TMaterialKategori,
 	TMesin,
+	TParameter,
+	TParameterKategori,
 } from "@appTypes/app.type";
 import {tableFormValue, tKanban, tMasterItem} from "@appTypes/app.zod";
 import {ItemDetail} from "@appTypes/props.type";
@@ -33,6 +41,13 @@ import {
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure} from "@trpc";
 import {appRouter} from "@trpc/routers";
+
+export type DataProcess = {
+	process: TInstruksiKanban;
+	hardness: (THardness & {OrmHardnessKategori: THardnessKategori})[];
+	material: (TMaterial & {OrmMaterialKategori: TMaterialKategori})[];
+	parameter: (TParameter & {OrmParameterKategori: TParameterKategori})[];
+};
 
 export const kanbanGet = {
 	availableMesins: procedure.input(z.string()).query(({ctx, input}) => {
@@ -98,9 +113,10 @@ export const kanbanGet = {
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,
-				order: [["id", "asc"]],
+				order: [["nomor_kanban", "desc"]],
 				offset: (page - 1) * limit,
 				where: wherePages("nomor_kanban", search),
+				logging: true,
 			});
 
 			return pagingResult(
@@ -127,7 +143,7 @@ export const kanbanGet = {
 						where,
 						limit: 5,
 						attributes: ["id"],
-						order: [["createdAt", "asc"]],
+						order: [["nomor_kanban", "asc"]],
 					});
 					const detailedKanban = await Promise.all(
 						dataKanban.map(e => routerCaller.kanban.detail(e.dataValues.id)),
@@ -146,13 +162,14 @@ export const kanbanGet = {
 		)
 		.query(({ctx, input: {process, selectedMesin}}) => {
 			return checkCredentialV2(ctx, async () => {
-				const listMesin = await OrmMesin.findAll({where: {id: selectedMesin}});
-				const selectedProcess = listMesin?.map(mesin => {
-					return process?.[mesin.dataValues?.kategori_mesin];
+				const listMesin = await OrmMesin.findAll({
+					where: {id: selectedMesin},
+					include: [{model: OrmKategoriMesin, as: OrmKategoriMesin._alias}],
 				});
+				const jhsdf = listMesin?.map(async mesin => {
+					const pr = process?.[mesin.dataValues?.kategori_mesin];
 
-				const processMapper = selectedProcess.map(async process => {
-					const result = process?.map(async p => {
+					const result = pr?.map(async p => {
 						const {hardness, id_instruksi, material, parameter} = p;
 
 						const prcs = await OrmKanbanInstruksi.findOne({
@@ -180,10 +197,16 @@ export const kanbanGet = {
 						};
 					});
 
-					return Promise.all(result);
+					return {
+						// @ts-ignore
+						dataProcess: (await Promise.all(result)) as DataProcess[],
+						mesin: mesin.dataValues as TMesin & {
+							OrmKategoriMesin: TKategoriMesin;
+						},
+					};
 				});
 
-				return Promise.all(processMapper);
+				return Promise.all(jhsdf);
 			});
 		}),
 };

@@ -199,7 +199,13 @@ export const tKanbanUpsertItem = tKanbanItem
 
 export type TKanbanUpsert = z.infer<typeof tKanbanUpsert>;
 export const tKanbanUpsert = tKanban
-	.partial({id: true, doc_id: true, createdBy: true, updatedBy: true})
+	.partial({
+		id: true,
+		doc_id: true,
+		createdBy: true,
+		updatedBy: true,
+		nomor_kanban: true,
+	})
 	.extend({
 		id_customer: z.string(),
 		items: z.record(tKanbanUpsertItem),

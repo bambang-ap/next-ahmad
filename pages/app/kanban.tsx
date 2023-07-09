@@ -1,3 +1,5 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {FormEventHandler, useEffect, useRef} from "react";
 
 import {useForm} from "react-hook-form";
@@ -54,19 +56,21 @@ export default function Kanban() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(async ({type, callbacks, list_mesin = {}, ...rest}) => {
-			if (callbacks) callbacks.forEach(callback => callback());
+		handleSubmit(
+			async ({nomor_kanban, type, callbacks, list_mesin = {}, ...rest}) => {
+				if (callbacks) callbacks.forEach(callback => callback());
 
-			switch (type) {
-				case "add":
-				case "edit":
-					return mutateUpsert({...rest, list_mesin}, {onSuccess});
-				case "delete":
-					return mutateDelete({id: rest.id}, {onSuccess});
-				default:
-					return null;
-			}
-		})();
+				switch (type) {
+					case "add":
+					case "edit":
+						return mutateUpsert({...rest, list_mesin}, {onSuccess});
+					case "delete":
+						return mutateDelete({id: rest.id}, {onSuccess});
+					default:
+						return null;
+				}
+			},
+		)();
 
 		function onSuccess() {
 			modalRef.current?.hide();
@@ -129,7 +133,7 @@ export default function Kanban() {
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell className="flex gap-x-2">
-								<KanbanGenerateQR idKanban={item.id} />
+								<KanbanGenerateQR idKanban={[item.id]} />
 								<Button
 									icon="faMagnifyingGlass"
 									onClick={() => showModal("preview", rest)}
