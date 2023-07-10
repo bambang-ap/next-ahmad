@@ -116,7 +116,6 @@ export const kanbanGet = {
 				order: [["nomor_kanban", "desc"]],
 				offset: (page - 1) * limit,
 				where: wherePages("nomor_kanban", search),
-				logging: true,
 			});
 
 			return pagingResult(
