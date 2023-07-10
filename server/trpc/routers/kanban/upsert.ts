@@ -24,7 +24,7 @@ export const kanbanUpsert = {
 
 				const {id, doc_id, items: kanban_items, createdBy, ...rest} = input;
 				const no_kanban = await routerCaller.kanban.getInvoice();
-				const hasKanban = await OrmKanban.findOne({where: {id}});
+				const hasKanban = id ? await OrmKanban.findOne({where: {id}}) : null;
 				const [createdKanban] = await OrmKanban.upsert({
 					...rest,
 					nomor_kanban: hasKanban?.dataValues?.nomor_kanban ?? no_kanban,

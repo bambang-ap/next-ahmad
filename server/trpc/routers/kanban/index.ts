@@ -16,7 +16,12 @@ const kanbanRouters = router({
 	...kanbanUpsert,
 	...kanbanImage,
 	getInvoice: procedure.query(() =>
-		genInvoice(OrmKanban, "KNB/IMI", value => value?.nomor_kanban),
+		genInvoice(
+			OrmKanban,
+			"KNB/IMI",
+			value => value?.nomor_kanban,
+			"nomor_kanban",
+		),
 	),
 	delete: procedure
 		.input(zId.partial())

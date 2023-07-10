@@ -58,7 +58,12 @@ type KJ = Omit<TCustomerSPPBOut, "po"> & {
 
 const sppbOutRouters = router({
 	getInvoice: procedure.query(() =>
-		genInvoice(OrmCustomerSPPBOut, "SJ/IMI", value => value?.invoice_no),
+		genInvoice(
+			OrmCustomerSPPBOut,
+			"SJ/IMI",
+			value => value?.invoice_no,
+			"invoice_no",
+		),
 	),
 	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
 		// const routerCaller = appRouter.createCaller(ctx);
