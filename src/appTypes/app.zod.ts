@@ -10,6 +10,7 @@ const zDecimal = z
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
+	z.undefined(),
 	z.literal("add"),
 	z.literal("edit"),
 	z.literal("delete"),

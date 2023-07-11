@@ -1,6 +1,10 @@
 import {forwardRef, PropsWithChildren, useImperativeHandle} from "react";
 
-import {generatePDF} from "@utils";
+import {Control, UseFormReset, useWatch} from "react-hook-form";
+
+import {ModalTypeSelect} from "@appTypes/app.type";
+import {Button} from "@components";
+import {generatePDF, modalTypeParser} from "@utils";
 
 export type GenPdfRef = {generate: () => Promise<void>};
 export type GenPdfProps = PropsWithChildren<{
@@ -33,3 +37,47 @@ export const GeneratePDF = forwardRef<GenPdfRef, GenPdfProps>(function GenPDF(
 		</div>
 	);
 });
+
+export function BatchPrintButton({
+	reset,
+	control,
+	children,
+	dataPrint,
+}: PropsWithChildren<{
+	dataPrint: JSX.Element;
+	control: Control<{type: ModalTypeSelect}>;
+	reset: UseFormReset<{type: ModalTypeSelect}>;
+}>) {
+	const type = useWatch({control, name: "type"});
+	const {isSelect} = modalTypeParser(type);
+
+	if (isSelect) {
+		return (
+			<>
+				{dataPrint}
+				<Button
+					onClick={() =>
+						reset(prev => {
+							return {...prev, type: undefined};
+						})
+					}>
+					Batal
+				</Button>
+			</>
+		);
+	}
+
+	return (
+		<>
+			<Button
+				onClick={() =>
+					reset(prev => {
+						return {...prev, type: "select"};
+					})
+				}>
+				Batch Print
+			</Button>
+			{children}
+		</>
+	);
+}

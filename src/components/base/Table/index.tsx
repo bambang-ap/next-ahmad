@@ -1,4 +1,4 @@
-import {FC, Fragment, useEffect} from "react";
+import {FC, Fragment, isValidElement, useEffect} from "react";
 
 import {Pagination, TableCellProps} from "@mui/material";
 import {useForm, UseFormReturn} from "react-hook-form";
@@ -23,7 +23,10 @@ export type TableProps<T, Cell = {}> = {
 	header?: OptionalUnion<
 		// Empty String
 		"∂",
-		string | false | [title: string, colSpan: number]
+		| React.ReactElement<unknown>
+		| string
+		| false
+		| [title: string, colSpan: number]
 	>[];
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
@@ -156,10 +159,12 @@ export function Table<T>(props: TableProps<T, Cells>) {
 					<THead>
 						<Tr>
 							{header.map(head => {
-								if (head === "∂") return <Td key={head} />;
 								if (!head) return null;
+								if (isValidElement(head)) return <Td key="headJsx">{head}</Td>;
+								if (head === "∂") return <Td key={head} />;
 								if (typeof head === "string") return <Td key={head}>{head}</Td>;
 
+								// @ts-ignore
 								const [title, colSpan] = head;
 								return (
 									<Td colSpan={colSpan} key={title}>

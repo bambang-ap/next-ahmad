@@ -271,7 +271,7 @@ export function RenderPerKanban({
 	return (
 		<>
 			<Button onClick={generatePdf}>Print</Button>
-			<Modal ref={modalRef} visible onVisibleChange={setVisible}>
+			<Modal ref={modalRef} onVisibleChange={setVisible}>
 				<div className="w-full flex justify-center items-center gap-2">
 					<Icon name="faSpinner" className="animate-spin" />
 					<Text>Harap Tunggu...</Text>

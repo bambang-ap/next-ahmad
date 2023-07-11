@@ -6,6 +6,7 @@ import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
 import ExportData from "@appComponent/ExportData";
+import {BatchPrintButton} from "@appComponent/GeneratePdf";
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
@@ -49,7 +50,10 @@ export default function Kanban() {
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
 	const [modalType, idKanbans = {}] = watch(["type", "idKanbans"]);
-	const {isPreview, modalTitle} = modalTypeParser(modalType, "Kanban");
+	const {isPreview, isSelect, modalTitle} = modalTypeParser(
+		modalType,
+		"Kanban",
+	);
 
 	const selectedIdKanbans = Object.entries(idKanbans).reduce<string[]>(
 		(ret, [id, val]) => {
@@ -99,6 +103,20 @@ export default function Kanban() {
 		modalRef.current?.show();
 	}
 
+	function selectAll() {
+		reset(prev => {
+			return {
+				...prev,
+				idKanbans: dataKanbanPage?.rows.reduce<KanbanFormType["idKanbans"]>(
+					(ret, cur) => {
+						return {...ret, [cur.id]: true};
+					},
+					{},
+				),
+			};
+		});
+	}
+
 	useEffect(() => {
 		// FIXME:
 		// @ts-ignore
@@ -107,17 +125,32 @@ export default function Kanban() {
 
 	return (
 		<>
-			<RenderPerKanban
-				onPrint={() => console.log("done")}
-				idKanban={selectedIdKanbans}
-			/>
-
 			<TableFilter
 				form={hookForm}
 				data={dataKanbanPage}
-				header={["∂", "Tanggal", "Nomor Kanban", "Keterangan", "Action"]}
+				header={[
+					isSelect && (
+						<>
+							<Button onClick={selectAll}>Select All</Button>
+						</>
+					),
+					"Tanggal",
+					"Nomor Kanban",
+					"Keterangan",
+					!isSelect && "Action",
+				]}
 				topComponent={
-					<>
+					<BatchPrintButton
+						// @ts-ignore
+						reset={reset}
+						// @ts-ignore
+						control={control}
+						dataPrint={
+							<RenderPerKanban
+								onPrint={() => reset({})}
+								idKanban={selectedIdKanbans}
+							/>
+						}>
 						<Button onClick={() => showModal("add", {})}>Add</Button>
 						<ExportData
 							names={["Kanban"]}
@@ -140,38 +173,56 @@ export default function Kanban() {
 								);
 							}}
 						/>
-					</>
+					</BatchPrintButton>
 				}
 				renderItem={({Cell, item}) => {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
 					const {...rest} = item;
 					return (
 						<>
-							<Cell>
-								{
-									<Input
-										noLabel
-										type="checkbox"
-										control={control}
-										fieldName={`idKanbans.${item.id}`}
-									/>
-								}
-							</Cell>
+							{isSelect && (
+								<Cell>
+									{
+										<Input
+											noLabel
+											type="checkbox"
+											control={control}
+											fieldName={`idKanbans.${item.id}`}
+										/>
+									}
+								</Cell>
+							)}
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.keterangan}</Cell>
-							<Cell className="flex gap-x-2">
-								{/* <KanbanGenerateQR idKanban={[item.id]} /> */}
-								<Button
-									icon="faMagnifyingGlass"
-									onClick={() => showModal("preview", rest)}
-								/>
-								<Button onClick={() => showModal("edit", rest)} icon="faEdit" />
-								<Button
-									onClick={() => showModal("delete", {id: item.id})}
-									icon="faTrash"
-								/>
-							</Cell>
+							{!isSelect && (
+								<Cell className="flex gap-x-2">
+									{/* <KanbanGenerateQR idKanban={[item.id]} /> */}
+									<Button
+										icon="faPrint"
+										onClick={() =>
+											reset(prev => {
+												return {
+													...prev,
+													idKanbans: {[item.id]: true},
+												};
+											})
+										}
+									/>
+									<Button
+										icon="faMagnifyingGlass"
+										onClick={() => showModal("preview", rest)}
+									/>
+									<Button
+										onClick={() => showModal("edit", rest)}
+										icon="faEdit"
+									/>
+									<Button
+										onClick={() => showModal("delete", {id: item.id})}
+										icon="faTrash"
+									/>
+								</Cell>
+							)}
 						</>
 					);
 				}}
