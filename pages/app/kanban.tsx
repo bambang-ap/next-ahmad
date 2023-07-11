@@ -6,12 +6,16 @@ import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
 import ExportData from "@appComponent/ExportData";
-import {ModalTypePreview, TKanbanUpsert} from "@appTypes/app.zod";
-import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
+import {
+	ModalTypePreview,
+	ModalTypeSelect,
+	TKanbanUpsert,
+} from "@appTypes/app.zod";
+import {Button, Form, Input, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
-import {KanbanGenerateQR} from "@pageComponent/kanban_GenerateQR";
+import {RenderPerKanban} from "@pageComponent/kanban_GenerateQR/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomDataKanban} from "@recoil/atoms";
 import {dateUtils, modalTypeParser} from "@utils";
@@ -20,7 +24,8 @@ import {trpc} from "@utils/trpc";
 Kanban.getLayout = getLayout;
 
 export type KanbanFormType = TKanbanUpsert & {
-	type: ModalTypePreview;
+	type: ModalTypeSelect;
+	idKanbans?: MyObject<boolean>;
 	id_customer: string;
 	temp_id_item: string;
 	callbacks?: Array<() => void>;
@@ -43,8 +48,16 @@ export default function Kanban() {
 	const {mutate: mutateDelete} =
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
-	const [modalType] = watch(["type"]);
+	const [modalType, idKanbans = {}] = watch(["type", "idKanbans"]);
 	const {isPreview, modalTitle} = modalTypeParser(modalType, "Kanban");
+
+	const selectedIdKanbans = Object.entries(idKanbans).reduce<string[]>(
+		(ret, [id, val]) => {
+			if (val) ret.push(id);
+			return ret;
+		},
+		[],
+	);
 
 	const useEffectDeps = [dataKanbanPage].map(e => {
 		if (!e) return "";
@@ -94,10 +107,15 @@ export default function Kanban() {
 
 	return (
 		<>
+			<RenderPerKanban
+				onPrint={() => console.log("done")}
+				idKanban={selectedIdKanbans}
+			/>
+
 			<TableFilter
 				form={hookForm}
 				data={dataKanbanPage}
-				header={["Tanggal", "Nomor Kanban", "Keterangan", "Action"]}
+				header={["∂", "Tanggal", "Nomor Kanban", "Keterangan", "Action"]}
 				topComponent={
 					<>
 						<Button onClick={() => showModal("add", {})}>Add</Button>
@@ -129,11 +147,21 @@ export default function Kanban() {
 					const {...rest} = item;
 					return (
 						<>
+							<Cell>
+								{
+									<Input
+										noLabel
+										type="checkbox"
+										control={control}
+										fieldName={`idKanbans.${item.id}`}
+									/>
+								}
+							</Cell>
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell className="flex gap-x-2">
-								<KanbanGenerateQR idKanban={[item.id]} />
+								{/* <KanbanGenerateQR idKanban={[item.id]} /> */}
 								<Button
 									icon="faMagnifyingGlass"
 									onClick={() => showModal("preview", rest)}

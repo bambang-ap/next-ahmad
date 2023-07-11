@@ -1,9 +1,17 @@
-import {TdHTMLAttributes} from "react";
+import {TdHTMLAttributes, useEffect, useRef, useState} from "react";
 
 import moment from "moment";
 
+import {GeneratePDF, GenPdfRef} from "@appComponent/GeneratePdf";
 import {TKanbanUpsertItem} from "@appTypes/app.type";
-import {Text as Txt, TextProps} from "@components";
+import {
+	Button,
+	Icon,
+	Modal,
+	ModalRef,
+	Text as Txt,
+	TextProps,
+} from "@components";
 import {DataProcess} from "@trpc/routers/kanban/get";
 import {classNames, dateUtils} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -228,22 +236,67 @@ function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 
 export function RenderPerKanban({
 	idKanban,
-}: Pick<Props, "idKanban">): JSX.Element | null {
-	const {data} = trpc.kanban.detail.useQuery(idKanban, {
-		enabled: !!idKanban,
-	});
+	onPrint,
+}: {
+	idKanban: string[];
+	onPrint?: NoopVoid;
+}) {
+	const [visible, setVisible] = useState(false);
+	const [isGenerating, setIsGenerating] = useState(false);
 
-	const {items = {}} = data ?? {};
+	const modalRef = useRef<ModalRef>(null);
+	const genPdfRef = useRef<GenPdfRef>(null);
+	const datas = trpc.useQueries(t => idKanban.map(id => t.kanban.detail(id)));
 
-	if (!data?.id) return null;
+	const isNotReady = datas.map(({data}) => !!data?.id).includes(false);
+
+	function generatePdf(): any {
+		if (datas.length <= 0) return alert("Silahkan pilih data terlebih dahulu!");
+
+		modalRef.current?.show();
+		setIsGenerating(true);
+	}
+
+	async function doPrint() {
+		await genPdfRef.current?.generate();
+		setIsGenerating(false);
+		modalRef.current?.hide();
+		onPrint?.();
+	}
+
+	useEffect(() => {
+		if (visible && isGenerating && !isNotReady) doPrint();
+	}, [isGenerating, isNotReady, visible]);
 
 	return (
 		<>
-			{Object.entries(items).map(item => {
-				return (
-					<RenderKanbanCard idKanban={idKanban} key={item[0]} item={item} />
-				);
-			})}
+			<Button onClick={generatePdf}>Print</Button>
+			<Modal ref={modalRef} visible onVisibleChange={setVisible}>
+				<div className="w-full flex justify-center items-center gap-2">
+					<Icon name="faSpinner" className="animate-spin" />
+					<Text>Harap Tunggu...</Text>
+				</div>
+				<GeneratePDF
+					ref={genPdfRef}
+					filename="kanban"
+					tagId={`data-${idKanban}`}>
+					{datas.map(({data}) => {
+						const {items = {}, id} = data ?? {};
+
+						return (
+							<>
+								{Object.entries(items).map(item => {
+									return (
+										<div key={item[0]} className="w-1/2 p-2">
+											<RenderKanbanCard idKanban={id!} item={item} />
+										</div>
+									);
+								})}
+							</>
+						);
+					})}
+				</GeneratePDF>
+			</Modal>
 		</>
 	);
 }

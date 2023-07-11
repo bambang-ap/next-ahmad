@@ -1,9 +1,6 @@
 import {useEffect, useRef, useState} from "react";
 
 import {Button, Icon, Modal, ModalRef, Text} from "@components";
-import {generatePDF} from "@utils";
-
-import {RenderPerKanban} from "./KanbanCard";
 
 export function KanbanGenerateQR({
 	idKanban,
@@ -20,8 +17,8 @@ export function KanbanGenerateQR({
 	const [visible, setVisible] = useState(false);
 
 	const {
-		className = "h-0 overflow-hidden -z-10 fixed",
-		// className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
 		withButton = true,
 	} = props;
 
@@ -33,8 +30,8 @@ export function KanbanGenerateQR({
 		if (!visible) return;
 
 		setTimeout(async () => {
-			await generatePDF(tagId, "kanban");
-			modalRef.current?.hide();
+			// await generatePDF(tagId, "kanban");
+			// modalRef.current?.hide();
 		}, 2500);
 	}
 
@@ -48,11 +45,10 @@ export function KanbanGenerateQR({
 					<Text>Harap Tunggu...</Text>
 				</div>
 				<div className={className}>
-					<div id={tagId} className="flex flex-wrap w-[800px]">
+					<div id={tagId} className="flex flex-wrap w-[1600px]">
 						{idKanban.map(id => (
-							<div key={id} className="w-full p-4 flex flex-col">
-								{/* <div key={id} className="w-1/2 p-4 flex flex-col"> */}
-								<RenderPerKanban idKanban={id} />
+							<div key={id} className="w-1/2 p-4 flex flex-col">
+								{/* <RenderPerKanban idKanban={id} /> */}
 							</div>
 						))}
 					</div>

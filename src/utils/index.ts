@@ -8,7 +8,7 @@ import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
 
-import {ModalTypePreview, TScanItem, TScanTarget} from "@appTypes/app.zod";
+import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
 	formatDateStringView,
 	formatDateView,
@@ -106,11 +106,12 @@ export function copyToClipboard(str: string) {
 	alert("Token copied");
 }
 
-export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
+export function modalTypeParser(type?: ModalTypeSelect, pageName = "") {
 	const isAdd = type === "add";
 	const isEdit = type === "edit";
 	const isPreview = type === "preview";
 	const isDelete = type === "delete";
+	const isSelect = type === "select";
 	const isPreviewEdit = isEdit || isPreview;
 
 	return {
@@ -118,9 +119,12 @@ export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
 		isPreview,
 		isAdd,
 		isDelete,
+		isSelect,
 		isPreviewEdit,
 		get modalTitle() {
 			switch (type) {
+				case "add":
+					return `Tambah ${pageName}`;
 				case "edit":
 					return `Ubah ${pageName}`;
 				case "preview":
@@ -128,7 +132,7 @@ export function modalTypeParser(type?: ModalTypePreview, pageName = "") {
 				case "delete":
 					return `Hapus ${pageName}`;
 				default:
-					return `Tambah ${pageName}`;
+					return "";
 			}
 		},
 	};
