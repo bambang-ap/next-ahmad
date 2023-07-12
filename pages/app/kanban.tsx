@@ -141,7 +141,8 @@ export default function Kanban() {
 		}
 		await genPdfRef.current?.generate();
 		loader?.hide?.();
-		reset(prev => ({...prev, idKanbans: {}, type: undefined}));
+		reset(prev => ({...prev, type: undefined}));
+		setTimeout(() => reset(prev => ({...prev, idKanbans: {}})), 2500);
 	}
 
 	useEffect(() => {
@@ -154,6 +155,8 @@ export default function Kanban() {
 		<>
 			{loader.component}
 			<GeneratePdf
+				splitPagePer={4}
+				orientation="l"
 				ref={genPdfRef}
 				tagId={tagId}
 				useQueries={() =>

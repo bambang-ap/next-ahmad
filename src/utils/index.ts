@@ -1,7 +1,7 @@
 import {ReactNode} from "react";
 
 import classnames from "clsx";
-import jsPDF from "jspdf";
+import jsPDF, {jsPDFOptions} from "jspdf";
 import clone from "just-clone";
 import moment from "moment";
 import objectPath from "object-path";
@@ -157,26 +157,52 @@ export function toBase64(
 	};
 }
 
-export async function generatePDF(id: string, filename = "a4") {
-	const doc = new jsPDF({unit: "mm", orientation: "p", format: paperA4});
-	const element = document.getElementById(id)!;
+export async function generatePDF(
+	ids: string | string[],
+	filename = "a4",
+	orientation: jsPDFOptions["orientation"] = "p",
+) {
+	return new Promise<void>(async resolve => {
+		const format = paperA4;
 
-	return new Promise<void>(resolve => {
-		doc.html(element, {
-			x: 0,
-			y: 0,
-			margin: 0,
-			autoPaging: "text",
-			html2canvas: {
-				width: document.body.clientWidth,
-				scale: paperA4[0] / element.clientWidth,
-			},
-			async callback(document) {
-				await document.save(`${filename}.pdf`, {returnPromise: true});
-				resolve();
-			},
-		});
+		const doc = new jsPDF({unit: "mm", orientation, format});
+
+		const elements = Array.isArray(ids)
+			? ids.map(id => document.getElementById(id))
+			: [document.getElementById(ids)];
+
+		await htmlPage(doc, elements.filter(Boolean));
+		resolve();
 	});
+
+	function htmlPage(doc: jsPDF, pages: HTMLElement[], index = 0) {
+		const hasPages = pages.length > 0;
+		const pageHeight = doc.internal.pageSize.getHeight();
+
+		const element = pages[0];
+
+		if (!hasPages) {
+			return doc.save(`${filename}.pdf`, {returnPromise: true});
+		}
+
+		return Promise.resolve<void>(
+			doc.html(element!, {
+				x: 0,
+				margin: 0,
+				y: index * pageHeight,
+				html2canvas: {
+					width: document.body.clientWidth,
+					scale: paperA4[1] / element!.clientWidth,
+				},
+				callback(pdf) {
+					if (index > 0 && pages.length > 1) pdf.addPage("a4", "l");
+					const restPages = pages.slice();
+					restPages.splice(0, 1);
+					htmlPage(pdf, restPages, index + 1);
+				},
+			}),
+		);
+	}
 }
 
 export function exportData<T extends object>(

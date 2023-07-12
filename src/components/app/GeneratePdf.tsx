@@ -1,5 +1,7 @@
 import {forwardRef, PropsWithChildren, useImperativeHandle} from "react";
 
+import {jsPDFOptions} from "jspdf";
+
 import {Button} from "@components";
 import {UseTRPCQueryResult} from "@trpc/react-query/shared";
 import {classNames, generatePDF, sleep} from "@utils";
@@ -19,8 +21,10 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 		tagId: string;
 		width?: string;
 		filename?: string;
+		splitPagePer?: number;
 		useQueries: () => W[];
 		renderItem: (item: W) => JSX.Element;
+		orientation?: jsPDFOptions["orientation"];
 	},
 	ref: React.ForwardedRef<GenPdfRef>,
 ) {
@@ -29,17 +33,36 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 
 	const {
 		tagId,
+		orientation,
 		filename = "file",
 		width = "w-[1600px]",
 		useQueries,
+		splitPagePer,
 		renderItem,
 	} = props;
 
 	const datas = useQueries();
 
+	const pageDatas = splitPagePer
+		? datas.reduce<{page: number; datas: W[][]}>(
+				(ret, cur) => {
+					if (!ret.datas[ret.page]) ret.datas[ret.page] = [];
+					ret.datas[ret.page]?.push(cur);
+					if (ret.datas[ret.page]?.length === splitPagePer) ret.page++;
+					return ret;
+				},
+				{page: 0, datas: []},
+		  ).datas
+		: [datas];
+
 	async function generate() {
 		await sleep(2500);
-		generatePDF(tagId, filename);
+		// generatePDF([tagId, tagId, tagId], filename, orientation);
+		generatePDF(
+			datas.map(({}, index) => `${tagId}-Page-${index}`),
+			filename,
+			orientation,
+		);
 	}
 
 	useImperativeHandle(ref, () => {
@@ -48,9 +71,16 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 
 	return (
 		<div className={className}>
-			<div id={tagId} className={classNames("flex flex-wrap", width)}>
-				{datas.map(item => renderItem(item))}
-			</div>
+			{pageDatas.map((dataList, index) => {
+				return (
+					<div
+						key={index}
+						id={`${tagId}-Page-${index}`}
+						className={classNames("flex flex-wrap", width)}>
+						{dataList.map(item => renderItem(item))}
+					</div>
+				);
+			})}
 		</div>
 	);
 });
