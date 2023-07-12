@@ -17,6 +17,7 @@ export type ModalRef = {
 	hide: (callback?: () => Promise<void>) => void;
 };
 export type ModalProps = {
+	disableBackdropClick?: boolean;
 	children: ReactNode;
 	title?: string;
 	visible?: boolean;
@@ -32,6 +33,7 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	const {
 		children,
 		title,
+		disableBackdropClick = false,
 		onVisibleChange,
 		renderFooter,
 		visible: initVisible = false,
@@ -68,9 +70,11 @@ export const Modal = forwardRef<ModalRef, ModalProps>(function ModalComponent(
 	return (
 		<Dialog
 			fullWidth
-			maxWidth={modalSize}
 			open={visible}
-			onClose={() => hide()}>
+			maxWidth={modalSize}
+			onClose={() => {
+				if (!disableBackdropClick) hide();
+			}}>
 			{title && (
 				<DialogTitle>
 					<div className="flex justify-between items-center">

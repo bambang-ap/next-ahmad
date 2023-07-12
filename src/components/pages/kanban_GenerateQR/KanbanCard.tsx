@@ -1,4 +1,11 @@
-import {TdHTMLAttributes, useEffect, useRef, useState} from "react";
+import {
+	forwardRef,
+	TdHTMLAttributes,
+	useEffect,
+	useImperativeHandle,
+	useRef,
+	useState,
+} from "react";
 
 import moment from "moment";
 
@@ -43,7 +50,7 @@ function Text(props: TextProps) {
 	return <Txt {...props} color="black" />;
 }
 
-function RenderKanbanCard({idKanban, item: dataItem}: Props) {
+export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 	const {data} = trpc.kanban.detail.useQuery(idKanban, {
 		enabled: !!idKanban,
 	});
@@ -234,13 +241,16 @@ function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 	);
 }
 
-export function RenderPerKanban({
-	idKanban,
-	onPrint,
-}: {
-	idKanban: string[];
-	onPrint?: NoopVoid;
-}) {
+export type RenderPerKanbanRef = {doPrint: NoopVoid};
+
+export const RenderPerKanban = forwardRef<
+	RenderPerKanbanRef,
+	{
+		showBtn?: boolean;
+		idKanban: string[];
+		onPrint?: NoopVoid;
+	}
+>(function RenderPerKanban({idKanban, onPrint, showBtn}, ref) {
 	const [visible, setVisible] = useState(false);
 	const [isGenerating, setIsGenerating] = useState(false);
 
@@ -264,13 +274,21 @@ export function RenderPerKanban({
 		onPrint?.();
 	}
 
+	useImperativeHandle(
+		ref,
+		() => {
+			return {doPrint};
+		},
+		[],
+	);
+
 	useEffect(() => {
 		if (visible && isGenerating && !isNotReady) doPrint();
 	}, [isGenerating, isNotReady, visible]);
 
 	return (
 		<>
-			<Button onClick={generatePdf}>Print</Button>
+			{showBtn && <Button onClick={generatePdf}>Print</Button>}
 			<Modal ref={modalRef} onVisibleChange={setVisible}>
 				<div className="w-full flex justify-center items-center gap-2">
 					<Icon name="faSpinner" className="animate-spin" />
@@ -299,4 +317,4 @@ export function RenderPerKanban({
 			</Modal>
 		</>
 	);
-}
+});

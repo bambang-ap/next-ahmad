@@ -4,7 +4,8 @@ import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {ModalTypeSelect} from "@appTypes/app.type";
 import {Button} from "@components";
-import {generatePDF, modalTypeParser} from "@utils";
+import {UseTRPCQueryResult} from "@trpc/react-query/shared";
+import {classNames, generatePDF, modalTypeParser, sleep} from "@utils";
 
 export type GenPdfRef = {generate: () => Promise<void>};
 export type GenPdfProps = PropsWithChildren<{
@@ -69,6 +70,7 @@ export function BatchPrintButton({
 
 	return (
 		<>
+			{dataPrint}
 			<Button
 				onClick={() =>
 					reset(prev => {
@@ -80,4 +82,69 @@ export function BatchPrintButton({
 			{children}
 		</>
 	);
+}
+
+export const GGenPdf = forwardRef(function GGenPdf<
+	T,
+	W extends UseTRPCQueryResult<T, unknown>,
+>(
+	props: {
+		tagId: string;
+		width?: string;
+		filename?: string;
+		useQueries: () => W[];
+		renderItem: (item: W) => JSX.Element;
+	},
+	ref: React.ForwardedRef<GenPdfRef>,
+) {
+	const className = "h-0 overflow-hidden -z-10 fixed";
+	// const className = "";
+
+	const {
+		tagId,
+		filename = "file",
+		width = "w-[1600px]",
+		useQueries,
+		renderItem,
+	} = props;
+
+	const datas = useQueries();
+
+	async function generate() {
+		await sleep(2500);
+		generatePDF(tagId, filename);
+	}
+
+	useImperativeHandle(ref, () => {
+		return {generate};
+	});
+
+	return (
+		<div className={className}>
+			<div id={tagId} className={classNames("flex flex-wrap", width)}>
+				{datas.map(item => renderItem(item))}
+			</div>
+		</div>
+	);
+});
+
+type SelectAllButtonProps = {
+	total?: number;
+	selected: number;
+	onClick?: () => void;
+};
+
+export function SelectAllButton({
+	onClick,
+	selected,
+	total = 0,
+}: SelectAllButtonProps) {
+	const btnText =
+		selected === 0
+			? "Select All"
+			: selected < total
+			? "Select All Rest"
+			: "Unselect All";
+
+	return <Button onClick={onClick}>{btnText}</Button>;
 }

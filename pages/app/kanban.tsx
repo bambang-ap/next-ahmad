@@ -6,7 +6,7 @@ import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
 import ExportData from "@appComponent/ExportData";
-import {BatchPrintButton} from "@appComponent/GeneratePdf";
+import {GenPdfRef, GGenPdf, SelectAllButton} from "@appComponent/GeneratePdf";
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
@@ -15,8 +15,8 @@ import {
 import {Button, Form, Input, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useTableFilter} from "@hooks";
-import {RenderPerKanban} from "@pageComponent/kanban_GenerateQR/KanbanCard";
+import {useLoader, useTableFilter} from "@hooks";
+import {RenderKanbanCard} from "@pageComponent/kanban_GenerateQR/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomDataKanban} from "@recoil/atoms";
 import {dateUtils, modalTypeParser} from "@utils";
@@ -34,7 +34,9 @@ export type KanbanFormType = TKanbanUpsert & {
 
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
+	const genPdfRef = useRef<GenPdfRef>(null);
 	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
+	const loader = useLoader();
 
 	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, clearErrors, handleSubmit} =
@@ -69,6 +71,8 @@ export default function Kanban() {
 		const {rows, ...rest} = e;
 		return JSON.stringify(rest);
 	});
+
+	const tagId = `kanban-data-print`;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -105,16 +109,35 @@ export default function Kanban() {
 
 	function selectAll() {
 		reset(prev => {
+			const isSelectedAll =
+				selectedIdKanbans.length === (dataKanbanPage?.rows.length ?? 0);
 			return {
 				...prev,
-				idKanbans: dataKanbanPage?.rows.reduce<KanbanFormType["idKanbans"]>(
-					(ret, cur) => {
-						return {...ret, [cur.id]: true};
-					},
-					{},
-				),
+				idKanbans: isSelectedAll
+					? {}
+					: dataKanbanPage?.rows.reduce<KanbanFormType["idKanbans"]>(
+							(ret, cur) => {
+								return {...ret, [cur.id]: true};
+							},
+							{},
+					  ),
 			};
 		});
+	}
+
+	async function printData(idOrAll: true | string) {
+		loader?.show?.();
+		if (typeof idOrAll === "string") {
+			reset(prev => ({...prev, idKanbans: {[idOrAll]: true}}));
+		} else {
+			if (selectedIdKanbans.length <= 0) {
+				loader?.hide?.();
+				return alert("Silahkan pilih data terlebih dahulu");
+			}
+		}
+		await genPdfRef.current?.generate();
+		loader?.hide?.();
+		reset(prev => ({...prev, idKanbans: {}, type: undefined}));
 	}
 
 	useEffect(() => {
@@ -125,14 +148,40 @@ export default function Kanban() {
 
 	return (
 		<>
+			{loader.component}
+			<GGenPdf
+				ref={genPdfRef}
+				tagId={tagId}
+				useQueries={() =>
+					trpc.useQueries(t => selectedIdKanbans.map(id => t.kanban.detail(id)))
+				}
+				renderItem={({data}) => {
+					const {items = {}, id} = data ?? {};
+
+					return (
+						<>
+							{Object.entries(items).map(item => {
+								return (
+									<div key={item[0]} className="w-1/2 p-2">
+										<RenderKanbanCard idKanban={id!} item={item} />
+									</div>
+								);
+							})}
+						</>
+					);
+				}}
+			/>
 			<TableFilter
 				form={hookForm}
 				data={dataKanbanPage}
 				header={[
 					isSelect && (
-						<>
-							<Button onClick={selectAll}>Select All</Button>
-						</>
+						<SelectAllButton
+							key="btnSelectAll"
+							onClick={selectAll}
+							selected={selectedIdKanbans.length}
+							total={dataKanbanPage?.rows.length}
+						/>
 					),
 					"Tanggal",
 					"Nomor Kanban",
@@ -140,40 +189,46 @@ export default function Kanban() {
 					!isSelect && "Action",
 				]}
 				topComponent={
-					<BatchPrintButton
-						// @ts-ignore
-						reset={reset}
-						// @ts-ignore
-						control={control}
-						dataPrint={
-							<RenderPerKanban
-								onPrint={() => reset({})}
-								idKanban={selectedIdKanbans}
+					isSelect ? (
+						<>
+							<Button onClick={() => printData(true)}>Print</Button>
+							<Button
+								onClick={() =>
+									reset(prev => ({...prev, type: undefined, idKanbans: {}}))
+								}>
+								Batal
+							</Button>
+						</>
+					) : (
+						<>
+							<Button
+								onClick={() => reset(prev => ({...prev, type: "select"}))}>
+								Batch Print
+							</Button>
+							<Button onClick={() => showModal("add", {})}>Add</Button>
+							<ExportData
+								names={["Kanban"]}
+								useQuery={() => trpc.kanban.get.useQuery({type: "kanban"})}
+								dataMapper={dataKanban => {
+									if (!dataKanban) return [];
+									return dataKanban?.map(
+										({
+											items,
+											list_mesin,
+											OrmDocument,
+											OrmCustomerPO,
+											dataSppbIn,
+											dataCreatedBy,
+											image,
+											dataUpdatedBy,
+											createdBy,
+											...rest
+										}) => rest,
+									);
+								}}
 							/>
-						}>
-						<Button onClick={() => showModal("add", {})}>Add</Button>
-						<ExportData
-							names={["Kanban"]}
-							useQuery={() => trpc.kanban.get.useQuery({type: "kanban"})}
-							dataMapper={dataKanban => {
-								if (!dataKanban) return [];
-								return dataKanban?.map(
-									({
-										items,
-										list_mesin,
-										OrmDocument,
-										OrmCustomerPO,
-										dataSppbIn,
-										dataCreatedBy,
-										image,
-										dataUpdatedBy,
-										createdBy,
-										...rest
-									}) => rest,
-								);
-							}}
-						/>
-					</BatchPrintButton>
+						</>
+					)
 				}
 				renderItem={({Cell, item}) => {
 					// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -197,18 +252,7 @@ export default function Kanban() {
 							<Cell>{item.keterangan}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-x-2">
-									{/* <KanbanGenerateQR idKanban={[item.id]} /> */}
-									<Button
-										icon="faPrint"
-										onClick={() =>
-											reset(prev => {
-												return {
-													...prev,
-													idKanbans: {[item.id]: true},
-												};
-											})
-										}
-									/>
+									<Button icon="faPrint" onClick={() => printData(item.id)} />
 									<Button
 										icon="faMagnifyingGlass"
 										onClick={() => showModal("preview", rest)}
