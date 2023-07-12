@@ -6,7 +6,11 @@ import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
 import ExportData from "@appComponent/ExportData";
-import {GenPdfRef, GGenPdf, SelectAllButton} from "@appComponent/GeneratePdf";
+import {
+	GeneratePdf,
+	GenPdfRef,
+	SelectAllButton,
+} from "@appComponent/GeneratePdf";
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
@@ -16,7 +20,7 @@ import {Button, Form, Input, Modal, ModalRef, TableFilter} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useTableFilter} from "@hooks";
-import {RenderKanbanCard} from "@pageComponent/kanban_GenerateQR/KanbanCard";
+import {RenderKanbanCard} from "@pageComponent/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomDataKanban} from "@recoil/atoms";
 import {dateUtils, modalTypeParser} from "@utils";
@@ -149,7 +153,7 @@ export default function Kanban() {
 	return (
 		<>
 			{loader.component}
-			<GGenPdf
+			<GeneratePdf
 				ref={genPdfRef}
 				tagId={tagId}
 				useQueries={() =>
