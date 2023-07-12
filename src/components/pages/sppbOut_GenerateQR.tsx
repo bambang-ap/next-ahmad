@@ -80,7 +80,7 @@ export function SPPBOutGenerateQR(props: {
 			{withButton && <Button icon="faPrint" onClick={showPdf} />}
 
 			<div className={className}>
-				<div id={tagId} className="w-[900px] flex flex-col gap-2 p-4">
+				<div id={tagId} className="w-[1000px] flex flex-col gap-2 p-4">
 					<div className="flex flex-col gap-2 p-4 border border-black">
 						<div className="flex justify-between">
 							<div className="flex flex-1 flex-col">

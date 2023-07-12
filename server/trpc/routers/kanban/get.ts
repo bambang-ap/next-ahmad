@@ -4,6 +4,7 @@ import {
 	AppRouterCaller,
 	KanbanGetRow,
 	PagingResult,
+	TCustomer,
 	THardness,
 	THardnessKategori,
 	TInstruksiKanban,
@@ -15,6 +16,7 @@ import {
 	TMesin,
 	TParameter,
 	TParameterKategori,
+	ZId,
 } from "@appTypes/app.type";
 import {tableFormValue, tKanban, tMasterItem} from "@appTypes/app.zod";
 import {ItemDetail} from "@appTypes/props.type";
@@ -108,7 +110,8 @@ export const kanbanGet = {
 		});
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
-		return checkCredentialV2(ctx, async (): Promise<PagingResult<TKanban>> => {
+		type UUU = TKanban & {OrmCustomerPO: ZId & {OrmCustomer: TCustomer}};
+		return checkCredentialV2(ctx, async (): Promise<PagingResult<UUU>> => {
 			const {limit, page, search} = input;
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
@@ -116,13 +119,20 @@ export const kanbanGet = {
 				order: [["nomor_kanban", "desc"]],
 				offset: (page - 1) * limit,
 				where: wherePages("nomor_kanban", search),
+				include: [
+					{
+						model: OrmCustomerPO,
+						include: [OrmCustomer],
+						attributes: ["id"],
+					},
+				],
 			});
 
 			return pagingResult(
 				count,
 				page,
 				limit,
-				rows.map(e => e.dataValues),
+				rows.map(e => e.dataValues as UUU),
 			);
 		});
 	}),

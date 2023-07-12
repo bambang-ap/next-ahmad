@@ -176,6 +176,10 @@ export async function generatePDF(
 	});
 
 	function htmlPage(doc: jsPDF, pages: HTMLElement[], index = 0) {
+		const scaleWidth =
+			orientation === "p" || orientation === "portrait"
+				? paperA4[0]
+				: paperA4[1];
 		const hasPages = pages.length > 0;
 		const pageHeight = doc.internal.pageSize.getHeight();
 
@@ -192,7 +196,7 @@ export async function generatePDF(
 				y: index * pageHeight,
 				html2canvas: {
 					width: document.body.clientWidth,
-					scale: paperA4[1] / element!.clientWidth,
+					scale: scaleWidth / element!.clientWidth,
 				},
 				callback(pdf) {
 					if (index > 0 && pages.length > 1) pdf.addPage("a4", "l");

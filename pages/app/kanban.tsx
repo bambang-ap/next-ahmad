@@ -192,6 +192,7 @@ export default function Kanban() {
 					),
 					"Tanggal",
 					"Nomor Kanban",
+					"Customer",
 					"Keterangan",
 					!isSelect && "Action",
 				]}
@@ -256,6 +257,7 @@ export default function Kanban() {
 							)}
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
+							<Cell>{item.OrmCustomerPO.OrmCustomer.name}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-x-2">
