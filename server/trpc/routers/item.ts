@@ -42,7 +42,10 @@ const itemRouters = router({
 				attributes: ["id"],
 				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
-				where: wherePages([""], search),
+				where: wherePages(
+					["name", "kode_item"] as (keyof TMasterItem)[],
+					search,
+				),
 			});
 
 			const data = rows.map(row => {
