@@ -200,8 +200,8 @@ function RenderData({
 	item,
 	children,
 	control,
-	printOne,
-}: PropsWithChildren<
+}: // printOne,
+PropsWithChildren<
 	MMapValue<ScanList> &
 		Cells & {
 			control: Control<ScanListFormType>;
