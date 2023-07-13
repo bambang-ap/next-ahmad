@@ -156,6 +156,17 @@ const sppbOutRouters = router({
 
 				const promisedData = await Promise.all(dataScanPromise);
 
+				return promisedData.reduce((ret, cur) => {
+					const index = ret.findIndex(
+						e => e.kanban.id_sppb_in === cur.kanban.id_sppb_in,
+					);
+
+					if (index < 0) ret.push(calllasl(cur, cur));
+					else ret[index] = calllasl(ret[index]!, cur);
+
+					return ret;
+				}, [] as YY[]);
+
 				function calllasl(asd: YY, cur: YY): YY {
 					const nextItemsMap = new Map(
 						Object.entries(cur.kanban.items).map(([a, b]) => {
@@ -176,17 +187,6 @@ const sppbOutRouters = router({
 						},
 					};
 				}
-
-				return promisedData.reduce((ret, cur) => {
-					const index = ret.findIndex(
-						e => e.kanban.id_sppb_in === cur.kanban.id_sppb_in,
-					);
-
-					if (index < 0) ret.push(calllasl(cur, cur));
-					else ret[index] = calllasl(ret[index]!, cur);
-
-					return ret;
-				}, [] as YY[]);
 			});
 		}),
 	upsert: procedure
