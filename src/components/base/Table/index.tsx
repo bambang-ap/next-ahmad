@@ -30,6 +30,7 @@ export type TableProps<T, Cell = {}> = {
 	>[];
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
+	reverseEachItem?: boolean;
 	topComponent?: JSX.Element;
 	bottomComponent?: JSX.Element;
 };
@@ -143,6 +144,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 		className,
 		renderItem,
 		renderItemEach,
+		reverseEachItem = false,
 		bottomComponent,
 		topComponent,
 	} = props;
@@ -181,13 +183,17 @@ export function Table<T>(props: TableProps<T, Cells>) {
 						const renderEach = renderItemEach?.(itemWithCell, index);
 						const renderItemRow = renderItem?.(itemWithCell, index);
 
+						const eachRenderer = renderEach && renderItemEach && (
+							<Tr>{renderEach}</Tr>
+						);
+
 						return (
 							<Fragment key={index}>
+								{reverseEachItem && eachRenderer}
 								<Tr className={classNames({hidden: !renderItemRow})}>
 									{renderItemRow}
 								</Tr>
-
-								{renderEach && renderItemEach && <Tr>{renderEach}</Tr>}
+								{!reverseEachItem && eachRenderer}
 							</Fragment>
 						);
 					})}

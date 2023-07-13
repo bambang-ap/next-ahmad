@@ -60,14 +60,12 @@ export default function PoModalChild({
 		field: {onChange: onChangePoItem},
 	} = useController({control, name: "po_item"});
 
-	const {headerTable, isPreview, nameColspan} = {
-		nameColspan: 3,
+	const {headerTable, isPreview} = {
 		get isPreview() {
 			return modalType === "preview";
 		},
 		get headerTable() {
 			const tableHeader: TableProps<any>["header"] = [
-				["Nama", this.nameColspan],
 				"Kode Item",
 				"Harga",
 				...qtyList.map(num => `Jumlah ${num}`),
@@ -108,7 +106,7 @@ export default function PoModalChild({
 	}
 
 	return (
-		<div className="gap-y-2 flex flex-col">
+		<div className="max-h-96 gap-y-2 flex flex-col">
 			<div className="flex gap-2">
 				<Select
 					className="flex-1"
@@ -147,30 +145,31 @@ export default function PoModalChild({
 			{poItem && poItem.length > 0 && (
 				<Table
 					data={poItem}
+					reverseEachItem
 					header={headerTable}
-					className="max-h-72 overflow-y-auto"
-					renderItem={({item, Cell}, index) => {
-						// const listItems =
-						// 	dataMasterItem?.rows.filter(
-						// 		e =>
-						// 			e.id === item.master_item_id ||
-						// 			!selectedMasterItemIds.includes(e.id),
-						// 	) ?? [];
+					className="overflow-y-auto"
+					renderItemEach={({Cell}, index) => {
 						const listItems = dataMasterItem?.rows ?? [];
+
+						return (
+							<Cell colSpan={headerTable.length}>
+								<Select
+									className="flex-1"
+									label="Nama Item"
+									control={control}
+									data={selectMapper(listItems, "id", "name")}
+									fieldName={`po_item.${index}.master_item_id`}
+								/>
+							</Cell>
+						);
+					}}
+					renderItem={({item, Cell}, index) => {
 						const selectedItem = dataMasterItem?.rows.find(
 							e => e.id === item.master_item_id,
 						);
 
 						return (
 							<>
-								<Cell colSpan={nameColspan}>
-									<Select
-										className="flex-1"
-										control={control}
-										data={selectMapper(listItems, "id", "name")}
-										fieldName={`po_item.${index}.master_item_id`}
-									/>
-								</Cell>
 								<Cell>{selectedItem?.kode_item}</Cell>
 								<Cell>
 									<Input
@@ -207,7 +206,7 @@ export default function PoModalChild({
 								})}
 								{!isPreview && (
 									<Cell>
-										<Button onClick={() => removeItem(index)}>Remove</Button>
+										<Button onClick={() => removeItem(index)} icon="faTrash" />
 									</Cell>
 								)}
 							</>
