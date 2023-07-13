@@ -2,12 +2,18 @@ import {PropsWithChildren, useEffect, useRef} from "react";
 
 import moment from "moment";
 import {useRouter} from "next/router";
-import {KanbanFormType} from "pages/app/kanban";
-import {useForm} from "react-hook-form";
+import {KanbanFormType as KanbanFormTypee} from "pages/app/kanban";
+import {Control, useForm, useWatch} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
+import {
+	GeneratePdf,
+	GenPdfRef,
+	SelectAllButton,
+} from "@appComponent/GeneratePdf";
 import {Wrapper as Wrp, WrapperProps} from "@appComponent/Wrapper";
 import {
+	KanbanGetRow,
 	THardness,
 	TInstruksiKanban,
 	TKanbanUpsertItem,
@@ -16,6 +22,7 @@ import {
 import {
 	Button,
 	Cells,
+	CellSelect,
 	Form,
 	Modal,
 	ModalRef,
@@ -25,14 +32,13 @@ import {
 import {qtyList} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
-import {useKanban, useTableFilter} from "@hooks";
+import {useKanban, useLoader, useTableFilter} from "@hooks";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomHeaderTitle} from "@recoil/atoms";
 import type {ScanList} from "@trpc/routers/scan";
 import {
 	classNames,
 	dateUtils,
-	generatePDF,
 	modalTypeParser,
 	scanMapperByStatus,
 } from "@utils";
@@ -42,10 +48,14 @@ import {Route} from "./";
 
 ListScanData.getLayout = getLayout;
 
+export type ScanListFormType = KanbanFormTypee;
+
 export default function ListScanData() {
 	useKanban();
 
+	const loader = useLoader();
 	const modalRef = useRef<ModalRef>(null);
+	const genPdfRef = useRef<GenPdfRef>(null);
 	const setTitle = useSetRecoilState(atomHeaderTitle);
 
 	const {isReady, ...router} = useRouter();
@@ -57,16 +67,44 @@ export default function ListScanData() {
 		target: route,
 	});
 
-	const {control, watch, reset} = useForm<KanbanFormType>();
+	const {control, watch, reset} = useForm<ScanListFormType>();
 
-	const [modalType] = watch(["type"]);
+	const formData = watch();
 
-	const {isPreview, modalTitle} = modalTypeParser(modalType);
+	// console.log(formData)
+
+	const {type: modalType} = formData;
+
+	const {isPreview, isSelect, modalTitle} = modalTypeParser(modalType);
+
+	const idKanbans = Object.entries(formData.idKanbans ?? {}).reduce<string[]>(
+		(ret, [id, val]) => {
+			if (val) ret.push(id);
+			return ret;
+		},
+		[],
+	);
 
 	function preview(id: string) {
 		// setIdKanban(id);
 		reset({id, type: "preview"});
 		modalRef.current?.show();
+	}
+
+	async function printData(idOrAll: true | string) {
+		loader?.show?.();
+		if (typeof idOrAll === "string") {
+			reset(prev => ({...prev, idKanbans: {[idOrAll]: true}}));
+		} else {
+			if (idKanbans.length <= 0) {
+				loader?.hide?.();
+				return alert("Silahkan pilih data terlebih dahulu");
+			}
+		}
+		await genPdfRef.current?.generate();
+		loader?.hide?.();
+		reset(prev => ({...prev, type: undefined}));
+		setTimeout(() => reset(prev => ({...prev, idKanbans: {}})), 2500);
 	}
 
 	useEffect(() => {
@@ -80,6 +118,18 @@ export default function ListScanData() {
 
 	return (
 		<>
+			{loader.component}
+			<GeneratePdf
+				// debug
+				splitPagePer={6}
+				orientation="p"
+				ref={genPdfRef}
+				tagId={`${route}-generated`}
+				renderItem={({data}) => <RenderPdfData data={data} route={route} />}
+				useQueries={() =>
+					trpc.useQueries(t => idKanbans.map(id => t.kanban.detail(id)))
+				}
+			/>
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form context={{disabled: isPreview, hideButton: isPreview}}>
 					<KanbanModalChild reset={reset} control={control} />
@@ -89,10 +139,50 @@ export default function ListScanData() {
 			<TableFilter
 				data={data}
 				form={hookForm}
-				header={["Tanggal", "Nomor Kanban", "Keterangan", "Action"]}
+				topComponent={
+					route === "qc" ? (
+						isSelect ? (
+							<>
+								<Button onClick={() => printData(true)}>Print</Button>
+								<Button
+									onClick={() =>
+										reset(prev => ({...prev, type: undefined, idKanbans: {}}))
+									}>
+									Batal
+								</Button>
+							</>
+						) : (
+							<Button
+								onClick={() => reset(prev => ({...prev, type: "select"}))}>
+								Batch Print
+							</Button>
+						)
+					) : null
+				}
+				header={[
+					isSelect && (
+						<SelectAllButton
+							selector="id_kanban"
+							form={formData}
+							property="idKanbans"
+							data={data?.rows}
+							selected={idKanbans.length}
+							total={data?.rows.length}
+							onClick={prev => reset(prev)}
+						/>
+					),
+					"Tanggal",
+					"Nomor Kanban",
+					"Keterangan",
+					!isSelect && "Action",
+				]}
 				renderItem={item => {
 					return (
-						<RenderData key={item.item.id_kanban} route={route} {...item}>
+						<RenderData
+							{...item}
+							control={control}
+							key={item.item.id_kanban}
+							printOne={id => printData(id)}>
 							<Button
 								icon="faMagnifyingGlass"
 								onClick={() => preview(item.item.id_kanban)}
@@ -108,84 +198,86 @@ export default function ListScanData() {
 function RenderData({
 	Cell,
 	item,
-	route,
 	children,
-}: PropsWithChildren<MMapValue<ScanList> & Cells & Route>) {
+	control,
+	printOne,
+}: PropsWithChildren<
+	MMapValue<ScanList> &
+		Cells & {
+			control: Control<ScanListFormType>;
+			printOne?: (idKanban: string) => void;
+		}
+>) {
 	const {data} = trpc.kanban.detail.useQuery(item.id_kanban as string);
 
-	// const document = item.OrmDocument;
-	const tagId = `SCAN-${item.id_kanban}`;
-	const items = Object.entries(data?.items ?? {});
-	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
-	// const formId = ["IMI", "FORM", formName, item.number]
-	// 	.filter(Boolean)
-	// 	.join("/");
-
-	function printData() {
-		generatePDF(tagId, `${route}-${item.id_kanban}`);
-	}
+	const [modalType, idKanbans] = useWatch({
+		control,
+		name: ["type", "idKanbans"],
+	});
+	const {isSelect} = modalTypeParser(modalType);
 
 	return (
 		<>
+			{isSelect && (
+				<CellSelect
+					noLabel
+					control={control}
+					key={`${idKanbans?.[item.id_kanban]}`}
+					fieldName={`idKanbans.${item.id_kanban}`}
+				/>
+			)}
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
 			<Cell>{data?.nomor_kanban}</Cell>
 			<Cell>{data?.keterangan}</Cell>
-			<Cell className="flex gap-2">
-				{children}
-				{route === "qc" && (
-					<>
-						<Button icon="faPrint" onClick={printData} />
-						<div className="h-0 overflow-hidden -z-10 fixed">
-							<div
-								id={tagId}
-								className={classNames(
-									"flex flex-col w-[500px] bg-black",
-									gap,
-									padding,
-								)}>
-								<div className={classNames("flex", gap)}>
-									<div className="bg-white flex justify-center flex-1 p-2">
-										<Text className="self-center text-4xl text-center">
-											IMI
-										</Text>
-									</div>
-									<div className="bg-white flex justify-center flex-1 p-2">
-										<Text className="self-center text-xl text-center">
-											{cardName}
-										</Text>
-									</div>
-									<div className={classNames("flex flex-col flex-1", gap)}>
-										<div className="bg-white flex justify-center flex-1 p-2">
-											<Text className="self-center">IMI/FORM/QC/01-14</Text>
-											{/* <Text className="self-center">{formId}</Text> */}
-										</div>
-										<div className="bg-white flex justify-center flex-1 p-1">
-											<Text className="self-center">Revisi : 0</Text>
-										</div>
-										<div className="bg-white flex justify-center flex-1 p-1">
-											<Text className="self-center">Terbit : A</Text>
-										</div>
-									</div>
-								</div>
-
-								<Wrapper title="Customer">
-									{data?.OrmCustomerPO?.OrmCustomer.name}
-								</Wrapper>
-								<Wrapper title="Tgl / Bln / Thn">
-									{moment(data?.createdAt).format("D MMMM YYYY")}
-								</Wrapper>
-								<Wrapper title="Nomor Lot IMI">
-									{data?.dataScan?.lot_no_imi}
-								</Wrapper>
-								{items.map(item => (
-									<RenderItem key={item[0]} item={item} />
-								))}
-							</div>
-						</div>
-					</>
-				)}
-			</Cell>
+			{!isSelect && (
+				<Cell className="flex gap-2">
+					{/* <Button icon="faPrint" onClick={() => printOne?.(item.id_kanban)} /> */}
+					{children}
+				</Cell>
+			)}
 		</>
+	);
+}
+
+function RenderPdfData({data, route}: Route & {data?: null | KanbanGetRow}) {
+	const items = Object.entries(data?.items ?? {});
+	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
+
+	return (
+		<div className="w-1/2 p-2">
+			<div className={classNames(gap, padding, "flex flex-col bg-black")}>
+				<div className={classNames("flex", gap)}>
+					<div className="bg-white flex justify-center flex-1 p-2">
+						<Text className="self-center text-4xl text-center">IMI</Text>
+					</div>
+					<div className="bg-white flex justify-center flex-1 p-2">
+						<Text className="self-center text-xl text-center">{cardName}</Text>
+					</div>
+					<div className={classNames("flex flex-col flex-1", gap)}>
+						<div className="bg-white flex justify-center flex-1 p-2">
+							<Text className="self-center">IMI/FORM/QC/01-14</Text>
+							{/* <Text className="self-center">{formId}</Text> */}
+						</div>
+						<div className="bg-white flex justify-center flex-1 p-1">
+							<Text className="self-center">Revisi : 0</Text>
+						</div>
+						<div className="bg-white flex justify-center flex-1 p-1">
+							<Text className="self-center">Terbit : A</Text>
+						</div>
+					</div>
+				</div>
+				<Wrapper title="Customer">
+					{data?.OrmCustomerPO?.OrmCustomer.name}
+				</Wrapper>
+				<Wrapper title="Tgl / Bln / Thn">
+					{moment(data?.createdAt).format("D MMMM YYYY")}
+				</Wrapper>
+				<Wrapper title="Nomor Lot IMI">{data?.dataScan?.lot_no_imi}</Wrapper>
+				{items.map(item => (
+					<RenderItem key={item[0]} item={item} />
+				))}
+			</div>
+		</div>
 	);
 }
 

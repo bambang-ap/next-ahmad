@@ -16,7 +16,14 @@ import {
 	ModalTypeSelect,
 	TKanbanUpsert,
 } from "@appTypes/app.zod";
-import {Button, Form, Input, Modal, ModalRef, TableFilter} from "@components";
+import {
+	Button,
+	CellSelect,
+	Form,
+	Modal,
+	ModalRef,
+	TableFilter,
+} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useTableFilter} from "@hooks";
@@ -55,7 +62,9 @@ export default function Kanban() {
 	const {mutate: mutateDelete} =
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
 
-	const [modalType, idKanbans = {}] = watch(["type", "idKanbans"]);
+	const dataForm = watch();
+
+	const {type: modalType, idKanbans = {}} = dataForm;
 	const {isPreview, isSelect, modalTitle} = modalTypeParser(
 		modalType,
 		"Kanban",
@@ -109,24 +118,6 @@ export default function Kanban() {
 	) {
 		reset({...initValue, type});
 		modalRef.current?.show();
-	}
-
-	function selectAll() {
-		reset(prev => {
-			const isSelectedAll =
-				selectedIdKanbans.length === (dataKanbanPage?.rows.length ?? 0);
-			return {
-				...prev,
-				idKanbans: isSelectedAll
-					? {}
-					: dataKanbanPage?.rows.reduce<KanbanFormType["idKanbans"]>(
-							(ret, cur) => {
-								return {...ret, [cur.id]: true};
-							},
-							{},
-					  ),
-			};
-		});
 	}
 
 	async function printData(idOrAll: true | string) {
@@ -184,8 +175,11 @@ export default function Kanban() {
 				header={[
 					isSelect && (
 						<SelectAllButton
+							form={dataForm}
+							property="idKanbans"
 							key="btnSelectAll"
-							onClick={selectAll}
+							data={dataKanbanPage?.rows}
+							onClick={prev => reset(prev)}
 							selected={selectedIdKanbans.length}
 							total={dataKanbanPage?.rows.length}
 						/>
@@ -244,16 +238,11 @@ export default function Kanban() {
 					return (
 						<>
 							{isSelect && (
-								<Cell>
-									{
-										<Input
-											noLabel
-											type="checkbox"
-											control={control}
-											fieldName={`idKanbans.${item.id}`}
-										/>
-									}
-								</Cell>
+								<CellSelect
+									noLabel
+									control={control}
+									fieldName={`idKanbans.${item.id}`}
+								/>
 							)}
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>

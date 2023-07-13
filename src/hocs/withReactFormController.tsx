@@ -25,16 +25,20 @@ export type ControlledComponentProps<
 	appliedRules?: (rules: UseControllerProps<F>["rules"]) => void;
 } & Partial<DefaultProps>;
 
+export type WrappedProps<F extends FieldValues, T extends {}> = Omit<
+	ControllerProps<F>,
+	"name" | "render"
+> & {
+	control: Control<F>;
+	fieldName: FieldPath<F>;
+} & Omit<T, keyof ControlledComponentProps<F>> &
+	DefaultProps;
+
 export const withReactFormController = <T extends {}, F extends FieldValues>(
 	Component: (
 		controlledComponentProps: Required<ControlledComponentProps<F>> & T,
 	) => JSX.Element,
 ) => {
-	type WrappedProps = Omit<ControllerProps<F>, "name" | "render"> & {
-		control: Control<F>;
-		fieldName: FieldPath<F>;
-	} & Omit<T, keyof ControlledComponentProps<F>> &
-		DefaultProps;
 	return function Decorated({
 		rules = {},
 		control,
@@ -42,7 +46,7 @@ export const withReactFormController = <T extends {}, F extends FieldValues>(
 		defaultValue,
 		shouldUnregister,
 		...props
-	}: WrappedProps) {
+	}: WrappedProps<F, T>) {
 		const [rulesApply, setRulesApply] =
 			useState<UseControllerProps<F>["rules"]>();
 

@@ -1,6 +1,6 @@
 // @ts-nocheck
 
-import {KanbanFormType} from "pages/app/kanban";
+import {ScanListFormType} from "pages/app/scan/[route]/list";
 import {Control, UseFormReset, useWatch} from "react-hook-form";
 
 import {Wrapper} from "@appComponent/Wrapper";
@@ -13,8 +13,8 @@ import {qtyList} from "../ModalChild_po";
 import {RenderMesin} from "./RenderMesin";
 
 type RenderItemProps = {
-	control: Control<KanbanFormType>;
-	reset: UseFormReset<KanbanFormType>;
+	control: Control<ScanListFormType>;
+	reset: UseFormReset<ScanListFormType>;
 };
 
 export function RenderItem({control, reset}: RenderItemProps) {

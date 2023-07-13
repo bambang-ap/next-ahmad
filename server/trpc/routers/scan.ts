@@ -52,6 +52,7 @@ const scanRouters = router({
 				const {count, rows: data} = await OrmScan.findAndCountAll({
 					limit,
 					attributes: [
+						"id",
 						"id_kanban",
 						[literal("ROW_NUMBER() OVER (ORDER BY id)"), "number"],
 					],

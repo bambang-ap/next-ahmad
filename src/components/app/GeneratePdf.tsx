@@ -2,11 +2,12 @@ import {forwardRef, PropsWithChildren, useImperativeHandle} from "react";
 
 import {jsPDFOptions} from "jspdf";
 
+import {ZId} from "@appTypes/app.type";
 import {Button} from "@components";
 import {UseTRPCQueryResult} from "@trpc/react-query/shared";
 import {classNames, generatePDF, sleep} from "@utils";
 
-export type GenPdfRef = {generate: () => Promise<void>};
+export type GenPdfRef = {generate: (timeout?: number) => Promise<void>};
 export type GenPdfProps = PropsWithChildren<{
 	tagId: string;
 	filename?: string;
@@ -18,6 +19,7 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 	W extends UseTRPCQueryResult<T, unknown>,
 >(
 	props: {
+		debug?: boolean;
 		tagId: string;
 		width?: string;
 		filename?: string;
@@ -28,11 +30,9 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 	},
 	ref: React.ForwardedRef<GenPdfRef>,
 ) {
-	const className = "h-0 overflow-hidden -z-10 fixed";
-	// const className = "";
-
 	const {
 		tagId,
+		debug,
 		orientation,
 		filename = "file",
 		width = "w-[1600px]",
@@ -42,6 +42,8 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 	} = props;
 
 	const datas = useQueries();
+
+	const className = debug ? "" : "h-0 overflow-hidden -z-10 fixed";
 
 	const pageDatas = splitPagePer
 		? datas.reduce<{page: number; datas: W[][]}>(
@@ -55,8 +57,8 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 		  ).datas
 		: [datas];
 
-	async function generate() {
-		await sleep(2500);
+	async function generate(timeout = 2500) {
+		await sleep(timeout);
 		// generatePDF([tagId, tagId, tagId], filename, orientation);
 		generatePDF(
 			datas.map(({}, index) => `${tagId}-Page-${index}`),
@@ -85,17 +87,31 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 	);
 });
 
-type SelectAllButtonProps = {
+type SelectAllButtonProps<T extends object, D extends ZId> = {
+	form: T;
+	property: keyof T;
+	data?: D[];
 	total?: number;
 	selected: number;
-	onClick?: () => void;
+	selector?: string;
+	onClick?: (
+		selectedIds?: T & {
+			[x: string]: MyObject<boolean> | undefined;
+		},
+	) => void;
 };
 
-export function SelectAllButton({
+export function SelectAllButton<T extends object, D extends ZId>({
+	form: prev,
 	onClick,
+	property,
+	data,
 	selected,
 	total = 0,
-}: SelectAllButtonProps) {
+	selector = "id",
+}: SelectAllButtonProps<T, D>) {
+	const isSelectedAll = selected === total;
+
 	const btnText =
 		selected === 0
 			? "Select All"
@@ -103,5 +119,18 @@ export function SelectAllButton({
 			? "Select All Rest"
 			: "Unselect All";
 
-	return <Button onClick={onClick}>{btnText}</Button>;
+	function selectAll() {
+		const selectedIds = {
+			...prev,
+			[property]: isSelectedAll
+				? {}
+				: data?.reduce<MyObject<boolean>>((ret, cur) => {
+						// @ts-ignore
+						return {...ret, [cur[selector]]: true};
+				  }, {}),
+		};
+		onClick?.(selectedIds);
+	}
+
+	return <Button onClick={selectAll}>{btnText}</Button>;
 }

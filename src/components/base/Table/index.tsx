@@ -1,11 +1,12 @@
 import {FC, Fragment, isValidElement, useEffect} from "react";
 
 import {Pagination, TableCellProps} from "@mui/material";
-import {useForm, UseFormReturn} from "react-hook-form";
+import {FieldValues, useForm, UseFormReturn} from "react-hook-form";
 
 import {PagingResult, TableFormValue} from "@appTypes/app.type";
-import {Button, Input, Select, SelectPropsData} from "@components";
+import {Button, Input, InputProps, Select, SelectPropsData} from "@components";
 import {defaultLimit} from "@constants";
+import {WrappedProps} from "@formController";
 import {classNames} from "@utils";
 
 import TableRoot from "./TableRoot";
@@ -14,6 +15,24 @@ export * from "./TableRoot";
 export {TableRoot as RootTable};
 
 type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
+
+type CellSelectProps<F extends FieldValues> = Omit<
+	WrappedProps<F, InputProps>,
+	"type"
+> & {
+	CellProps?: TableCellProps;
+};
+
+export function CellSelect<F extends FieldValues>({
+	CellProps,
+	...props
+}: CellSelectProps<F>) {
+	return (
+		<TableRoot.Td {...CellProps}>
+			<Input type="checkbox" {...props} />
+		</TableRoot.Td>
+	);
+}
 
 export type Cells = {Cell: FC<TableCellProps>};
 
@@ -31,7 +50,7 @@ export type TableProps<T, Cell = {}> = {
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
 	reverseEachItem?: boolean;
-	topComponent?: JSX.Element;
+	topComponent?: JSX.Element | null;
 	bottomComponent?: JSX.Element;
 };
 
