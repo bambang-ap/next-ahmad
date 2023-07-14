@@ -3,7 +3,7 @@ import {forwardRef, PropsWithChildren, useImperativeHandle} from "react";
 import {jsPDFOptions} from "jspdf";
 
 import {ZId} from "@appTypes/app.type";
-import {Button} from "@components";
+import {CheckBox} from "@components";
 import {UseTRPCQueryResult} from "@trpc/react-query/shared";
 import {classNames, generatePDF, sleep} from "@utils";
 
@@ -111,13 +111,7 @@ export function SelectAllButton<T extends object, D extends ZId>({
 	selector = "id",
 }: SelectAllButtonProps<T, D>) {
 	const isSelectedAll = selected === total;
-
-	const btnText =
-		selected === 0
-			? "Select All"
-			: selected < total
-			? "Select All Rest"
-			: "Unselect All";
+	const isSomeSelected = selected < total && selected !== 0;
 
 	function selectAll() {
 		const selectedIds = {
@@ -132,5 +126,10 @@ export function SelectAllButton<T extends object, D extends ZId>({
 		onClick?.(selectedIds);
 	}
 
-	return <Button onClick={selectAll}>{btnText}</Button>;
+	return (
+		<CheckBox
+			onCheck={selectAll}
+			value={isSomeSelected ? "@" : isSelectedAll}
+		/>
+	);
 }

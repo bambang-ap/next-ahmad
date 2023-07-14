@@ -21,6 +21,8 @@ import {
 } from "@formController";
 import {classNames} from "@utils";
 
+import {CheckBox} from "./CheckBox";
+
 export type InputProps = {
 	byPassValue?: string;
 	hidden?: boolean;
@@ -161,19 +163,14 @@ export function InputComponent<F extends FieldValues>(
 			}
 
 			return (
-				<div
-					className={classNames(
-						`flex items-center cursor-pointer !px-0 !py-0`,
-						{hidden},
-						className,
-					)}
-					onClick={onCheck}>
-					<div className="flex justify-center items-center mr-2 border rounded h-6 w-6">
-						{value && <Icon name="faCheck" />}
-					</div>
-					<Text>{label}</Text>
+				<CheckBox
+					label={label}
+					value={value}
+					hidden={hidden}
+					onCheck={onCheck}
+					className={className}>
 					{errorMessage}
-				</div>
+				</CheckBox>
 			);
 		}
 
