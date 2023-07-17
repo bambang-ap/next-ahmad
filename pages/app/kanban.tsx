@@ -5,7 +5,6 @@ import {FormEventHandler, useEffect, useRef} from "react";
 import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
-import ExportData from "@appComponent/ExportData";
 import {
 	GeneratePdf,
 	GenPdfRef,
@@ -141,6 +140,10 @@ export default function Kanban() {
 	}
 
 	async function exportData() {
+		if (selectedIdKanbans.length <= 0) {
+			return alert("Silahkan pilih data terlebih dahulu");
+		}
+
 		exportResult();
 		reset(prev => ({...prev, type: undefined}));
 		await sleep(2500);
@@ -240,27 +243,6 @@ export default function Kanban() {
 								Select
 							</Button>
 							<Button onClick={() => showModal("add", {})}>Add</Button>
-							<ExportData
-								names={["Kanban"]}
-								useQuery={() => trpc.kanban.get.useQuery({type: "kanban"})}
-								dataMapper={dataKanban => {
-									if (!dataKanban) return [];
-									return dataKanban?.map(
-										({
-											items,
-											list_mesin,
-											OrmDocument,
-											OrmCustomerPO,
-											dataSppbIn,
-											dataCreatedBy,
-											image,
-											dataUpdatedBy,
-											createdBy,
-											...rest
-										}) => rest,
-									);
-								}}
-							/>
 						</>
 					)
 				}

@@ -3,20 +3,30 @@ import {FormEventHandler, useRef} from "react";
 import {MutateOptions} from "@tanstack/react-query";
 import {useForm} from "react-hook-form";
 
-import ExportData from "@appComponent/ExportData";
-import {ModalTypePreview, TCustomerSPPBOut} from "@appTypes/app.type";
-import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
+import {SelectAllButton} from "@appComponent/GeneratePdf";
+import {ModalTypeSelect, TCustomerSPPBOut} from "@appTypes/app.type";
+import {
+	Button,
+	CellSelect,
+	Form,
+	Modal,
+	ModalRef,
+	TableFilter,
+} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useSppbOut, useTableFilter} from "@hooks";
+import {useExportData, useSppbOut, useTableFilter} from "@hooks";
 import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
 import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
-import {modalTypeParser} from "@utils";
+import {modalTypeParser, sleep} from "@utils";
 import {trpc} from "@utils/trpc";
 
 SPPBOUT.getLayout = getLayout;
 
-export type FormValue = {type: ModalTypePreview} & TCustomerSPPBOut;
+export type FormValue = {
+	type: ModalTypeSelect;
+	idSppbOuts?: MyObject<boolean>;
+} & TCustomerSPPBOut;
 
 export default function SPPBOUT() {
 	const {dataKendaraan, dataCustomer} = useSppbOut();
@@ -30,8 +40,44 @@ export default function SPPBOUT() {
 	const {mutate: mutateDelete} = trpc.sppb.out.delete.useMutation();
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
-	const [modalType] = watch(["type"]);
-	const {modalTitle, isPreview, isEdit, isAdd} = modalTypeParser(modalType);
+	const dataForm = watch();
+	const {type: modalType, idSppbOuts: idSppbIns} = dataForm;
+
+	const {isPreview, modalTitle, isAdd, isEdit, isSelect} = modalTypeParser(
+		modalType,
+		"SPPB In",
+	);
+
+	const selectedIdSppbIns = Object.entries(idSppbIns ?? {}).reduce<string[]>(
+		(ret, [id, val]) => {
+			if (val) ret.push(id);
+			return ret;
+		},
+		[],
+	);
+
+	const {exportResult} = useExportData(
+		() =>
+			trpc.useQueries(t =>
+				selectedIdSppbIns.map(id => t.sppb.out.getDetail(id)),
+			),
+		({data}) => {
+			const {OrmCustomer, OrmKendaraan, po, ...rest} = data ?? {};
+
+			return rest;
+		},
+	);
+
+	async function exportData() {
+		if (selectedIdSppbIns.length <= 0) {
+			return alert("Silahkan pilih data terlebih dahulu");
+		}
+
+		exportResult();
+		reset(prev => ({...prev, type: undefined}));
+		await sleep(2500);
+		reset(prev => ({...prev, idSppbIns: {}}));
+	}
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -49,6 +95,7 @@ export default function SPPBOUT() {
 			else mutateUpsert(values, callbackOpt);
 		})();
 	};
+
 	function showModal({type, ...rest}: Partial<FormValue>) {
 		reset({...rest, type});
 		modalRef.current?.show();
@@ -70,31 +117,51 @@ export default function SPPBOUT() {
 			<TableFilter
 				data={data}
 				form={hookForm}
-				header={["Nomor Surat", "Kendaraan", "Customer", "Action"]}
-				topComponent={
-					<>
-						<Button
-							onClick={() =>
-								showModal({
-									type: "add",
-									po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
-								})
-							}>
-							Add
-						</Button>
-						<ExportData
-							names={["SPPB Out"]}
-							useQuery={() =>
-								// @ts-ignore
-								trpc.sppb.out.get.useQuery({limit: 9999, page: 1})
-							}
-							// @ts-ignore
-							dataMapper={(dataSppbOut: TCustomerSPPBOut[]) => {
-								if (!dataSppbOut) return [];
-								return dataSppbOut?.map(({po, ...rest}) => rest);
-							}}
+				header={[
+					isSelect && (
+						<SelectAllButton
+							form={dataForm}
+							property="idSppbOuts"
+							key="btnSelectAll"
+							data={data?.rows}
+							onClick={prev => reset(prev)}
+							selected={selectedIdSppbIns.length}
+							total={data?.rows.length}
 						/>
-					</>
+					),
+					"Nomor Surat",
+					"Kendaraan",
+					"Customer",
+					!isSelect && "Action",
+				]}
+				topComponent={
+					isSelect ? (
+						<>
+							<Button onClick={() => exportData()}>Export</Button>
+							<Button
+								onClick={() =>
+									reset(prev => ({...prev, type: undefined, idKanbans: {}}))
+								}>
+								Batal
+							</Button>
+						</>
+					) : (
+						<>
+							<Button
+								onClick={() => reset(prev => ({...prev, type: "select"}))}>
+								Select
+							</Button>
+							<Button
+								onClick={() =>
+									showModal({
+										type: "add",
+										po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
+									})
+								}>
+								Add
+							</Button>
+						</>
+					)
 				}
 				renderItem={({Cell, item}) => {
 					const {id, id_kendaraan, id_customer} = item;
@@ -102,25 +169,34 @@ export default function SPPBOUT() {
 					const customer = dataCustomer.find(e => e.id === id_customer);
 					return (
 						<>
+							{isSelect && (
+								<CellSelect
+									noLabel
+									control={control}
+									fieldName={`idSppbOuts.${item.id}`}
+								/>
+							)}
 							<Cell>{item.invoice_no}</Cell>
 							<Cell>{kendaraan?.name}</Cell>
 							<Cell>{customer?.name}</Cell>
 
-							<Cell className="flex gap-2">
-								<SPPBOutGenerateQR {...item} />
-								<Button
-									icon="faMagnifyingGlass"
-									onClick={() => showModal({...item, type: "preview"})}
-								/>
-								<Button
-									onClick={() => showModal({...item, type: "edit"})}
-									icon="faEdit"
-								/>
-								<Button
-									onClick={() => showModal({id, type: "delete"})}
-									icon="faTrash"
-								/>
-							</Cell>
+							{!isSelect && (
+								<Cell className="flex gap-2">
+									<SPPBOutGenerateQR {...item} />
+									<Button
+										icon="faMagnifyingGlass"
+										onClick={() => showModal({...item, type: "preview"})}
+									/>
+									<Button
+										onClick={() => showModal({...item, type: "edit"})}
+										icon="faEdit"
+									/>
+									<Button
+										onClick={() => showModal({id, type: "delete"})}
+										icon="faTrash"
+									/>
+								</Cell>
+							)}
 						</>
 					);
 				}}

@@ -2,21 +2,34 @@ import {FormEventHandler, useRef} from "react";
 
 import {useForm} from "react-hook-form";
 
-import ExportData from "@appComponent/ExportData";
-import {ModalTypePreview, TCustomer, TUpsertSppbIn} from "@appTypes/app.type";
-import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
+import {SelectAllButton} from "@appComponent/GeneratePdf";
+import {
+	ModalTypePreview,
+	ModalTypeSelect,
+	TCustomer,
+	TUpsertSppbIn,
+} from "@appTypes/app.type";
+import {
+	Button,
+	CellSelect,
+	Form,
+	Modal,
+	ModalRef,
+	TableFilter,
+} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
-import {useTableFilter} from "@hooks";
+import {useExportData, useTableFilter} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
 import {SppbInRows} from "@trpc/routers/sppb/in";
-import {dateUtils, modalTypeParser} from "@utils";
+import {dateUtils, modalTypeParser, sleep} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type FormType = {
-	type: ModalTypePreview;
+	type: ModalTypeSelect;
 	id_customer?: string;
+	idSppbIns?: MyObject<boolean>;
 } & TUpsertSppbIn &
 	Partial<Pick<SppbInRows, "items">>;
 
@@ -42,9 +55,35 @@ export default function SPPBIN() {
 	const {mutate: mutateDelete} =
 		trpc.sppb.in.delete.useMutation(defaultErrorMutation);
 
-	const modalType = watch("type");
+	const dataForm = watch();
+	const {type: modalType, idSppbIns} = dataForm;
 
-	const {isPreview, modalTitle} = modalTypeParser(modalType, "SPPB In");
+	const {isPreview, modalTitle, isSelect} = modalTypeParser(
+		modalType,
+		"SPPB In",
+	);
+
+	const selectedIdSppbIns = Object.entries(idSppbIns ?? {}).reduce<string[]>(
+		(ret, [id, val]) => {
+			if (val) ret.push(id);
+			return ret;
+		},
+		[],
+	);
+
+	const {exportResult} = useExportData(
+		() =>
+			trpc.useQueries(t =>
+				selectedIdSppbIns.map(id =>
+					t.sppb.in.get({type: "sppb_in", where: {id}}),
+				),
+			),
+		({data}) => {
+			const {detailPo, items, ...rest} = data?.[0] ?? {};
+
+			return rest;
+		},
+	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -69,35 +108,73 @@ export default function SPPBIN() {
 		modalRef.current?.show();
 	}
 
+	async function exportData() {
+		if (selectedIdSppbIns.length <= 0) {
+			return alert("Silahkan pilih data terlebih dahulu");
+		}
+
+		exportResult();
+		reset(prev => ({...prev, type: undefined}));
+		await sleep(2500);
+		reset(prev => ({...prev, idSppbIns: {}}));
+	}
+
 	return (
 		<>
 			<TableFilter
 				data={data}
 				form={hookForm}
 				topComponent={
-					<>
-						<Button onClick={() => showModal("add", {})}>Add</Button>
-						<ExportData
-							names={["SPPB In"]}
-							useQuery={() => trpc.sppb.in.get.useQuery({type: "sppb_in"})}
-							dataMapper={dataSppbIn => {
-								if (!dataSppbIn) return [];
-								return dataSppbIn?.map(({detailPo, items, ...rest}) => rest);
-							}}
-						/>
-					</>
+					isSelect ? (
+						<>
+							<Button onClick={() => exportData()}>Export</Button>
+							<Button
+								onClick={() =>
+									reset(prev => ({...prev, type: undefined, idKanbans: {}}))
+								}>
+								Batal
+							</Button>
+						</>
+					) : (
+						<>
+							<Button
+								onClick={() => reset(prev => ({...prev, type: "select"}))}>
+								Select
+							</Button>
+							<Button onClick={() => showModal("add", {})}>Add</Button>
+						</>
+					)
 				}
 				header={[
+					isSelect && (
+						<SelectAllButton
+							form={dataForm}
+							property="idSppbIns"
+							key="btnSelectAll"
+							// @ts-ignore
+							data={data?.rows}
+							onClick={prev => reset(prev)}
+							selected={selectedIdSppbIns.length}
+							total={data?.rows.length}
+						/>
+					),
 					"Tanggal Surat Jalan",
 					"Nomor PO",
 					"Customer",
 					"Nomor Surat Jalan",
-					"Action",
+					!isSelect && "Action",
 				]}
 				renderItem={({Cell, item}) => {
 					const {id} = item;
 					return (
 						<>
+							{isSelect && (
+								<CellSelect
+									noLabel
+									control={control}
+									fieldName={`idSppbIns.${item.id}`}
+								/>
+							)}
 							<Cell>{dateUtils.date(item.tgl)}</Cell>
 							<Cell>{item.detailPo?.nomor_po}</Cell>
 							<Cell>
@@ -107,15 +184,17 @@ export default function SPPBIN() {
 								}
 							</Cell>
 							<Cell>{item.nomor_surat}</Cell>
-							<Cell className="flex gap-2">
-								<Button onClick={() => showModal("preview", item)}>
-									Preview
-								</Button>
-								<Button onClick={() => showModal("edit", item)}>Edit</Button>
-								<Button onClick={() => showModal("delete", {id})}>
-									Delete
-								</Button>
-							</Cell>
+							{!isSelect && (
+								<Cell className="flex gap-2">
+									<Button onClick={() => showModal("preview", item)}>
+										Preview
+									</Button>
+									<Button onClick={() => showModal("edit", item)}>Edit</Button>
+									<Button onClick={() => showModal("delete", {id})}>
+										Delete
+									</Button>
+								</Cell>
+							)}
 						</>
 					);
 				}}
