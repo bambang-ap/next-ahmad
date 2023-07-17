@@ -52,6 +52,7 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 		image,
 		createdAt,
 		keterangan,
+		nomor_kanban,
 	} = data ?? {};
 
 	const processes = item.OrmMasterItem?.instruksi;
@@ -177,6 +178,10 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 				<tr>
 					<Td>Incoming Date</Td>
 					<Td colSpan={2}>{moment(dataSppbIn?.tgl).format("D MMMM YYYY")}</Td>
+				</tr>
+				<tr>
+					<Td>Nomor Kanban</Td>
+					<Td colSpan={2}>{nomor_kanban}</Td>
 				</tr>
 				<tr>
 					<Td>Part No</Td>

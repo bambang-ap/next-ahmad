@@ -24,13 +24,13 @@ import {
 	ModalRef,
 	TableFilter,
 } from "@components";
-import {defaultErrorMutation} from "@constants";
+import {cuttingLineClassName, defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useTableFilter} from "@hooks";
 import {RenderKanbanCard} from "@pageComponent/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomDataKanban} from "@recoil/atoms";
-import {dateUtils, modalTypeParser} from "@utils";
+import {classNames, dateUtils, modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
 Kanban.getLayout = getLayout;
@@ -84,8 +84,6 @@ export default function Kanban() {
 		const {rows, ...rest} = e;
 		return JSON.stringify(rest);
 	});
-
-	const tagId = `kanban-data-print`;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -146,10 +144,11 @@ export default function Kanban() {
 		<>
 			{loader.component}
 			<GeneratePdf
+				width="w-[1700px]"
 				splitPagePer={4}
 				orientation="l"
 				ref={genPdfRef}
-				tagId={tagId}
+				tagId={"kanban-data-print"}
 				useQueries={() =>
 					trpc.useQueries(t => selectedIdKanbans.map(id => t.kanban.detail(id)))
 				}
@@ -160,7 +159,9 @@ export default function Kanban() {
 						<>
 							{Object.entries(items).map(item => {
 								return (
-									<div key={item[0]} className="w-1/2 p-2">
+									<div
+										key={item[0]}
+										className={classNames("w-1/2 p-4", cuttingLineClassName)}>
 										<RenderKanbanCard idKanban={id!} item={item} />
 									</div>
 								);

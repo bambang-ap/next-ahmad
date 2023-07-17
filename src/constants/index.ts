@@ -34,6 +34,9 @@ export const ScanTarget: TScanTarget[] = ["produksi", "qc", "finish_good"];
 
 export const paperA4: [width: number, height: number] = [210, 297];
 
+export const cuttingLineClassName =
+	"border border-dashed border-l-0 border-t-0";
+
 export const focusInputClassName =
 	"border-2 border-transparent focus-within:border-app-secondary-03";
 
