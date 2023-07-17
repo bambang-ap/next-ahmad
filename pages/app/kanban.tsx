@@ -26,11 +26,11 @@ import {
 } from "@components";
 import {cuttingLineClassName, defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useLoader, useTableFilter} from "@hooks";
+import {useExportData, useLoader, useTableFilter} from "@hooks";
 import {RenderKanbanCard} from "@pageComponent/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomDataKanban} from "@recoil/atoms";
-import {classNames, dateUtils, modalTypeParser} from "@utils";
+import {classNames, dateUtils, modalTypeParser, sleep} from "@utils";
 import {trpc} from "@utils/trpc";
 
 Kanban.getLayout = getLayout;
@@ -85,6 +85,28 @@ export default function Kanban() {
 		return JSON.stringify(rest);
 	});
 
+	const {exportResult} = useExportData(
+		() =>
+			trpc.useQueries(t => selectedIdKanbans.map(id => t.kanban.detail(id))),
+		({data}) => {
+			const {
+				items,
+				list_mesin,
+				OrmDocument,
+				OrmCustomerPO,
+				dataSppbIn,
+				dataCreatedBy,
+				image,
+				dataScan,
+				dataUpdatedBy,
+				createdBy,
+				...rest
+			} = data ?? {};
+
+			return rest;
+		},
+	);
+
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
@@ -118,6 +140,13 @@ export default function Kanban() {
 		modalRef.current?.show();
 	}
 
+	async function exportData() {
+		exportResult();
+		reset(prev => ({...prev, type: undefined}));
+		await sleep(2500);
+		reset(prev => ({...prev, idKanbans: {}}));
+	}
+
 	async function printData(idOrAll: true | string) {
 		loader?.show?.();
 		if (typeof idOrAll === "string") {
@@ -131,7 +160,8 @@ export default function Kanban() {
 		await genPdfRef.current?.generate();
 		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
-		setTimeout(() => reset(prev => ({...prev, idKanbans: {}})), 2500);
+		await sleep(2500);
+		reset(prev => ({...prev, idKanbans: {}}));
 	}
 
 	useEffect(() => {
@@ -148,7 +178,7 @@ export default function Kanban() {
 				splitPagePer={4}
 				orientation="l"
 				ref={genPdfRef}
-				tagId={"kanban-data-print"}
+				tagId="kanban-data-print"
 				useQueries={() =>
 					trpc.useQueries(t => selectedIdKanbans.map(id => t.kanban.detail(id)))
 				}
@@ -195,6 +225,7 @@ export default function Kanban() {
 					isSelect ? (
 						<>
 							<Button onClick={() => printData(true)}>Print</Button>
+							<Button onClick={() => exportData()}>Export</Button>
 							<Button
 								onClick={() =>
 									reset(prev => ({...prev, type: undefined, idKanbans: {}}))
@@ -206,7 +237,7 @@ export default function Kanban() {
 						<>
 							<Button
 								onClick={() => reset(prev => ({...prev, type: "select"}))}>
-								Batch Print
+								Select
 							</Button>
 							<Button onClick={() => showModal("add", {})}>Add</Button>
 							<ExportData
