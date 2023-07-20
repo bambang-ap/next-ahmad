@@ -186,8 +186,10 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 				<tr>
 					<Td>Part No</Td>
 					<Td colSpan={2}>{masterItem?.kode_item}</Td>
-					<Td colSpan={2}>PROCESS</Td>
-					<Td>MATERIAL</Td>
+					<Td colSpan={2} className="text-center">
+						PROCESS
+					</Td>
+					<Td className="text-center">MATERIAL</Td>
 				</tr>
 				<tr>
 					<Td>Part Name</Td>

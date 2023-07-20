@@ -6,6 +6,7 @@ import {classNames} from "@utils";
 import {trpc} from "@utils/trpc";
 
 App.getLayout = getLayout;
+
 export default function App() {
 	const {data} = trpc.dashboard.useQuery();
 	const {push} = useRouter();

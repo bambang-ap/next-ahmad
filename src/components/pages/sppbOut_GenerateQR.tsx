@@ -4,19 +4,33 @@
 import {PropsWithChildren} from "react";
 
 import {TInstruksiKanban} from "@appTypes/app.type";
-import {Button, RootTable as Table, Text as Txt, TextProps} from "@components";
+import {
+	Button,
+	RootTable as Table,
+	StyledCellProps,
+	Text as Txt,
+	TextProps,
+} from "@components";
 import {IMIConst} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {useSppbOut} from "@hooks";
-import {dateUtils, generatePDF, qtyMap} from "@utils";
+import {classNames, dateUtils, generatePDF, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {qtyList} from "./ModalChild_po";
 
-const {Td, Tr} = Table;
+const {Tr} = Table;
 
-function Text(props: TextProps) {
-	return <Txt {...props} color="black" />;
+const font = "font-bold";
+
+function Td({className, ...props}: StyledCellProps) {
+	return <Table.Td {...props} className={classNames(font, className)} />;
+}
+
+function Text({className, ...props}: TextProps) {
+	return (
+		<Txt {...props} color="black" className={classNames(font, className)} />
+	);
 }
 
 function Section({
@@ -36,7 +50,7 @@ function Section({
 function Sign({children}: PropsWithChildren) {
 	return (
 		<div className="flex flex-col w-full items-center">
-			<Text>{children}</Text>
+			<Text className={font}>{children}</Text>
 			<div className="h-16" />
 			<div className="flex w-full justify-center">
 				<Text>(</Text>
@@ -87,8 +101,10 @@ export function SPPBOutGenerateQR(props: {
 								<Text className="font-extrabold">{IMIConst.name}</Text>
 								<Text>{IMIConst.address1}</Text>
 								<Text>{IMIConst.address2}</Text>
-								<Section title="Phone">{IMIConst.phone}</Section>
-								<Section title="Fax">{IMIConst.fax}</Section>
+								<div>
+									<Section title="Phone">{IMIConst.phone}</Section>
+									<Section title="Fax">{IMIConst.fax}</Section>
+								</div>
 							</div>
 							<div className="flex flex-1 flex-col">
 								<div className="w-[100px] self-end">
@@ -121,7 +137,7 @@ export function SPPBOutGenerateQR(props: {
 							</div>
 							<div className="flex-1 border border-black p-4">
 								<Text>Kepada : {detail?.OrmCustomer.name}</Text>
-								<Text>di {detail?.OrmCustomer.alamat}</Text>
+								<Text>{detail?.OrmCustomer.alamat}</Text>
 							</div>
 						</div>
 					</div>

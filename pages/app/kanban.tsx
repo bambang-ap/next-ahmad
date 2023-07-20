@@ -194,7 +194,7 @@ export default function Kanban() {
 								return (
 									<div
 										key={item[0]}
-										className={classNames("w-1/2 p-4", cuttingLineClassName)}>
+										className={classNames("w-1/2 p-6", cuttingLineClassName)}>
 										<RenderKanbanCard idKanban={id!} item={item} />
 									</div>
 								);

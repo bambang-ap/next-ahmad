@@ -130,3 +130,6 @@ NOTE: buat printout kanban
 
 - Design Kanban Printout
 - Export yg bisa di export
+
+- pas scan produksi dan scan fg, jika qty item yg dikirim ke QC kurang dari jumlah planing -> rubah data qty di item kanban supaya bisa dibuat ulang kanban dg item tsb
+- pas scan qc, item qty reject masuk ke table reject item

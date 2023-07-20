@@ -29,7 +29,7 @@ import {
 	TableFilter,
 	Text,
 } from "@components";
-import {qtyList} from "@constants";
+import {cuttingLineClassName, qtyList} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useKanban, useLoader, useTableFilter} from "@hooks";
@@ -120,10 +120,10 @@ export default function ListScanData() {
 		<>
 			{loader.component}
 			<GeneratePdf
-				// debug
-				splitPagePer={6}
-				orientation="p"
+				splitPagePer={4}
+				orientation="l"
 				ref={genPdfRef}
+				width="w-[2200px]"
 				tagId={`${route}-generated`}
 				renderItem={({data}) => <RenderPdfData data={data} route={route} />}
 				useQueries={() =>
@@ -244,7 +244,7 @@ function RenderPdfData({data, route}: Route & {data?: null | KanbanGetRow}) {
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
-		<div className="w-1/2 p-2">
+		<div className={classNames("w-1/2 p-6", cuttingLineClassName)}>
 			<div className={classNames(gap, padding, "flex flex-col bg-black")}>
 				<div className={classNames("flex", gap)}>
 					<div className="bg-white flex justify-center flex-1 p-2">
@@ -346,6 +346,7 @@ function RenderItem({
 		<>
 			<Wrapper title="Nomor Lot">{selectedSppbInItem?.lot_no}</Wrapper>
 			<Wrapper title="SPPB In">{selectedSppbIn?.nomor_surat}</Wrapper>
+			<Wrapper title="Nomor Kanban">{dataKanban?.nomor_kanban}</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
 			<Wrapper title="Material">
