@@ -87,7 +87,7 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 	);
 });
 
-type SelectAllButtonProps<T extends object, D extends ZId> = {
+type SelectAllButtonProps<T extends object, G extends {}, D extends ZId & G> = {
 	form: T;
 	property: keyof T;
 	data?: D[];
@@ -101,7 +101,11 @@ type SelectAllButtonProps<T extends object, D extends ZId> = {
 	) => void;
 };
 
-export function SelectAllButton<T extends object, D extends ZId>({
+export function SelectAllButton<
+	T extends object,
+	G extends {},
+	D extends ZId & G,
+>({
 	form: prev,
 	onClick,
 	property,
@@ -109,9 +113,11 @@ export function SelectAllButton<T extends object, D extends ZId>({
 	selected,
 	total = 0,
 	selector = "id",
-}: SelectAllButtonProps<T, D>) {
+}: SelectAllButtonProps<T, G, D>) {
 	const isSelectedAll = selected === total;
 	const isSomeSelected = selected < total && selected !== 0;
+
+	console.log({isSelectedAll, isSomeSelected, prev});
 
 	function selectAll() {
 		const selectedIds = {

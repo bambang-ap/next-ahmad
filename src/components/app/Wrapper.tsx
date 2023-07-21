@@ -18,9 +18,13 @@ export function Wrapper({
 
 	return (
 		<div className={classNames("flex", gapSpacing)}>
-			<Text className={classNames("bg-white p-2", sizeTitle)}>{title}</Text>
+			<Text className={classNames("bg-white p-2", sizeTitle)} color="black">
+				{title}
+			</Text>
 			{!noColon && <Text className={classNames("bg-white p-2 px-4")}>:</Text>}
-			<Text className={classNames("bg-white p-2", sizeDesc)}>{children}</Text>
+			<Text className={classNames("bg-white p-2", sizeDesc)} color="black">
+				{children}
+			</Text>
 		</div>
 	);
 }

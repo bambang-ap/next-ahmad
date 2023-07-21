@@ -27,7 +27,7 @@ function Td({className, ...props}: StyledCellProps) {
 	return <Table.Td {...props} className={classNames(font, className)} />;
 }
 
-function Text({className, ...props}: TextProps) {
+export function TxtBold({className, ...props}: TextProps) {
 	return (
 		<Txt {...props} color="black" className={classNames(font, className)} />
 	);
@@ -40,9 +40,9 @@ function Section({
 }: PropsWithChildren<{title: string; mid?: string}>) {
 	return (
 		<div className="flex gap-2 flex-1">
-			<Text className="w-1/6">{title}</Text>
-			<Text>{mid}</Text>
-			<Text className="flex-1">{children}</Text>
+			<TxtBold className="w-1/6">{title}</TxtBold>
+			<TxtBold>{mid}</TxtBold>
+			<TxtBold className="flex-1">{children}</TxtBold>
 		</div>
 	);
 }
@@ -50,12 +50,12 @@ function Section({
 function Sign({children}: PropsWithChildren) {
 	return (
 		<div className="flex flex-col w-full items-center">
-			<Text className={font}>{children}</Text>
+			<TxtBold className={font}>{children}</TxtBold>
 			<div className="h-16" />
 			<div className="flex w-full justify-center">
-				<Text>(</Text>
+				<TxtBold>(</TxtBold>
 				<div className="w-1/2" />
-				<Text>)</Text>
+				<TxtBold>)</TxtBold>
 			</div>
 		</div>
 	);
@@ -98,9 +98,9 @@ export function SPPBOutGenerateQR(props: {
 					<div className="flex flex-col gap-2 p-4 border border-black">
 						<div className="flex justify-between">
 							<div className="flex flex-1 flex-col">
-								<Text className="font-extrabold">{IMIConst.name}</Text>
-								<Text>{IMIConst.address1}</Text>
-								<Text>{IMIConst.address2}</Text>
+								<TxtBold className="font-extrabold">{IMIConst.name}</TxtBold>
+								<TxtBold>{IMIConst.address1}</TxtBold>
+								<TxtBold>{IMIConst.address2}</TxtBold>
 								<div>
 									<Section title="Phone">{IMIConst.phone}</Section>
 									<Section title="Fax">{IMIConst.fax}</Section>
@@ -124,20 +124,20 @@ export function SPPBOutGenerateQR(props: {
 						</div>
 						<div className="flex justify-between">
 							<div className="flex-1">
-								<Text className="font-extrabold">SURAT JALAN</Text>
+								<TxtBold className="font-extrabold">SURAT JALAN</TxtBold>
 								<Section title="Tanggal">
 									{dateUtils.date(detail?.date)}
 								</Section>
 								<Section title="No. D.O.">{detail?.invoice_no}</Section>
 								<Section title="Kendaraan">{detail?.OrmKendaraan.name}</Section>
 								<Section title="No. Pol."></Section>
-								<Text>
+								<TxtBold>
 									Harap diterima dengan baik barang-barang dibawah ini
-								</Text>
+								</TxtBold>
 							</div>
 							<div className="flex-1 border border-black p-4">
-								<Text>Kepada : {detail?.OrmCustomer.name}</Text>
-								<Text>{detail?.OrmCustomer.alamat}</Text>
+								<TxtBold>Kepada : {detail?.OrmCustomer.name}</TxtBold>
+								<TxtBold>{detail?.OrmCustomer.alamat}</TxtBold>
 							</div>
 						</div>
 					</div>
@@ -224,10 +224,10 @@ export function SPPBOutGenerateQR(props: {
 						<Sign>Pembuat,</Sign>
 					</div>
 					<div className="flex gap-2">
-						<Text>Putih : Accounting</Text>
-						<Text>Merah : Arsip</Text>
-						<Text>Kuning : Security</Text>
-						<Text>Biru & Hijau : Customer</Text>
+						<TxtBold>Putih : Accounting</TxtBold>
+						<TxtBold>Merah : Arsip</TxtBold>
+						<TxtBold>Kuning : Security</TxtBold>
+						<TxtBold>Biru & Hijau : Customer</TxtBold>
 					</div>
 				</div>
 			</div>
@@ -241,5 +241,5 @@ function DetailProcess({id}: {id: string}) {
 		where: {id},
 	});
 
-	return <Text>{data?.[0]?.name}</Text>;
+	return <TxtBold>{data?.[0]?.name}</TxtBold>;
 }

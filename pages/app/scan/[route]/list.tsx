@@ -27,13 +27,13 @@ import {
 	Modal,
 	ModalRef,
 	TableFilter,
-	Text,
 } from "@components";
 import {cuttingLineClassName, qtyList} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useKanban, useLoader, useTableFilter} from "@hooks";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
+import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
 import type {ScanList} from "@trpc/routers/scan";
 import {
@@ -47,7 +47,7 @@ import {trpc} from "@utils/trpc";
 import {Route} from "./";
 
 ListScanData.getLayout = getLayout;
-
+const Text = TxtBold;
 export type ScanListFormType = KanbanFormTypee;
 
 export default function ListScanData() {
@@ -120,7 +120,7 @@ export default function ListScanData() {
 		<>
 			{loader.component}
 			<GeneratePdf
-				splitPagePer={4}
+				splitPagePer={6}
 				orientation="l"
 				ref={genPdfRef}
 				width="w-[2200px]"
@@ -244,7 +244,7 @@ function RenderPdfData({data, route}: Route & {data?: null | KanbanGetRow}) {
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
-		<div className={classNames("w-1/2 p-6", cuttingLineClassName)}>
+		<div className={classNames("w-1/3 p-6", cuttingLineClassName)}>
 			<div className={classNames(gap, padding, "flex flex-col bg-black")}>
 				<div className={classNames("flex", gap)}>
 					<div className="bg-white flex justify-center flex-1 p-2">
@@ -397,5 +397,11 @@ const gap = `gap-[${spacing}px]`;
 const padding = `p-[${spacing}px]`;
 
 function Wrapper(props: WrapperProps) {
-	return <Wrp {...props} noColon />;
+	return (
+		<Wrp
+			{...props}
+			noColon
+			sizes={["w-1/4 font-semibold", "flex-1 font-semibold"]}
+		/>
+	);
 }

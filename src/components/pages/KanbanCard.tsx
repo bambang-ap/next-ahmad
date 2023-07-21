@@ -8,6 +8,8 @@ import {DataProcess} from "@trpc/routers/kanban/get";
 import {classNames, dateUtils} from "@utils";
 import {trpc} from "@utils/trpc";
 
+import {TxtBold} from "./sppbOut_GenerateQR";
+
 type Props = {
 	idKanban: string;
 	item: [string, TKanbanUpsertItem];
@@ -23,7 +25,10 @@ function Td({center, top, className, ...props}: TdProps) {
 		<td
 			{...props}
 			className={classNames(
-				"border flex-1 px-2 py-1",
+				"border-black border-2",
+				"flex-1 px-2 py-1",
+				"font-semibold",
+				"pb-2",
 				{["text-center"]: center, ["align-top"]: top},
 				className,
 			)}
@@ -63,6 +68,7 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 		selectedMesin,
 	});
 
+	const borderClassName = "border-black border-b-2 -mx-2 px-2 pb-2";
 	const itemSppbIn = dataSppbIn?.items?.find(e => e.id === id_item);
 	const dateKanban = `Tgl Kanban ${moment(createdAt).format(
 		"D MMMM YYYY - HH.mm.ss",
@@ -132,34 +138,45 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 					<Td rowSpan={2} colSpan={3} center>
 						PROCESSING CARD
 					</Td>
-					<Td colSpan={2}>{docDetail?.doc_no}</Td>
+					<Td center colSpan={2}>
+						{docDetail?.doc_no}
+					</Td>
 				</tr>
 				<tr>
-					<Td>{dateUtils.dateS(docDetail?.tgl_efektif)}</Td>
+					<Td center>{dateUtils.dateS(docDetail?.tgl_efektif)}</Td>
 					<Td>Rev {docDetail?.revisi}</Td>
 				</tr>
 				<tr>
 					<Td>Customer</Td>
 					<Td colSpan={2}>{OrmCustomerPO?.OrmCustomer.name}</Td>
-					<Td>HARDNESS</Td>
-					<Td colSpan={2}>PARAMETER</Td>
+					<Td center>HARDNESS</Td>
+					<Td center colSpan={2}>
+						PARAMETER
+					</Td>
 				</tr>
 				<tr>
 					<Td>Purchase Order No</Td>
 					<Td colSpan={2}>{OrmCustomerPO?.nomor_po}</Td>
-					<Td rowSpan={3}>
+					<Td rowSpan={4}>
 						<div className="flex h-full flex-col justify-between">
-							{rest?.hardness.map(e => (
-								<Text color="black" className="border-0 border-b-2" key={e.id}>
+							{rest?.hardness.mmap(({item: e, isLast}) => (
+								<Text
+									color="black"
+									className={classNames("", {[borderClassName]: !isLast})}
+									key={e.id}>
 									{e.name}
 								</Text>
 							))}
 						</div>
 					</Td>
-					<Td rowSpan={3} colSpan={2}>
+					<Td rowSpan={4} colSpan={2}>
 						<div className="flex h-full flex-col justify-between">
-							{rest?.parameter.map(e => (
-								<div className="flex gap-1 border-0 border-b-2" key={e.id}>
+							{rest?.parameter.mmap(({item: e, isLast}) => (
+								<div
+									className={classNames("flex gap-1", {
+										[borderClassName]: !isLast,
+									})}
+									key={e.id}>
 									<Text color="black" className="flex-1">
 										{e.OrmParameterKategori.name}
 									</Text>
@@ -226,8 +243,8 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 				</tr>
 			</table>
 			<div className="mt-2 flex justify-between">
-				<Text>{dateKanban}</Text>
-				<Text>{`Created by : ${dataCreatedBy?.name}`}</Text>
+				<TxtBold>{dateKanban}</TxtBold>
+				<TxtBold>{`Created by : ${dataCreatedBy?.name}`}</TxtBold>
 			</div>
 		</>
 	);
