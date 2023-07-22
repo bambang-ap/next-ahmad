@@ -406,3 +406,6 @@ export const tSupplierPO = zId.extend({
 		}),
 	),
 });
+
+export type TDashboardView = z.infer<typeof tDashboardView>;
+export const tDashboardView = z.literal("total").or(z.literal("bar"));

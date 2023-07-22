@@ -3,6 +3,7 @@ export * from "./base/Gallery";
 export * from "./base/Icon";
 export * from "./base/ImageWithPreview";
 export * from "./base/Input";
+export * from "./base/Input/ButtonGroup";
 export * from "./base/Input/CheckBox";
 export * from "./base/Input/InputFile";
 export * from "./base/Input/Select";

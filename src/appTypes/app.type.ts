@@ -31,6 +31,7 @@ export type {
 	TCustomerSPPBOut,
 	TDashboard,
 	TDashboardInput,
+	TDashboardView,
 	TDocument,
 	THardness,
 	THardnessKategori,

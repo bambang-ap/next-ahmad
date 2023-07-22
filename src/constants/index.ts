@@ -2,7 +2,13 @@ import {Breakpoint, TextFieldProps} from "@mui/material";
 import type {OrderItem} from "sequelize";
 import {z} from "zod";
 
-import {AppRouter, TMasterItem, TScanTarget} from "@appTypes/app.type";
+import {
+	AppRouter,
+	TDashboardView,
+	TMasterItem,
+	TScanTarget,
+} from "@appTypes/app.type";
+import {SelectPropsData} from "@components";
 import {TRPCClientError} from "@trpc/client";
 
 export * from "./colors";
@@ -33,6 +39,11 @@ export const SidebarCollapseOn: Breakpoint = "sm";
 export const ScanTarget: TScanTarget[] = ["produksi", "qc", "finish_good"];
 
 export const paperA4: [width: number, height: number] = [210, 297];
+
+export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
+	{value: "total"},
+	{value: "bar"},
+];
 
 export const cuttingLineClassName =
 	"border border-gray-500 border-dashed border-l-0 border-t-0";
