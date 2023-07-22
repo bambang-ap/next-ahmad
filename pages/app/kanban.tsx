@@ -19,6 +19,7 @@ import {
 	Button,
 	CellSelect,
 	Form,
+	Icon,
 	Modal,
 	ModalRef,
 	TableFilter,
@@ -60,6 +61,8 @@ export default function Kanban() {
 		trpc.kanban.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =
 		trpc.kanban.delete.useMutation(defaultErrorMutation);
+	const {mutateAsync: mutatePrinted} =
+		trpc.kanban.printed.useMutation(defaultErrorMutation);
 
 	const dataForm = watch();
 
@@ -150,10 +153,11 @@ export default function Kanban() {
 		reset(prev => ({...prev, idKanbans: {}}));
 	}
 
-	async function printData(idOrAll: true | string) {
+	async function printData(idOrAll: true | string): Promise<any> {
 		loader?.show?.();
 		if (typeof idOrAll === "string") {
 			reset(prev => ({...prev, idKanbans: {[idOrAll]: true}}));
+			return printData(true);
 		} else {
 			if (selectedIdKanbans.length <= 0) {
 				loader?.hide?.();
@@ -161,6 +165,7 @@ export default function Kanban() {
 			}
 		}
 		await genPdfRef.current?.generate();
+		await mutatePrinted(selectedIdKanbans);
 		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
 		await sleep(2500);
@@ -222,6 +227,7 @@ export default function Kanban() {
 					"Nomor Kanban",
 					"Customer",
 					"Keterangan",
+					"Di cetak",
 					!isSelect && "Action",
 				]}
 				topComponent={
@@ -262,6 +268,12 @@ export default function Kanban() {
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.OrmCustomerPO.OrmCustomer.name}</Cell>
 							<Cell>{item.keterangan}</Cell>
+							<Cell className="flex justify-center">
+								<Icon
+									className="text-xl"
+									name={item.printed ? "faCheckCircle" : "faXmarkCircle"}
+								/>
+							</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-x-2">
 									<Button icon="faPrint" onClick={() => printData(item.id)} />

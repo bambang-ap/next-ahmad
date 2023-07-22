@@ -14,6 +14,7 @@ export default function initOrmKanban(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_po: {type: DataTypes.STRING},
+			printed: {type: DataTypes.BOOLEAN},
 			id_sppb_in: DataTypes.STRING,
 			keterangan: DataTypes.STRING,
 			createdBy: DataTypes.STRING,

@@ -23,6 +23,13 @@ const kanbanRouters = router({
 			"nomor_kanban",
 		),
 	),
+	printed: procedure.input(z.string().array()).mutation(({ctx, input}) => {
+		return checkCredentialV2(ctx, async () => {
+			await OrmKanban.update({printed: true}, {where: {id: input}});
+
+			return Success;
+		});
+	}),
 	delete: procedure
 		.input(zId.partial())
 		.mutation(async ({input: {id}, ctx: {req, res}}) => {
