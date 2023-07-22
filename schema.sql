@@ -93,7 +93,8 @@ CREATE TABLE public.document_number (
     "updatedAt" timestamp without time zone,
     tgl_efektif character varying(100),
     revisi character varying(5) DEFAULT '00'::character varying,
-    terbit character varying(5) DEFAULT 'AA'::character varying
+    terbit character varying(5) DEFAULT 'AA'::character varying,
+    target character varying(47)
 );
 
 
@@ -160,7 +161,8 @@ CREATE TABLE public.kanban (
     status character varying(2) DEFAULT '0'::character varying NOT NULL,
     doc_id character varying(47),
     nomor_kanban character varying(47),
-    list_mesin json DEFAULT '[]'::json
+    list_mesin json DEFAULT '[]'::json,
+    printed boolean DEFAULT false
 );
 
 
@@ -214,7 +216,8 @@ CREATE TABLE public.master_item (
     "updatedAt" timestamp without time zone,
     kategori_mesin character varying(47),
     instruksi json DEFAULT '[]'::json,
-    kategori_mesinn character varying(47)[]
+    kategori_mesinn character varying(47)[],
+    keterangan character varying(100)
 );
 
 
