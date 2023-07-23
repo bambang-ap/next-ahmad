@@ -25,7 +25,14 @@ const kanbanRouters = router({
 	),
 	printed: procedure.input(z.string().array()).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
-			await OrmKanban.update({printed: true}, {where: {id: input}});
+			const kanbans = await OrmKanban.findAll({where: {id: input}});
+			const promisedKanbans = kanbans.map(({dataValues}) =>
+				OrmKanban.update(
+					{printed: dataValues?.printed! + 1},
+					{where: {id: dataValues.id}},
+				),
+			);
+			await Promise.all(promisedKanbans);
 
 			return Success;
 		});

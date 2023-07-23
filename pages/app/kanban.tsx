@@ -19,7 +19,6 @@ import {
 	Button,
 	CellSelect,
 	Form,
-	Icon,
 	Modal,
 	ModalRef,
 	TableFilter,
@@ -153,19 +152,24 @@ export default function Kanban() {
 		reset(prev => ({...prev, idKanbans: {}}));
 	}
 
-	async function printData(idOrAll: true | string): Promise<any> {
+	async function printData(
+		idOrAll: true | string,
+		kanbanIds = selectedIdKanbans,
+	): Promise<any> {
 		loader?.show?.();
 		if (typeof idOrAll === "string") {
 			reset(prev => ({...prev, idKanbans: {[idOrAll]: true}}));
-			return printData(true);
+			return printData(true, [idOrAll]);
 		} else {
-			if (selectedIdKanbans.length <= 0) {
+			if (kanbanIds.length <= 0) {
 				loader?.hide?.();
 				return alert("Silahkan pilih data terlebih dahulu");
 			}
 		}
+
 		await genPdfRef.current?.generate();
-		await mutatePrinted(selectedIdKanbans);
+		await mutatePrinted(kanbanIds);
+		refetch();
 		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
 		await sleep(2500);
@@ -268,12 +272,7 @@ export default function Kanban() {
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.OrmCustomerPO.OrmCustomer.name}</Cell>
 							<Cell>{item.keterangan}</Cell>
-							<Cell className="flex justify-center">
-								<Icon
-									className="text-xl"
-									name={item.printed ? "faCheckCircle" : "faXmarkCircle"}
-								/>
-							</Cell>
+							<Cell className="flex justify-center">{item.printed}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-x-2">
 									<Button icon="faPrint" onClick={() => printData(item.id)} />

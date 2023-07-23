@@ -117,8 +117,6 @@ export function SelectAllButton<
 	const isSelectedAll = selected === total;
 	const isSomeSelected = selected < total && selected !== 0;
 
-	console.log({isSelectedAll, isSomeSelected, prev});
-
 	function selectAll() {
 		const selectedIds = {
 			...prev,

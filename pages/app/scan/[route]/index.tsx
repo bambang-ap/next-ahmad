@@ -131,7 +131,12 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 		});
 		setIds(prev => {
 			const index = ids.findIndex(_id => _id.key === key);
-			if (status) return prev.replace(index, {...prev[index]!, id: ""});
+
+			if (!status) {
+				const idsData = prev.replace(index, {...prev[index]!, id: ""});
+				reset(form => ({...form, id: ""}));
+				return idsData;
+			}
 			return prev.remove(index);
 		});
 	}
