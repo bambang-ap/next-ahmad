@@ -80,13 +80,14 @@ export const tItemUnit = z.union([
 	z.literal("pallet"),
 ]);
 
-const unitQty = {
+export type UnitQty = z.infer<typeof unitQty>;
+export const unitQty = z.object({
 	qty1: zDecimal,
 	qty2: zDecimal.nullish(),
 	qty3: zDecimal.nullish(),
 	qty4: zDecimal.nullish(),
 	qty5: zDecimal.nullish(),
-};
+});
 
 export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
@@ -98,7 +99,7 @@ export const tPOItem = zId.extend({
 	unit3: tItemUnit.nullish(),
 	unit4: tItemUnit.nullish(),
 	unit5: tItemUnit.nullish(),
-	...unitQty,
+	...unitQty.shape,
 });
 
 export type TPOItemSppbIn = z.infer<typeof tPOItemSppbIn>;
@@ -107,7 +108,7 @@ export const tPOItemSppbIn = zId.extend({
 	id_item: z.string(),
 	master_item_id: z.string(),
 	lot_no: z.string().optional(),
-	...unitQty,
+	...unitQty.shape,
 });
 
 export type TCustomerPO = z.infer<typeof tCustomerPO>;
@@ -193,7 +194,7 @@ export const tKanbanItem = zId.extend({
 	id_item: z.string(),
 	master_item_id: z.string(),
 	id_item_po: z.string(),
-	...unitQty,
+	...unitQty.shape,
 });
 
 export type TKanbanUpsertItem = z.infer<typeof tKanbanUpsertItem>;
