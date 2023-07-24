@@ -1,4 +1,4 @@
-import {useEffect, useRef} from "react";
+import {FormEventHandler, useEffect, useRef} from "react";
 
 import {useRouter} from "next/router";
 import {Control, useForm} from "react-hook-form";
@@ -84,9 +84,8 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 
 	const {route} = router.query as Route;
 	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
-	const {control, watch, handleSubmit, setValue, reset} = useForm<FormTypeScan>(
-		{defaultValues: {id: uId}},
-	);
+	const {control, watch, handleSubmit, clearErrors, setValue, reset} =
+		useForm<FormTypeScan>({defaultValues: {id: uId}});
 
 	const id = watch("id");
 	const currentKey = `status_${route}` as const;
@@ -97,27 +96,28 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 		{enabled: !!id, ...defaultErrorMutation},
 	);
 
-	const {mutate} = trpc.scan.update.useMutation({
+	const {mutateAsync: mutate} = trpc.scan.update.useMutation({
 		...defaultErrorMutation,
 		onSuccess: () => refetch(),
 	});
 
 	const status = data?.[currentKey];
 
-	const submit = handleSubmit(values => {
-		function mutateScan() {
-			refetch();
-			mutate({...values, id, target: route});
-		}
-		if (route === "qc") {
-			if (confirm("Apakah Anda yakin data tersebut sudah benar?"))
-				return mutateScan();
+	const submit: FormEventHandler<HTMLFormElement> = e => {
+		e.preventDefault();
+		clearErrors();
 
-			return;
-		}
+		handleSubmit(values => {
+			if (route === "qc") {
+				if (confirm("Apakah Anda yakin data tersebut sudah benar?"))
+					return mutateScan(values);
 
-		mutateScan();
-	});
+				return;
+			}
+
+			mutateScan(values);
+		})();
+	};
 
 	function onRead(result: string) {
 		setValue("id", result);
@@ -139,6 +139,11 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 			}
 			return prev.remove(index);
 		});
+	}
+
+	async function mutateScan(values: FormTypeScan) {
+		await mutate({...values, id, target: route});
+		refetch();
 	}
 
 	useEffect(() => {
