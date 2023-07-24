@@ -1,6 +1,12 @@
 import {literal} from "sequelize";
 
-import {PagingResult, TDataScan, TDocument, TScan} from "@appTypes/app.type";
+import {
+	PagingResult,
+	TDataScan,
+	TDocument,
+	TScan,
+	UnitQty,
+} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	tScan,
@@ -10,11 +16,12 @@ import {
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
-import {OrmDocument, OrmKanban, OrmScan} from "@database";
+import {OrmDocument, OrmKanban, OrmKanbanItem, OrmScan} from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
+import {qtyMap} from "@utils";
 
 export type ScanList = TScan & {number: string; OrmDocument: TDocument};
 type ListResult = PagingResult<ScanList>;
@@ -126,6 +133,7 @@ const scanRouters = router({
 
 					const {id, target, ...rest} = input;
 					const statusTarget = `status_${target}` as const;
+					const itemTarget = `item_${target}` as const;
 
 					const dataScan = await routerCaller.scan.get({id, target});
 
@@ -144,6 +152,29 @@ const scanRouters = router({
 						{[statusTarget]: true, ...rest},
 						{where: {id_kanban: id}},
 					);
+
+					switch (target) {
+						case "qc":
+							break;
+						default: {
+							const promisedUpdateItem = rest[itemTarget]?.map(
+								async ([idItem, ...qtys]) => {
+									const f = qtyMap(({qtyKey}, i) => {
+										if (!qtys[i]) return;
+										return {[qtyKey]: qtys[i]};
+									});
+									const updatedQty = f.reduce(
+										(a, b) => ({...a, ...b}),
+										{} as UnitQty,
+									);
+									return OrmKanbanItem.update(updatedQty, {
+										where: {id: idItem},
+									});
+								},
+							);
+							await Promise.all(promisedUpdateItem ?? []);
+						}
+					}
 
 					return Success;
 				},
