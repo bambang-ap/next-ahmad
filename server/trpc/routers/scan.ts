@@ -122,8 +122,6 @@ const scanRouters = router({
 			return checkCredentialV2(
 				{req, res},
 				async (): Promise<{message: string}> => {
-					return input;
-
 					const routerCaller = appRouter.createCaller({req, res});
 
 					const {id, target, ...rest} = input;
