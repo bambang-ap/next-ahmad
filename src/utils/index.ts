@@ -35,17 +35,20 @@ export const dateUtils = {
 	dateS: convertDateS,
 };
 
-export function qtyMap(
-	callback: (value: {
-		qtyKey: `qty${Qty}`;
-		unitKey: `unit${Qty}`;
-		num: Qty;
-	}) => ReactNode,
+export function qtyMap<T = ReactNode>(
+	callback: (
+		value: {
+			qtyKey: `qty${Qty}`;
+			unitKey: `unit${Qty}`;
+			num: Qty;
+		},
+		index: number,
+	) => T,
 ) {
-	return qtyList.map(num => {
+	return qtyList.map((num, i) => {
 		const qtyKey = `qty${num}` as const;
 		const unitKey = `unit${num}` as const;
-		return callback({qtyKey, unitKey, num});
+		return callback({qtyKey, unitKey, num}, i);
 	});
 }
 
