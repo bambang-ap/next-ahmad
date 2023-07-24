@@ -1,6 +1,6 @@
 {
 	"name": "next-ahmad",
-	"version": "0.1.4",
+	"version": "0.1.5",
 	"private": true,
 	"scripts": {
 		"export": "next export",
