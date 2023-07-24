@@ -179,7 +179,7 @@ CREATE TABLE public.kanban (
     doc_id character varying(47),
     nomor_kanban character varying(47),
     list_mesin json DEFAULT '[]'::json,
-    printed boolean DEFAULT false
+    printed integer DEFAULT 0
 );
 
 
