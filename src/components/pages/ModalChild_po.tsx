@@ -66,6 +66,7 @@ export default function PoModalChild({
 		},
 		get headerTable() {
 			const tableHeader: TableProps<any>["header"] = [
+				"Nama Item",
 				"Kode Item",
 				"Harga",
 				...qtyList.map(num => `Jumlah ${num}`),
@@ -148,28 +149,24 @@ export default function PoModalChild({
 					reverseEachItem
 					header={headerTable}
 					className="overflow-y-auto"
-					renderItemEach={({Cell}, index) => {
+					renderItem={({item, Cell}, index) => {
 						const listItems = dataMasterItem?.rows ?? [];
 
-						return (
-							<Cell colSpan={headerTable.length}>
-								<Select
-									className="flex-1"
-									label="Nama Item"
-									control={control}
-									data={selectMapper(listItems, "id", "name")}
-									fieldName={`po_item.${index}.master_item_id`}
-								/>
-							</Cell>
-						);
-					}}
-					renderItem={({item, Cell}, index) => {
 						const selectedItem = dataMasterItem?.rows.find(
 							e => e.id === item.master_item_id,
 						);
 
 						return (
 							<>
+								<Cell width="25%">
+									<Select
+										className="flex-1"
+										label="Nama Item"
+										control={control}
+										data={selectMapper(listItems, "id", "name")}
+										fieldName={`po_item.${index}.master_item_id`}
+									/>
+								</Cell>
 								<Cell>{selectedItem?.kode_item}</Cell>
 								<Cell>
 									<Input
