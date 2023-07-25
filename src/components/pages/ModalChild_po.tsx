@@ -66,6 +66,7 @@ export default function PoModalChild({
 		},
 		get headerTable() {
 			const tableHeader: TableProps<any>["header"] = [
+				"No",
 				"Nama Item",
 				"Kode Item",
 				"Harga",
@@ -107,7 +108,7 @@ export default function PoModalChild({
 	}
 
 	return (
-		<div className="max-h-96 gap-y-2 flex flex-col">
+		<div className="gap-y-2 flex flex-col">
 			<div className="flex gap-2">
 				<Select
 					className="flex-1"
@@ -158,6 +159,7 @@ export default function PoModalChild({
 
 						return (
 							<>
+								<Cell>{index + 1}</Cell>
 								<Cell width="25%">
 									<Select
 										className="flex-1"
