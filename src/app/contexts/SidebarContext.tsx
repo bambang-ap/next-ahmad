@@ -1,6 +1,10 @@
-import {createContext, ReactNode, useState} from "react";
+import {createContext, ReactNode, useLayoutEffect, useState} from "react";
+
+import {useTheme} from "@mui/material";
+
+import {SidebarCollapseOn} from "@constants";
 type SidebarContext = {
-	sidebarToggle: any;
+	sidebarToggle: boolean;
 	toggleSidebar: () => void;
 	closeSidebar: () => void;
 };
@@ -15,7 +19,9 @@ type Props = {
 };
 
 export function SidebarProvider({children}: Props) {
-	const [sidebarToggle, setSidebarToggle] = useState(false);
+	const theme = useTheme();
+	const [sidebarToggle, setSidebarToggle] = useState(true);
+
 	const toggleSidebar = () => {
 		setSidebarToggle(!sidebarToggle);
 	};
@@ -23,6 +29,17 @@ export function SidebarProvider({children}: Props) {
 	const closeSidebar = () => {
 		setSidebarToggle(false);
 	};
+
+	function handleResize() {
+		const {[SidebarCollapseOn]: width} = theme.breakpoints.values;
+		if (window.innerWidth < width) setSidebarToggle(false);
+		else setSidebarToggle(true);
+	}
+
+	useLayoutEffect(() => {
+		window.addEventListener("resize", handleResize);
+		return () => window.removeEventListener("resize", handleResize);
+	}, []);
 
 	return (
 		<SidebarContext.Provider

@@ -92,7 +92,7 @@ function Sidebar() {
 				sx={{
 					display: {
 						xs: "none",
-						[SidebarCollapseOn]: "inline-block",
+						[SidebarCollapseOn]: sidebarToggle ? "inline-block" : "none",
 					},
 					position: "fixed",
 					left: 0,
@@ -108,6 +108,10 @@ function Sidebar() {
 			</SidebarWrapper>
 			<Drawer
 				sx={{
+					display: {
+						xs: "inline-block",
+						[SidebarCollapseOn]: "none",
+					},
 					boxShadow: `${theme.sidebar.boxShadow}`,
 				}}
 				anchor={theme.direction === "rtl" ? "right" : "left"}

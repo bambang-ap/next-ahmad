@@ -1,8 +1,9 @@
-import {FC, ReactNode} from "react";
+import {FC, ReactNode, useContext} from "react";
 
 import {alpha, Box, lighten, useTheme} from "@mui/material";
 import PropTypes from "prop-types";
 
+import {SidebarContext} from "@app/contexts/SidebarContext";
 import {SidebarCollapseOn} from "@constants";
 import Scrollbar from "@prevComp/Scrollbar";
 
@@ -15,6 +16,7 @@ interface SidebarLayoutProps {
 
 export const SidebarLayout: FC<SidebarLayoutProps> = ({children}) => {
 	const theme = useTheme();
+	const {sidebarToggle} = useContext(SidebarContext);
 
 	return (
 		<Box
@@ -52,7 +54,7 @@ export const SidebarLayout: FC<SidebarLayoutProps> = ({children}) => {
 					flex: 1,
 					pt: `${theme.header.height}`,
 					[theme.breakpoints.up(SidebarCollapseOn)]: {
-						ml: `${theme.sidebar.width}`,
+						ml: sidebarToggle ? `${theme.sidebar.width}` : 0,
 					},
 				}}>
 				<Box display="block" className="p-4 h-full">

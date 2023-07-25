@@ -22,24 +22,26 @@ import {useAuth, useMenu} from "@hooks";
 import {atomHeaderTitle} from "@recoil/atoms";
 import {classNames} from "@utils";
 
-const HeaderWrapper = styled(Box)(
-	({theme}) => `
-        height: ${theme.header.height};
-        color: ${theme.header.textColor};
-        padding: ${theme.spacing(0, 2)};
-        right: 0;
-        z-index: 6;
-        background-color: ${alpha(theme?.header?.background ?? "", 0.95)};
-        backdrop-filter: blur(3px);
-        position: fixed;
-        justify-content: space-between;
-        width: 100%;
-        @media (min-width: ${theme.breakpoints.values[SidebarCollapseOn]}px) {
-            left: ${theme.sidebar.width};
-            width: auto;
-        }
-`,
-);
+const HeaderWrapper = styled(Box)(({theme}) => {
+	const {sidebarToggle} = useContext(SidebarContext);
+
+	return `
+		height: ${theme.header.height};
+		color: ${theme.header.textColor};
+		padding: ${theme.spacing(0, 2)};
+		right: 0;
+		z-index: 6;
+		background-color: ${alpha(theme?.header?.background ?? "", 0.95)};
+		backdrop-filter: blur(3px);
+		position: fixed;
+		justify-content: space-between;
+		width: 100%;
+		@media (min-width: ${theme.breakpoints.values[SidebarCollapseOn]}px) {
+				left: ${sidebarToggle ? theme.sidebar.width : 0};
+				width: auto;
+		}
+		`;
+});
 
 function Header() {
 	useAuth();
@@ -95,7 +97,10 @@ function Header() {
 						component="span"
 						sx={{
 							ml: 2,
-							display: {[SidebarCollapseOn]: "none", xs: "inline-block"},
+							display: {
+								xs: "inline-block",
+								[SidebarCollapseOn]: "inline-block",
+							},
 						}}>
 						<Tooltip arrow title="Toggle Menu">
 							<IconButton color="primary" onClick={toggleSidebar}>
