@@ -62,3 +62,8 @@ export const atomHeaderTitle = atom<string>({
 	key: "atomHeaderTitle",
 	default: "",
 });
+
+export const atomIsMobile = atom({
+	key: "atomIsMobile",
+	default: false,
+});

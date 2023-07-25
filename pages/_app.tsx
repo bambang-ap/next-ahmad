@@ -70,13 +70,13 @@ function App(props: AppProps) {
 						content="width=device-width, initial-scale=1, shrink-to-fit=no"
 					/>
 				</Head>
-				<SidebarProvider>
-					<ThemeProvider>
-						<LocalizationProvider dateAdapter={AdapterDateFns}>
-							<CssBaseline />
-							<QueryClientProvider client={queryClient}>
-								{!isProd && <ReactQueryDevtools />}
-								<RecoilRoot>
+				<RecoilRoot>
+					<SidebarProvider>
+						<ThemeProvider>
+							<LocalizationProvider dateAdapter={AdapterDateFns}>
+								<CssBaseline />
+								<QueryClientProvider client={queryClient}>
+									{!isProd && <ReactQueryDevtools />}
 									<SessionProvider
 										session={session}
 										refetchInterval={30000}
@@ -84,11 +84,11 @@ function App(props: AppProps) {
 										refetchOnWindowFocus={false}>
 										{getLayout(<Component {...pageProps} />)}
 									</SessionProvider>
-								</RecoilRoot>
-							</QueryClientProvider>
-						</LocalizationProvider>
-					</ThemeProvider>
-				</SidebarProvider>
+								</QueryClientProvider>
+							</LocalizationProvider>
+						</ThemeProvider>
+					</SidebarProvider>
+				</RecoilRoot>
 			</CacheProvider>
 		</StrictMode>
 	);

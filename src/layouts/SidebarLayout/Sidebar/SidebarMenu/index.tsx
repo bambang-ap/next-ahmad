@@ -10,10 +10,12 @@ import {
 	ListItemText,
 } from "@mui/material";
 import {useRouter} from "next/router";
+import {useRecoilValue} from "recoil";
 
 import {SidebarContext} from "@app/contexts/SidebarContext";
 import {TMenu} from "@appTypes/app.zod";
 import {Icon} from "@components";
+import {atomIsMobile} from "@recoil/atoms";
 import {trpc} from "@utils/trpc";
 
 function SubMenu({title, path, icon, subMenu}: TMenu) {
@@ -44,6 +46,8 @@ function SubMenu({title, path, icon, subMenu}: TMenu) {
 }
 
 function Menu(menu: TMenu) {
+	const isMobile = useRecoilValue(atomIsMobile);
+
 	const {push} = useRouter();
 	const {closeSidebar} = useContext(SidebarContext);
 
@@ -53,7 +57,7 @@ function Menu(menu: TMenu) {
 
 	function handleClick() {
 		if (!!path) push(path);
-		closeSidebar();
+		if (isMobile) closeSidebar();
 	}
 
 	if (hasSubMenu) return <SubMenu {...menu} />;
