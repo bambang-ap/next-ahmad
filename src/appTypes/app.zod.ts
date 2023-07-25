@@ -92,7 +92,7 @@ export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
 	master_item_id: z.string(),
 	id_po: z.string(),
-	harga: zDecimal,
+	harga: zDecimal.optional(),
 	unit1: tItemUnit,
 	unit2: tItemUnit.nullish(),
 	unit3: tItemUnit.nullish(),
