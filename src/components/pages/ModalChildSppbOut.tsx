@@ -54,6 +54,7 @@ export function SppbOutModalChild({
 				label="Kendaraan"
 				data={selectMapper(dataKendaraan, "id", "name")}
 			/>
+			<Input control={control} fieldName="keterangan" label="Keterangan" />
 			<Select
 				label="Customer"
 				control={control}

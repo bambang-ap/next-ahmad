@@ -271,6 +271,7 @@ export const tCustomerSPPBOut = zId.extend({
 	id_kendaraan: z.string(),
 	id_customer: z.string(),
 	po: tCustomerSPPBOutPo.array(),
+	keterangan: z.string().optional(),
 });
 
 export type TMaterial = z.infer<typeof tMaterial>;

@@ -71,8 +71,8 @@ export function SPPBOutGenerateQR(props: {
 	const {
 		id,
 		withButton = true,
-		// className = "",
-		className = "h-0 overflow-hidden -z-10 fixed",
+		className = "",
+		// className = "h-0 overflow-hidden -z-10 fixed",
 	} = props;
 
 	// const {data: qrImage} = trpc.qr.useQuery<any, string>(
@@ -131,6 +131,7 @@ export function SPPBOutGenerateQR(props: {
 								<Section title="No. D.O.">{detail?.invoice_no}</Section>
 								<Section title="Kendaraan">{detail?.OrmKendaraan.name}</Section>
 								<Section title="No. Pol."></Section>
+								<Section title="Keterangan">{detail?.keterangan}</Section>
 								<TxtBold>
 									Harap diterima dengan baik barang-barang dibawah ini
 								</TxtBold>

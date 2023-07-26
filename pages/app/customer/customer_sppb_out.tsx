@@ -12,6 +12,7 @@ import {
 	Modal,
 	ModalRef,
 	TableFilter,
+	TableProps,
 } from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
@@ -56,6 +57,25 @@ export default function SPPBOUT() {
 		[],
 	);
 
+	const tableHeader: TableProps["header"] = [
+		isSelect && (
+			<SelectAllButton
+				form={dataForm}
+				property="idSppbOuts"
+				key="btnSelectAll"
+				data={data?.rows}
+				onClick={prev => reset(prev)}
+				selected={selectedIdSppbIns.length}
+				total={data?.rows.length}
+			/>
+		),
+		"Nomor Surat",
+		"Kendaraan",
+		"Customer",
+		"Keterangan",
+		!isSelect && "Action",
+	];
+
 	const {exportResult} = useExportData(
 		() =>
 			trpc.useQueries(t =>
@@ -68,16 +88,32 @@ export default function SPPBOUT() {
 		},
 	);
 
-	async function exportData() {
-		if (selectedIdSppbIns.length <= 0) {
-			return alert("Silahkan pilih data terlebih dahulu");
-		}
-
-		exportResult();
-		reset(prev => ({...prev, type: undefined}));
-		await sleep(2500);
-		reset(prev => ({...prev, idSppbIns: {}}));
-	}
+	const topComponent = isSelect ? (
+		<>
+			<Button onClick={() => exportData()}>Export</Button>
+			<Button
+				onClick={() =>
+					reset(prev => ({...prev, type: undefined, idKanbans: {}}))
+				}>
+				Batal
+			</Button>
+		</>
+	) : (
+		<>
+			<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
+				Select
+			</Button>
+			<Button
+				onClick={() =>
+					showModal({
+						type: "add",
+						po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
+					})
+				}>
+				Add
+			</Button>
+		</>
+	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -101,6 +137,17 @@ export default function SPPBOUT() {
 		modalRef.current?.show();
 	}
 
+	async function exportData() {
+		if (selectedIdSppbIns.length <= 0) {
+			return alert("Silahkan pilih data terlebih dahulu");
+		}
+
+		exportResult();
+		reset(prev => ({...prev, type: undefined}));
+		await sleep(2500);
+		reset(prev => ({...prev, idSppbIns: {}}));
+	}
+
 	return (
 		<>
 			<Modal size="xl" title={modalTitle} ref={modalRef}>
@@ -117,52 +164,8 @@ export default function SPPBOUT() {
 			<TableFilter
 				data={data}
 				form={hookForm}
-				header={[
-					isSelect && (
-						<SelectAllButton
-							form={dataForm}
-							property="idSppbOuts"
-							key="btnSelectAll"
-							data={data?.rows}
-							onClick={prev => reset(prev)}
-							selected={selectedIdSppbIns.length}
-							total={data?.rows.length}
-						/>
-					),
-					"Nomor Surat",
-					"Kendaraan",
-					"Customer",
-					!isSelect && "Action",
-				]}
-				topComponent={
-					isSelect ? (
-						<>
-							<Button onClick={() => exportData()}>Export</Button>
-							<Button
-								onClick={() =>
-									reset(prev => ({...prev, type: undefined, idKanbans: {}}))
-								}>
-								Batal
-							</Button>
-						</>
-					) : (
-						<>
-							<Button
-								onClick={() => reset(prev => ({...prev, type: "select"}))}>
-								Select
-							</Button>
-							<Button
-								onClick={() =>
-									showModal({
-										type: "add",
-										po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
-									})
-								}>
-								Add
-							</Button>
-						</>
-					)
-				}
+				header={tableHeader}
+				topComponent={topComponent}
 				renderItem={({Cell, item}) => {
 					const {id, id_kendaraan, id_customer} = item;
 					const kendaraan = dataKendaraan.find(e => e.id === id_kendaraan);
@@ -179,6 +182,7 @@ export default function SPPBOUT() {
 							<Cell>{item.invoice_no}</Cell>
 							<Cell>{kendaraan?.name}</Cell>
 							<Cell>{customer?.name}</Cell>
+							<Cell>{item.keterangan}</Cell>
 
 							{!isSelect && (
 								<Cell className="flex gap-2">

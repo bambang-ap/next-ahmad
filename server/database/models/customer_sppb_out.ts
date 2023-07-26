@@ -14,6 +14,7 @@ export default function initOrmCustomerSPPBOut(sequelize: Sequelize) {
 			id_customer: DataTypes.STRING,
 			id_kendaraan: DataTypes.STRING,
 			invoice_no: DataTypes.STRING,
+			keterangan: DataTypes.STRING,
 			po: DataTypes.JSONB,
 		},
 		{

@@ -75,7 +75,8 @@ CREATE TABLE public.customer_sppb_out (
     po json DEFAULT '[]'::json,
     date character varying(30),
     invoice_no character varying(47),
-    id_kendaraan character varying(47)
+    id_kendaraan character varying(47),
+    keterangan character varying(255)
 );
 
 
@@ -162,7 +163,7 @@ CREATE TABLE public.kanban (
     doc_id character varying(47),
     nomor_kanban character varying(47),
     list_mesin json DEFAULT '[]'::json,
-    printed boolean DEFAULT false
+    printed integer DEFAULT 0
 );
 
 

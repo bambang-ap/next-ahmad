@@ -36,7 +36,7 @@ export function CellSelect<F extends FieldValues>({
 
 export type Cells = {Cell: FC<TableCellProps>};
 
-export type TableProps<T, Cell = {}> = {
+export type TableProps<T = any, Cell = {}> = {
 	data?: T[];
 	className?: string;
 	header?: OptionalUnion<
