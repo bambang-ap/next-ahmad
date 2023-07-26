@@ -209,6 +209,19 @@ export async function generatePDF(
 	}
 }
 
+export function paperSizeCalculator(
+	width: number,
+	options?: {orientation?: jsPDFOptions["orientation"]; minus?: number},
+): [width: number, height: number] {
+	const {orientation = "p", minus = 0} = options ?? {};
+	const [a, b] = paperA4;
+	const isPortrait = orientation === "p" || orientation === "portrait";
+	const scale = isPortrait ? a / b : b / a;
+	const height = width / scale;
+
+	return [width, height - minus];
+}
+
 export function exportData<T extends object>(
 	data?: T[],
 	names?: [filename?: string, sheetName?: string],
