@@ -19,10 +19,11 @@ const {
 	DEV_PGSQL_HOST,
 	PROD_PGSQL_PORT,
 	DEV_PGSQL_PORT,
+	PGSQL_DATABASE,
 } = process.env;
 
 export const ORM = new Sequelize(
-	"manajemen",
+	PGSQL_DATABASE,
 	isProd ? PROD_PGSQL_USER : DEV_PGSQL_USER,
 	isProd ? PROD_PGSQL_PASSWORD : DEV_PGSQL_PASSWORD,
 	{
