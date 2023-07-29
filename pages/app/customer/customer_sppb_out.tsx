@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {FormEventHandler, useRef} from "react";
 
 import {MutateOptions} from "@tanstack/react-query";

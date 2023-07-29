@@ -144,13 +144,6 @@ export function RenderItem({control, reset}: RenderItemProps) {
 										? maxValue - calculatedQty + currentQty
 										: maxValue - calculatedQty;
 
-									console.log({
-										maxValue,
-										currentQty,
-										calculatedQty,
-										defaultValue,
-									});
-
 									return (
 										<div className="flex-1" key={`${rowItem.id}${num}`}>
 											<Input
