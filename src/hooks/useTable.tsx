@@ -14,7 +14,8 @@ export function useTableFilter(defaultValue?: Partial<TableFormValue>) {
 
 	const hookForm = useForm<TableFormValue>({defaultValues});
 
-	const formValue = hookForm.watch();
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	const {pageTotal, ...formValue} = hookForm.watch();
 
 	return {hookForm, formValue};
 }

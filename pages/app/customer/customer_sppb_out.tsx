@@ -165,6 +165,7 @@ export default function SPPBOUT() {
 				data={data}
 				form={hookForm}
 				header={tableHeader}
+				keyExtractor={item => item.id}
 				topComponent={topComponent}
 				renderItem={({Cell, item}) => {
 					const {id, id_kendaraan, id_customer} = item;

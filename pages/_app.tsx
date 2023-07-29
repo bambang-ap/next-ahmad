@@ -28,12 +28,12 @@ import {RecoilRoot} from "recoil";
 
 import {SidebarProvider} from "@app/contexts/SidebarContext";
 import ThemeProvider from "@app/theme/ThemeProvider";
-import {isProd} from "@constants";
+import {isProd, queryClientConfig} from "@constants";
 import {createEmotionCache} from "@hoc";
 import {trpc} from "@utils/trpc";
 
 const queryClient = new QueryClient({
-	defaultOptions: {queries: {refetchOnWindowFocus: false}},
+	defaultOptions: {queries: queryClientConfig},
 });
 
 const clientSideEmotionCache = createEmotionCache();

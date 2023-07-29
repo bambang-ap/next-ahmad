@@ -123,7 +123,7 @@ module.exports = {
 				"no-unreachable": 1,
 				"no-console": [1, {allow: ["info"]}],
 				"import-helpers/order-imports": [
-					2,
+					1,
 					{
 						newlinesBetween: "always",
 						groups: [

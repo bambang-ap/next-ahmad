@@ -83,6 +83,7 @@ export default function POCustomer() {
 			</Modal>
 			<div className="overflow-x-auto w-full">
 				<TableFilter
+					keyExtractor={item => item.id}
 					data={data}
 					form={hookForm}
 					header={[

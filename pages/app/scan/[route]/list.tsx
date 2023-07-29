@@ -138,6 +138,7 @@ export default function ListScanData() {
 
 			<TableFilter
 				data={data}
+				keyExtractor={item => item.id}
 				form={hookForm}
 				topComponent={
 					route === "qc" ? (

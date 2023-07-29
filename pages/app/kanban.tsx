@@ -51,10 +51,11 @@ export default function Kanban() {
 	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<KanbanFormType>();
-	const {data: dataKanbanPage, refetch} = trpc.kanban.getPage.useQuery(
-		formValue!,
-		{enabled: !!formValue},
-	);
+	const {
+		data: dataKanbanPage,
+		refetch,
+		isFetched,
+	} = trpc.kanban.getPage.useQuery(formValue!, {enabled: !!formValue});
 
 	const {mutate: mutateUpsert} =
 		trpc.kanban.upsert.useMutation(defaultErrorMutation);
@@ -215,6 +216,8 @@ export default function Kanban() {
 			<TableFilter
 				form={hookForm}
 				data={dataKanbanPage}
+				isLoading={!isFetched}
+				keyExtractor={item => item.id}
 				header={[
 					isSelect && (
 						<SelectAllButton

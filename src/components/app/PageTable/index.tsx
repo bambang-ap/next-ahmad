@@ -3,7 +3,7 @@ import {Suspense, useRef} from "react";
 import {useRouter} from "next/router";
 import {useForm} from "react-hook-form";
 
-import {ModalType, TUser} from "@appTypes/app.type";
+import {ModalType, TUser, ZId} from "@appTypes/app.type";
 import {Button, Modal, ModalRef, TableFilter, Text} from "@components";
 import {allowedPages, defaultErrorMutation} from "@constants";
 import {CRUD_ENABLED} from "@enum";
@@ -93,6 +93,7 @@ const RenderPage = ({path}: {path: string}) => {
 					form={hookForm}
 					data={dataTable}
 					header={table?.header}
+					keyExtractor={(item: ZId) => item?.id}
 					topComponent={
 						<>
 							<Button onClick={() => showModal("add", {})}>Add</Button>
@@ -122,7 +123,8 @@ const RenderPage = ({path}: {path: string}) => {
 											) : isFunction ? (
 												<Text>{key(item)}</Text>
 											) : (
-												<Text>{item[key]}</Text>
+												// @ts-ignore
+												<Text>{item?.[key]}</Text>
 											)}
 										</Cell>
 									);

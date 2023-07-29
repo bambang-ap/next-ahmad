@@ -88,6 +88,7 @@ export default function POSupplier() {
 			<TableFilter
 				data={data}
 				form={hookForm}
+				keyExtractor={item => item.id}
 				header={["Nama Supplier", "Items", "Action"]}
 				topComponent={
 					<Button onClick={() => showModal({type: "add"})}>Add</Button>

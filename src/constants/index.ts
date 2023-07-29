@@ -1,4 +1,5 @@
 import {Breakpoint, TextFieldProps} from "@mui/material";
+import {QueryObserverOptions} from "@tanstack/react-query";
 import type {OrderItem} from "sequelize";
 import {z} from "zod";
 
@@ -95,4 +96,11 @@ export const defaultErrorMutation: {onError: any} = {
 			alert(err?.message);
 		}
 	},
+};
+
+export const queryClientConfig: QueryObserverOptions = {
+	refetchIntervalInBackground: false,
+	refetchOnMount: false,
+	refetchOnWindowFocus: false,
+	refetchInterval: 1000 * 5 * 60,
 };

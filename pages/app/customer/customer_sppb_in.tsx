@@ -124,6 +124,7 @@ export default function SPPBIN() {
 			<TableFilter
 				data={data}
 				form={hookForm}
+				keyExtractor={item => item?.id}
 				topComponent={
 					isSelect ? (
 						<>

@@ -1,4 +1,5 @@
 import {AppRouter} from "@appTypes/app.type";
+import {queryClientConfig} from "@constants";
 import {httpLink} from "@trpc/client";
 import {createTRPCNext} from "@trpc/next";
 
@@ -26,6 +27,11 @@ export const trpc = createTRPCNext<AppRouter>({
 	ssr: false,
 	config() {
 		return {
+			queryClientConfig: {
+				defaultOptions: {
+					queries: queryClientConfig,
+				},
+			},
 			links: [
 				// httpBatchLink({
 				httpLink({

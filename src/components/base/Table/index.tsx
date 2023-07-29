@@ -1,10 +1,17 @@
-import {FC, Fragment, isValidElement, useEffect} from "react";
+import {FC, Fragment, isValidElement, useEffect, useState} from "react";
 
 import {Pagination, TableCellProps} from "@mui/material";
 import {FieldValues, useForm, UseFormReturn} from "react-hook-form";
 
 import {PagingResult, TableFormValue} from "@appTypes/app.type";
-import {Button, Input, InputProps, Select, SelectPropsData} from "@components";
+import {
+	Button,
+	Icon,
+	Input,
+	InputProps,
+	Select,
+	SelectPropsData,
+} from "@components";
 import {defaultLimit} from "@constants";
 import {WrappedProps} from "@formController";
 import {classNames} from "@utils";
@@ -47,6 +54,9 @@ export type TableProps<T = any, Cell = {}> = {
 		| false
 		| [title: string, colSpan: number]
 	>[];
+	isLoading?: boolean;
+	loaderComponent?: JSX.Element;
+	keyExtractor?: (item: T, index: number) => string | undefined;
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
 	reverseEachItem?: boolean;
@@ -166,14 +176,53 @@ export function Table<T>(props: TableProps<T, Cells>) {
 		reverseEachItem = false,
 		bottomComponent,
 		topComponent,
+		keyExtractor,
+		loaderComponent,
+		isLoading,
 	} = props;
 
-	if (!data) return null;
+	const [tableKey] = useState(uuid());
 
 	const {TBody, THead, Td, Tr} = TableRoot;
 
+	const renderData =
+		isLoading !== undefined && isLoading ? (
+			<Tr>
+				<Td className="justify-center" colSpan={header?.filter(Boolean).length}>
+					{loaderComponent || (
+						<div className="animate-pulse">
+							<Icon name="faSpinner" className="animate-spin" />
+						</div>
+					)}
+				</Td>
+			</Tr>
+		) : (
+			data &&
+			data.length > 0 &&
+			data.mmap((item, index) => {
+				const itemWithCell = {...item, Cell: Td};
+				const renderEach = renderItemEach?.(itemWithCell, index);
+				const renderItemRow = renderItem?.(itemWithCell, index);
+				const key = keyExtractor?.(item.item, index) ?? index;
+
+				const eachRenderer = renderEach && renderItemEach && (
+					<Tr>{renderEach}</Tr>
+				);
+
+				return (
+					<Fragment key={key}>
+						{reverseEachItem && eachRenderer}
+						<Tr className={classNames({hidden: !renderItemRow})}>
+							{renderItemRow}
+						</Tr>
+						{!reverseEachItem && eachRenderer}
+					</Fragment>
+				);
+			})
+		);
+
 	return (
-		<div className={classNames("w-full", className)}>
+		<div key={tableKey} className={classNames("w-full", className)}>
 			{topComponent}
 			<TableRoot>
 				{header && (
@@ -196,27 +245,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 						</Tr>
 					</THead>
 				)}
-				<TBody>
-					{data.mmap((item, index) => {
-						const itemWithCell = {...item, Cell: Td};
-						const renderEach = renderItemEach?.(itemWithCell, index);
-						const renderItemRow = renderItem?.(itemWithCell, index);
-
-						const eachRenderer = renderEach && renderItemEach && (
-							<Tr>{renderEach}</Tr>
-						);
-
-						return (
-							<Fragment key={index}>
-								{reverseEachItem && eachRenderer}
-								<Tr className={classNames({hidden: !renderItemRow})}>
-									{renderItemRow}
-								</Tr>
-								{!reverseEachItem && eachRenderer}
-							</Fragment>
-						);
-					})}
-				</TBody>
+				<TBody>{renderData}</TBody>
 			</TableRoot>
 			{bottomComponent}
 		</div>

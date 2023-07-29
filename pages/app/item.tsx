@@ -73,6 +73,7 @@ export default function MasterItem() {
 				<TableFilter
 					data={data}
 					form={hookForm}
+					keyExtractor={item => item.id}
 					header={[
 						"Nomor",
 						"Nama Mesin",
