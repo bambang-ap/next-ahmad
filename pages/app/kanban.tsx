@@ -273,7 +273,7 @@ export default function Kanban() {
 							)}
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
-							<Cell>{item.OrmCustomerPO.OrmCustomer.name}</Cell>
+							<Cell>{item.OrmCustomerPO.OrmCustomer?.name}</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell className="flex justify-center">{item.printed}</Cell>
 							{!isSelect && (

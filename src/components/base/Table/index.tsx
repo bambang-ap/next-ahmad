@@ -55,6 +55,7 @@ export type TableProps<T = any, Cell = {}> = {
 		| [title: string, colSpan: number]
 	>[];
 	isLoading?: boolean;
+
 	loaderComponent?: JSX.Element;
 	keyExtractor?: (item: T, index: number) => string | undefined;
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
@@ -81,8 +82,8 @@ export function TableFilter<T>({
 	disableSearch,
 	...props
 }: TableFilterProps<T>) {
-	const {control, watch, setValue} = form;
-	const {rows = [], totalPage: pageCount = 1} = data ?? {};
+	const {control, watch, reset: resetForm} = form;
+	const {rows = [], totalPage: pageCount = 1, page = 1} = data ?? {};
 
 	const {
 		reset,
@@ -91,6 +92,7 @@ export function TableFilter<T>({
 	} = useForm({defaultValues: {search: ""}});
 
 	const formValue = watch();
+
 	const searching = formValue.search && formValue.search.length > 0;
 	const selectData = Array.from({length: 10}).map<SelectPropsData>((_, i) => ({
 		// @ts-ignore
@@ -98,7 +100,7 @@ export function TableFilter<T>({
 	}));
 
 	const doSearch = handleSubmit(({search}) => {
-		setValue("search", search);
+		resetForm(prev => ({...prev, search}));
 	});
 
 	function clearSearch() {
@@ -107,9 +109,9 @@ export function TableFilter<T>({
 	}
 
 	useEffect(() => {
-		setValue("pageTotal", pageCount);
-		if (formValue.page > pageCount) setValue("page", 1);
-	}, [pageCount]);
+		resetForm(prev => ({...prev, pageTotal: pageCount}));
+		if (page > pageCount) resetForm(prev => ({...prev, page: 1}));
+	}, [pageCount, page]);
 
 	useEffect(() => {
 		reset({search: formValue.search});
@@ -157,7 +159,7 @@ export function TableFilter<T>({
 			bottomComponent={
 				<div className="px-2 flex justify-center">
 					<Pagination
-						onChange={(_, v) => setValue("page", v)}
+						onChange={(_, page) => resetForm(prev => ({...prev, page}))}
 						count={Number(formValue?.pageTotal ?? 1)}
 					/>
 				</div>
