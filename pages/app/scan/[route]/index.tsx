@@ -37,7 +37,7 @@ export default function Scan() {
 	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
 
 	function addNew() {
-		setIds(prev => [...prev, {key: uuid(), id: ""}]);
+		setIds(prev => [{key: uuid(), id: ""}, ...prev]);
 	}
 
 	function navigateListData() {
@@ -187,7 +187,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 				/>
 				{/* <Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button> */}
 				<Button
-					icon={status ? "faEyeSlash" : "faCircleXmark"}
+					icon={status ? "faTrash" : "faCircleXmark"}
 					onClick={removeUid}
 				/>
 				{id && !!data && (

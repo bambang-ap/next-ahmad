@@ -35,7 +35,7 @@ export default function SPPBOUT() {
 
 	const modalRef = useRef<ModalRef>(null);
 
-	const {formValue, hookForm} = useTableFilter();
+	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, handleSubmit, clearErrors} =
 		useForm<FormValue>();
 	const {mutate: mutateUpsert} = trpc.sppb.out.upsert.useMutation();
