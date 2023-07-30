@@ -4,7 +4,11 @@ import {FormEventHandler, useRef} from "react";
 import {MutateOptions} from "@tanstack/react-query";
 import {useForm} from "react-hook-form";
 
-import {SelectAllButton} from "@appComponent/GeneratePdf";
+import {
+	GeneratePdf,
+	GenPdfRef,
+	SelectAllButton,
+} from "@appComponent/GeneratePdf";
 import {ModalTypeSelect, TCustomerSPPBOut} from "@appTypes/app.type";
 import {
 	Button,
@@ -17,7 +21,7 @@ import {
 } from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useExportData, useSppbOut, useTableFilter} from "@hooks";
+import {useExportData, useLoader, useSppbOut, useTableFilter} from "@hooks";
 import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
 import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
 import {modalTypeParser, sleep} from "@utils";
@@ -34,6 +38,8 @@ export default function SPPBOUT() {
 	const {dataKendaraan, dataCustomer} = useSppbOut();
 
 	const modalRef = useRef<ModalRef>(null);
+	const genPdfRef = useRef<GenPdfRef>(null);
+	const loader = useLoader();
 
 	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, handleSubmit, clearErrors} =
@@ -50,6 +56,7 @@ export default function SPPBOUT() {
 		"SPPB In",
 	);
 
+	const widthSize = 1100;
 	const selectedIdSppbIns = Object.entries(idSppbIns ?? {}).reduce<string[]>(
 		(ret, [id, val]) => {
 			if (val) ret.push(id);
@@ -91,6 +98,7 @@ export default function SPPBOUT() {
 
 	const topComponent = isSelect ? (
 		<>
+			<Button onClick={() => printData(true)}>Print</Button>
 			<Button onClick={() => exportData()}>Export</Button>
 			<Button
 				onClick={() =>
@@ -149,8 +157,51 @@ export default function SPPBOUT() {
 		reset(prev => ({...prev, idSppbIns: {}}));
 	}
 
+	async function printData(
+		idOrAll: true | string,
+		sppbOutIds = selectedIdSppbIns,
+	): Promise<any> {
+		loader?.show?.();
+		if (typeof idOrAll === "string") {
+			reset(prev => ({...prev, idSppbOuts: {[idOrAll]: true}}));
+			return printData(true, [idOrAll]);
+		} else {
+			if (sppbOutIds.length <= 0) {
+				loader?.hide?.();
+				return alert("Silahkan pilih data terlebih dahulu");
+			}
+		}
+
+		await genPdfRef.current?.generate();
+		refetch();
+		loader?.hide?.();
+		reset(prev => ({...prev, type: undefined}));
+		await sleep(2500);
+		reset(prev => ({...prev, idKanbans: {}}));
+	}
+
 	return (
 		<>
+			{loader.component}
+			<GeneratePdf
+				width={`w-[${widthSize}px]`}
+				splitPagePer={4}
+				ref={genPdfRef}
+				tagId="kanban-data-print"
+				useQueries={() =>
+					trpc.useQueries(t =>
+						selectedIdSppbIns.map(id => t.sppb.out.getDetail(id)),
+					)
+				}
+				renderItem={({data}) => {
+					return (
+						<>
+							<SPPBOutGenerateQR detail={data} width={widthSize} />
+						</>
+					);
+				}}
+			/>
+
 			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<Form
 					onSubmit={submit}
@@ -188,7 +239,7 @@ export default function SPPBOUT() {
 
 							{!isSelect && (
 								<Cell className="flex gap-2">
-									<SPPBOutGenerateQR {...item} />
+									<Button icon="faPrint" onClick={() => printData(item.id)} />
 									<Button
 										icon="faMagnifyingGlass"
 										onClick={() => showModal({...item, type: "preview"})}
