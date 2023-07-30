@@ -136,7 +136,14 @@ export function SPPBOutGenerateQR(props: {
 							</div>
 							<div className="flex justify-between">
 								<div className="flex-1">
-									<TxtBold className="font-extrabold">SURAT JALAN</TxtBold>
+									<div className="flex">
+										<TxtBold className="font-extrabold">SURAT JALAN</TxtBold>
+										<div className="flex flex-1 justify-center">
+											<TxtBold className="font-extrabold">
+												{detail?.keterangan}
+											</TxtBold>
+										</div>
+									</div>
 									<Section title="Tanggal">
 										{dateUtils.date(detail?.date)}
 									</Section>
@@ -145,7 +152,6 @@ export function SPPBOutGenerateQR(props: {
 										{detail?.OrmKendaraan.name}
 									</Section>
 									<Section title="No. Pol."></Section>
-									<Section title="Keterangan">{detail?.keterangan}</Section>
 									<TxtBold>
 										Harap diterima dengan baik barang-barang dibawah ini
 									</TxtBold>
