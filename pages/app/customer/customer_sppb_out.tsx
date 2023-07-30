@@ -185,7 +185,6 @@ export default function SPPBOUT() {
 			{loader.component}
 			<GeneratePdf
 				width={`w-[${widthSize}px]`}
-				splitPagePer={4}
 				ref={genPdfRef}
 				tagId="kanban-data-print"
 				useQueries={() =>
