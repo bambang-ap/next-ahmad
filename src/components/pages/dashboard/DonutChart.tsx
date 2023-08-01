@@ -2,12 +2,12 @@ import {Chart} from "@prevComp/Chart";
 import {trpc} from "@utils/trpc";
 
 export default function DonutChart() {
-	const {data} = trpc.dashboard.totalCount.useQuery();
+	const {data} = trpc.dashboard.unitCountPoItem.useQuery();
 
 	const {categories = [], dataChart = []} =
 		data?.reduce(
 			(ret, cur) => {
-				ret.categories.push(cur.title);
+				ret.categories.push(cur.unit.ucwords());
 				ret.dataChart.push(cur.count);
 				return ret;
 			},
@@ -16,10 +16,10 @@ export default function DonutChart() {
 
 	return (
 		<Chart
+			type="pie"
 			height={500}
-			type="donut"
-			options={{labels: categories}}
 			series={dataChart}
+			options={{labels: categories}}
 		/>
 	);
 }

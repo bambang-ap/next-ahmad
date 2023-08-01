@@ -6,6 +6,7 @@ import {z} from "zod";
 import {
 	AppRouter,
 	TDashboardView,
+	TItemUnit,
 	TMasterItem,
 	TScanTarget,
 } from "@appTypes/app.type";
@@ -28,6 +29,21 @@ export const IMIConst = {
 	fax: "(0267) 432268",
 };
 
+export const unitData: TItemUnit[] = [
+	"pcs",
+	"drum",
+	"kg",
+	"box",
+	"set",
+	"carton",
+	"pallet",
+];
+export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
+	unit => ({
+		value: unit,
+	}),
+);
+
 export const Success = {message: "Success"};
 
 export const isProd = process.env.NODE_ENV === "production";
@@ -42,10 +58,10 @@ export const ScanTarget: TScanTarget[] = ["produksi", "qc", "finish_good"];
 export const paperA4: [width: number, height: number] = [210, 297];
 
 export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
-	{value: "total"},
+	{value: "total", label: "Total Records"},
 	{value: "bar"},
 	{value: "line"},
-	{value: "donut"},
+	{value: "donut", label: "Qty Unit"},
 ];
 
 export const cuttingLineClassName =

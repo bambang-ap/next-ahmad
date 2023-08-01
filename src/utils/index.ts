@@ -35,12 +35,12 @@ export const dateUtils = {
 	dateS: convertDateS,
 };
 
-export function qtyMap(
+export function qtyMap<T = ReactNode>(
 	callback: (value: {
 		qtyKey: `qty${Qty}`;
 		unitKey: `unit${Qty}`;
 		num: Qty;
-	}) => ReactNode,
+	}) => T,
 ) {
 	return qtyList.map(num => {
 		const qtyKey = `qty${num}` as const;

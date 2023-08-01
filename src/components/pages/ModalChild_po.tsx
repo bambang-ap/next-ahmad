@@ -6,7 +6,6 @@ import {
 	TCustomerPO,
 	TCustomerPOExtended,
 } from "@appTypes/app.type";
-import {TItemUnit} from "@appTypes/app.zod";
 import {
 	Button,
 	Input,
@@ -16,18 +15,9 @@ import {
 	Table,
 	TableProps,
 } from "@components";
+import {selectUnitData} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
-
-export const selectUnitData = [
-	{value: "pcs"},
-	{value: "drum"},
-	{value: "kg"},
-	{value: "box"},
-	{value: "set"},
-	{value: "carton"},
-	{value: "pallet"},
-] as SelectPropsData<TItemUnit>[];
 
 export type UQtyList = `qty${typeof qtyList[number]}`;
 export const qtyList = [1, 2, 3] as const;

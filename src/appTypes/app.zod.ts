@@ -404,7 +404,7 @@ export const tSupplierPO = zId.extend({
 		z.string(),
 		z.object({
 			qty: zDecimal,
-			unit: z.string(),
+			unit: tItemUnit.or(z.literal("")).optional(), // z.string(),
 		}),
 	),
 });

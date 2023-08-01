@@ -19,10 +19,10 @@ import {
 	Table,
 	TableFilter,
 } from "@components";
+import {selectUnitData} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
-import {selectUnitData} from "@pageComponent/ModalChild_po";
 import {classNames, modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
