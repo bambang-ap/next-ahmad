@@ -14,9 +14,9 @@ import {
 	OrmScan,
 } from "@database";
 import {checkCredentialV2} from "@server";
-import {procedure, router} from "@trpc";
+import {procedure} from "@trpc";
 
-export const dashboardRouter = router({
+export const defaultDashboardRouter = {
 	totalCount: procedure.query(({ctx}) =>
 		checkCredentialV2(ctx, async (): Promise<TDashboard[]> => {
 			const data: TDashboardInput[] = [
@@ -131,4 +131,4 @@ export const dashboardRouter = router({
 			);
 		}),
 	),
-});
+};

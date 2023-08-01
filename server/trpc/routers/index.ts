@@ -3,7 +3,7 @@ import {inferRouterInputs, inferRouterOutputs} from "@trpc/server";
 
 import basicRouters from "./basic";
 import customer_poRouters from "./customer_po";
-import {dashboardRouter} from "./dashboard";
+import dashboardRouters from "./dashboard";
 import exportRouters from "./export";
 import itemRouters from "./item";
 import kanbanRouters from "./kanban";
@@ -25,7 +25,7 @@ export const appRouter = router({
 	kanban: kanbanRouters,
 	scan: scanRouters,
 	sppb: sppbRouters,
-	dashboard: dashboardRouter,
+	dashboard: dashboardRouters,
 	export: exportRouters,
 });
 
