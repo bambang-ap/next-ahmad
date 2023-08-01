@@ -4,6 +4,7 @@ import {inferRouterInputs, inferRouterOutputs} from "@trpc/server";
 import basicRouters from "./basic";
 import customer_poRouters from "./customer_po";
 import {dashboardRouter} from "./dashboard";
+import exportRouters from "./export";
 import itemRouters from "./item";
 import kanbanRouters from "./kanban";
 import menuRouters from "./menu";
@@ -25,6 +26,7 @@ export const appRouter = router({
 	scan: scanRouters,
 	sppb: sppbRouters,
 	dashboard: dashboardRouter,
+	export: exportRouters,
 });
 
 export type AppRouter = typeof appRouter;
