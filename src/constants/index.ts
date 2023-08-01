@@ -59,9 +59,9 @@ export const paperA4: [width: number, height: number] = [210, 297];
 
 export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: "total", label: "Total Records"},
-	{value: "bar"},
-	{value: "line"},
-	{value: "donut", label: "Qty Unit"},
+	{value: "bar", label: "Business Process"},
+	// {value: "line"},
+	{value: "donut", label: "Quantity Unit"},
 ];
 
 export const cuttingLineClassName =

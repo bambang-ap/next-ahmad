@@ -369,9 +369,26 @@ export const tScanTarget = z.union([
 	// z.literal("out_barang"),
 ]);
 
+export type TDashboardTitle = z.infer<typeof tDashboardTitle>;
+export const tDashboardTitle = z
+	.literal("Mesin")
+	.or(z.literal("Customer"))
+	.or(z.literal("PO"))
+	.or(z.literal("Kendaraan"))
+	.or(z.literal("SPPB In"))
+	.or(z.literal("SPPB Out"))
+	.or(z.literal("Kanban"))
+	.or(z.literal("Proses Kanban"))
+	.or(z.literal("Parameter"))
+	.or(z.literal("Material"))
+	.or(z.literal("Hardness"))
+	.or(z.literal("Scan Produksi"))
+	.or(z.literal("Scan QC"))
+	.or(z.literal("Scan Finish Good"));
+
 export type TDashboardInput = z.infer<typeof tDashboardInput>;
 export const tDashboardInput = z.object({
-	title: z.string(),
+	title: tDashboardTitle,
 	path: z.string().optional(),
 	image: z.string().optional(),
 	count: z.promise(z.number()),
