@@ -120,12 +120,14 @@ export default function ListScanData() {
 		<>
 			{loader.component}
 			<GeneratePdf
-				splitPagePer={6}
+				splitPagePer={4}
 				orientation="l"
 				ref={genPdfRef}
 				width="w-[2200px]"
 				tagId={`${route}-generated`}
-				renderItem={({data}) => <RenderPdfData data={data} route={route} />}
+				renderItem={({data}) => (
+					<RenderPdfData className="w-1/2" data={data} route={route} />
+				)}
 				useQueries={() =>
 					trpc.useQueries(t => idKanbans.map(id => t.kanban.detail(id)))
 				}
@@ -240,12 +242,16 @@ PropsWithChildren<
 	);
 }
 
-function RenderPdfData({data, route}: Route & {data?: null | KanbanGetRow}) {
+function RenderPdfData({
+	data,
+	route,
+	className,
+}: Route & {data?: null | KanbanGetRow; className?: string}) {
 	const items = Object.entries(data?.items ?? {});
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
-		<div className={classNames("w-1/3 p-6", cuttingLineClassName)}>
+		<div className={classNames("p-6", className, cuttingLineClassName)}>
 			<div className={classNames(gap, padding, "flex flex-col bg-black")}>
 				<div className={classNames("flex", gap)}>
 					<div className="bg-white flex justify-center flex-1 p-2">

@@ -79,7 +79,7 @@ export function SPPBOutGenerateQR({
 	const {dataFg} = useSppbOut(detail?.id_customer);
 	const doc = dataFg?.[0]?.kanban.OrmDocument;
 
-	const [width, height] = paperSizeCalculator(widthSize, {minus: 1});
+	const [width, height] = paperSizeCalculator(widthSize, {minus: 45});
 	const tagId = `data-${detail?.id}`;
 
 	return (
