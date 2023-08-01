@@ -1,12 +1,16 @@
 import {useRouter} from "next/router";
+import {useRecoilValue} from "recoil";
 
 import {Button, Text} from "@components";
+import {atomIsMobile} from "@recoil/atoms";
 import {classNames} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export default function TotalCount() {
 	const {data} = trpc.dashboard.totalCount.useQuery();
 	const {push} = useRouter();
+
+	const isMobile = useRecoilValue(atomIsMobile);
 
 	return (
 		<div className="-m-1 flex flex-wrap md:-m-2">
@@ -15,7 +19,12 @@ export default function TotalCount() {
 					push(path!);
 				}
 				return (
-					<div key={i} className="flex w-1/4 flex-wrap p-1 rounded-md">
+					<div
+						key={i}
+						className={classNames("flex flex-wrap p-1 rounded-md", {
+							["w-full"]: isMobile,
+							["w-1/4"]: !isMobile,
+						})}>
 						<div
 							className={classNames(
 								"flex flex-col flex-1 justify-between",
