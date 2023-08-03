@@ -21,7 +21,7 @@ import {
 } from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useExportData, useLoader, useSppbOut, useTableFilter} from "@hooks";
+import {useLoader, useNewExportData, useSppbOut, useTableFilter} from "@hooks";
 import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
 import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
 import {modalTypeParser, sleep} from "@utils";
@@ -84,16 +84,13 @@ export default function SPPBOUT() {
 		!isSelect && "Action",
 	];
 
-	const {exportResult} = useExportData(
+	const {exportResult} = useNewExportData(
 		() =>
-			trpc.useQueries(t =>
-				selectedIdSppbIns.map(id => t.sppb.out.getDetail(id)),
+			trpc.export.sppb.out.useQuery(
+				{ids: selectedIdSppbIns},
+				{enabled: selectedIdSppbIns.length > 0},
 			),
-		({data}) => {
-			const {OrmCustomer, OrmKendaraan, po, ...rest} = data ?? {};
-
-			return rest;
-		},
+		exportedData => exportedData,
 	);
 
 	const topComponent = isSelect ? (
