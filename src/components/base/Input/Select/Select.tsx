@@ -10,8 +10,9 @@ import {
 } from "@formController";
 import {classNames} from "@utils";
 
-import {InputComponent} from ".";
-import {FormContext} from "../Form";
+import {InputComponent} from "..";
+
+import {FormContext} from "../../Form";
 
 export type SelectPropsData<T extends string = string> = {
 	label?: string;
@@ -87,6 +88,7 @@ function SelectComponent<F extends FieldValues>({
 	if (isDisabled) {
 		return (
 			<InputComponent
+				disabled
 				byPassValue={selectedValue?.label}
 				noLabel={noLabel}
 				label={label as string}
