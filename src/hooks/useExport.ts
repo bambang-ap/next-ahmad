@@ -14,8 +14,30 @@ export function useExportData<
 
 	const result = datas.map(renderItem);
 
-	function exportResult() {
+	function exportResult(callback?: NoopVoid) {
 		exportData(result, names);
+		callback?.();
+	}
+
+	return {exportResult};
+}
+
+export function useNewExportData<
+	T,
+	R extends {},
+	W extends UseTRPCQueryResult<T[], unknown>,
+>(
+	useQuery: () => W,
+	renderItem: (item: NonNullable<W["data"]>[number]) => R,
+	names?: Parameters<typeof exportData>[1],
+) {
+	const {data} = useQuery();
+
+	const result = data?.map(renderItem);
+
+	function exportResult(callback?: NoopVoid) {
+		exportData(result, names);
+		callback?.();
 	}
 
 	return {exportResult};
