@@ -1,5 +1,7 @@
 import {Model, ModelStatic} from "sequelize";
 
+import {TSupItemRelation} from "@appTypes/app.type";
+
 import {OrmCustomer} from "../models/customer";
 import {OrmCustomerPO} from "../models/customer_po";
 import {OrmCustomerPOItem} from "../models/customer_po_item";
@@ -20,6 +22,7 @@ import {OrmParameterKategori} from "../models/parameter_kategori";
 import {OrmPOItemSppbIn} from "../models/po_item_sppb_in";
 import {OrmSupplier} from "../models/supplier";
 import {OrmSupplierItem} from "../models/supplier_item";
+import {OrmSupItemRelation} from "../models/supplier_item_relation";
 import {OrmSupplierPO} from "../models/supplier_po";
 import {OrmUser} from "../models/user";
 
@@ -74,10 +77,21 @@ export function initRelations() {
 	]);
 	// relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "kategori_mesin");
 
-	oneToMany(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
+	// oneToMany(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
 	oneToMany(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
 
 	oneToMany(OrmHardnessKategori, OrmHardness, "id", "id_kategori");
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id", "id_kategori");
 	oneToMany(OrmParameterKategori, OrmParameter, "id", "id_kategori");
+
+	OrmSupplier.belongsToMany(OrmSupplierItem, {
+		through: OrmSupItemRelation,
+		as: OrmSupplierItem._alias,
+		foreignKey: "supplier_id" as keyof TSupItemRelation,
+	});
+	OrmSupplierItem.belongsToMany(OrmSupplier, {
+		through: OrmSupItemRelation,
+		as: OrmSupplier._alias,
+		foreignKey: "item_id" as keyof TSupItemRelation,
+	});
 }

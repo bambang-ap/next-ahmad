@@ -24,6 +24,7 @@ export * from "./models/role";
 export * from "./models/scan";
 export * from "./models/supplier";
 export * from "./models/supplier_item";
+export * from "./models/supplier_item_relation";
 export * from "./models/supplier_po";
 export * from "./models/user";
 export * from "./models/user_login";

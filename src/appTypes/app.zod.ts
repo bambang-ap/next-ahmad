@@ -398,6 +398,12 @@ export const tDashboardInput = z.object({
 export type TDashboard = z.infer<typeof tDashboard>;
 export const tDashboard = tDashboardInput.extend({count: z.number()});
 
+export type TSupItemRelation = z.infer<typeof tSupItemRelation>;
+export const tSupItemRelation = zId.extend({
+	item_id: z.string(),
+	supplier_id: z.string(),
+});
+
 export type TSupplier = z.infer<typeof tSupplier>;
 export const tSupplier = zId.extend({
 	name: z.string(),
@@ -405,7 +411,6 @@ export const tSupplier = zId.extend({
 
 export type TSupplierItem = z.infer<typeof tSupplierItem>;
 export const tSupplierItem = zId.extend({
-	id_supplier: z.string(),
 	code_item: z.string().optional(),
 	name_item: z.string().optional(),
 	harga: zDecimal.optional(),

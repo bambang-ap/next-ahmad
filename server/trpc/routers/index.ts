@@ -1,4 +1,5 @@
-import {router} from "@trpc";
+import {OrmSupplier, OrmSupplierItem} from "@database";
+import {procedure, router} from "@trpc";
 import {inferRouterInputs, inferRouterOutputs} from "@trpc/server";
 
 import basicRouters from "./basic";
@@ -27,6 +28,23 @@ export const appRouter = router({
 	sppb: sppbRouters,
 	dashboard: dashboardRouters,
 	export: exportRouters,
+	test: procedure.query(async () => {
+		const data1 = await OrmSupplier.findAll({
+			include: [
+				{
+					as: OrmSupplierItem._alias,
+					model: OrmSupplierItem,
+					attributes: ["id"],
+				},
+			],
+		});
+		const data2 = await OrmSupplierItem.findAll({
+			include: [
+				{as: OrmSupplier._alias, model: OrmSupplier, attributes: ["id"]},
+			],
+		});
+		return [data1, data2];
+	}),
 });
 
 export type AppRouter = typeof appRouter;

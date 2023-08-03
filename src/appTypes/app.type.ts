@@ -59,6 +59,7 @@ export type {
 	TScanItem,
 	TScanTarget,
 	TSession,
+	TSupItemRelation,
 	TSupplier,
 	TSupplierItem,
 	TSupplierPO,

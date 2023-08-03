@@ -4,13 +4,14 @@ import {TSupplierItem} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
-export class OrmSupplierItem extends Model<TSupplierItem> {}
+export class OrmSupplierItem extends Model<TSupplierItem> {
+	static _alias = "SupplierItem";
+}
 
 export default function initOrmSupplierItem(sequelize: Sequelize) {
 	OrmSupplierItem.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
-			id_supplier: {type: DataTypes.STRING},
 			code_item: {type: DataTypes.STRING},
 			name_item: {type: DataTypes.STRING},
 			harga: {type: DataTypes.NUMBER},

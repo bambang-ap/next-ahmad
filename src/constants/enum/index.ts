@@ -13,6 +13,7 @@ export enum PO_STATUS {
 export enum TABLES {
 	SUPPLIER = "supplier",
 	SUPPLIER_ITEM = "supplier_item",
+	SUPPLIER_ITEM_RELATION = "supplier_item_relation",
 	SUPPLIER_PO = "supplier_po",
 	CUSTOMER = "customer",
 	CUSTOMER_PO = "po",

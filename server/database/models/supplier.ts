@@ -4,7 +4,9 @@ import {TSupplier} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
-export class OrmSupplier extends Model<TSupplier> {}
+export class OrmSupplier extends Model<TSupplier> {
+	static _alias = "Supplier";
+}
 
 export default function initOrmSupplier(sequelize: Sequelize) {
 	OrmSupplier.init(
