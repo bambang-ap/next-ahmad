@@ -87,7 +87,8 @@ CREATE TABLE public.document_number (
     "updatedAt" timestamp without time zone,
     tgl_efektif character varying(100),
     revisi character varying(5) DEFAULT '00'::character varying,
-    terbit character varying(5) DEFAULT 'AA'::character varying
+    terbit character varying(5) DEFAULT 'AA'::character varying,
+    target character varying(47)
 );
 
 
@@ -453,7 +454,6 @@ ALTER TABLE public.supplier OWNER TO postgres;
 
 CREATE TABLE public.supplier_item (
     id character varying(47) NOT NULL,
-    id_supplier character varying(47) NOT NULL,
     code_item character varying(100) NOT NULL,
     name_item character varying(100) NOT NULL,
     "createdAt" timestamp without time zone,
