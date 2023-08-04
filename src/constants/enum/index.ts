@@ -43,7 +43,6 @@ export enum TABLES {
 }
 
 export enum CRUD_ENABLED {
-	SUPPLIER = "supplier",
 	CUSTOMER = "customer",
 	MESIN = "mesin",
 	MESIN_KATEGORI = "mesin_kategori",

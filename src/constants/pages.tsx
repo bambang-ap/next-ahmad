@@ -17,7 +17,6 @@ import {
 	TParameter,
 	TParameterKategori,
 	TRole,
-	TSupplier,
 	TUser,
 } from "@appTypes/app.type";
 import {InputProps, SelectPropsData} from "@components";
@@ -607,32 +606,6 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: "Tambah role",
 				edit: "Ubah role",
 				delete: "Hapus role",
-			},
-		},
-	},
-
-	"/app/supplier": {
-		enumName: CRUD_ENABLED.SUPPLIER,
-		searchKey: "name",
-		table: {
-			header: ["Name", "Action"],
-			get body(): Body<TSupplier> {
-				return ["name"];
-			},
-		},
-		modalField: {
-			get add(): FieldForm<TSupplier>[] {
-				return [{col: "name", label: "Nama"}];
-			},
-			get edit() {
-				return this.add;
-			},
-		},
-		text: {
-			modal: {
-				add: "Tambah Supplier",
-				edit: "Ubah Supplier",
-				delete: "Hapus Supplier",
 			},
 		},
 	},

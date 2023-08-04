@@ -116,7 +116,7 @@ export const defaultErrorMutation: {onError: any} = {
 
 export const queryClientConfig: QueryObserverOptions = {
 	refetchIntervalInBackground: false,
-	refetchOnMount: false,
-	refetchOnWindowFocus: false,
+	refetchOnMount: true,
+	refetchOnWindowFocus: true,
 	refetchInterval: 1000 * 5 * 60,
 };

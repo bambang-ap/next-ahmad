@@ -409,11 +409,16 @@ export const tSupplier = zId.extend({
 	name: z.string(),
 });
 
+export type TSupplierUpsert = z.infer<typeof tSupplierUpsert>;
+export const tSupplierUpsert = z.object({
+	...tSupplier.shape,
+	item: z.string().array(),
+});
+
 export type TSupplierItem = z.infer<typeof tSupplierItem>;
 export const tSupplierItem = zId.extend({
 	code_item: z.string().optional(),
 	name_item: z.string().optional(),
-	harga: zDecimal.optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
 });
@@ -421,7 +426,7 @@ export const tSupplierItem = zId.extend({
 export type TSupplierItemUpsert = z.infer<typeof tSupplierItemUpsert>;
 export const tSupplierItemUpsert = z.object({
 	...tSupplierItem.shape,
-	supplier: z.string().array().min(1),
+	supplier: z.string().array(),
 });
 
 export type TSupplierPO = z.infer<typeof tSupplierPO>;

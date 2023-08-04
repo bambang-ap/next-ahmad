@@ -1,4 +1,5 @@
 import {Op} from "sequelize";
+import {z} from "zod";
 
 import {
 	tableFormValue,
@@ -18,32 +19,36 @@ import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 
 const supplierItemRouters = router({
-	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		type UUU = TSupplierItem & {[OrmSupplier._alias]: TSupplier[]};
-		return checkCredentialV2(ctx, async () => {
-			const {limit, page, search} = input;
-			const {count, rows} = await OrmSupplierItem.findAndCountAll({
-				limit,
-				order: [["name_item", "desc"]],
-				offset: (page - 1) * limit,
-				where: wherePages("name_item", search),
-				include: [
-					{
-						model: OrmSupplier,
-						as: OrmSupplier._alias,
-						through: {attributes: []},
-					},
-				],
-			});
+	get: procedure
+		.input(tableFormValue.extend({withSupplier: z.boolean().optional()}))
+		.query(({ctx, input}) => {
+			type UUU = TSupplierItem & {[OrmSupplier._alias]: TSupplier[]};
+			return checkCredentialV2(ctx, async () => {
+				const {limit, page, search, withSupplier = true} = input;
+				const {count, rows} = await OrmSupplierItem.findAndCountAll({
+					limit,
+					order: [["name_item", "desc"]],
+					offset: (page - 1) * limit,
+					where: wherePages("name_item", search),
+					include: withSupplier
+						? [
+								{
+									model: OrmSupplier,
+									as: OrmSupplier._alias,
+									through: {attributes: []},
+								},
+						  ]
+						: [],
+				});
 
-			return pagingResult(
-				count,
-				page,
-				limit,
-				rows.map(e => e.dataValues as UUU),
-			);
-		});
-	}),
+				return pagingResult(
+					count,
+					page,
+					limit,
+					rows.map(e => e.dataValues as UUU),
+				);
+			});
+		}),
 	upsert: procedure
 		.input(tSupplierItemUpsert.partial({id: true}))
 		.mutation(({ctx, input}) => {

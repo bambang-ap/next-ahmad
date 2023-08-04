@@ -2,8 +2,11 @@ import {FormEventHandler, useRef} from "react";
 
 import {Control, useForm, useWatch} from "react-hook-form";
 
-import {RouterOutput} from "@appTypes/app.type";
-import {ModalTypeSelect, TSupplierItemUpsert} from "@appTypes/app.zod";
+import {
+	ModalTypeSelect,
+	RouterOutput,
+	TSupplierUpsert,
+} from "@appTypes/app.type";
 import {
 	Button,
 	Form,
@@ -19,18 +22,18 @@ import {getLayout} from "@hoc";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
-type SupplierItemForm = TSupplierItemUpsert & {type: ModalTypeSelect};
+type SupplierForm = TSupplierUpsert & {type: ModalTypeSelect};
 
-ItemSupplier.getLayout = getLayout;
+Supplier.getLayout = getLayout;
 
-export default function ItemSupplier() {
+export default function Supplier() {
 	const modalRef = useRef<ModalRef>(null);
 	const tableRef = useRef<TableFilterV2Ref>(null);
 
 	const {control, reset, watch, handleSubmit, clearErrors} =
-		useForm<SupplierItemForm>();
-	const {mutate: mutateUpsert} = trpc.supplier.item.upsert.useMutation();
-	const {mutate: mutateDelete} = trpc.supplier.item.delete.useMutation();
+		useForm<SupplierForm>();
+	const {mutate: mutateUpsert} = trpc.supplier.upsert.useMutation();
+	const {mutate: mutateDelete} = trpc.supplier.delete.useMutation();
 
 	const modalForm = watch();
 
@@ -42,11 +45,11 @@ export default function ItemSupplier() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, supplier = [], ...rest}) => {
+		handleSubmit(({type, item = [], ...rest}) => {
 			switch (type) {
 				case "add":
 				case "edit":
-					return mutateUpsert({...rest, supplier}, {onSuccess});
+					return mutateUpsert({...rest, item}, {onSuccess});
 				case "delete":
 					return mutateDelete({id: rest.id}, {onSuccess});
 				default:
@@ -62,7 +65,7 @@ export default function ItemSupplier() {
 
 	function showModal(
 		type: ModalTypeSelect,
-		initValue?: Partial<Omit<SupplierItemForm, "type">>,
+		initValue?: Partial<Omit<SupplierForm, "type">>,
 	) {
 		reset({...initValue, type});
 		modalRef.current?.show();
@@ -70,10 +73,10 @@ export default function ItemSupplier() {
 
 	return (
 		<>
-			<TableFilterV2<RouterOutput["supplier"]["item"]["get"]["rows"][number]>
+			<TableFilterV2<RouterOutput["supplier"]["get"]["rows"][number]>
 				ref={tableRef}
-				header={["Supplier", "Kode Item", "Nama Item", "Harga", "Action"]}
-				useQuery={form => trpc.supplier.item.get.useQuery(form)}
+				header={["Nama", "Item", "Action"]}
+				useQuery={form => trpc.supplier.get.useQuery(form)}
 				topComponent={
 					isSelect ? (
 						<>
@@ -97,17 +100,18 @@ export default function ItemSupplier() {
 					)
 				}
 				renderItem={({item, Cell}) => {
-					const {Supplier, ...restItem} = item;
-					const rest: TSupplierItemUpsert = {
+					const {SupplierItem, ...restSupplier} = item;
+					const rest: TSupplierUpsert = {
 						...item,
-						supplier: Supplier.map(e => e.id),
+						item: SupplierItem.map(e => e.id),
 					};
 
 					return (
 						<>
-							<Cell>{Supplier.map(sup => sup.name).join(" | ")}</Cell>
-							<Cell>{restItem.code_item}</Cell>
-							<Cell>{restItem.name_item}</Cell>
+							<Cell>{restSupplier.name}</Cell>
+							<Cell>
+								{SupplierItem.map(supItem => supItem.name_item).join(" | ")}
+							</Cell>
 							<Cell className="gap-2">
 								<Button
 									icon="faMagnifyingGlass"
@@ -135,8 +139,11 @@ export default function ItemSupplier() {
 	);
 }
 
-function ModalChildSupItem({control}: {control: Control<SupplierItemForm>}) {
-	const {data} = trpc.supplier.get.useQuery({withItem: false, limit: 99999});
+function ModalChildSupItem({control}: {control: Control<SupplierForm>}) {
+	const {data} = trpc.supplier.item.get.useQuery({
+		withSupplier: false,
+		limit: 99999,
+	});
 
 	const {type} = useWatch({control});
 	const {isDelete} = modalTypeParser(type);
@@ -145,14 +152,13 @@ function ModalChildSupItem({control}: {control: Control<SupplierItemForm>}) {
 
 	return (
 		<>
+			<Input label="Name" control={control} fieldName="name" />
 			<MultipleSelect
-				label="Supplier"
+				label="Item"
 				control={control}
-				fieldName="supplier"
-				data={selectMapper(data?.rows ?? [], "id", "name")}
+				fieldName="item"
+				data={selectMapper(data?.rows ?? [], "id", "name_item")}
 			/>
-			<Input label="Kode Item" control={control} fieldName="code_item" />
-			<Input label="Nama Item" control={control} fieldName="name_item" />
 			<Button type="submit">Submit</Button>
 		</>
 	);

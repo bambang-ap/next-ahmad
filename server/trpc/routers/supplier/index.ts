@@ -2,10 +2,12 @@ import {router} from "@trpc";
 
 import supplierItemRouters from "./item";
 import supplierPoRouters from "./po";
+import supplierRouters from "./supplier";
 
-const supplierRouters = router({
+const supplierRouter = router({
+	...supplierRouters,
 	po: supplierPoRouters,
 	item: supplierItemRouters,
 });
 
-export default supplierRouters;
+export default supplierRouter;

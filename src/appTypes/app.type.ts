@@ -64,6 +64,7 @@ export type {
 	TSupplierItem,
 	TSupplierItemUpsert,
 	TSupplierPO,
+	TSupplierUpsert,
 	TUpsertSppbIn,
 	TUser,
 	TUserLogin,

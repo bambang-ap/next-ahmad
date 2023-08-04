@@ -1,10 +1,11 @@
 import {Op} from "sequelize";
+import {z} from "zod";
 
 import {
 	tableFormValue,
 	TSupplier,
 	TSupplierItem,
-	tSupplierItemUpsert,
+	tSupplierUpsert,
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
@@ -15,61 +16,65 @@ import {
 	wherePages,
 } from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+import {procedure} from "@trpc";
 
-const supplierRouters = router({
-	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		type UUU = TSupplierItem & {[OrmSupplier._alias]: TSupplier[]};
-		return checkCredentialV2(ctx, async () => {
-			const {limit, page, search} = input;
-			const {count, rows} = await OrmSupplierItem.findAndCountAll({
-				limit,
-				order: [["name_item", "desc"]],
-				offset: (page - 1) * limit,
-				where: wherePages("name_item", search),
-				include: [
-					{
-						model: OrmSupplier,
-						as: OrmSupplier._alias,
-						through: {attributes: []},
-					},
-				],
-			});
-
-			return pagingResult(
-				count,
-				page,
-				limit,
-				rows.map(e => e.dataValues as UUU),
-			);
-		});
-	}),
-	upsert: procedure
-		.input(tSupplierItemUpsert.partial({id: true}))
-		.mutation(({ctx, input}) => {
-			const {supplier, ...items} = input;
+const supplierRouters = {
+	get: procedure
+		.input(tableFormValue.extend({withItem: z.boolean().optional()}))
+		.query(({ctx, input}) => {
+			type UUU = TSupplier & {[OrmSupplierItem._alias]: TSupplierItem[]};
 			return checkCredentialV2(ctx, async () => {
-				const [item] = await OrmSupplierItem.upsert({
-					...items,
-					id: items.id || generateId("SPI"),
+				const {limit, page, search, withItem = true} = input;
+				const {count, rows} = await OrmSupplier.findAndCountAll({
+					limit,
+					order: [["name", "desc"]],
+					offset: (page - 1) * limit,
+					where: wherePages("name", search),
+					include: withItem
+						? [
+								{
+									model: OrmSupplierItem,
+									as: OrmSupplierItem._alias,
+									through: {attributes: []},
+								},
+						  ]
+						: [],
+				});
+
+				return pagingResult(
+					count,
+					page,
+					limit,
+					rows.map(e => e.dataValues as UUU),
+				);
+			});
+		}),
+	upsert: procedure
+		.input(tSupplierUpsert.partial({id: true}))
+		.mutation(({ctx, input}) => {
+			const {item: items, ...restSupplier} = input;
+			return checkCredentialV2(ctx, async () => {
+				const [supplier] = await OrmSupplier.upsert({
+					...restSupplier,
+					id: restSupplier.id || generateId("SP"),
 				});
 
 				const relationToRemove = await OrmSupItemRelation.findAll({
 					where: {
-						item_id: item.dataValues.id,
-						supplier_id: {[Op.not]: supplier},
+						supplier_id: supplier.dataValues.id,
+						item_id: {[Op.not]: items},
 					},
 				});
 
-				supplier.forEach(async supplier_id => {
+				items.forEach(async item_id => {
 					const relation = await OrmSupItemRelation.findOne({
-						where: {item_id: item.dataValues.id, supplier_id},
+						where: {supplier_id: supplier.dataValues.id, item_id},
 					});
 
 					await OrmSupItemRelation.upsert({
 						id: relation?.dataValues.id ?? generateId("SPIR"),
-						item_id: item.dataValues.id,
-						supplier_id,
+						supplier_id: supplier.dataValues.id,
+						item_id,
 					});
 				});
 
@@ -84,11 +89,11 @@ const supplierRouters = router({
 		}),
 	delete: procedure.input(zId.partial()).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
-			await OrmSupItemRelation.destroy({where: {item_id: input.id}});
+			await OrmSupItemRelation.destroy({where: {supplier_id: input.id}});
 			await OrmSupplierItem.destroy({where: input});
 			return Success;
 		});
 	}),
-});
+};
 
 export default supplierRouters;

@@ -14,7 +14,6 @@ export default function initOrmSupplierItem(sequelize: Sequelize) {
 			id: {type: DataTypes.STRING, primaryKey: true},
 			code_item: {type: DataTypes.STRING},
 			name_item: {type: DataTypes.STRING},
-			harga: {type: DataTypes.NUMBER},
 		},
 		{
 			sequelize,
