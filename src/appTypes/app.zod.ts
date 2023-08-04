@@ -418,6 +418,12 @@ export const tSupplierItem = zId.extend({
 	updatedAt: z.string().optional(),
 });
 
+export type TSupplierItemUpsert = z.infer<typeof tSupplierItemUpsert>;
+export const tSupplierItemUpsert = z.object({
+	...tSupplierItem.shape,
+	supplier: z.string().array().min(1),
+});
+
 export type TSupplierPO = z.infer<typeof tSupplierPO>;
 export const tSupplierPO = zId.extend({
 	id_supplier: z.string(),

@@ -5,7 +5,7 @@ import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
 export class OrmKategoriMesin extends Model<TKategoriMesin> {
-	static _alias = "dataKMesin";
+	static _alias = "dataKMesin" as const;
 }
 
 export default function initOrmKategoriMesin(sequelize: Sequelize) {

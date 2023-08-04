@@ -2,7 +2,7 @@ import {useContext} from "react";
 
 import CheckBoxIcon from "@mui/icons-material/CheckBox";
 import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import {Autocomplete, Checkbox, TextField} from "@mui/material";
+import {Autocomplete, Checkbox, Chip, TextField} from "@mui/material";
 import {FieldValues} from "react-hook-form";
 
 import {defaultTextFieldProps} from "@constants";
@@ -78,6 +78,16 @@ function MultipleSelectComponent<F extends FieldValues>({
 				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}
 				getOptionLabel={({value: optionValue, label: optionLabel}) =>
 					optionLabel || optionValue
+				}
+				renderTags={(tagValue, getTagProps) =>
+					tagValue.map((option, index) => (
+						<Chip
+							{...getTagProps({index})}
+							label={option.label ?? option.value}
+							key={index.toString()}
+							onDelete={undefined}
+						/>
+					))
 				}
 				renderInput={params => (
 					<TextField

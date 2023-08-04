@@ -5,8 +5,8 @@ import {defaultExcludeColumn} from "@constants";
 import {TABLES} from "@enum";
 
 export class OrmKanban extends Model<TKanban> {
-	static _aliasCreatedBy = "dataCreatedBy";
-	static _aliasUpdatedBy = "dataUpdatedBy";
+	static _aliasCreatedBy = "dataCreatedBy" as const;
+	static _aliasUpdatedBy = "dataUpdatedBy" as const;
 }
 
 export default function initOrmKanban(sequelize: Sequelize) {

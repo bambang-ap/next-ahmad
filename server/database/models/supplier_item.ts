@@ -5,7 +5,7 @@ import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
 export class OrmSupplierItem extends Model<TSupplierItem> {
-	static _alias = "SupplierItem";
+	static _alias = "SupplierItem" as const;
 }
 
 export default function initOrmSupplierItem(sequelize: Sequelize) {

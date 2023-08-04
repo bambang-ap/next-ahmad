@@ -18,7 +18,6 @@ import {
 	TParameterKategori,
 	TRole,
 	TSupplier,
-	TSupplierItem,
 	TUser,
 } from "@appTypes/app.type";
 import {InputProps, SelectPropsData} from "@components";
@@ -634,56 +633,6 @@ export const allowedPages: Record<string, AllowedPages> = {
 				add: "Tambah Supplier",
 				edit: "Ubah Supplier",
 				delete: "Hapus Supplier",
-			},
-		},
-	},
-
-	"/app/supplier/item": {
-		enumName: CRUD_ENABLED.SUPPLIER_ITEM,
-		searchKey: "name_item" as keyof TSupplierItem,
-		table: {
-			header: ["Suplier", "Kode Item", "Nama Item", "Harga Item", "Action"],
-			get body(): Body<TSupplierItem> {
-				return [
-					[
-						"id_supplier",
-						() => trpc.basic.get.useQuery({target: CRUD_ENABLED.SUPPLIER}),
-						(item: TSupplierItem, data: TSupplier[]) =>
-							data?.find?.(e => e.id === item.id_supplier)?.name,
-					],
-					"code_item",
-					"name_item",
-					"harga",
-				];
-			},
-		},
-		modalField: {
-			get add(): FieldForm<TSupplierItem>[] {
-				return [
-					{
-						col: "id_supplier",
-						label: "Supplier",
-						type: "select",
-						firstOption: "- Pilih Supplier -",
-						dataQuery: () =>
-							trpc.basic.get.useQuery({target: CRUD_ENABLED.SUPPLIER}),
-						dataMapping: (item: TSupplier[]) =>
-							item?.map(({id, name}) => ({value: id, label: name})),
-					},
-					{col: "code_item", label: "Kode Item"},
-					{col: "name_item", label: "Name Item"},
-					{col: "harga", label: "Harga Item", type: "decimal"},
-				];
-			},
-			get edit() {
-				return this.add;
-			},
-		},
-		text: {
-			modal: {
-				add: "Tambah Item Supplier",
-				edit: "Ubah Item Supplier",
-				delete: "Hapus Item Supplier",
 			},
 		},
 	},
