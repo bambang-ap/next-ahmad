@@ -445,7 +445,11 @@ CREATE TABLE public.supplier (
     id character varying(47) NOT NULL,
     name character varying(100) NOT NULL,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    up character varying(100),
+    alamat character varying(255),
+    phone character varying(20),
+    npwp character varying(20)
 );
 
 
@@ -457,16 +461,29 @@ ALTER TABLE public.supplier OWNER TO postgres;
 
 CREATE TABLE public.supplier_item (
     id character varying(47) NOT NULL,
-    id_supplier character varying(47) NOT NULL,
     code_item character varying(100) NOT NULL,
     name_item character varying(100) NOT NULL,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone,
-    harga numeric
+    "updatedAt" timestamp without time zone
 );
 
 
 ALTER TABLE public.supplier_item OWNER TO postgres;
+
+--
+-- Name: supplier_item_relation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.supplier_item_relation (
+    id character varying(47) NOT NULL,
+    item_id character varying(47) NOT NULL,
+    supplier_id character varying(47) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.supplier_item_relation OWNER TO postgres;
 
 --
 -- Name: supplier_po; Type: TABLE; Schema: public; Owner: postgres
@@ -721,6 +738,14 @@ ALTER TABLE ONLY public.customer_sppb_out
 
 ALTER TABLE ONLY public.supplier_item
     ADD CONSTRAINT supplier_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: supplier_item_relation supplier_item_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.supplier_item_relation
+    ADD CONSTRAINT supplier_item_relation_pkey PRIMARY KEY (id);
 
 
 --
