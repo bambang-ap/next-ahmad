@@ -72,7 +72,7 @@ export default function ItemSupplier() {
 		<>
 			<TableFilterV2<RouterOutput["supplier"]["item"]["get"]["rows"][number]>
 				ref={tableRef}
-				header={["Supplier", "Kode Item", "Nama Item", "Harga", "Action"]}
+				header={["Supplier", "Kode Item", "Nama Item", "Action"]}
 				useQuery={form => trpc.supplier.item.get.useQuery(form)}
 				topComponent={
 					isSelect ? (
@@ -99,7 +99,7 @@ export default function ItemSupplier() {
 				renderItem={({item, Cell}) => {
 					const {Supplier, ...restItem} = item;
 					const rest: TSupplierItemUpsert = {
-						...item,
+						...restItem,
 						supplier: Supplier.map(e => e.id),
 					};
 

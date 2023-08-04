@@ -407,6 +407,10 @@ export const tSupItemRelation = zId.extend({
 export type TSupplier = z.infer<typeof tSupplier>;
 export const tSupplier = zId.extend({
 	name: z.string(),
+	phone: z.string(),
+	alamat: z.string(),
+	up: z.string().optional(),
+	npwp: z.string().optional(),
 });
 
 export type TSupplierUpsert = z.infer<typeof tSupplierUpsert>;

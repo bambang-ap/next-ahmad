@@ -75,7 +75,7 @@ export default function Supplier() {
 		<>
 			<TableFilterV2<RouterOutput["supplier"]["get"]["rows"][number]>
 				ref={tableRef}
-				header={["Nama", "Item", "Action"]}
+				header={["Item", "Nama", "No. Telp", "NPWP", "Up", "Alamat", "Action"]}
 				useQuery={form => trpc.supplier.get.useQuery(form)}
 				topComponent={
 					isSelect ? (
@@ -102,16 +102,20 @@ export default function Supplier() {
 				renderItem={({item, Cell}) => {
 					const {SupplierItem, ...restSupplier} = item;
 					const rest: TSupplierUpsert = {
-						...item,
+						...restSupplier,
 						item: SupplierItem.map(e => e.id),
 					};
 
 					return (
 						<>
-							<Cell>{restSupplier.name}</Cell>
 							<Cell>
 								{SupplierItem.map(supItem => supItem.name_item).join(" | ")}
 							</Cell>
+							<Cell>{restSupplier.name}</Cell>
+							<Cell>{restSupplier.npwp}</Cell>
+							<Cell>{restSupplier.up}</Cell>
+							<Cell>{restSupplier.phone}</Cell>
+							<Cell>{restSupplier.alamat}</Cell>
 							<Cell className="gap-2">
 								<Button
 									icon="faMagnifyingGlass"
@@ -152,13 +156,17 @@ function ModalChildSupItem({control}: {control: Control<SupplierForm>}) {
 
 	return (
 		<>
-			<Input label="Name" control={control} fieldName="name" />
 			<MultipleSelect
 				label="Item"
 				control={control}
 				fieldName="item"
 				data={selectMapper(data?.rows ?? [], "id", "name_item")}
 			/>
+			<Input label="Name" control={control} fieldName="name" />
+			<Input label="NPWP" control={control} fieldName="npwp" />
+			<Input label="Up" control={control} fieldName="up" />
+			<Input label="No. Telp" control={control} fieldName="phone" />
+			<Input label="Alamat" control={control} fieldName="alamat" />
 			<Button type="submit">Submit</Button>
 		</>
 	);

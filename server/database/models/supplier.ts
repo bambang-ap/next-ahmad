@@ -13,6 +13,10 @@ export default function initOrmSupplier(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			name: {type: DataTypes.STRING},
+			alamat: {type: DataTypes.STRING},
+			phone: {type: DataTypes.STRING},
+			npwp: {type: DataTypes.STRING},
+			up: {type: DataTypes.STRING},
 		},
 		{
 			sequelize,
