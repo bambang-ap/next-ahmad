@@ -47,11 +47,11 @@ export default function ItemSupplier() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, ...rest}) => {
+		handleSubmit(({type, supplier = [], ...rest}) => {
 			switch (type) {
 				case "add":
 				case "edit":
-					return mutateUpsert({...rest}, {onSuccess});
+					return mutateUpsert({...rest, supplier}, {onSuccess});
 				case "delete":
 					return mutateDelete({id: rest.id}, {onSuccess});
 				default:
