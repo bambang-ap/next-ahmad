@@ -26,6 +26,7 @@ export * from "./models/supplier";
 export * from "./models/supplier_item";
 export * from "./models/supplier_item_relation";
 export * from "./models/supplier_po";
+export * from "./models/supplier_po_item";
 export * from "./models/user";
 export * from "./models/user_login";
 export * from "./_init";
