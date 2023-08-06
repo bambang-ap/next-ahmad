@@ -1,29 +1,34 @@
+// @ts-nocheck
+
 import {Model, ModelStatic} from "sequelize";
 
 import {TSupItemRelation} from "@appTypes/app.type";
-
-import {OrmCustomer} from "../models/customer";
-import {OrmCustomerPO} from "../models/customer_po";
-import {OrmCustomerPOItem} from "../models/customer_po_item";
-import {OrmCustomerSPPBOut} from "../models/customer_sppb_out";
-import {OrmDocument} from "../models/document";
-import {OrmHardness} from "../models/hardness";
-import {OrmHardnessKategori} from "../models/hardness_kategori";
-import {OrmMasterItem} from "../models/item";
-import {OrmKanban} from "../models/kanban";
-import {OrmKanbanItem} from "../models/kanban_item";
-import {OrmKendaraan} from "../models/kendaraan";
-import {OrmMaterial} from "../models/material";
-import {OrmMaterialKategori} from "../models/material_kategori";
-import {OrmMesin} from "../models/mesin";
-import {OrmKategoriMesin} from "../models/mesin_kategori";
-import {OrmParameter} from "../models/parameter";
-import {OrmParameterKategori} from "../models/parameter_kategori";
-import {OrmPOItemSppbIn} from "../models/po_item_sppb_in";
-import {OrmSupplier} from "../models/supplier";
-import {OrmSupplierItem} from "../models/supplier_item";
-import {OrmSupItemRelation} from "../models/supplier_item_relation";
-import {OrmUser} from "../models/user";
+import {
+	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerPOItem,
+	OrmCustomerSPPBOut,
+	OrmDocument,
+	OrmHardness,
+	OrmHardnessKategori,
+	OrmKanban,
+	OrmKanbanItem,
+	OrmKategoriMesin,
+	OrmKendaraan,
+	OrmMasterItem,
+	OrmMaterial,
+	OrmMaterialKategori,
+	OrmMesin,
+	OrmParameter,
+	OrmParameterKategori,
+	OrmPOItemSppbIn,
+	OrmSupItemRelation,
+	OrmSupplier,
+	OrmSupplierItem,
+	OrmSupplierPO,
+	OrmSupplierPOItem,
+	OrmUser,
+} from "@database";
 
 function oneToMany<M extends object, B extends object>(
 	sourceOrm: ModelStatic<Model<M>>,
@@ -49,7 +54,7 @@ function oneToMany<M extends object, B extends object>(
 		targetForeignKey.forEach(([foreignKey, as]) => {
 			belongsTo(foreignKey as string, as);
 		});
-	} else belongsTo(targetForeignKey as string, alias);
+	} else belongsTo(sourceForeignKey as string, alias);
 }
 
 export function initRelations() {
@@ -77,7 +82,11 @@ export function initRelations() {
 	// relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "kategori_mesin");
 
 	// oneToMany(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
-	// oneToMany(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
+	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id_po", "id");
+	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id_supplier_item", "id");
+
+	// OrmSupplierPO.hasMany(OrmSupplierPOItem, {foreignKey: "id_po"});
+	// OrmSupplierPOItem.belongsTo(OrmSupplierPO, {foreignKey: "id"});
 
 	oneToMany(OrmHardnessKategori, OrmHardness, "id", "id_kategori");
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id", "id_kategori");
