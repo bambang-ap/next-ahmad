@@ -28,12 +28,8 @@ import {
 	OrmRole,
 	OrmUser,
 } from "./database";
-import {OrmSupplier} from "./database/models/supplier";
-import {OrmSupplierItem} from "./database/models/supplier_item";
 
 export const MAPPING_CRUD_ORM = {
-	[CRUD_ENABLED.SUPPLIER]: OrmSupplier,
-	[CRUD_ENABLED.SUPPLIER_ITEM]: OrmSupplierItem,
 	[CRUD_ENABLED.CUSTOMER]: OrmCustomer,
 	[TABLES.CUSTOMER_SPPB_IN]: OrmCustomerSPPBIn,
 	[TABLES.CUSTOMER_SPPB_OUT]: OrmCustomerSPPBOut,
