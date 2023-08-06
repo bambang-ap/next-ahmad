@@ -8,7 +8,7 @@ import {
 	tSupplierUpsert,
 	zId,
 } from "@appTypes/app.zod";
-import {Success} from "@constants";
+import {Success, through} from "@constants";
 import {
 	OrmSupItemRelation,
 	OrmSupplier,
@@ -35,7 +35,7 @@ const supplierRouters = {
 								{
 									model: OrmSupplierItem,
 									as: OrmSupplierItem._alias,
-									through: {attributes: []},
+									through,
 								},
 						  ]
 						: [],
@@ -72,7 +72,7 @@ const supplierRouters = {
 					});
 
 					await OrmSupItemRelation.upsert({
-						id: relation?.dataValues.id ?? generateId("SPIR"),
+						id: relation?.dataValues.id ?? generateId("SP_IR"),
 						supplier_id: supplier.dataValues.id,
 						item_id,
 					});

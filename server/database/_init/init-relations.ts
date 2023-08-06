@@ -23,7 +23,6 @@ import {OrmPOItemSppbIn} from "../models/po_item_sppb_in";
 import {OrmSupplier} from "../models/supplier";
 import {OrmSupplierItem} from "../models/supplier_item";
 import {OrmSupItemRelation} from "../models/supplier_item_relation";
-import {OrmSupplierPO} from "../models/supplier_po";
 import {OrmUser} from "../models/user";
 
 function oneToMany<M extends object, B extends object>(
@@ -78,7 +77,7 @@ export function initRelations() {
 	// relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "kategori_mesin");
 
 	// oneToMany(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
-	oneToMany(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
+	// oneToMany(OrmSupplier, OrmSupplierPO, "id", "id_supplier");
 
 	oneToMany(OrmHardnessKategori, OrmHardness, "id", "id_kategori");
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id", "id_kategori");

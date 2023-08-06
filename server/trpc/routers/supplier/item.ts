@@ -8,7 +8,7 @@ import {
 	tSupplierItemUpsert,
 	zId,
 } from "@appTypes/app.zod";
-import {Success} from "@constants";
+import {Success, through} from "@constants";
 import {
 	OrmSupItemRelation,
 	OrmSupplier,
@@ -35,7 +35,7 @@ const supplierItemRouters = router({
 								{
 									model: OrmSupplier,
 									as: OrmSupplier._alias,
-									through: {attributes: []},
+									through,
 								},
 						  ]
 						: [],
@@ -56,7 +56,7 @@ const supplierItemRouters = router({
 			return checkCredentialV2(ctx, async () => {
 				const [item] = await OrmSupplierItem.upsert({
 					...items,
-					id: items.id || generateId("SPI"),
+					id: items.id || generateId("SP_I"),
 				});
 
 				const relationToRemove = await OrmSupItemRelation.findAll({
@@ -72,7 +72,7 @@ const supplierItemRouters = router({
 					});
 
 					await OrmSupItemRelation.upsert({
-						id: relation?.dataValues.id ?? generateId("SPIR"),
+						id: relation?.dataValues.id ?? generateId("SP_IR"),
 						item_id: item.dataValues.id,
 						supplier_id,
 					});

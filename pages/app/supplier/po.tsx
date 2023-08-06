@@ -4,9 +4,8 @@ import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
 
 import {
 	ModalTypePreview,
-	TSupplier,
 	TSupplierItem,
-	TSupplierPO,
+	TSupplierPOUpsert,
 } from "@appTypes/app.type";
 import {
 	Button,
@@ -20,7 +19,6 @@ import {
 	TableFilter,
 } from "@components";
 import {selectUnitData} from "@constants";
-import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
 import {classNames, modalTypeParser} from "@utils";
@@ -28,7 +26,10 @@ import {trpc} from "@utils/trpc";
 
 POSupplier.getLayout = getLayout;
 
-type FormType = TSupplierPO & {type: ModalTypePreview; tempIdItem: string};
+type FormType = TSupplierPOUpsert & {
+	type: ModalTypePreview;
+	tempIdItem: string;
+};
 type ModalChildProps = {
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
@@ -72,6 +73,7 @@ export default function POSupplier() {
 	return (
 		<>
 			<Modal
+				size="lg"
 				ref={modalRef}
 				title={modalTitle}
 				onVisibleChange={visible => {
@@ -97,7 +99,7 @@ export default function POSupplier() {
 					const {OrmItem, OrmSupplier, items, id} = item;
 					return (
 						<>
-							<Cell>{OrmSupplier.name}</Cell>
+							<Cell>{OrmSupplier?.name}</Cell>
 							<Cell>
 								<Table
 									data={Object.entries(items)}
@@ -141,17 +143,14 @@ export default function POSupplier() {
 function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 	const formData = useWatch({control});
 
-	const {data: dataSupplier = []} = trpc.basic.get.useQuery<any, TSupplier[]>({
-		target: CRUD_ENABLED.SUPPLIER,
-	});
-	const {data: dataItem = []} = trpc.basic.get.useQuery<any, TSupplierItem[]>({
-		target: CRUD_ENABLED.SUPPLIER_ITEM,
-		where: {id_supplier: formData.id_supplier} as Partial<TSupplierItem>,
-	});
+	const {data: dataSupplier} = trpc.supplier.get.useQuery({limit: 9999});
 
 	const {isDelete, isPreview} = modalTypeParser(formData.type);
 
-	const selectedItems = dataItem.reduce((ret, item) => {
+	const selectedSupplier = dataSupplier?.rows.find(
+		e => e.id === formData.id_supplier,
+	);
+	const selectedItems = selectedSupplier?.SupplierItem.reduce((ret, item) => {
 		return {...ret, [item.id]: item};
 	}, {} as MyObject<TSupplierItem>);
 
@@ -166,15 +165,25 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 	useEffect(() => {
 		reset(prev => {
 			if (!formData.tempIdItem) return prev;
+
 			return {
 				...prev,
 				tempIdItem: "",
-				items: {...prev.items, [formData.tempIdItem]: {qty: 0, unit: ""}},
+				items: {
+					...prev.items,
+					[formData.tempIdItem]: {harga: 0, qty: 0, unit: "pcs"},
+				},
 			};
 		});
 	}, [formData.tempIdItem]);
 
 	if (isDelete) return <Button type="submit">Delete</Button>;
+
+	const dataTempIdItem = selectMapper(
+		selectedSupplier?.SupplierItem ?? [],
+		"id",
+		"code_item",
+	)?.filter(data => !Object.keys(formData.items ?? {}).includes(data.value));
 
 	return (
 		<>
@@ -183,19 +192,35 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 					className="flex-1"
 					control={control}
 					fieldName="id_supplier"
-					data={selectMapper(dataSupplier, "id", "name")}
+					data={selectMapper(dataSupplier?.rows ?? [], "id", "name")}
 				/>
 				<Select
 					control={control}
 					fieldName="tempIdItem"
 					key={formData.tempIdItem}
+					data={dataTempIdItem}
 					className={classNames("flex-1", {
-						hidden: !formData.id_supplier || isPreview,
+						hidden:
+							!formData.id_supplier || isPreview || dataTempIdItem.length <= 0,
 					})}
-					data={selectMapper(dataItem, "id", "code_item").filter(
-						data => !Object.keys(formData.items ?? {}).includes(data.value),
-					)}
 				/>
+				<Input
+					className="flex-1"
+					control={control}
+					fieldName="tgl_po"
+					type="date"
+					placeholder="Tanggal PO"
+					label="Tanggal"
+				/>
+				<Input
+					className="flex-1"
+					control={control}
+					fieldName="tgl_req_send"
+					type="date"
+					placeholder="Tanggal Permintaan Pengiriman"
+					label="Tanggal"
+				/>
+				<Input type="checkbox" control={control} fieldName="ppn" label="PPN" />
 			</div>
 
 			<Table
@@ -205,12 +230,19 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 					hidden: Object.keys(formData.items ?? {}).length <= 0,
 				})}
 				renderItem={({item: [id_item, item], Cell}) => {
-					const selectedItem = selectedItems[id_item];
+					const selectedItem = selectedItems?.[id_item];
 
 					return (
 						<>
 							<Cell>{selectedItem?.name_item}</Cell>
-							<Cell>{selectedItem?.harga}</Cell>
+							<Cell>
+								<Input
+									type="decimal"
+									fieldName={`items.${id_item}.harga`}
+									className="flex-1"
+									control={control}
+								/>
+							</Cell>
 							<Cell className="flex gap-2">
 								<Input
 									type="decimal"
@@ -224,7 +256,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 									data={selectUnitData}
 								/>
 							</Cell>
-							<Cell>{(selectedItem?.harga ?? 0) * (item?.qty ?? 0)}</Cell>
+							<Cell>{(item?.harga ?? 0) * (item?.qty ?? 0)}</Cell>
 							<Cell>
 								<Button onClick={() => removeItem(id_item)} icon="faTrash" />
 							</Cell>

@@ -435,14 +435,30 @@ export const tSupplierItemUpsert = z.object({
 
 export type TSupplierPO = z.infer<typeof tSupplierPO>;
 export const tSupplierPO = zId.extend({
+	ppn: z.boolean().optional(),
+	tgl_po: z.string(),
+	tgl_req_send: z.string(),
+	keterangan: z.string().nullish(),
+	ppn_percentage: z.number().min(0).max(100).optional(),
+});
+
+export type TSupplierPOItem = z.infer<typeof tSupplierPOItem>;
+export const tSupplierPOItem = zId.extend({
+	id_po: z.string(),
+	id_supplier_item: z.string(),
+	harga: zDecimal,
+	qty: zDecimal,
+	unit: tItemUnit,
+});
+
+export type TSupplierPOUpsert = z.infer<typeof tSupplierPOUpsert>;
+export const tSupplierPOUpsert = zId.extend({
+	...tSupplierPO.shape,
 	id_supplier: z.string(),
-	/** Key of items is ID Item from tSupplierItem */
 	items: z.record(
-		z.string(),
-		z.object({
-			qty: zDecimal,
-			unit: tItemUnit.or(z.literal("")).optional(), // z.string(),
-		}),
+		tSupplierPOItem
+			.omit({id_supplier_item: true, id: true})
+			.partial({id_po: true}),
 	),
 });
 

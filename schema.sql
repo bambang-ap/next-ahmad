@@ -146,6 +146,69 @@ CREATE TABLE public.instruksi_kanban (
 ALTER TABLE public.instruksi_kanban OWNER TO postgres;
 
 --
+-- Name: inv_supplier; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.inv_supplier (
+    id character varying(47) NOT NULL,
+    name character varying(100) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone,
+    up character varying(100),
+    alamat character varying(255),
+    phone character varying(20),
+    npwp character varying(20)
+);
+
+
+ALTER TABLE public.inv_supplier OWNER TO postgres;
+
+--
+-- Name: inv_supplier_item; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.inv_supplier_item (
+    id character varying(47) NOT NULL,
+    code_item character varying(100) NOT NULL,
+    name_item character varying(100) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.inv_supplier_item OWNER TO postgres;
+
+--
+-- Name: inv_supplier_item_relation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.inv_supplier_item_relation (
+    id character varying(47) NOT NULL,
+    item_id character varying(47) NOT NULL,
+    supplier_id character varying(47) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.inv_supplier_item_relation OWNER TO postgres;
+
+--
+-- Name: inv_supplier_po; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.inv_supplier_po (
+    id character varying(47) NOT NULL,
+    id_supplier character varying(47) NOT NULL,
+    items json DEFAULT '{}'::json,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.inv_supplier_po OWNER TO postgres;
+
+--
 -- Name: kanban; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -438,69 +501,6 @@ CREATE TABLE public.scan (
 ALTER TABLE public.scan OWNER TO postgres;
 
 --
--- Name: supplier; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.supplier (
-    id character varying(47) NOT NULL,
-    name character varying(100) NOT NULL,
-    "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone,
-    up character varying(100),
-    alamat character varying(255),
-    phone character varying(20),
-    npwp character varying(20)
-);
-
-
-ALTER TABLE public.supplier OWNER TO postgres;
-
---
--- Name: supplier_item; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.supplier_item (
-    id character varying(47) NOT NULL,
-    code_item character varying(100) NOT NULL,
-    name_item character varying(100) NOT NULL,
-    "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
-);
-
-
-ALTER TABLE public.supplier_item OWNER TO postgres;
-
---
--- Name: supplier_item_relation; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.supplier_item_relation (
-    id character varying(47) NOT NULL,
-    item_id character varying(47) NOT NULL,
-    supplier_id character varying(47) NOT NULL,
-    "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
-);
-
-
-ALTER TABLE public.supplier_item_relation OWNER TO postgres;
-
---
--- Name: supplier_po; Type: TABLE; Schema: public; Owner: postgres
---
-
-CREATE TABLE public.supplier_po (
-    id character varying(47) NOT NULL,
-    id_supplier character varying(47) NOT NULL,
-    items json DEFAULT '{}'::json,
-    "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
-);
-
-
-ALTER TABLE public.supplier_po OWNER TO postgres;
-
---
 -- Name: user_login; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -733,34 +733,34 @@ ALTER TABLE ONLY public.customer_sppb_out
 
 
 --
--- Name: supplier_item supplier_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inv_supplier_item supplier_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.supplier_item
+ALTER TABLE ONLY public.inv_supplier_item
     ADD CONSTRAINT supplier_item_pkey PRIMARY KEY (id);
 
 
 --
--- Name: supplier_item_relation supplier_item_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inv_supplier_item_relation supplier_item_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.supplier_item_relation
+ALTER TABLE ONLY public.inv_supplier_item_relation
     ADD CONSTRAINT supplier_item_relation_pkey PRIMARY KEY (id);
 
 
 --
--- Name: supplier supplier_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inv_supplier supplier_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.supplier
+ALTER TABLE ONLY public.inv_supplier
     ADD CONSTRAINT supplier_pkey PRIMARY KEY (id);
 
 
 --
--- Name: supplier_po supplier_po_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inv_supplier_po supplier_po_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.supplier_po
+ALTER TABLE ONLY public.inv_supplier_po
     ADD CONSTRAINT supplier_po_pkey PRIMARY KEY (id);
 
 
@@ -800,6 +800,22 @@ ALTER TABLE ONLY public.hardness
 
 ALTER TABLE ONLY public.scan
     ADD CONSTRAINT id_kanban FOREIGN KEY (id_kanban) REFERENCES public.kanban(id);
+
+
+--
+-- Name: inv_supplier_po id_supplier; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.inv_supplier_po
+    ADD CONSTRAINT id_supplier FOREIGN KEY (id_supplier) REFERENCES public.inv_supplier(id);
+
+
+--
+-- Name: inv_supplier_item_relation item_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.inv_supplier_item_relation
+    ADD CONSTRAINT item_id FOREIGN KEY (item_id) REFERENCES public.inv_supplier_item(id);
 
 
 --
@@ -880,6 +896,14 @@ ALTER TABLE ONLY public.po_item_sppb_in
 
 ALTER TABLE ONLY public.po_itemm
     ADD CONSTRAINT po_itemm_id_po_fkey FOREIGN KEY (id_po) REFERENCES public.po(id);
+
+
+--
+-- Name: inv_supplier_item_relation supplier_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.inv_supplier_item_relation
+    ADD CONSTRAINT supplier_id FOREIGN KEY (supplier_id) REFERENCES public.inv_supplier(id);
 
 
 --

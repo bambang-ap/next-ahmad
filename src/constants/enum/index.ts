@@ -11,10 +11,11 @@ export enum PO_STATUS {
 }
 
 export enum TABLES {
-	SUPPLIER = "supplier",
-	SUPPLIER_ITEM = "supplier_item",
-	SUPPLIER_ITEM_RELATION = "supplier_item_relation",
-	SUPPLIER_PO = "supplier_po",
+	SUPPLIER = "inv_supplier",
+	SUPPLIER_ITEM = "inv_supplier_item",
+	SUPPLIER_ITEM_RELATION = "inv_supplier_item_relation",
+	SUPPLIER_PO = "inv_supplier_po",
+	SUPPLIER_PO_ITEM = "inv_supplier_po_item",
 	CUSTOMER = "customer",
 	CUSTOMER_PO = "po",
 	CUSTOMER_PO_ITEM = "po_itemm",

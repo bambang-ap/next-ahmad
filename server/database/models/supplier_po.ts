@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {BOOLEAN, DataTypes, Model, NUMBER, Sequelize, STRING} from "sequelize";
 
 import {TSupplierPO} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
@@ -10,8 +10,11 @@ export default function initOrmSupplierPO(sequelize: Sequelize) {
 	OrmSupplierPO.init(
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
-			id_supplier: {type: DataTypes.STRING},
-			items: {type: DataTypes.JSONB},
+			ppn: BOOLEAN,
+			tgl_po: STRING,
+			tgl_req_send: STRING,
+			keterangan: STRING,
+			ppn_percentage: NUMBER,
 		},
 		{
 			sequelize,

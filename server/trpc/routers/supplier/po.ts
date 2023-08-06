@@ -6,7 +6,7 @@ import {
 	TSupplierItem,
 	TSupplierPO,
 } from "@appTypes/app.type";
-import {tableFormValue, tSupplierPO} from "@appTypes/app.zod";
+import {tableFormValue, tSupplierPOUpsert} from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {OrmSupplier, OrmSupplierItem, OrmSupplierPO} from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
@@ -48,12 +48,15 @@ const supplierPoRouters = router({
 		});
 	}),
 	upsert: procedure
-		.input(tSupplierPO.partial({id: true}))
+		.input(tSupplierPOUpsert.partial({id: true}))
 		.mutation(({ctx, input}) => {
 			return checkCredentialV2(ctx, async () => {
-				const {id, ...body} = input;
+				const {id, id_supplier, items, ...body} = input;
 
-				await OrmSupplierPO.upsert({...body, id: id || generateId("SP_PO")});
+				await OrmSupplierPO.upsert(
+					{...body, id: id || generateId("SP_PO")},
+					{logging: true},
+				);
 
 				return Success;
 			});

@@ -120,3 +120,5 @@ export const queryClientConfig: QueryObserverOptions = {
 	refetchOnWindowFocus: true,
 	refetchInterval: 1000 * 5 * 60,
 };
+
+export const through = {attributes: []};
