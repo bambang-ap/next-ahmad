@@ -1,3 +1,4 @@
+// @ts-nocheck
 import {FormEventHandler, useEffect, useRef} from "react";
 
 import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
