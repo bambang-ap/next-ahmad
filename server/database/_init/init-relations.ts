@@ -1,8 +1,5 @@
-// @ts-nocheck
-
 import {Model, ModelStatic} from "sequelize";
 
-import {TSupItemRelation} from "@appTypes/app.type";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -85,21 +82,74 @@ export function initRelations() {
 	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id_po", "id");
 	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id_supplier_item", "id");
 
-	// OrmSupplierPO.hasMany(OrmSupplierPOItem, {foreignKey: "id_po"});
-	// OrmSupplierPOItem.belongsTo(OrmSupplierPO, {foreignKey: "id"});
-
 	oneToMany(OrmHardnessKategori, OrmHardness, "id", "id_kategori");
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id", "id_kategori");
 	oneToMany(OrmParameterKategori, OrmParameter, "id", "id_kategori");
 
-	OrmSupplier.belongsToMany(OrmSupplierItem, {
-		through: OrmSupItemRelation,
-		as: OrmSupplierItem._alias,
-		foreignKey: "supplier_id" as keyof TSupItemRelation,
+	manyToMany(
+		[OrmSupplier, "id"],
+		[OrmSupplierItem, "id"],
+		[OrmSupItemRelation, ["supplier_id", "item_id"]],
+	);
+}
+
+type OO<T extends {}> = [model: ModelStatic<Model<T>>, foreignKey: ObjKeyof<T>];
+type OG<T extends {}> = [
+	model: ModelStatic<Model<T>>,
+	foreignKey: [throughFKSource: ObjKeyof<T>, throughFKTarget: ObjKeyof<T>],
+];
+function manyToMany<A extends {}, B extends {}, C extends {}>(
+	source: OO<A>,
+	target: OO<B>,
+	through: OG<C>,
+) {
+	const [sourceModel, sourceFK] = source;
+	const [targetModel, targetFK] = target;
+	const [throughModel, [throughFKSource, throughFKTarget]] = through;
+
+	sourceModel.belongsToMany(targetModel, {
+		through: throughModel,
+		// as: targetModel._alias,
+		foreignKey: throughFKSource,
 	});
-	OrmSupplierItem.belongsToMany(OrmSupplier, {
-		through: OrmSupItemRelation,
-		as: OrmSupplier._alias,
-		foreignKey: "item_id" as keyof TSupItemRelation,
+	targetModel.belongsToMany(sourceModel, {
+		through: throughModel,
+		// as: sourceModel._alias,
+		foreignKey: throughFKTarget,
+	});
+	throughModel.belongsTo(sourceModel, {
+		foreignKey: throughFKSource,
+	});
+	sourceModel.belongsTo(throughModel, {
+		foreignKey: sourceFK,
+	});
+	throughModel.belongsTo(targetModel, {
+		foreignKey: throughFKTarget,
+	});
+	OrmSupplierItem.belongsTo(throughModel, {
+		foreignKey: targetFK,
 	});
 }
+
+// OrmSupplier.belongsToMany(OrmSupplierItem, {
+// 	through: OrmSupItemRelation,
+// 	as: OrmSupplierItem._alias,
+// 	foreignKey: "supplier_id" as keyof TSupItemRelation,
+// });
+// OrmSupplierItem.belongsToMany(OrmSupplier, {
+// 	through: OrmSupItemRelation,
+// 	as: OrmSupplier._alias,
+// 	foreignKey: "item_id" as keyof TSupItemRelation,
+// });
+// OrmSupItemRelation.belongsTo(OrmSupplier, {
+// 	foreignKey: "supplier_id" as keyof TSupItemRelation,
+// });
+// OrmSupplier.belongsTo(OrmSupItemRelation, {
+// 	foreignKey: "id" as keyof TSupplier,
+// });
+// OrmSupItemRelation.belongsTo(OrmSupplierItem, {
+// 	foreignKey: "item_id" as keyof TSupItemRelation,
+// });
+// OrmSupplierItem.belongsTo(OrmSupItemRelation, {
+// 	foreignKey: "id" as keyof TSupplier,
+// });

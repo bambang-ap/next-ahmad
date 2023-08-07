@@ -1,4 +1,3 @@
-// @ts-nocheck
 import {FormEventHandler, useEffect, useRef} from "react";
 
 import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
@@ -40,7 +39,7 @@ export default function POSupplier() {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {formValue, hookForm} = useTableFilter();
-	const {data} = trpc.supplier.po.get.useQuery(formValue);
+	const {data, refetch} = trpc.supplier.po.get.useQuery(formValue);
 	const {mutate: mutateUpsert} = trpc.supplier.po.upsert.useMutation();
 	const {mutate: mutateDelete} = trpc.supplier.po.delete.useMutation();
 
@@ -56,14 +55,19 @@ export default function POSupplier() {
 		handleSubmit(({type, ...body}) => {
 			switch (type) {
 				case "delete":
-					return mutateDelete(body.id);
+					return mutateDelete(body.id, {onSuccess});
 				case "add":
 				case "edit":
-					return mutateUpsert(body);
+					return mutateUpsert(body, {onSuccess});
 				default:
 					return;
 			}
 		})();
+
+		function onSuccess() {
+			refetch();
+			modalRef.current?.hide();
+		}
 	};
 
 	function showModal(form: Partial<FormType>) {
@@ -92,33 +96,34 @@ export default function POSupplier() {
 				data={data}
 				form={hookForm}
 				keyExtractor={item => item.id}
-				header={["Nama Supplier", "Items", "Action"]}
+				header={[
+					"Nama Supplier",
+					"Tgl PO",
+					"Tgl Request Kirim",
+					"PPN",
+					"Keterangan",
+					"Action",
+				]}
 				topComponent={
 					<Button onClick={() => showModal({type: "add"})}>Add</Button>
 				}
 				renderItem={({Cell, item}) => {
-					const {OrmItem, OrmSupplier, items, id} = item;
+					const {
+						items = {},
+						supplier,
+						id,
+						tgl_po,
+						tgl_req_send,
+						keterangan,
+						ppn,
+					} = item;
 					return (
 						<>
-							<Cell>{OrmSupplier?.name}</Cell>
-							<Cell>
-								<Table
-									data={Object.entries(items)}
-									renderItem={({item: [id_item, dataItem]}) => {
-										const selectedItem = OrmItem[id_item];
-										return (
-											<div className="flex gap-2" key={id_item}>
-												<Cell>{selectedItem?.code_item}</Cell>
-												<Cell>{selectedItem?.name_item}</Cell>
-												<Cell>{selectedItem?.harga}</Cell>
-												<Cell>{dataItem.qty}</Cell>
-												<Cell>{dataItem.unit}</Cell>
-												<Cell>{dataItem.qty * (selectedItem?.harga ?? 0)}</Cell>
-											</div>
-										);
-									}}
-								/>
-							</Cell>
+							<Cell>{supplier?.name}</Cell>
+							<Cell>{tgl_po}</Cell>
+							<Cell>{tgl_req_send}</Cell>
+							<Cell>{ppn ? "Ya" : "Tidak"}</Cell>
+							<Cell>{keterangan}</Cell>
 							<Cell className="flex gap-2">
 								<Button
 									icon="faMagnifyingGlass"
@@ -151,9 +156,12 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 	const selectedSupplier = dataSupplier?.rows.find(
 		e => e.id === formData.id_supplier,
 	);
-	const selectedItems = selectedSupplier?.SupplierItem.reduce((ret, item) => {
-		return {...ret, [item.id]: item};
-	}, {} as MyObject<TSupplierItem>);
+	const selectedItems = selectedSupplier?.OrmSupplierItems.reduce(
+		(ret, item) => {
+			return {...ret, [item.id]: item};
+		},
+		{} as MyObject<TSupplierItem>,
+	);
 
 	function removeItem(id_item: string) {
 		reset(prev => {
@@ -181,7 +189,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 	if (isDelete) return <Button type="submit">Delete</Button>;
 
 	const dataTempIdItem = selectMapper(
-		selectedSupplier?.SupplierItem ?? [],
+		selectedSupplier?.OrmSupplierItems ?? [],
 		"id",
 		"code_item",
 	)?.filter(data => !Object.keys(formData.items ?? {}).includes(data.value));

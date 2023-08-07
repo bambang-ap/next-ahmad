@@ -457,8 +457,8 @@ export const tSupplierPOUpsert = zId.extend({
 	id_supplier: z.string(),
 	items: z.record(
 		tSupplierPOItem
-			.omit({id_supplier_item: true, id: true})
-			.partial({id_po: true}),
+			.omit({id_supplier_item: true})
+			.partial({id_po: true, id: true}),
 	),
 });
 

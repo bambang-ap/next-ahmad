@@ -22,7 +22,7 @@ const supplierItemRouters = router({
 	get: procedure
 		.input(tableFormValue.extend({withSupplier: z.boolean().optional()}))
 		.query(({ctx, input}) => {
-			type UUU = TSupplierItem & {[OrmSupplier._alias]: TSupplier[]};
+			type UUU = TSupplierItem & {OrmSuppliers: TSupplier[]};
 			return checkCredentialV2(ctx, async () => {
 				const {limit, page, search, withSupplier = true} = input;
 				const {count, rows} = await OrmSupplierItem.findAndCountAll({
@@ -30,15 +30,7 @@ const supplierItemRouters = router({
 					order: [["name_item", "desc"]],
 					offset: (page - 1) * limit,
 					where: wherePages("name_item", search),
-					include: withSupplier
-						? [
-								{
-									model: OrmSupplier,
-									as: OrmSupplier._alias,
-									through,
-								},
-						  ]
-						: [],
+					include: withSupplier ? [{model: OrmSupplier, through}] : [],
 				});
 
 				return pagingResult(

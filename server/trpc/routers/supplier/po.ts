@@ -1,22 +1,41 @@
-// @ts-nocheck
-
+import {Model} from "sequelize";
 import {z} from "zod";
 
+import {PagingResult} from "@appTypes/app.type";
 import {
-	PagingResult,
+	tableFormValue,
+	TSupItemRelation,
 	TSupplier,
 	TSupplierItem,
 	TSupplierPO,
-} from "@appTypes/app.type";
-import {tableFormValue, tSupplierPOUpsert} from "@appTypes/app.zod";
+	TSupplierPOItem,
+	TSupplierPOUpsert,
+	tSupplierPOUpsert,
+} from "@appTypes/app.zod";
 import {Success} from "@constants";
-import {OrmSupplier, OrmSupplierItem, OrmSupplierPO} from "@database";
+import {
+	OrmSupItemRelation,
+	OrmSupplier,
+	OrmSupplierItem,
+	OrmSupplierPO,
+	OrmSupplierPOItem,
+} from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 
-type GetPage = TSupplierPO & {
-	OrmSupplier: TSupplier;
-	OrmItem: MyObject<TSupplierItem>;
+type GetPage = TSupplierPOUpsert & {
+	supplier?: TSupplier;
+};
+type OOO = TSupplierPO & {
+	id_supplier?: string;
+	OrmSupplierPOItems: Model<
+		TSupplierPOItem & {
+			OrmSupItemRelation: TSupItemRelation & {
+				OrmSupplier?: TSupplier;
+				OrmSupplierItem?: TSupplierItem;
+			};
+		}
+	>[];
 };
 
 const supplierPoRouters = router({
@@ -27,17 +46,36 @@ const supplierPoRouters = router({
 				limit,
 				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
-				include: [OrmSupplier],
+				include: [
+					{
+						model: OrmSupplierPOItem,
+						include: [
+							{
+								model: OrmSupItemRelation,
+								include: [OrmSupplier, OrmSupplierItem],
+							},
+						],
+					},
+				],
 			});
+
 			const allData = data.map(async e => {
-				const values = e.dataValues;
-				const idItems = Object.keys(values.items);
-				const OrmItem = await OrmSupplierItem.findAll({where: {id: idItems}});
+				let supplier: TSupplier;
+				const {OrmSupplierPOItems, ...values} = e.dataValues as OOO;
 				return {
 					...values,
-					OrmItem: OrmItem.reduce((ret, {dataValues}) => {
-						return {...ret, [dataValues.id]: dataValues};
-					}, {} as GetPage["OrmItem"]),
+					get id_supplier() {
+						return supplier.id;
+					},
+					get supplier() {
+						return supplier;
+					},
+					items: OrmSupplierPOItems.reduce((ret, {dataValues}) => {
+						const {OrmSupItemRelation: SupItem, ...restValues} = dataValues;
+						const {OrmSupplier, OrmSupplierItem} = SupItem;
+						supplier = OrmSupplier!;
+						return {...ret, [OrmSupplierItem?.id!]: restValues};
+					}, {} as GetPage["items"]),
 				};
 			});
 
@@ -53,12 +91,25 @@ const supplierPoRouters = router({
 		.input(tSupplierPOUpsert.partial({id: true}))
 		.mutation(({ctx, input}) => {
 			return checkCredentialV2(ctx, async () => {
-				const {id, id_supplier, items, ...body} = input;
+				const {id, id_supplier: supplier_id, items, ...body} = input;
 
-				await OrmSupplierPO.upsert(
+				const [dataPo] = await OrmSupplierPO.upsert(
 					{...body, id: id || generateId("SP_PO")},
 					{logging: true},
 				);
+
+				Object.entries(items).forEach(async ([item_id, {id_po, ...item}]) => {
+					const relation = await OrmSupItemRelation.findOne({
+						where: {item_id, supplier_id},
+					});
+					await OrmSupplierPOItem.upsert({
+						...item,
+						id: item.id ?? generateId("SP_PI"),
+						id_po: id_po ?? dataPo.dataValues.id,
+						// @ts-ignore
+						id_supplier_item: relation?.dataValues.id,
+					});
+				});
 
 				return Success;
 			});

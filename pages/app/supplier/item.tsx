@@ -97,7 +97,7 @@ export default function ItemSupplier() {
 					)
 				}
 				renderItem={({item, Cell}) => {
-					const {Supplier, ...restItem} = item;
+					const {OrmSuppliers: Supplier, ...restItem} = item;
 					const rest: TSupplierItemUpsert = {
 						...restItem,
 						supplier: Supplier.map(e => e.id),
