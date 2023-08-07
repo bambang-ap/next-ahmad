@@ -76,10 +76,10 @@ export function initRelations() {
 		["createdBy", OrmKanban._aliasCreatedBy],
 		["updatedBy", OrmKanban._aliasUpdatedBy],
 	]);
-	// relation(OrmCustomerPOItem, OrmPOItemSppbIn, "id", "kategori_mesin");
 
-	// oneToMany(OrmSupplier, OrmSupplierItem, "id", "id_supplier");
+	// @ts-ignore
 	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id_po", "id");
+	// @ts-ignore
 	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id_supplier_item", "id");
 
 	oneToMany(OrmHardnessKategori, OrmHardness, "id", "id_kategori");

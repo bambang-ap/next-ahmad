@@ -108,15 +108,7 @@ export default function POSupplier() {
 					<Button onClick={() => showModal({type: "add"})}>Add</Button>
 				}
 				renderItem={({Cell, item}) => {
-					const {
-						items = {},
-						supplier,
-						id,
-						tgl_po,
-						tgl_req_send,
-						keterangan,
-						ppn,
-					} = item;
+					const {supplier, id, tgl_po, tgl_req_send, keterangan, ppn} = item;
 					return (
 						<>
 							<Cell>{supplier?.name}</Cell>
