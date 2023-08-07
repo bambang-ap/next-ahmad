@@ -72,9 +72,9 @@ const supplierPoRouters = router({
 					},
 					items: OrmSupplierPOItems.reduce((ret, {dataValues}) => {
 						const {OrmSupItemRelation: SupItem, ...restValues} = dataValues;
-						const {OrmSupplier, OrmSupplierItem} = SupItem;
-						supplier = OrmSupplier!;
-						return {...ret, [OrmSupplierItem?.id!]: restValues};
+						const {OrmSupplier: Sup, OrmSupplierItem: SUpItem} = SupItem;
+						supplier = Sup!;
+						return {...ret, [SUpItem?.id!]: restValues};
 					}, {} as GetPage["items"]),
 				};
 			});
