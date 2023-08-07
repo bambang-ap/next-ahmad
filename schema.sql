@@ -199,14 +199,35 @@ ALTER TABLE public.inv_supplier_item_relation OWNER TO postgres;
 
 CREATE TABLE public.inv_supplier_po (
     id character varying(47) NOT NULL,
-    id_supplier character varying(47) NOT NULL,
-    items json DEFAULT '{}'::json,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone,
+    ppn boolean DEFAULT false,
+    tgl_po character varying(50),
+    tgl_req_send character varying(50),
+    keterangan character varying(100),
+    ppn_percentage integer DEFAULT 11
+);
+
+
+ALTER TABLE public.inv_supplier_po OWNER TO postgres;
+
+--
+-- Name: inv_supplier_po_item; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.inv_supplier_po_item (
+    id character varying(47) NOT NULL,
+    id_po character varying(47) NOT NULL,
+    id_supplier_item character varying(47) NOT NULL,
+    harga numeric,
+    qty numeric,
+    unit character varying(20),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone
 );
 
 
-ALTER TABLE public.inv_supplier_po OWNER TO postgres;
+ALTER TABLE public.inv_supplier_po_item OWNER TO postgres;
 
 --
 -- Name: kanban; Type: TABLE; Schema: public; Owner: postgres
@@ -597,6 +618,14 @@ ALTER TABLE ONLY public.instruksi_kanban
 
 
 --
+-- Name: inv_supplier_po_item inv_supplier_po_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.inv_supplier_po_item
+    ADD CONSTRAINT inv_supplier_po_item_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: kanban_item kanban_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -803,11 +832,19 @@ ALTER TABLE ONLY public.scan
 
 
 --
--- Name: inv_supplier_po id_supplier; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+-- Name: inv_supplier_po_item inv_supplier_po_item_id_po_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
-ALTER TABLE ONLY public.inv_supplier_po
-    ADD CONSTRAINT id_supplier FOREIGN KEY (id_supplier) REFERENCES public.inv_supplier(id);
+ALTER TABLE ONLY public.inv_supplier_po_item
+    ADD CONSTRAINT inv_supplier_po_item_id_po_fkey FOREIGN KEY (id_po) REFERENCES public.inv_supplier_po(id);
+
+
+--
+-- Name: inv_supplier_po_item inv_supplier_po_item_id_supplier_item_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.inv_supplier_po_item
+    ADD CONSTRAINT inv_supplier_po_item_id_supplier_item_fkey FOREIGN KEY (id_supplier_item) REFERENCES public.inv_supplier_item_relation(id);
 
 
 --

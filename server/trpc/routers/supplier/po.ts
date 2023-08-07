@@ -93,10 +93,10 @@ const supplierPoRouters = router({
 			return checkCredentialV2(ctx, async () => {
 				const {id, id_supplier: supplier_id, items, ...body} = input;
 
-				const [dataPo] = await OrmSupplierPO.upsert(
-					{...body, id: id || generateId("SP_PO")},
-					{logging: true},
-				);
+				const [dataPo] = await OrmSupplierPO.upsert({
+					...body,
+					id: id || generateId("SP_PO"),
+				});
 
 				Object.entries(items).forEach(async ([item_id, {id_po, ...item}]) => {
 					const relation = await OrmSupItemRelation.findOne({

@@ -82,7 +82,7 @@ const supplierRouters = {
 	delete: procedure.input(zId.partial()).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
 			await OrmSupItemRelation.destroy({where: {supplier_id: input.id}});
-			await OrmSupplierItem.destroy({where: input});
+			await OrmSupplier.destroy({where: input});
 			return Success;
 		});
 	}),
