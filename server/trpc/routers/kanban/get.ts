@@ -119,13 +119,13 @@ export const kanbanGet = {
 				order: [["nomor_kanban", "desc"]],
 				offset: (page - 1) * limit,
 				where: wherePages("nomor_kanban", search),
-				include: [
-					{
-						model: OrmCustomerPO,
-						include: [OrmCustomer],
-						attributes: ["id"],
-					},
-				],
+				// include: [
+				// 	{
+				// 		model: OrmCustomerPO,
+				// 		include: [OrmCustomer],
+				// 		attributes: ["id"],
+				// 	},
+				// ],
 			});
 
 			return pagingResult(
