@@ -77,10 +77,8 @@ export function initRelations() {
 		["updatedBy", OrmKanban._aliasUpdatedBy],
 	]);
 
-	// @ts-ignore
-	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id_po", "id");
-	// @ts-ignore
-	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id_supplier_item", "id");
+	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id", "id_po");
+	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id", "id_supplier_item");
 
 	oneToMany(OrmHardnessKategori, OrmHardness, "id", "id_kategori");
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id", "id_kategori");
