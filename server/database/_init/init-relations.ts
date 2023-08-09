@@ -51,7 +51,7 @@ function oneToMany<M extends object, B extends object>(
 		targetForeignKey.forEach(([foreignKey, as]) => {
 			belongsTo(foreignKey as string, as);
 		});
-	} else belongsTo(sourceForeignKey as string, alias);
+	} else belongsTo(targetForeignKey as string, alias);
 }
 
 export function initRelations() {
