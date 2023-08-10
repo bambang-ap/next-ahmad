@@ -118,7 +118,7 @@ const sppbInRouters = router({
 
 				const [{dataValues: createdSppb}] = await OrmCustomerSPPBIn.upsert({
 					...rest,
-					id: id || generateId("SPPBIN"),
+					id: id || generateId("SPPBIN_"),
 				});
 
 				const existingPoItemPromises = (
@@ -141,7 +141,7 @@ const sppbInRouters = router({
 							...item,
 							id_item,
 							id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
-							id: idItem || generateId("SPPBINITM"),
+							id: idItem || generateId("SPPBINITM_"),
 						});
 					});
 				});

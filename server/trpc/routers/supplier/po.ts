@@ -95,7 +95,7 @@ const supplierPoRouters = router({
 
 				const [dataPo] = await OrmSupplierPO.upsert({
 					...body,
-					id: id || generateId("SP_PO"),
+					id: id || generateId("SP_PO_"),
 				});
 
 				Object.entries(items).forEach(async ([item_id, {id_po, ...item}]) => {
@@ -104,7 +104,7 @@ const supplierPoRouters = router({
 					});
 					await OrmSupplierPOItem.upsert({
 						...item,
-						id: item.id ?? generateId("SP_PI"),
+						id: item.id ?? generateId("SP_PI_"),
 						id_po: id_po ?? dataPo.dataValues.id,
 						// @ts-ignore
 						id_supplier_item: relation?.dataValues.id,

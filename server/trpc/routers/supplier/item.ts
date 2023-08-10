@@ -48,7 +48,7 @@ const supplierItemRouters = router({
 			return checkCredentialV2(ctx, async () => {
 				const [item] = await OrmSupplierItem.upsert({
 					...items,
-					id: items.id || generateId("SP_I"),
+					id: items.id || generateId("SP_I_"),
 				});
 
 				const relationToRemove = await OrmSupItemRelation.findAll({
@@ -64,7 +64,7 @@ const supplierItemRouters = router({
 					});
 
 					await OrmSupItemRelation.upsert({
-						id: relation?.dataValues.id ?? generateId("SP_IR"),
+						id: relation?.dataValues.id ?? generateId("SP_IR_"),
 						item_id: item.dataValues.id,
 						supplier_id,
 					});

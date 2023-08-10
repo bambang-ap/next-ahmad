@@ -152,19 +152,19 @@ const customer_poRouters = router({
 				const {po_item, ...body} = input;
 				const {dataValues: createdPo} = await OrmCustomerPO.create({
 					...body,
-					id: generateId("PO"),
+					id: generateId("PO_"),
 				});
 				po_item.forEach(async item => {
 					await OrmCustomerPOItem.create({
 						...item,
-						id: generateId("POI"),
+						id: generateId("POI_"),
 						id_po: createdPo.id,
 					});
 				});
 				// const poItemPromises = po_item?.map(item =>
 				// 	OrmCustomerPOItem.create({
 				// 		...item,
-				// 		id: generateId("POI"),
+				// 		id: generateId("POI_"),
 				// 		id_po: createdPo.id,
 				// 	}),
 				// );
@@ -194,7 +194,7 @@ const customer_poRouters = router({
 
 					return OrmCustomerPOItem.upsert({
 						...item,
-						id: itemId || generateId("POI"),
+						id: itemId || generateId("POI_"),
 						id_po: input.id,
 					});
 				});

@@ -27,7 +27,7 @@ const user_loginRouters = router({
 		const [retValue] = await OrmUserLogin.upsert({
 			id_user,
 			expiredAt,
-			id: hasDataLogin?.dataValues.id || generateId("UL"),
+			id: hasDataLogin?.dataValues.id || generateId("UL_"),
 		});
 
 		return retValue;
