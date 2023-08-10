@@ -1,5 +1,4 @@
 import {Model} from "sequelize";
-import {z} from "zod";
 
 import {PagingResult} from "@appTypes/app.type";
 import {
@@ -11,6 +10,7 @@ import {
 	TSupplierPOItem,
 	TSupplierPOUpsert,
 	tSupplierPOUpsert,
+	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
@@ -65,16 +65,16 @@ const supplierPoRouters = router({
 				return {
 					...values,
 					get id_supplier() {
-						return supplier.id;
+						return supplier?.id;
 					},
 					get supplier() {
 						return supplier;
 					},
-					items: OrmSupplierPOItems.reduce((ret, {dataValues}) => {
-						const {OrmSupItemRelation: SupItem, ...restValues} = dataValues;
-						const {OrmSupplier: Sup, OrmSupplierItem: SUpItem} = SupItem;
+					items: OrmSupplierPOItems?.reduce?.((ret, {dataValues}) => {
+						const {OrmSupItemRelation: Relation, ...restValues} = dataValues;
+						const {OrmSupplier: Sup, OrmSupplierItem: SupItem} = Relation;
 						supplier = Sup!;
-						return {...ret, [SUpItem?.id!]: restValues};
+						return {...ret, [SupItem?.id!]: restValues};
 					}, {} as GetPage["items"]),
 				};
 			});
@@ -114,9 +114,10 @@ const supplierPoRouters = router({
 				return Success;
 			});
 		}),
-	delete: procedure.input(z.string()).mutation(({ctx, input}) => {
+	delete: procedure.input(zId).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
-			await OrmSupplierPO.destroy({where: {id: input}});
+			await OrmSupplierPOItem.destroy({where: {id_po: input.id}});
+			await OrmSupplierPO.destroy({where: {id: input.id}});
 
 			return Success;
 		});

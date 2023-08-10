@@ -55,7 +55,7 @@ export default function POSupplier() {
 		handleSubmit(({type, ...body}) => {
 			switch (type) {
 				case "delete":
-					return mutateDelete(body.id, {onSuccess});
+					return mutateDelete({id: body.id}, {onSuccess});
 				case "add":
 				case "edit":
 					return mutateUpsert(body, {onSuccess});
@@ -95,7 +95,7 @@ export default function POSupplier() {
 			<TableFilter
 				data={data}
 				form={hookForm}
-				keyExtractor={item => item.id}
+				keyExtractor={item => item?.id}
 				header={[
 					"Nama Supplier",
 					"Tgl PO",
@@ -108,7 +108,8 @@ export default function POSupplier() {
 					<Button onClick={() => showModal({type: "add"})}>Add</Button>
 				}
 				renderItem={({Cell, item}) => {
-					const {supplier, id, tgl_po, tgl_req_send, keterangan, ppn} = item;
+					const {supplier, id, tgl_po, tgl_req_send, keterangan, ppn} =
+						item ?? {};
 					return (
 						<>
 							<Cell>{supplier?.name}</Cell>

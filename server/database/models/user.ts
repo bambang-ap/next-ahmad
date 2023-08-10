@@ -11,7 +11,9 @@ import {TUser} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
 import {TABLES} from "@enum";
 
-export class OrmUser extends Model<TUser> {}
+export class OrmUser extends Model<TUser> {
+	static _alias = "dataUser" as const;
+}
 
 export function ormUserAttributes(): [
 	ModelAttributes<OrmUser, Optional<TUser, never>>,

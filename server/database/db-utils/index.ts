@@ -9,6 +9,8 @@ import {
 import {ORM, OrmCustomerSPPBIn, OrmKanban, OrmScan} from "@database";
 import {PO_STATUS} from "@enum";
 
+export * from "./relation";
+
 export function ormDecimalType(fieldName: string) {
 	return {
 		type: DECIMAL,
