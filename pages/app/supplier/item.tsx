@@ -15,6 +15,7 @@ import {
 	TableFilterV2,
 	TableFilterV2Ref,
 } from "@components";
+import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -29,8 +30,10 @@ export default function ItemSupplier() {
 
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<SupplierItemForm>();
-	const {mutate: mutateUpsert} = trpc.supplier.item.upsert.useMutation();
-	const {mutate: mutateDelete} = trpc.supplier.item.delete.useMutation();
+	const {mutate: mutateUpsert} =
+		trpc.supplier.item.upsert.useMutation(defaultErrorMutation);
+	const {mutate: mutateDelete} =
+		trpc.supplier.item.delete.useMutation(defaultErrorMutation);
 
 	const modalForm = watch();
 

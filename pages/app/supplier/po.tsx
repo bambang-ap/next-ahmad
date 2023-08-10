@@ -18,7 +18,7 @@ import {
 	Table,
 	TableFilter,
 } from "@components";
-import {selectUnitData} from "@constants";
+import {defaultErrorMutation, selectUnitData} from "@constants";
 import {getLayout} from "@hoc";
 import {useTableFilter} from "@hooks";
 import {classNames, modalTypeParser} from "@utils";
@@ -40,8 +40,10 @@ export default function POSupplier() {
 
 	const {formValue, hookForm} = useTableFilter();
 	const {data, refetch} = trpc.supplier.po.get.useQuery(formValue);
-	const {mutate: mutateUpsert} = trpc.supplier.po.upsert.useMutation();
-	const {mutate: mutateDelete} = trpc.supplier.po.delete.useMutation();
+	const {mutate: mutateUpsert} =
+		trpc.supplier.po.upsert.useMutation(defaultErrorMutation);
+	const {mutate: mutateDelete} =
+		trpc.supplier.po.delete.useMutation(defaultErrorMutation);
 
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
