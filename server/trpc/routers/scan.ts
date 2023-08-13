@@ -126,7 +126,7 @@ const scanRouters = router({
 
 					const {id, target, ...rest} = input;
 					const statusTarget = `status_${target}` as const;
-					const itemTarget = `item_${target}` as const;
+					// const itemTarget = `item_${target}` as const;
 
 					const dataScan = await routerCaller.scan.get({id, target});
 

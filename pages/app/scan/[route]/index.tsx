@@ -115,7 +115,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 				return;
 			}
 
-			mutateScan(values);
+			return mutateScan(values);
 		})();
 	};
 
