@@ -4,6 +4,7 @@ import {
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
 	OrmDocument,
 	OrmHardness,
@@ -30,6 +31,7 @@ import {
 export function initRelations() {
 	oneToMany(OrmMasterItem, OrmCustomerPOItem, "master_item_id");
 	oneToMany(OrmMasterItem, OrmKanbanItem, "master_item_id");
+	oneToMany(OrmMasterItem, OrmPOItemSppbIn, "master_item_id");
 	oneToMany(OrmKategoriMesin, OrmMasterItem, "kategori_mesin");
 	oneToMany(
 		OrmKategoriMesin,
@@ -44,6 +46,8 @@ export function initRelations() {
 	oneToMany(OrmCustomerPOItem, OrmPOItemSppbIn, "id_item");
 	oneToMany(OrmPOItemSppbIn, OrmKanbanItem, "id_item");
 	oneToMany(OrmDocument, OrmKanban, "doc_id");
+
+	oneToMany(OrmCustomerSPPBIn, OrmPOItemSppbIn, "id_sppb_in");
 
 	oneToMany(OrmUser, OrmKanban, "createdBy", OrmKanban._aliasCreatedBy);
 	oneToMany(OrmUser, OrmKanban, "updatedBy", OrmKanban._aliasUpdatedBy);

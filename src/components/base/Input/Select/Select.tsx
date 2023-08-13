@@ -82,7 +82,7 @@ function SelectComponent<F extends FieldValues>({
 
 	const label = !noLabel && (labelProps || name);
 
-	const isDisabled = formContext?.disabled ?? disabled;
+	const isDisabled = formContext?.disabled || disabled;
 	const selectedValue = data.find(e => e.value === value);
 
 	if (isDisabled) {

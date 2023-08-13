@@ -28,7 +28,7 @@ function SelectComponent<F extends FieldValues>({
 		field: {value, onChange},
 	} = controller;
 
-	const isDisabled = formContext?.disabled ?? disabled;
+	const isDisabled = formContext?.disabled || disabled;
 
 	return (
 		<BtnGroup variant="text" className={className}>

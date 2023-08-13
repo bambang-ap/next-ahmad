@@ -75,7 +75,7 @@ export function InputComponent<F extends FieldValues>(
 		field: {value, onChange, ...field},
 	} = controller;
 
-	const isDisabled = disabled !== undefined ? disabled : formContext?.disabled;
+	const isDisabled = formContext?.disabled || disabled;
 	const label = !noLabel && (labelProps || field.name);
 
 	const errorMessage = fieldState.error?.message && (

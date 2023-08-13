@@ -44,12 +44,17 @@ export function qtyMap<T = ReactNode>(
 		},
 		index: number,
 	) => T,
+	filtered?: boolean,
 ) {
-	return qtyList.map((num, i) => {
+	const result = qtyList.map((num, i) => {
 		const qtyKey = `qty${num}` as const;
 		const unitKey = `unit${num}` as const;
 		return callback({qtyKey, unitKey, num}, i);
 	});
+
+	if (filtered) return result.filter(Boolean);
+
+	return result;
 }
 
 export function scanMapperByStatus(

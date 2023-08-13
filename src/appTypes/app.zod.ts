@@ -252,14 +252,19 @@ export const tUpsertSppbIn = tCustomerSPPBIn.extend({
 	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
 });
 
+export type TCustomerSPPBOutPoItems = z.infer<typeof tCustomerSPPBOutPoItems>;
 export const tCustomerSPPBOutPoItems = z.record(
 	tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
 );
+
+export type TCustomerSPPBOutSppbIn = z.infer<typeof tCustomerSPPBOutSppbIn>;
 export const tCustomerSPPBOutSppbIn = z.object({
 	id_sppb_in: z.string(),
 	items: tCustomerSPPBOutPoItems,
 	// customer_no_lot: z.string(),
 });
+
+export type TCustomerSPPBOutPo = z.infer<typeof tCustomerSPPBOutPo>;
 export const tCustomerSPPBOutPo = z.object({
 	id_po: z.string(),
 	sppb_in: tCustomerSPPBOutSppbIn.array(),

@@ -44,6 +44,11 @@ import {checkCredentialV2, pagingResult} from "@server";
 import {procedure} from "@trpc";
 import {appRouter} from "@trpc/routers";
 
+type KJKD = {
+	dataProcess: DataProcess[];
+	mesin?: TMesin & {OrmKategoriMesin: TKategoriMesin};
+};
+
 export type DataProcess = {
 	process: TInstruksiKanban;
 	hardness: (THardness & {OrmHardnessKategori: THardnessKategori})[];
@@ -167,51 +172,66 @@ export const kanbanGet = {
 			z.object({
 				process: tMasterItem.shape.instruksi.optional(),
 				selectedMesin: z.string().array().optional(),
+				kategoriMesin: z.string().array().optional(),
 			}),
 		)
-		.query(({ctx, input: {process, selectedMesin}}) => {
-			return checkCredentialV2(ctx, async () => {
+		.query(({ctx, input: {process, selectedMesin, kategoriMesin}}) => {
+			async function kjsdfjh(kategori: string) {
+				const pr = process?.[kategori];
+
+				const result = pr?.map(async p => {
+					const {hardness, id_instruksi, material, parameter} = p;
+
+					const prcs = await OrmKanbanInstruksi.findOne({
+						where: {id: id_instruksi},
+					});
+
+					const hdns = await OrmHardness.findAll({
+						where: {id: hardness},
+						include: [OrmHardnessKategori],
+					});
+					const mtrl = await OrmMaterial.findAll({
+						where: {id: material},
+						include: [OrmMaterialKategori],
+					});
+					const prmtr = await OrmParameter.findAll({
+						where: {id: parameter},
+						include: [OrmParameterKategori],
+					});
+
+					return {
+						process: prcs,
+						hardness: hdns,
+						material: mtrl,
+						parameter: prmtr,
+					};
+				});
+
+				// @ts-ignore
+				return (await Promise.all(result)) as DataProcess[];
+			}
+			return checkCredentialV2(ctx, async (): Promise<KJKD[]> => {
+				if (!!kategoriMesin) {
+					const dataProcess = await OrmKategoriMesin.findAll({
+						where: {id: kategoriMesin},
+					});
+					const dd = dataProcess.map(async ({dataValues}) => {
+						const k = await kjsdfjh(dataValues.id);
+						return {dataProcess: k};
+					});
+
+					return Promise.all(dd);
+				}
+
 				const listMesin = await OrmMesin.findAll({
 					where: {id: selectedMesin},
 					include: [{model: OrmKategoriMesin, as: OrmKategoriMesin._alias}],
 				});
 				const jhsdf = listMesin?.map(async mesin => {
-					const pr = process?.[mesin.dataValues?.kategori_mesin];
-
-					const result = pr?.map(async p => {
-						const {hardness, id_instruksi, material, parameter} = p;
-
-						const prcs = await OrmKanbanInstruksi.findOne({
-							where: {id: id_instruksi},
-						});
-
-						const hdns = await OrmHardness.findAll({
-							where: {id: hardness},
-							include: [OrmHardnessKategori],
-						});
-						const mtrl = await OrmMaterial.findAll({
-							where: {id: material},
-							include: [OrmMaterialKategori],
-						});
-						const prmtr = await OrmParameter.findAll({
-							where: {id: parameter},
-							include: [OrmParameterKategori],
-						});
-
-						return {
-							process: prcs,
-							hardness: hdns,
-							material: mtrl,
-							parameter: prmtr,
-						};
-					});
-
+					const dataProcess = await kjsdfjh(mesin.dataValues.kategori_mesin);
 					return {
-						// @ts-ignore
-						dataProcess: (await Promise.all(result)) as DataProcess[],
-						mesin: mesin.dataValues as TMesin & {
-							OrmKategoriMesin: TKategoriMesin;
-						},
+						dataProcess,
+						mesin: mesin.dataValues as KJKD["mesin"],
 					};
 				});
 
