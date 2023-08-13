@@ -3,6 +3,9 @@ import {z} from "zod";
 import {
 	TCustomer,
 	TCustomerPO,
+	TCustomerSPPBIn,
+	TCustomerSPPBOut,
+	TCustomerSPPBOutPoItems,
 	TMasterItem,
 	TPOItem,
 	TPOItemSppbIn,
@@ -39,6 +42,20 @@ const exportSppbRouters = router({
 	out: procedure
 		.input(z.object({ids: z.string().array()}))
 		.query(({input, ctx}) => {
+			type HH = TPOItemSppbIn & {OrmMasterItem: TMasterItem};
+			type OO = {
+				OrmCustomerPO: TCustomerPO;
+				sppbIn: TCustomerSPPBIn & {
+					OrmPOItemSppbIn: MyObject<
+						TCustomerSPPBOutPoItems & {sppbInItem?: HH}
+					>;
+				};
+			};
+			type UU = TCustomerSPPBOut & {
+				OrmCustomer: TCustomer;
+				dataPo: OO[];
+			};
+
 			return checkCredentialV2(ctx, async (): Promise<OutResult[]> => {
 				const routerCaller = appRouter.createCaller(ctx);
 				const result: OutResult[] = [];
@@ -47,9 +64,9 @@ const exportSppbRouters = router({
 					where: {id: input.ids},
 					include: [OrmCustomer],
 				});
-				// let NO = 0;
+				let NO = 0;
 				for (const {dataValues} of data) {
-					// NO++;
+					NO++;
 					const {po: listPo, invoice_no, date} = dataValues;
 
 					for (const po of listPo) {
