@@ -118,7 +118,7 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 				{hardness: [], material: [], parameter: [], process: []},
 			);
 
-			nomorMesin.push(mesin?.mesin?.nomor_mesin);
+			nomorMesin.push(mesin.mesin?.nomor_mesin!);
 			return {
 				nomorMesin,
 				material: [...material, ...e.material],

@@ -11,6 +11,7 @@ import type {
 	TUser,
 } from "./app.zod";
 
+export type {Included} from "@database";
 export type {
 	AppRouter,
 	AppRouterCaller,
@@ -29,6 +30,9 @@ export type {
 	TCustomerPOExtended,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
+	TCustomerSPPBOutPo,
+	TCustomerSPPBOutPoItems,
+	TCustomerSPPBOutSppbIn,
 	TDashboard,
 	TDashboardInput,
 	TDashboardTitle,
