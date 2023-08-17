@@ -34,6 +34,11 @@ type GetPageRows = TCustomerPO & {
 	po_item: (TPOItem & {OrmMasterItem: TMasterItem} & {isClosed?: boolean})[];
 };
 
+type III = Pick<
+	GetPageRows,
+	"id" | "id_customer" | "po_item" | "isClosed" | "nomor_po"
+>;
+
 const customer_poRouters = router({
 	get: procedure
 		.input(
@@ -44,14 +49,17 @@ const customer_poRouters = router({
 					type: z.literal("customer_po"),
 				}),
 		)
-		.query(async ({ctx, input}): Promise<GetPage["rows"]> => {
+		.query(async ({ctx, input}): Promise<III[]> => {
 			const routerCaller = appRouter.createCaller(ctx);
 
 			const data = await routerCaller.customer_po.getPage({
 				...input,
+				limit: 9999,
 			});
 
-			return data.rows;
+			return data.rows.map(({po_item, id_customer, id, isClosed, nomor_po}) => {
+				return {po_item, id_customer, id, isClosed, nomor_po} as III;
+			});
 		}),
 	getPage: procedure
 		.input(
