@@ -21,8 +21,6 @@ import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 import {qtyMap} from "@utils";
 
-import {appRouter} from "..";
-
 type OutResult = Record<
 	// FIXME: add number
 	// | "NO"
@@ -41,7 +39,6 @@ const exportSppbRouters = router({
 		.input(z.object({ids: z.string().array()}))
 		.query(({input, ctx}) => {
 			return checkCredentialV2(ctx, async (): Promise<OutResult[]> => {
-				const routerCaller = appRouter.createCaller(ctx);
 				const result: OutResult[] = [];
 
 				const data = await OrmCustomerSPPBOut.findAll({
