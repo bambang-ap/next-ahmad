@@ -13,7 +13,7 @@ import {
 import {Wrapper as Wrp, WrapperProps} from "@appComponent/Wrapper";
 import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {getLayout} from "@hoc";
-import {useKanban, useLoader, useTableFilter} from "@hooks";
+import {useKanban, useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
@@ -55,6 +55,8 @@ export default function ListScanData() {
 
 	const {isPreview, isSelect, modalTitle} = modalTypeParser(modalType);
 
+	const isQC = route === "qc",
+		isProd = route === "produksi";
 	const idKanbans = Object.entries(formData.idKanbans ?? {}).reduce<string[]>(
 		(ret, [id, val]) => {
 			if (val) ret.push(id);
@@ -67,6 +69,23 @@ export default function ListScanData() {
 		// setIdKanban(id);
 		reset({id, type: "preview"});
 		modalRef.current?.show();
+	}
+
+	const {exportResult} = useNewExportData(
+		() => {
+			return trpc.export.scan.useQuery(
+				{route, idKanbans},
+				{enabled: isProd && idKanbans.length > 0},
+			);
+		},
+		item => item,
+		["produksi"],
+	);
+
+	async function exportList() {
+		exportResult();
+		reset(prev => ({...prev, type: undefined}));
+		setTimeout(() => reset(prev => ({...prev, idKanbans: {}})), 2500);
 	}
 
 	async function printData(idOrAll: true | string) {
@@ -108,7 +127,11 @@ export default function ListScanData() {
 					<RenderPdfData className="w-1/2" data={data} route={route} />
 				)}
 				useQueries={() =>
-					trpc.useQueries(t => idKanbans.map(id => t.kanban.detail(id)))
+					trpc.useQueries(t =>
+						idKanbans.map(id =>
+							t.kanban.detail(id, {enabled: isQC && idKanbans.length > 0}),
+						),
+					)
 				}
 			/>
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
@@ -122,10 +145,11 @@ export default function ListScanData() {
 				keyExtractor={item => item.id}
 				form={hookForm}
 				topComponent={
-					route === "qc" ? (
+					isQC || isProd ? (
 						isSelect ? (
 							<>
-								<Button onClick={() => printData(true)}>Print</Button>
+								{isQC && <Button onClick={() => printData(true)}>Print</Button>}
+								{isProd && <Button onClick={exportList}>Export</Button>}
 								<Button
 									onClick={() =>
 										reset(prev => ({...prev, type: undefined, idKanbans: {}}))
@@ -136,7 +160,7 @@ export default function ListScanData() {
 						) : (
 							<Button
 								onClick={() => reset(prev => ({...prev, type: "select"}))}>
-								Batch Print
+								Select
 							</Button>
 						)
 					) : null

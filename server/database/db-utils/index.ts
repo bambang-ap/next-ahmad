@@ -1,13 +1,16 @@
 import {DECIMAL, Op} from "sequelize";
 
 import {
+	Context,
 	TCustomerSPPBIn,
 	TCustomerSPPBOut,
 	TKanban,
+	TMasterItem,
 	TScan,
 } from "@appTypes/app.type";
 import {ORM, OrmCustomerSPPBIn, OrmKanban, OrmScan} from "@database";
 import {PO_STATUS} from "@enum";
+import {appRouter} from "@trpc/routers";
 
 export * from "./relation";
 
@@ -80,6 +83,26 @@ export async function getCurrentPOStatus(id_po: string): Promise<PO_STATUS> {
 	if (kanban?.dataValues.id) return PO_STATUS.C;
 	if (sppbIn?.dataValues.id) return PO_STATUS.B;
 	return PO_STATUS.A;
+}
+
+export async function processMapper(
+	ctx: Context,
+	{
+		instruksi: process,
+		kategori_mesinn,
+	}: Partial<Pick<TMasterItem, "instruksi" | "kategori_mesinn">>,
+) {
+	const routerCaller = appRouter.createCaller(ctx);
+	const processes = await routerCaller.kanban.mesinProcess({
+		process,
+		kategoriMesin: kategori_mesinn,
+	});
+
+	const instruksi = processes
+		.map(e => e.dataProcess.map(r => r.process.name).join(" | "))
+		.join(" - ");
+
+	return instruksi;
 }
 
 // FIXME: Seharusnya cek apakah datanya sudah closed atau belum

@@ -354,6 +354,13 @@ export const tScanItem = z.object({
 	// item_out_barang: scanItem.array().optional(),
 });
 
+export type TScanDate = z.infer<typeof tScanDate>;
+export const tScanDate = z.object({
+	produksi_updatedAt: z.string().optional(),
+	qc_updatedAt: z.string().optional(),
+	finish_good_updatedAt: z.string().optional(),
+});
+
 export type TScan = z.infer<typeof tScan>;
 export const tScan = zId.extend({
 	...tScanItem.shape,
@@ -365,6 +372,7 @@ export const tScan = zId.extend({
 	status_finish_good: z.boolean().optional(),
 	// status_out_barang: z.boolean().optional(),
 	notes: z.string().optional(),
+	date: tScanDate.optional(),
 });
 
 export type TScanTarget = z.infer<typeof tScanTarget>;

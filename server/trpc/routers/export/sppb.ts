@@ -15,6 +15,7 @@ import {
 	OrmCustomerSPPBOut,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
+	processMapper,
 } from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
@@ -87,14 +88,10 @@ const exportSppbRouters = router({
 									};
 								});
 
-								const processes = await routerCaller.kanban.mesinProcess({
-									process: ddddd.OrmMasterItem.instruksi,
-									kategoriMesin: ddddd.OrmMasterItem.kategori_mesinn,
+								const instruksi = await processMapper(ctx, {
+									instruksi: ddddd.OrmMasterItem.instruksi,
+									kategori_mesinn: ddddd.OrmMasterItem.kategori_mesinn,
 								});
-
-								const instruksi = processes
-									.map(e => e.dataProcess.map(r => r.process.name).join(" | "))
-									.join(" - ");
 
 								result.push({
 									// NO,

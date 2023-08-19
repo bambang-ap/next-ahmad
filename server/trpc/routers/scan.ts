@@ -1,15 +1,17 @@
+import moment from "moment";
 import {literal} from "sequelize";
 
 import {PagingResult, TDataScan, TDocument, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	tScan,
+	TScanDate,
 	tScanItem,
 	TScanTarget,
 	tScanTarget,
 	zId,
 } from "@appTypes/app.zod";
-import {Success} from "@constants";
+import {formatFullView, Success} from "@constants";
 import {OrmDocument, OrmKanban, OrmScan} from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -141,8 +143,14 @@ const scanRouters = router({
 						throw new TRPCError({code: "BAD_REQUEST", message: "Failed"});
 					}
 
+					const prevDate = await OrmScan.findOne({where: {id_kanban: id}});
+					const date: TScanDate = {
+						...prevDate?.dataValues.date,
+						[`${target}_updatedAt`]: moment().format(formatFullView),
+					};
+
 					await OrmScan.update(
-						{[statusTarget]: true, ...rest},
+						{[statusTarget]: true, date, ...rest},
 						{where: {id_kanban: id}},
 					);
 

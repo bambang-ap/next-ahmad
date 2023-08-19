@@ -20,6 +20,7 @@ import {
 	OrmParameter,
 	OrmParameterKategori,
 	OrmPOItemSppbIn,
+	OrmScan,
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
@@ -43,11 +44,15 @@ export function initRelations() {
 	oneToMany(OrmCustomer, OrmCustomerSPPBOut, "id_customer");
 	oneToMany(OrmKendaraan, OrmCustomerSPPBOut, "id_kendaraan");
 	oneToMany(OrmCustomerPO, OrmKanban, "id_po");
+	oneToMany(OrmCustomerPO, OrmCustomerPOItem, "id_po");
 	oneToMany(OrmCustomerPOItem, OrmPOItemSppbIn, "id_item");
 	oneToMany(OrmPOItemSppbIn, OrmKanbanItem, "id_item");
 	oneToMany(OrmDocument, OrmKanban, "doc_id");
+	oneToMany(OrmKanban, OrmScan, "id_kanban");
+	oneToMany(OrmKanban, OrmKanbanItem, "id_kanban");
 
 	oneToMany(OrmCustomerSPPBIn, OrmPOItemSppbIn, "id_sppb_in");
+	oneToMany(OrmCustomerSPPBIn, OrmKanban, "id_sppb_in");
 
 	oneToMany(OrmUser, OrmKanban, "createdBy", OrmKanban._aliasCreatedBy);
 	oneToMany(OrmUser, OrmKanban, "updatedBy", OrmKanban._aliasUpdatedBy);
