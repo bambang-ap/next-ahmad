@@ -25,7 +25,7 @@ import {
 } from "@components";
 import {cuttingLineClassName, defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useExportData, useLoader, useTableFilter} from "@hooks";
+import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {RenderKanbanCard} from "@pageComponent/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {atomDataKanban} from "@recoil/atoms";
@@ -87,26 +87,13 @@ export default function Kanban() {
 		return JSON.stringify(rest);
 	});
 
-	const {exportResult} = useExportData(
+	const {exportResult} = useNewExportData(
 		() =>
-			trpc.useQueries(t => selectedIdKanbans.map(id => t.kanban.detail(id))),
-		({data}) => {
-			const {
-				items,
-				list_mesin,
-				OrmDocument,
-				OrmCustomerPO,
-				dataSppbIn,
-				dataCreatedBy,
-				image,
-				dataScan,
-				dataUpdatedBy,
-				createdBy,
-				...rest
-			} = data ?? {};
-
-			return rest;
-		},
+			trpc.export.kanban.useQuery(
+				{idKanbans: selectedIdKanbans},
+				{enabled: selectedIdKanbans.length > 0},
+			),
+		data => data,
 	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {

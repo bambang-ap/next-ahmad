@@ -233,6 +233,7 @@ export function paperSizeCalculator(
 export function exportData<T extends object>(
 	data?: T[],
 	names?: [filename?: string, sheetName?: string],
+	header?: ObjKeyof<T>[],
 ) {
 	if (!data) return;
 
@@ -240,7 +241,7 @@ export function exportData<T extends object>(
 
 	const workbook = XLSX.utils.book_new();
 	workbook.SheetNames.push(sheetName);
-	workbook.Sheets[sheetName] = XLSX.utils.json_to_sheet(data);
+	workbook.Sheets[sheetName] = XLSX.utils.json_to_sheet(data, {header});
 	XLSX.writeFile(workbook, `${filename}.xlsx`);
 }
 

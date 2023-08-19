@@ -47,9 +47,18 @@ export default function ListScanData() {
 
 	const {control, watch, reset} = useForm<ScanListFormType>();
 
-	const formData = watch();
+	const {exportResult} = useNewExportData(
+		() => {
+			return trpc.export.scan.useQuery(
+				{route, idKanbans},
+				{enabled: isProd && idKanbans.length > 0},
+			);
+		},
+		item => item,
+		["produksi"],
+	);
 
-	// console.log(formData)
+	const formData = watch();
 
 	const {type: modalType} = formData;
 
@@ -70,17 +79,6 @@ export default function ListScanData() {
 		reset({id, type: "preview"});
 		modalRef.current?.show();
 	}
-
-	const {exportResult} = useNewExportData(
-		() => {
-			return trpc.export.scan.useQuery(
-				{route, idKanbans},
-				{enabled: isProd && idKanbans.length > 0},
-			);
-		},
-		item => item,
-		["produksi"],
-	);
 
 	async function exportList() {
 		exportResult();
