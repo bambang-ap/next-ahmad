@@ -78,7 +78,9 @@ export default function SPPBIN() {
 					t.sppb.in.get({type: "sppb_in", where: {id}}),
 				),
 			),
+		// eslint-disable-next-line @typescript-eslint/no-shadow
 		({data}) => {
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
 			const {detailPo, items, ...rest} = data?.[0] ?? {};
 
 			return rest;

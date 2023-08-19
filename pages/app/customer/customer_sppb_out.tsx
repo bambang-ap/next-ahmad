@@ -189,6 +189,7 @@ export default function SPPBOUT() {
 						selectedIdSppbIns.map(id => t.sppb.out.getDetail(id)),
 					)
 				}
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				renderItem={({data}) => {
 					return (
 						<>

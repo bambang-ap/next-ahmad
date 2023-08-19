@@ -106,6 +106,7 @@ export function ScanDetailKanban({
 					e => e.id === id_item,
 				)?.itemDetail;
 
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				const jj = dataPrev?.find(([id]) => id === item.id);
 
 				return (

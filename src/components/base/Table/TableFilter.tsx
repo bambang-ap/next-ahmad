@@ -110,6 +110,7 @@ export function TableFilter<T>({
 			bottomComponent={
 				<div className="px-2 flex justify-center">
 					<Pagination
+						// eslint-disable-next-line @typescript-eslint/no-shadow
 						onChange={(_, page) => resetForm(prev => ({...prev, page}))}
 						count={Number(formValue?.pageTotal ?? 1)}
 					/>
