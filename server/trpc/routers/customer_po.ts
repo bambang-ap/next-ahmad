@@ -27,7 +27,7 @@ import {procedure, router} from "@trpc";
 import {appRouter} from ".";
 
 type GetPage = PagingResult<GetPageRows>;
-type GetPageRows = TCustomerPO & {
+export type GetPageRows = TCustomerPO & {
 	status: PO_STATUS;
 	OrmCustomer?: TCustomer;
 	isClosed?: boolean;
@@ -63,10 +63,10 @@ const customer_poRouters = router({
 		}),
 	getPage: procedure
 		.input(
-			tableFormValue
-				.partial()
-				.extend({type: z.literal("customer_po")})
-				.and(tCustomerPO.pick({id: true}).partial()),
+			tableFormValue.partial().extend({
+				type: z.literal("customer_po").optional(),
+				id: z.string().array().or(z.string()).optional(),
+			}),
 		)
 		.query(async ({ctx: {req, res}, input}) => {
 			const {id: idPo, limit = defaultLimit, page = 1, search} = input;

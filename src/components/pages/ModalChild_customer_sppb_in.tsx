@@ -36,9 +36,10 @@ export function SppbInModalChild({
 	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
-	const {data: listPo = []} = trpc.customer_po.get.useQuery({
-		type: "customer_po",
-	});
+
+	const {data: listPo = []} = trpc.sppb.in.po.get.useQuery();
+
+	console.log(listPo.map(({isClosed, nomor_po}) => ({isClosed, nomor_po})));
 
 	const isEdit = modalType === "edit";
 	const isPreview = modalType === "preview";

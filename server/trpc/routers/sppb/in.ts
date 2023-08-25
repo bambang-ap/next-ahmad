@@ -28,6 +28,8 @@ import {procedure, router} from "@trpc";
 
 import {appRouter} from "..";
 
+import {GetPageRows} from "../customer_po";
+
 type GetPage = PagingResult<SppbInRows>;
 export type SppbInRows = TCustomerSPPBIn & {
 	detailPo?: TCustomerPO;
@@ -37,6 +39,48 @@ export type SppbInRows = TCustomerSPPBIn & {
 };
 
 const sppbInRouters = router({
+	po: router({
+		get: procedure.query(({ctx}) => {
+			type II = TCustomerPO & {
+				OrmCustomerPOItems: (TPOItem & {
+					OrmMasterItem: TMasterItem;
+					OrmPOItemSppbIns: TPOItemSppbIn[];
+				})[];
+			};
+			return checkCredentialV2(ctx, async (): Promise<GetPageRows[]> => {
+				const routerCaller = appRouter.createCaller(ctx);
+				const listPo = await OrmCustomerPO.findAll({
+					include: [
+						{
+							model: OrmCustomerPOItem,
+							include: [OrmMasterItem, OrmPOItemSppbIn],
+						},
+					],
+				});
+
+				const promisedListPo = listPo.map(({dataValues}) => {
+					const val = dataValues as II;
+
+					const u = val.OrmCustomerPOItems.map(cur => {
+						const result = cur.OrmPOItemSppbIns.reduce(
+							(ret, item) => ret + item.qty1,
+							0,
+						);
+						return result === cur.qty1;
+					}, []);
+					return {...val, isClosed: !u.includes(false)};
+				});
+
+				const jash = await Promise.all(promisedListPo);
+
+				const ddd = await routerCaller.customer_po.getPage({limit: 9999});
+
+				return ddd.rows.map(e => {
+					return {...e, isClosed: jash.find(u => u.id === e.id)?.isClosed};
+				});
+			});
+		}),
+	}),
 	get: procedure
 		.input(
 			z.object({
