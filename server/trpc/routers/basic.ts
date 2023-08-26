@@ -2,9 +2,28 @@ import {Op} from "sequelize";
 import {z} from "zod";
 
 import {tableFormValue, uModalType} from "@appTypes/app.zod";
-import {wherePages} from "@database";
-import {eOpKeys, Z_CRUD_ENABLED} from "@enum";
-import {generateId, MAPPING_CRUD_ORM, pagingResult} from "@server";
+import {
+	OrmCustomer,
+	OrmCustomerSPPBIn,
+	OrmCustomerSPPBOut,
+	OrmDocument,
+	OrmHardness,
+	OrmHardnessKategori,
+	OrmKanbanInstruksi,
+	OrmKategoriMesin,
+	OrmKendaraan,
+	OrmMasterItem,
+	OrmMaterial,
+	OrmMaterialKategori,
+	OrmMesin,
+	OrmParameter,
+	OrmParameterKategori,
+	OrmRole,
+	OrmUser,
+	wherePages,
+} from "@database";
+import {CRUD_ENABLED, eOpKeys, TABLES, Z_CRUD_ENABLED} from "@enum";
+import {generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {TRPCError} from "@trpc/server";
 
@@ -19,6 +38,29 @@ type BasicWherer = z.infer<typeof basicWherer>;
 const basicWherer = z.record(
 	basicUnion.or(z.record(eOpKeys, basicUnion)).optional(),
 );
+
+function getMappingCrud() {
+	return {
+		[CRUD_ENABLED.CUSTOMER]: OrmCustomer,
+		[TABLES.CUSTOMER_SPPB_IN]: OrmCustomerSPPBIn,
+		[TABLES.CUSTOMER_SPPB_OUT]: OrmCustomerSPPBOut,
+		[CRUD_ENABLED.MESIN]: OrmMesin,
+		[CRUD_ENABLED.MESIN_KATEGORI]: OrmKategoriMesin,
+		[CRUD_ENABLED.KENDARAAN]: OrmKendaraan,
+		[CRUD_ENABLED.ROLE]: OrmRole,
+		[CRUD_ENABLED.USER]: OrmUser,
+		[CRUD_ENABLED.INSTRUKSI_KANBAN]: OrmKanbanInstruksi,
+		[CRUD_ENABLED.MATERIAL]: OrmMaterial,
+		[CRUD_ENABLED.MATERIAL_KATEGORI]: OrmMaterialKategori,
+		[CRUD_ENABLED.HARDNESS]: OrmHardness,
+		[CRUD_ENABLED.HARDNESS_KATEGORI]: OrmHardnessKategori,
+		[CRUD_ENABLED.PARAMETER]: OrmParameter,
+		[CRUD_ENABLED.PARAMETER_KATEGORI]: OrmParameterKategori,
+		[CRUD_ENABLED.DOCUMENT]: OrmDocument,
+		[CRUD_ENABLED.ITEM]: OrmMasterItem,
+	};
+}
+
 export const basicWhere = basicWherer.or(z.string()).transform(obj => {
 	try {
 		if (typeof obj === "string") return JSON.parse(obj);
@@ -52,6 +94,7 @@ const basicRouters = router({
 			}),
 		)
 		.query(async ({input}) => {
+			const MAPPING_CRUD_ORM = getMappingCrud();
 			const {target, where, limit, page, search, searchKey} = input;
 
 			if (!target) throw new TRPCError({code: "BAD_REQUEST"});
@@ -79,6 +122,7 @@ const basicRouters = router({
 			}),
 		)
 		.query(async ({input: {target, where}}) => {
+			const MAPPING_CRUD_ORM = getMappingCrud();
 			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
 			const ormResult = await orm.findAll({where, order: [["id", "asc"]]});
@@ -97,6 +141,7 @@ const basicRouters = router({
 			const {body, target, type} = input;
 			const {id, ...rest} = body;
 
+			const MAPPING_CRUD_ORM = getMappingCrud();
 			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
 
