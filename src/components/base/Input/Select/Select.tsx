@@ -1,6 +1,6 @@
 import {useContext} from "react";
 
-import {Autocomplete, TextField} from "@mui/material";
+import {Autocomplete, Box, TextField} from "@mui/material";
 import {FieldPath, FieldValues} from "react-hook-form";
 
 import {defaultTextFieldProps} from "@constants";
@@ -13,6 +13,7 @@ import {classNames} from "@utils";
 import {InputComponent} from "..";
 
 import {FormContext} from "../../Form";
+import {Icon} from "../../Icon";
 
 export type SelectPropsData<T extends string = string> = {
 	label?: string;
@@ -111,6 +112,23 @@ function SelectComponent<F extends FieldValues>({
 				getOptionLabel={({value: optionValue, label: optionLabel}) =>
 					optionLabel || optionValue
 				}
+				renderOption={(props, option) => {
+					const isSelected = selectedValue?.value === option.value;
+
+					return (
+						<Box component="li" {...props} className="m-0">
+							<div
+								className={classNames(
+									"w-full p-4",
+									"flex items-center justify-between",
+									{["bg-green-700 text-white"]: isSelected},
+								)}>
+								{option.label || option.value}
+								{isSelected && <Icon className="text-white" name="faCheck" />}
+							</div>
+						</Box>
+					);
+				}}
 				renderInput={params => (
 					<TextField
 						{...params}

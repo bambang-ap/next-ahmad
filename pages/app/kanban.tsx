@@ -147,6 +147,7 @@ export default function Kanban() {
 		loader?.show?.();
 		if (typeof idOrAll === "string") {
 			reset(prev => ({...prev, idKanbans: {[idOrAll]: true}}));
+			await sleep(500);
 			return printData(true, [idOrAll]);
 		} else {
 			if (kanbanIds.length <= 0) {
