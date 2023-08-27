@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, JSONB, Model, Sequelize} from "sequelize";
 
 import {TScan} from "@appTypes/app.type";
 import {defaultExcludeColumn, defaultOrderBy} from "@constants";
@@ -22,6 +22,7 @@ export default function initOrmScan(sequelize: Sequelize) {
 			item_produksi: DataTypes.JSON,
 			item_qc: DataTypes.JSON,
 			notes: DataTypes.TEXT,
+			date: JSONB,
 		},
 		{
 			sequelize,

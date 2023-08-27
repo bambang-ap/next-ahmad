@@ -11,7 +11,7 @@ import {
 	tScanTarget,
 	zId,
 } from "@appTypes/app.zod";
-import {formatFullView, Success} from "@constants";
+import {Success} from "@constants";
 import {OrmDocument, OrmKanban, OrmScan} from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -143,15 +143,15 @@ const scanRouters = router({
 						throw new TRPCError({code: "BAD_REQUEST", message: "Failed"});
 					}
 
-					const prevDate = await OrmScan.findOne({where: {id_kanban: id}});
+					const prevDate = await OrmScan.findOne({where: {id: dataScan.id}});
 					const date: TScanDate = {
 						...prevDate?.dataValues.date,
-						[`${target}_updatedAt`]: moment().format(formatFullView),
+						[`${target}_updatedAt`]: moment(),
 					};
 
 					await OrmScan.update(
 						{[statusTarget]: true, date, ...rest},
-						{where: {id_kanban: id}},
+						{where: {id: dataScan.id}},
 					);
 
 					// FIXME: Not running well
