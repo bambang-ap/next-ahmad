@@ -219,6 +219,7 @@ export default function Kanban() {
 						/>
 					),
 					"Tanggal",
+					"Nomor PO",
 					"Nomor Kanban",
 					"Customer",
 					"Keterangan",
@@ -248,8 +249,6 @@ export default function Kanban() {
 					)
 				}
 				renderItem={({Cell, item}) => {
-					// eslint-disable-next-line @typescript-eslint/no-unused-vars
-					const {...rest} = item;
 					return (
 						<>
 							{isSelect && (
@@ -260,6 +259,7 @@ export default function Kanban() {
 								/>
 							)}
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
+							<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.OrmCustomerPO?.OrmCustomer?.name}</Cell>
 							<Cell>{item.keterangan}</Cell>
@@ -269,10 +269,10 @@ export default function Kanban() {
 									<Button icon="faPrint" onClick={() => printData(item.id)} />
 									<Button
 										icon="faMagnifyingGlass"
-										onClick={() => showModal("preview", rest)}
+										onClick={() => showModal("preview", item)}
 									/>
 									<Button
-										onClick={() => showModal("edit", rest)}
+										onClick={() => showModal("edit", item)}
 										icon="faEdit"
 									/>
 									<Button

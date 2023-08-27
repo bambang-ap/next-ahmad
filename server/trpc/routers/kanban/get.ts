@@ -16,9 +16,13 @@ import {
 	TMesin,
 	TParameter,
 	TParameterKategori,
-	ZId,
 } from "@appTypes/app.type";
-import {tableFormValue, tKanban, tMasterItem} from "@appTypes/app.zod";
+import {
+	tableFormValue,
+	TCustomerPO,
+	tKanban,
+	tMasterItem,
+} from "@appTypes/app.zod";
 import {ItemDetail} from "@appTypes/props.type";
 import {
 	OrmCustomer,
@@ -115,7 +119,9 @@ export const kanbanGet = {
 		});
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
-		type UUU = TKanban & {OrmCustomerPO: ZId & {OrmCustomer: TCustomer}};
+		type UUU = TKanban & {
+			OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
+		};
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<UUU>> => {
 			const {limit, page, search} = input;
 
@@ -128,7 +134,7 @@ export const kanbanGet = {
 					{
 						model: OrmCustomerPO,
 						include: [OrmCustomer],
-						attributes: ["id"],
+						attributes: ["id", "nomor_po"] as (keyof TCustomerPO)[],
 					},
 				],
 			});
