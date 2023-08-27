@@ -53,6 +53,7 @@ export function initRelations() {
 
 	oneToMany(OrmCustomerSPPBIn, OrmPOItemSppbIn, "id_sppb_in");
 	oneToMany(OrmCustomerSPPBIn, OrmKanban, "id_sppb_in");
+	oneToMany(OrmCustomerPO, OrmCustomerSPPBIn, "id_po");
 
 	oneToMany(OrmUser, OrmKanban, "createdBy", OrmKanban._aliasCreatedBy);
 	oneToMany(OrmUser, OrmKanban, "updatedBy", OrmKanban._aliasUpdatedBy);

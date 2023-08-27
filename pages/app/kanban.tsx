@@ -13,6 +13,7 @@ import {
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
+	TKanban,
 	TKanbanUpsert,
 } from "@appTypes/app.zod";
 import {
@@ -222,6 +223,7 @@ export default function Kanban() {
 					"Nomor PO",
 					"Nomor Kanban",
 					"Customer",
+					"Mesin",
 					"Keterangan",
 					"Di cetak",
 					!isSelect && "Action",
@@ -262,6 +264,9 @@ export default function Kanban() {
 							<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
 							<Cell>{item.OrmCustomerPO?.OrmCustomer?.name}</Cell>
+							<Cell>
+								<RenderNameMesin list_mesin={item.list_mesin} />
+							</Cell>
 							<Cell>{item.keterangan}</Cell>
 							<Cell className="flex justify-center">{item.printed}</Cell>
 							{!isSelect && (
@@ -295,4 +300,10 @@ export default function Kanban() {
 			</Modal>
 		</>
 	);
+}
+
+function RenderNameMesin(kanban: Pick<TKanban, "list_mesin">) {
+	const {data} = trpc.kanban.nameMesin.useQuery(kanban);
+
+	return <>{data?.map(e => e.dataKMesin.name).join(" | ")}</>;
 }

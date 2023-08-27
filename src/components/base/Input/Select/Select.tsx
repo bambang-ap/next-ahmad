@@ -119,12 +119,13 @@ function SelectComponent<F extends FieldValues>({
 						<Box component="li" {...props} className="m-0">
 							<div
 								className={classNames(
-									"w-full p-4",
+									"w-full p-4 cursor-pointer",
 									"flex items-center justify-between",
+									"hover:bg-gray-300 hover:text-white",
 									{["bg-green-700 text-white"]: isSelected},
 								)}>
 								{option.label || option.value}
-								{isSelected && <Icon className="text-white" name="faCheck" />}
+								{isSelected && <Icon name="faCheck" className="text-white" />}
 							</div>
 						</Box>
 					);

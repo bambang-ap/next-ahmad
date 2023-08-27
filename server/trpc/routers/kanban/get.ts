@@ -67,6 +67,23 @@ export const kanbanGet = {
 			return mesins.map(e => e.dataValues);
 		});
 	}),
+	nameMesin: procedure
+		.input(tKanban.pick({list_mesin: true}))
+		.query(({ctx, input}) => {
+			type OO = TMesin & {[OrmKategoriMesin._alias]: TKategoriMesin};
+			return checkCredentialV2(ctx, async () => {
+				const id = new Set(
+					Object.values(input.list_mesin).reduce((ret, cur) => {
+						return [...ret, ...cur];
+					}, [] as string[]),
+				);
+				const listMesin = await OrmMesin.findAll({
+					where: {id: [...id.values()]},
+					include: [{model: OrmKategoriMesin, as: OrmKategoriMesin._alias}],
+				});
+				return listMesin.map(({dataValues}) => dataValues as OO);
+			});
+		}),
 	itemDetail: procedure
 		.input(z.string().or(z.string().array()))
 		.query(({ctx, input}) => {
