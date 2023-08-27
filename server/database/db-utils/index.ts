@@ -1,4 +1,5 @@
-import {DECIMAL, Op} from "sequelize";
+import {Route} from "pages/app/scan/[route]";
+import {DECIMAL, Op, Order} from "sequelize";
 
 import {
 	Context,
@@ -103,6 +104,10 @@ export async function processMapper(
 		.join(" - ");
 
 	return instruksi;
+}
+
+export function OrmScanOrder(target: Route["route"]): Order {
+	return [[`date.${target}_updatedAt`, "DESC NULLS LAST"]];
 }
 
 // FIXME: Seharusnya cek apakah datanya sudah closed atau belum

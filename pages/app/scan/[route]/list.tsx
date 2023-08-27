@@ -122,7 +122,7 @@ export default function ListScanData() {
 				tagId={`${route}-generated`}
 				// eslint-disable-next-line @typescript-eslint/no-shadow
 				renderItem={({data}) => (
-					<RenderPdfData className="w-1/2" data={data} route={route} />
+					<RenderPdfData className="w-1/2" data={data!} route={route} />
 				)}
 				useQueries={() =>
 					trpc.useQueries(t =>
@@ -186,6 +186,7 @@ export default function ListScanData() {
 							{...item}
 							control={control}
 							key={item.item.id_kanban}
+							route={route}
 							printOne={id => printData(id)}>
 							<Button
 								icon="faMagnifyingGlass"

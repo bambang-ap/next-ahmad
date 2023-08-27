@@ -1,5 +1,6 @@
 import {PropsWithChildren} from "react";
 
+import {Route} from "pages/app/scan/[route]";
 import {ScanListFormType} from "pages/app/scan/[route]/list";
 import {Control, useWatch} from "react-hook-form";
 
@@ -12,11 +13,13 @@ export function RenderData({
 	Cell,
 	item,
 	children,
+	route,
 	control,
 }: // printOne,
 PropsWithChildren<
 	MMapValue<ScanList> &
-		Cells & {
+		Cells &
+		Route & {
 			control: Control<ScanListFormType>;
 			printOne?: (idKanban: string) => void;
 		}
@@ -42,6 +45,7 @@ PropsWithChildren<
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
 			<Cell>{data?.nomor_kanban}</Cell>
 			<Cell>{data?.keterangan}</Cell>
+			<Cell>{item.date?.[`${route}_updatedAt`]}</Cell>
 			{!isSelect && (
 				<Cell className="flex gap-2">
 					{/* <Button icon="faPrint" onClick={() => printOne?.(item.id_kanban)} /> */}

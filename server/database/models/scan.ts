@@ -1,7 +1,7 @@
 import {DataTypes, JSONB, Model, Sequelize} from "sequelize";
 
 import {TScan} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {defaultExcludeColumn} from "@constants";
 import {TABLES} from "@enum";
 
 export class OrmScan extends Model<TScan> {}
@@ -28,7 +28,6 @@ export default function initOrmScan(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.SCAN,
 			defaultScope: {
-				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

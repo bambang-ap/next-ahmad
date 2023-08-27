@@ -12,7 +12,12 @@ import {
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
-import {OrmDocument, OrmKanban, OrmScan} from "@database";
+import {
+	OrmDocument,
+	OrmKanban,
+	OrmScan,
+	OrmScanOrder as scanOrder,
+} from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
@@ -56,11 +61,13 @@ const scanRouters = router({
 					attributes: [
 						"id",
 						"id_kanban",
+						"date",
 						[literal("ROW_NUMBER() OVER (ORDER BY id)"), "number"],
 					],
-					order: [["id", "asc"]],
+					order: scanOrder(target),
 					offset: (page - 1) * limit,
 					where: {[`status_${target}`]: true},
+					logging: true,
 				});
 				const allDataScan = data.map(async ({dataValues}) => {
 					const kanban = await OrmKanban.findOne({
