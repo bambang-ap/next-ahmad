@@ -108,9 +108,10 @@ export function InputComponent<F extends FieldValues>(
 	switch (type) {
 		case "date": {
 			return (
-				<div className={classNames("pt-2", className)}>
+				<div className={classNames("pt-2 cursor-pointer", className)}>
 					<TextField
 						{...defaultTextFieldProps}
+						onClick={isDisabled ? undefined : () => modalRef.current?.show()}
 						InputLabelProps={{
 							...defaultTextFieldProps.InputLabelProps,
 							// shrink: type === 'date' ? true : undefined,
@@ -120,13 +121,12 @@ export function InputComponent<F extends FieldValues>(
 						fullWidth
 						label={label}
 						disabled
-						onClick={() => modalRef.current?.show()}
 						sx={{
 							"& .MuiInputBase-input.Mui-disabled": {
 								WebkitTextFillColor: "#000000",
 							},
 							"& .MuiFormLabel-root.Mui-disabled": {
-								WebkitTextFillColor: theme.colors.alpha.black[100],
+								WebkitTextFillColor: theme.colors.alpha.black[50],
 							},
 							"& .MuiInputBase-root.Mui-disabled": {
 								backgroundColor: theme.colors.alpha.black[10],

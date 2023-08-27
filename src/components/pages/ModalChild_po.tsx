@@ -1,3 +1,6 @@
+import {useEffect} from "react";
+
+import moment from "moment";
 import {Control, useController, UseFormReset, useWatch} from "react-hook-form";
 
 import {
@@ -15,7 +18,7 @@ import {
 	Table,
 	TableProps,
 } from "@components";
-import {selectUnitData} from "@constants";
+import {formatDate, selectUnitData} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {trpc} from "@utils/trpc";
 
@@ -33,10 +36,9 @@ export default function PoModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const [modalType, poItem = []] = useWatch({
-		control,
-		name: ["type", "po_item"],
-	});
+	const {type: modalType, po_item: poItem = [], tgl_po} = useWatch({control});
+
+	console.log(useWatch({control}));
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
@@ -83,10 +85,21 @@ export default function PoModalChild({
 		resetForm(({po_item = [], ...prev}) => {
 			return {
 				...prev,
-				po_item: [...po_item, {} as typeof poItem[number]],
+				po_item: [...po_item, {} as typeof po_item[number]],
 			};
 		});
 	}
+
+	useEffect(() => {
+		if (!!tgl_po) {
+			resetForm(prev => {
+				return {
+					...prev,
+					due_date: moment(tgl_po).add(3, "d").format(formatDate),
+				};
+			});
+		}
+	}, [tgl_po]);
 
 	if (modalType === "delete") {
 		return (
@@ -125,10 +138,10 @@ export default function PoModalChild({
 					fieldName="tgl_po"
 				/>
 				<Input
+					disabled
 					className="flex-1"
 					type="date"
 					label="Due Date"
-					disabled={isPreview}
 					control={control}
 					fieldName="due_date"
 				/>
