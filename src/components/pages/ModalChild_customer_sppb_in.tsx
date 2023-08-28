@@ -39,8 +39,6 @@ export function SppbInModalChild({
 
 	const {data: listPo = []} = trpc.sppb.in.po.get.useQuery();
 
-	console.log(listPo.map(({isClosed, nomor_po}) => ({isClosed, nomor_po})));
-
 	const isEdit = modalType === "edit";
 	const isPreview = modalType === "preview";
 	const isDelete = modalType === "delete";

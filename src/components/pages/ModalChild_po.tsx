@@ -38,8 +38,6 @@ export default function PoModalChild({
 }) {
 	const {type: modalType, po_item: poItem = [], tgl_po} = useWatch({control});
 
-	console.log(useWatch({control}));
-
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
