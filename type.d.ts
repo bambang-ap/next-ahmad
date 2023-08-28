@@ -1,3 +1,5 @@
+import {HTMLAttributes} from "react";
+
 type TNextApi = (req: NextApiRequest, res: NextApiResponse) => void;
 
 // declare module 'next' {
@@ -37,8 +39,6 @@ declare namespace NodeJS {
 }
 
 declare module "react-qr-scanner" {
-	import {HTMLAttributes} from "react";
-
 	export type QRResult = {text: string} | null;
 	export type QRReaderProps = {
 		delay?: number;

@@ -16,17 +16,24 @@ import {
 	TMesin,
 	TParameter,
 	TParameterKategori,
+	UQtyList,
 } from "@appTypes/app.type";
 import {
 	tableFormValue,
 	TCustomerPO,
+	TCustomerSPPBIn,
 	tKanban,
+	TKanbanItem,
 	tMasterItem,
+	TPOItemSppbIn,
+	ZId,
+	zId,
 } from "@appTypes/app.zod";
 import {ItemDetail} from "@appTypes/props.type";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
+	OrmCustomerSPPBIn,
 	OrmDocument,
 	OrmHardness,
 	OrmHardnessKategori,
@@ -40,13 +47,15 @@ import {
 	OrmMesin,
 	OrmParameter,
 	OrmParameterKategori,
+	OrmPOItemSppbIn,
 	OrmScan,
 	OrmUser,
 	wherePages,
 } from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
-import {procedure} from "@trpc";
+import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
+import {qtyMap} from "@utils";
 
 type KJKD = {
 	dataProcess: DataProcess[];
@@ -61,6 +70,85 @@ export type DataProcess = {
 };
 
 export const kanbanGet = {
+	po: router({
+		get: procedure.input(zId).query(({ctx, input}) => {
+			type KJD = TCustomerSPPBIn & {
+				isClosed: boolean;
+				OrmKanbans?: ZId[];
+				OrmPOItemSppbIns: (TPOItemSppbIn & {OrmMasterItem: TMasterItem})[];
+			};
+			type II = TCustomerPO & {
+				isClosed: boolean;
+				OrmCustomerSPPBIns: KJD[];
+				OrmKanbans: (TKanban & {
+					OrmKanbanItems: TKanbanItem[];
+				})[];
+			};
+			return checkCredentialV2(ctx, async (): Promise<II[]> => {
+				const listPo = await OrmCustomerPO.findAll({
+					where: {id_customer: input.id},
+					limit: 1,
+					logging: true,
+					offset: 2,
+					include: [
+						{
+							model: OrmCustomerSPPBIn,
+							include: [
+								{model: OrmKanban, attributes: ["id"]},
+								{
+									model: OrmPOItemSppbIn,
+									include: [OrmMasterItem],
+								},
+							],
+						},
+						{
+							model: OrmKanban,
+							include: [{model: OrmKanbanItem}],
+						},
+					],
+				});
+				const result = listPo.map(e => {
+					const {OrmCustomerSPPBIns, ...val} = e.dataValues as II;
+					let isClosed = false;
+					if (OrmCustomerSPPBIns.length > 0) {
+						if (val.OrmKanbans.length > 0) {
+							let sppbInItem: undefined | TPOItemSppbIn;
+							const qtys = val.OrmKanbans.reduce((ret, kanban) => {
+								const item = kanban.OrmKanbanItems?.[0];
+								sppbInItem = OrmCustomerSPPBIns.find(
+									e => e.id === kanban.id_sppb_in,
+								)?.OrmPOItemSppbIns.find(u => u.id === item?.id_item);
+
+								qtyMap(({qtyKey}) => {
+									if (!ret[qtyKey]) ret[qtyKey] = 0;
+									ret[qtyKey] += item?.[qtyKey]!;
+								});
+								return ret;
+							}, {} as Record<UQtyList, number>);
+
+							const compare = qtyMap(({qtyKey}) => {
+								return qtys[qtyKey] === sppbInItem?.[qtyKey]!;
+							});
+
+							if (!compare.includes(false)) isClosed = true;
+						}
+					} else isClosed = true;
+
+					// @ts-ignore
+					const sppbInData = OrmCustomerSPPBIns.map((eVal: Model<KJD>) => {
+						return {
+							...eVal.dataValues,
+							isClosed: eVal.dataValues.OrmKanbans?.length! === 0 ?? false,
+						};
+					});
+
+					return {...val, OrmCustomerSPPBIns, isClosed};
+				});
+
+				return Promise.all(result);
+			});
+		}),
+	}),
 	availableMesins: procedure.input(z.string()).query(({ctx, input}) => {
 		return checkCredentialV2(ctx, async (): Promise<TMesin[]> => {
 			const mesins = await OrmMesin.findAll({where: {kategori_mesin: input}});

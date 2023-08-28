@@ -5,13 +5,18 @@ export type TFormContext = {
 	hideButton?: boolean;
 	disableSubmit?: boolean;
 };
-export type FormProps = HtmlHTMLAttributes<HTMLFormElement> & {
+export type FormComponentProps = HtmlHTMLAttributes<HTMLFormElement> & {
 	context?: TFormContext;
 };
 
 export const FormContext = createContext<TFormContext | null>(null);
 
-export function Form({children, onSubmit, context, ...rest}: FormProps) {
+export function Form({
+	children,
+	onSubmit,
+	context,
+	...rest
+}: FormComponentProps) {
 	return (
 		<FormContext.Provider value={context ?? null}>
 			<form {...rest} onSubmit={context?.disableSubmit ? undefined : onSubmit}>

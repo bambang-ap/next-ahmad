@@ -11,18 +11,17 @@ import {
 	SelectAllButton,
 } from "@appComponent/GeneratePdf";
 import {Wrapper as Wrp, WrapperProps} from "@appComponent/Wrapper";
+import {Route} from "@appTypes/app.type";
 import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {getLayout} from "@hoc";
 import {useKanban, useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
+import {RenderData} from "@pageComponent/scan/list/RenderData";
+import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
-
-import {Route} from ".";
-import {RenderData} from "../../../../src/components/pages/scan/list/RenderData";
-import {RenderPdfData} from "../../../../src/components/pages/scan/list/RenderPdfData";
 
 ListScanData.getLayout = getLayout;
 export const Text = TxtBold;

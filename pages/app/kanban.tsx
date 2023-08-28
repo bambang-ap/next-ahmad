@@ -29,6 +29,7 @@ import {getLayout} from "@hoc";
 import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {RenderKanbanCard} from "@pageComponent/KanbanCard";
 import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
+import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {atomDataKanban} from "@recoil/atoms";
 import {classNames, dateUtils, modalTypeParser, sleep} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -45,6 +46,7 @@ export type KanbanFormType = TKanbanUpsert & {
 
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
+	const modalRef2 = useRef<ModalRef>(null);
 	const genPdfRef = useRef<GenPdfRef>(null);
 	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
 	const loader = useLoader();
@@ -127,7 +129,15 @@ export default function Kanban() {
 		initValue?: Partial<Omit<KanbanFormType, "type">>,
 	) {
 		reset({...initValue, type});
-		modalRef.current?.show();
+		modalRef2.current?.show();
+	}
+
+	function showModal2(
+		type: ModalTypePreview,
+		initValue?: Partial<Omit<KanbanFormType, "type">>,
+	) {
+		reset({...initValue, type});
+		modalRef2.current?.show();
 	}
 
 	async function exportData() {
@@ -175,6 +185,23 @@ export default function Kanban() {
 	return (
 		<>
 			{loader.component}
+
+			<Modal title={modalTitle} size="xl" ref={modalRef}>
+				<Form
+					onSubmit={submit}
+					context={{disabled: isPreview, hideButton: isPreview}}>
+					<KanbanModalChild reset={reset} control={control} />
+				</Form>
+			</Modal>
+
+			<Modal title={modalTitle} size="xl" ref={modalRef2}>
+				<Form
+					onSubmit={submit}
+					context={{disabled: isPreview, hideButton: isPreview}}>
+					<NewKanbanModalChild reset={reset} control={control} />
+				</Form>
+			</Modal>
+
 			<GeneratePdf
 				width="w-[1850px]"
 				splitPagePer={4}
@@ -247,6 +274,7 @@ export default function Kanban() {
 								Select
 							</Button>
 							<Button onClick={() => showModal("add", {})}>Add</Button>
+							<Button onClick={() => showModal2("add", {})}>Add 2</Button>
 						</>
 					)
 				}
@@ -290,14 +318,6 @@ export default function Kanban() {
 					);
 				}}
 			/>
-
-			<Modal title={modalTitle} size="xl" ref={modalRef}>
-				<Form
-					onSubmit={submit}
-					context={{disabled: isPreview, hideButton: isPreview}}>
-					<KanbanModalChild reset={reset} control={control} />
-				</Form>
-			</Modal>
 		</>
 	);
 }

@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import {ScanListFormType} from "pages/app/scan/[route]/list";
+import type {ScanListFormType} from "pages/app/scan/[route]/list";
 import {useWatch} from "react-hook-form";
 
 import {FormProps} from "@appTypes/app.type";
@@ -12,38 +12,34 @@ import {
 	Select,
 	selectMapper,
 } from "@components";
-import {useKanban} from "@hooks";
+import {CRUD_ENABLED} from "@enum";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {RenderItem} from "./RenderItem";
 
-export function KanbanModalChild({
+export function NewKanbanModalChild({
 	control,
 	reset,
 }: FormProps<ScanListFormType, "control" | "reset">) {
-	const [
-		idKanban,
-		idCustomer,
-		idSppbIn,
-		tempIdItem,
-		kanbanItems = {},
+	const {
+		id: idKanban,
+		id_customer: idCustomer,
+		id_sppb_in: idSppbIn,
+		temp_id_item: tempIdItem,
+		items: kanbanItems = {},
 		id_po,
-		modalType,
-	] = useWatch({
-		control,
-		name: [
-			"id",
-			"id_customer",
-			"id_sppb_in",
-			"temp_id_item",
-			"items",
-			"id_po",
-			"type",
-		],
-	});
+		type: modalType,
+	} = useWatch({control});
 
-	const {dataCustomer, dataPo, dataSppbIn} = useKanban();
+	const {data: dataPo = []} = trpc.kanban.po.get.useQuery(
+		{id: idCustomer!},
+		{enabled: !!idCustomer},
+	);
+
+	const {data: dataCustomer} = trpc.basic.get.useQuery({
+		target: CRUD_ENABLED.CUSTOMER,
+	});
 	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
 	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
 		enabled: !!idKanban,
@@ -54,8 +50,11 @@ export function KanbanModalChild({
 
 	const {isPreview, isDelete} = modalTypeParser(modalType);
 
-	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
-	const itemsInSppbIn = selectedSppbIn?.items?.filter(
+	const selectedPo = dataPo.find(e => e.id === id_po);
+	const selectedSppbIn = selectedPo?.OrmCustomerSPPBIns?.find(
+		e => e.id === idSppbIn,
+	);
+	const itemsInSppbIn = selectedSppbIn?.OrmPOItemSppbIns?.filter(
 		e => !Object.keys(kanbanItems).includes(e.id),
 	);
 
@@ -132,7 +131,7 @@ export function KanbanModalChild({
 						firstOption="- Pilih PO -"
 						label="PO"
 						data={selectMapper(
-							dataPo?.filter(e => e.id_customer === idCustomer) ?? [],
+							dataPo?.filter(e => !e.isClosed),
 							"id",
 							"nomor_po",
 						)}
@@ -147,7 +146,7 @@ export function KanbanModalChild({
 						label="Surat Jalan Masuk"
 						firstOption="- Pilih Surat Jalan -"
 						data={selectMapper(
-							dataSppbIn?.filter(e => e.id_po === id_po) ?? [],
+							selectedPo?.OrmCustomerSPPBIns ?? [],
 							"id",
 							"nomor_surat",
 						)}
@@ -163,7 +162,7 @@ export function KanbanModalChild({
 						label="Tambah Item"
 						firstOption="- Tambah Item -"
 						data={selectMapper(itemsInSppbIn ?? [], "id", [
-							"itemDetail.OrmMasterItem.name",
+							"OrmMasterItem.name",
 						])}
 					/>
 				)}

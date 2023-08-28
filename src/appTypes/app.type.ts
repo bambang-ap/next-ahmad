@@ -1,3 +1,5 @@
+import {FieldValues, UseFormReturn} from "react-hook-form";
+
 import {qtyList} from "@constants";
 import type {RouterOutput} from "@trpc/routers";
 export type {
@@ -6,6 +8,7 @@ export type {
 	RouterInput,
 	RouterOutput,
 } from "@trpc/routers";
+export type {Route} from "pages/app/scan/[route]";
 export type {Context} from "server/trpc/context";
 export type {
 	BaseMenu,
@@ -79,6 +82,11 @@ import type {
 	TScan,
 	TUser,
 } from "./app.zod";
+
+export type FormProps<
+	T extends FieldValues,
+	K extends keyof UseFormReturn<T>,
+> = Pick<UseFormReturn<T>, K>;
 
 export type TDataScan = {dataKanban: RouterOutput["kanban"]["get"]} & TScan;
 export type UQtyList = `qty${typeof qtyList[number]}`;
