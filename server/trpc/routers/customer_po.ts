@@ -9,6 +9,7 @@ import {
 	tCustomerPO,
 	TPOItem,
 	tPOItem,
+	zId,
 } from "@appTypes/app.zod";
 import {defaultLimit, qtyList, Success} from "@constants";
 import {
@@ -226,8 +227,8 @@ const customer_poRouters = router({
 		}),
 
 	delete: procedure
-		.input(z.string())
-		.mutation(async ({input: id, ctx: {req, res}}) => {
+		.input(zId)
+		.mutation(async ({input: {id}, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
 				const dataSppb = await OrmCustomerSPPBIn.findAll({where: {id_po: id}});
 				await Promise.all(

@@ -59,7 +59,7 @@ export default function POCustomer() {
 				case "edit":
 					return updatePO.mutate({id, po_item, ...rest}, {onSuccess});
 				case "delete":
-					return deletePO.mutate(id, {onSuccess});
+					return deletePO.mutate({id}, {onSuccess});
 				default:
 					return null;
 			}
