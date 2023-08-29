@@ -128,8 +128,9 @@ export default function Kanban() {
 		type: ModalTypePreview,
 		initValue?: Partial<Omit<KanbanFormType, "type">>,
 	) {
-		reset({...initValue, type});
-		modalRef2.current?.show();
+		// reset({...initValue, type});
+		// modalRef2.current?.show();
+		showModal2(type, initValue);
 	}
 
 	function showModal2(
@@ -274,7 +275,7 @@ export default function Kanban() {
 								Select
 							</Button>
 							<Button onClick={() => showModal("add", {})}>Add</Button>
-							<Button onClick={() => showModal2("add", {})}>Add 2</Button>
+							{/* <Button onClick={() => showModal2("add", {})}>Add 2</Button> */}
 						</>
 					)
 				}

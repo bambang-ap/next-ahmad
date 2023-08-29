@@ -87,9 +87,6 @@ export const kanbanGet = {
 			return checkCredentialV2(ctx, async (): Promise<II[]> => {
 				const listPo = await OrmCustomerPO.findAll({
 					where: {id_customer: input.id},
-					limit: 1,
-					logging: true,
-					offset: 2,
 					include: [
 						{
 							model: OrmCustomerSPPBIn,
@@ -266,7 +263,6 @@ export const kanbanGet = {
 				async (): Promise<KanbanGetRow[]> => {
 					const dataKanban = await OrmKanban.findAll({
 						where,
-						limit: 5,
 						attributes: ["id"],
 						order: [["nomor_kanban", "asc"]],
 					});
