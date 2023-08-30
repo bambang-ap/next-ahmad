@@ -36,7 +36,9 @@ export function RenderItem({control, reset}: RenderItemProps) {
 
 	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
 	// const selectedKanban = dataKanban?.find(e => e.id === idKanban);
-	const {data: selectedKanban} = trpc.kanban.detail.useQuery(idKanban);
+	const {data: selectedKanban} = trpc.kanban.detail.useQuery(idKanban, {
+		enabled: !!idKanban,
+	});
 	const {data: selectedKanbans = []} = trpc.kanban.get.useQuery({
 		type: "kanban",
 		where: {id_sppb_in: idSppbIn},

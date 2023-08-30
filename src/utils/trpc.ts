@@ -27,6 +27,7 @@ export const trpc = createTRPCNext<AppRouter>({
 	ssr: false,
 	config() {
 		return {
+			abortOnUnmount: true,
 			queryClientConfig: {
 				defaultOptions: {
 					queries: queryClientConfig,

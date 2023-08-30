@@ -121,4 +121,10 @@ export const queryClientConfig: QueryObserverOptions = {
 	refetchInterval: 1000 * 5 * 60,
 };
 
+export const nonRequiredRefetch: any = {
+	refetchOnMount: false,
+	refetchOnWindowFocus: false,
+	refetchOnReconnect: false,
+} as QueryObserverOptions;
+
 export const through = {attributes: []};

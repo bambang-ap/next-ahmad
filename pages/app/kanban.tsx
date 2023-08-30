@@ -24,11 +24,14 @@ import {
 	ModalRef,
 	TableFilter,
 } from "@components";
-import {cuttingLineClassName, defaultErrorMutation} from "@constants";
+import {
+	cuttingLineClassName,
+	defaultErrorMutation,
+	nonRequiredRefetch,
+} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {RenderKanbanCard} from "@pageComponent/KanbanCard";
-import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {atomDataKanban} from "@recoil/atoms";
 import {classNames, dateUtils, modalTypeParser, sleep} from "@utils";
@@ -46,7 +49,6 @@ export type KanbanFormType = TKanbanUpsert & {
 
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
-	const modalRef2 = useRef<ModalRef>(null);
 	const genPdfRef = useRef<GenPdfRef>(null);
 	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
 	const loader = useLoader();
@@ -128,17 +130,8 @@ export default function Kanban() {
 		type: ModalTypePreview,
 		initValue?: Partial<Omit<KanbanFormType, "type">>,
 	) {
-		// reset({...initValue, type});
-		// modalRef2.current?.show();
-		showModal2(type, initValue);
-	}
-
-	function showModal2(
-		type: ModalTypePreview,
-		initValue?: Partial<Omit<KanbanFormType, "type">>,
-	) {
 		reset({...initValue, type});
-		modalRef2.current?.show();
+		modalRef.current?.show();
 	}
 
 	async function exportData() {
@@ -191,14 +184,6 @@ export default function Kanban() {
 				<Form
 					onSubmit={submit}
 					context={{disabled: isPreview, hideButton: isPreview}}>
-					<KanbanModalChild reset={reset} control={control} />
-				</Form>
-			</Modal>
-
-			<Modal title={modalTitle} size="xl" ref={modalRef2}>
-				<Form
-					onSubmit={submit}
-					context={{disabled: isPreview, hideButton: isPreview}}>
 					<NewKanbanModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>
@@ -210,7 +195,9 @@ export default function Kanban() {
 				ref={genPdfRef}
 				tagId="kanban-data-print"
 				useQueries={() =>
-					trpc.useQueries(t => selectedIdKanbans.map(id => t.kanban.detail(id)))
+					trpc.useQueries(t =>
+						selectedIdKanbans.map(id => t.kanban.detail(id, {enabled: !!id})),
+					)
 				}
 				renderItem={({data}) => {
 					const {items = {}, id} = data ?? {};
@@ -323,8 +310,11 @@ export default function Kanban() {
 	);
 }
 
-function RenderNameMesin(kanban: Pick<TKanban, "list_mesin">) {
-	const {data} = trpc.kanban.nameMesin.useQuery(kanban);
+function RenderNameMesin({list_mesin}: Pick<TKanban, "list_mesin">) {
+	const {data} = trpc.kanban.nameMesin.useQuery(
+		{list_mesin},
+		nonRequiredRefetch,
+	);
 
 	return <>{data?.map(e => e.dataKMesin.name).join(" | ")}</>;
 }
