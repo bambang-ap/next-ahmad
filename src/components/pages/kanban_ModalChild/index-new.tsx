@@ -33,7 +33,7 @@ export function NewKanbanModalChild({
 	} = useWatch({control});
 
 	const {data: dataPo = [], isLoading: isLoadingPo} =
-		trpc.kanban.po.getNew.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
+		trpc.kanban.po.get.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
 
 	const {data: dataCustomer, isLoading: isLoadingCustomer} =
 		trpc.basic.get.useQuery({
