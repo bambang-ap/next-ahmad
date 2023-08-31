@@ -1,9 +1,10 @@
 import {useContext} from "react";
 
+import {Autocomplete, Box, TextField} from "@mui/material";
+
 import {FormContext} from "@baseComps/Form";
 import {Icon} from "@baseComps/Icon";
 
-import {Autocomplete, Box, TextField} from "@mui/material";
 import {FieldPath, FieldValues} from "react-hook-form";
 
 import {defaultTextFieldProps} from "@constants";
@@ -11,6 +12,7 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from "@formController";
+import {useTicker} from "@hooks";
 import {classNames} from "@utils";
 
 import {InputComponent} from "..";
@@ -27,6 +29,7 @@ export type SelectProps = {
 	label?: string;
 	noLabel?: boolean;
 	disableClear?: boolean;
+	isLoading?: boolean;
 };
 
 export const Select = withReactFormController(SelectComponent);
@@ -72,6 +75,7 @@ function SelectComponent<F extends FieldValues>({
 	disableClear,
 	firstOption,
 	className,
+	isLoading = false,
 	noLabel,
 	label: labelProps,
 }: ControlledComponentProps<F, SelectProps>) {
@@ -85,6 +89,14 @@ function SelectComponent<F extends FieldValues>({
 
 	const isDisabled = formContext?.disabled || disabled;
 	const selectedValue = data.find(e => e.value === value);
+
+	const tick = useTicker(isLoading, 5);
+
+	const isLoadingText = !isLoading
+		? ""
+		: `Harap Tunggu${Array.from({length: tick})
+				.map(() => `.`)
+				.join("")}`;
 
 	if (isDisabled) {
 		return (
@@ -102,6 +114,8 @@ function SelectComponent<F extends FieldValues>({
 	return (
 		<div className={classNames("pt-2", className)}>
 			<Autocomplete
+				loading={isLoading}
+				loadingText={isLoadingText}
 				disableClearable={disableClear}
 				disablePortal
 				options={data}

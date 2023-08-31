@@ -5,3 +5,4 @@ export * from "./useLoader";
 export * from "./useMenu";
 export * from "./useSppbOut";
 export * from "./useTable";
+export * from "./useTicker";

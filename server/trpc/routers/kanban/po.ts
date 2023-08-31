@@ -35,7 +35,6 @@ const kanbanPoRouters = router({
 		};
 		return checkCredentialV2(ctx, async (): Promise<II[]> => {
 			const listPo = await OrmCustomerPO.findAll({
-				logging: true,
 				where: {id_customer: input.id},
 				include: [
 					{

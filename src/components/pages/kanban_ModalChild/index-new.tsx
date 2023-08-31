@@ -32,14 +32,13 @@ export function NewKanbanModalChild({
 		type: modalType,
 	} = useWatch({control});
 
-	const {data: dataPo = []} = trpc.kanban.po.get.useQuery(
-		{id: idCustomer!},
-		{enabled: !!idCustomer},
-	);
+	const {data: dataPo = [], isLoading: isLoadingPo} =
+		trpc.kanban.po.get.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
 
-	const {data: dataCustomer} = trpc.basic.get.useQuery({
-		target: CRUD_ENABLED.CUSTOMER,
-	});
+	const {data: dataCustomer, isLoading: isLoadingCustomer} =
+		trpc.basic.get.useQuery({
+			target: CRUD_ENABLED.CUSTOMER,
+		});
 	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
 	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
 		enabled: !!idKanban,
@@ -119,6 +118,7 @@ export function NewKanbanModalChild({
 					className="flex-1"
 					firstOption="- Pilih Customer -"
 					control={control}
+					isLoading={isLoadingCustomer}
 					data={selectMapper(dataCustomer ?? [], "id", "name")}
 					fieldName="id_customer"
 					label="Customer"
@@ -130,6 +130,7 @@ export function NewKanbanModalChild({
 						fieldName="id_po"
 						firstOption="- Pilih PO -"
 						label="PO"
+						isLoading={isLoadingPo}
 						data={selectMapper(
 							dataPo?.filter(e => !e.isClosed),
 							"id",
