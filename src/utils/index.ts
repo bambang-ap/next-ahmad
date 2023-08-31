@@ -10,6 +10,7 @@ import * as XLSX from "xlsx";
 
 import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
+	defaultErrorMutation,
 	formatDateStringView,
 	formatDateView,
 	formatFullView,
@@ -17,6 +18,8 @@ import {
 	paperA4,
 	qtyList,
 } from "@constants";
+import {useLoader} from "@hooks";
+import {UseTRPCMutationOptions} from "@trpc/react-query/shared";
 
 type Qty = typeof qtyList[number];
 
@@ -312,4 +315,19 @@ export function sleep(timeout = 1000) {
 			resolve();
 		}, timeout);
 	});
+}
+
+export function mutateCallback(
+	{hide, show}: ReturnType<typeof useLoader>,
+	withDefault = true,
+): any {
+	return {
+		...(withDefault ? defaultErrorMutation : {}),
+		onMutate() {
+			show?.();
+		},
+		onSettled() {
+			hide?.();
+		},
+	} as UseTRPCMutationOptions<any, any, any>;
 }

@@ -24,17 +24,19 @@ import {
 	ModalRef,
 	TableFilter,
 } from "@components";
-import {
-	cuttingLineClassName,
-	defaultErrorMutation,
-	nonRequiredRefetch,
-} from "@constants";
+import {cuttingLineClassName, nonRequiredRefetch} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {RenderKanbanCard} from "@pageComponent/KanbanCard";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {atomDataKanban} from "@recoil/atoms";
-import {classNames, dateUtils, modalTypeParser, sleep} from "@utils";
+import {
+	classNames,
+	dateUtils,
+	modalTypeParser,
+	mutateCallback,
+	sleep,
+} from "@utils";
 import {trpc} from "@utils/trpc";
 
 Kanban.getLayout = getLayout;
@@ -62,12 +64,14 @@ export default function Kanban() {
 		isFetched,
 	} = trpc.kanban.getPage.useQuery(formValue!, {enabled: !!formValue});
 
+	const mutationOptions = mutateCallback(loader);
+
 	const {mutate: mutateUpsert} =
-		trpc.kanban.upsert.useMutation(defaultErrorMutation);
+		trpc.kanban.upsert.useMutation(mutationOptions);
 	const {mutate: mutateDelete} =
-		trpc.kanban.delete.useMutation(defaultErrorMutation);
+		trpc.kanban.delete.useMutation(mutationOptions);
 	const {mutateAsync: mutatePrinted} =
-		trpc.kanban.printed.useMutation(defaultErrorMutation);
+		trpc.kanban.printed.useMutation(mutationOptions);
 
 	const dataForm = watch();
 

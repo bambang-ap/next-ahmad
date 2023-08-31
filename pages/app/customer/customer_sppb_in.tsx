@@ -17,13 +17,12 @@ import {
 	ModalRef,
 	TableFilter,
 } from "@components";
-import {defaultErrorMutation} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
-import {useExportData, useTableFilter} from "@hooks";
+import {useExportData, useLoader, useTableFilter} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
 import {SppbInRows} from "@trpc/routers/sppb/in";
-import {dateUtils, modalTypeParser, sleep} from "@utils";
+import {dateUtils, modalTypeParser, mutateCallback, sleep} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type FormType = {
@@ -37,11 +36,14 @@ SPPBIN.getLayout = getLayout;
 
 export default function SPPBIN() {
 	const modalRef = useRef<ModalRef>(null);
+	const loader = useLoader();
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		defaultValues: {type: "add"},
 	});
 
 	const {formValue, hookForm} = useTableFilter();
+
+	const mutationOptions = mutateCallback(loader);
 
 	const {data, refetch} = trpc.sppb.in.getPage.useQuery({
 		type: "sppb_in",
@@ -51,9 +53,9 @@ export default function SPPBIN() {
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 	const {mutate: mutateUpsert} =
-		trpc.sppb.in.upsert.useMutation(defaultErrorMutation);
+		trpc.sppb.in.upsert.useMutation(mutationOptions);
 	const {mutate: mutateDelete} =
-		trpc.sppb.in.delete.useMutation(defaultErrorMutation);
+		trpc.sppb.in.delete.useMutation(mutationOptions);
 
 	const dataForm = watch();
 	const {type: modalType, idSppbIns} = dataForm;
@@ -123,6 +125,7 @@ export default function SPPBIN() {
 
 	return (
 		<>
+			{loader.component}
 			<TableFilter
 				data={data}
 				form={hookForm}
