@@ -15,7 +15,7 @@ import {Route} from "@appTypes/app.type";
 import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
 import {getLayout} from "@hoc";
 import {useKanban, useLoader, useNewExportData, useTableFilter} from "@hooks";
-import {KanbanModalChild} from "@pageComponent/kanban_ModalChild";
+import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {RenderData} from "@pageComponent/scan/list/RenderData";
 import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
@@ -133,7 +133,7 @@ export default function ListScanData() {
 			/>
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form context={{disabled: isPreview, hideButton: isPreview}}>
-					<KanbanModalChild reset={reset} control={control} />
+					<NewKanbanModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>
 
