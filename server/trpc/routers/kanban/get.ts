@@ -20,6 +20,7 @@ import {
 import {
 	tableFormValue,
 	TCustomerPO,
+	TCustomerSPPBIn,
 	tKanban,
 	tMasterItem,
 } from "@appTypes/app.zod";
@@ -27,6 +28,7 @@ import {ItemDetail} from "@appTypes/props.type";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
+	OrmCustomerSPPBIn,
 	OrmDocument,
 	OrmHardness,
 	OrmHardnessKategori,
@@ -141,6 +143,7 @@ export const kanbanGet = {
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type UUU = TKanban & {
 			OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
+			OrmCustomerSPPBIn: TCustomerSPPBIn;
 		};
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<UUU>> => {
 			const {limit, page, search} = input;
@@ -151,6 +154,7 @@ export const kanbanGet = {
 				offset: (page - 1) * limit,
 				where: wherePages("nomor_kanban", search),
 				include: [
+					OrmCustomerSPPBIn,
 					{
 						model: OrmCustomerPO,
 						include: [OrmCustomer],

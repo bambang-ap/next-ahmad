@@ -241,6 +241,7 @@ export default function Kanban() {
 					"Tanggal",
 					"Nomor PO",
 					"Nomor Kanban",
+					"Nomor Surat",
 					"Customer",
 					"Mesin",
 					"Keterangan",
@@ -266,7 +267,6 @@ export default function Kanban() {
 								Select
 							</Button>
 							<Button onClick={() => showModal("add", {})}>Add</Button>
-							{/* <Button onClick={() => showModal2("add", {})}>Add 2</Button> */}
 						</>
 					)
 				}
@@ -283,6 +283,7 @@ export default function Kanban() {
 							<Cell>{dateUtils.date(item.createdAt)}</Cell>
 							<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
 							<Cell>{item.nomor_kanban}</Cell>
+							<Cell>{item?.OrmCustomerSPPBIn?.nomor_surat}</Cell>
 							<Cell>{item.OrmCustomerPO?.OrmCustomer?.name}</Cell>
 							<Cell>
 								<RenderNameMesin list_mesin={item.list_mesin} />

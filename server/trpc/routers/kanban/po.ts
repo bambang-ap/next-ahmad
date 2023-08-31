@@ -21,10 +21,11 @@ import {qtyMap} from "@utils";
 
 const kanbanPoRouters = router({
 	get: procedure.input(zId).query(({ctx, input}) => {
+		type GG = TPOItemSppbIn & {OrmMasterItem: TMasterItem};
 		type KJD = TCustomerSPPBIn & {
 			isClosed: boolean;
 			OrmKanbans?: ZId[];
-			OrmPOItemSppbIns: (TPOItemSppbIn & {OrmMasterItem: TMasterItem})[];
+			OrmPOItemSppbIns: GG[];
 		};
 		type II = TCustomerPO & {
 			isClosed: boolean;
