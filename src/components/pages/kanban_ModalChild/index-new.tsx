@@ -33,7 +33,7 @@ export function NewKanbanModalChild({
 	} = useWatch({control});
 
 	const {data: dataPo = [], isLoading: isLoadingPo} =
-		trpc.kanban.po.get.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
+		trpc.kanban.po.getNew.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
 
 	const {data: dataCustomer, isLoading: isLoadingCustomer} =
 		trpc.basic.get.useQuery({
@@ -147,7 +147,7 @@ export function NewKanbanModalChild({
 						label="Surat Jalan Masuk"
 						firstOption="- Pilih Surat Jalan -"
 						data={selectMapper(
-							selectedPo?.OrmCustomerSPPBIns ?? [],
+							selectedPo?.OrmCustomerSPPBIns.filter(e => !e.isClosed) ?? [],
 							"id",
 							"nomor_surat",
 						)}
@@ -162,9 +162,11 @@ export function NewKanbanModalChild({
 						fieldName="temp_id_item"
 						label="Tambah Item"
 						firstOption="- Tambah Item -"
-						data={selectMapper(itemsInSppbIn ?? [], "id", [
-							"OrmMasterItem.name",
-						])}
+						data={selectMapper(
+							itemsInSppbIn?.filter(e => !e.isClosed) ?? [],
+							"id",
+							["OrmMasterItem.name"],
+						)}
 					/>
 				)}
 			</div>
