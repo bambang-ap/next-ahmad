@@ -43,6 +43,7 @@ export function ScanDetailKanban({
 
 	const fieldKey = `item_${route}` as const;
 	const isQC = route === "qc";
+	const isProduksi = route === "produksi";
 
 	useEffect(() => {
 		typingCallback(() => {
@@ -138,7 +139,12 @@ export function ScanDetailKanban({
 							</div>
 							<div className="flex-1 flex flex-col">
 								{qtyMap(({qtyKey, unitKey, num}) => {
-									const jumlah = jj?.[num] ?? item[qtyKey];
+									const jumlah =
+										(isProduksi
+											? kanban.dataScan?.item_from_kanban?.[item?.id!]?.[qtyKey]
+											: undefined) ??
+										jj?.[num] ??
+										item[qtyKey];
 
 									if (!jumlah) return null;
 

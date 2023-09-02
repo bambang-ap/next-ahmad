@@ -373,6 +373,7 @@ export const tScan = zId.extend({
 	// status_out_barang: z.boolean().optional(),
 	notes: z.string().optional(),
 	date: tScanDate.optional(),
+	item_from_kanban: z.record(unitQty).optional(),
 });
 
 export type TScanTarget = z.infer<typeof tScanTarget>;

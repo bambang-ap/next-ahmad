@@ -9,12 +9,14 @@ import {
 	tScanItem,
 	TScanTarget,
 	tScanTarget,
+	UnitQty,
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
 	OrmDocument,
 	OrmKanban,
+	OrmKanbanItem,
 	OrmScan,
 	OrmScanOrder as scanOrder,
 } from "@database";
@@ -22,6 +24,7 @@ import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
+import {qtyMap} from "@utils";
 
 export type ScanList = TScan & {number: string; OrmDocument: TDocument};
 type ListResult = PagingResult<ScanList>;
@@ -135,7 +138,7 @@ const scanRouters = router({
 
 					const {id, target, ...rest} = input;
 					const statusTarget = `status_${target}` as const;
-					// const itemTarget = `item_${target}` as const;
+					const itemTarget = `item_${target}` as const;
 
 					const dataScan = await routerCaller.scan.get({id, target});
 
@@ -158,32 +161,32 @@ const scanRouters = router({
 
 					await OrmScan.update(
 						{[statusTarget]: true, date, ...rest},
+						// {[statusTarget]: false, date, ...rest},
 						{where: {id: dataScan.id}},
 					);
 
-					// FIXME: Not running well
-					// switch (target) {
-					// 	case "qc":
-					// 		break;
-					// 	default: {
-					// 		const promisedUpdateItem = rest[itemTarget]?.map(
-					// 			async ([idItem, ...qtys]) => {
-					// 				const f = qtyMap(({qtyKey}, i) => {
-					// 					if (!qtys[i]) return;
-					// 					return {[qtyKey]: qtys[i]};
-					// 				});
-					// 				const updatedQty = f.reduce(
-					// 					(a, b) => ({...a, ...b}),
-					// 					{} as UnitQty,
-					// 				);
-					// 				return OrmKanbanItem.update(updatedQty, {
-					// 					where: {id: idItem},
-					// 				});
-					// 			},
-					// 		);
-					// 		await Promise.all(promisedUpdateItem ?? []);
-					// 	}
-					// }
+					switch (target) {
+						case "qc":
+							break;
+						default: {
+							const promisedUpdateItem = rest[itemTarget]?.map(
+								async ([idItem, ...qtys]) => {
+									const f = qtyMap(({qtyKey}, i) => {
+										if (!qtys[i]) return;
+										return {[qtyKey]: qtys[i]};
+									});
+									const updatedQty = f.reduce(
+										(a, b) => ({...a, ...b}),
+										{} as UnitQty,
+									);
+									return OrmKanbanItem.update(updatedQty, {
+										where: {id: idItem},
+									});
+								},
+							);
+							await Promise.all(promisedUpdateItem ?? []);
+						}
+					}
 
 					return Success;
 				},
