@@ -76,6 +76,7 @@ export function SPPBOutGenerateQR({
 	detail?: Partial<RouterOutput["sppb"]["out"]["getDetail"]>;
 	width: number;
 }) {
+	let index = 0;
 	const {dataFg} = useSppbOut(detail?.id_customer);
 	const doc = dataFg?.[0]?.kanban.OrmDocument;
 
@@ -163,50 +164,47 @@ export function SPPBOutGenerateQR({
 										);
 										return (
 											<>
-												{Object.entries(e.items).map(
-													([id_item, item], index) => {
-														const {id, itemDetail, lot_no} =
-															selectedSppbIn?.kanban.dataSppbIn?.items?.find(
-																eItem => eItem.id === id_item,
-															) ?? {};
-														const kanban = selectedSppbIn?.kanban;
+												{Object.entries(e.items).map(([id_item, item]) => {
+													index++;
+													const {id, itemDetail, lot_no} =
+														selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+															eItem => eItem.id === id_item,
+														) ?? {};
+													const kanban = selectedSppbIn?.kanban;
 
-														const masterItem =
-															kanban?.items[id_item]?.OrmMasterItem;
-														return (
-															<>
-																<Tr>
-																	<Td>{index + 1}</Td>
-																	<Td>{masterItem?.name}</Td>
-																	{qtyMap(({num, qtyKey, unitKey}) => {
-																		return (
-																			<Td key={num}>
-																				{item[qtyKey]} {itemDetail?.[unitKey]}
-																			</Td>
-																		);
+													const masterItem =
+														kanban?.items[id_item]?.OrmMasterItem;
+													return (
+														<>
+															<Tr>
+																<Td>{index}</Td>
+																<Td>{masterItem?.name}</Td>
+																{qtyMap(({num, qtyKey, unitKey}) => {
+																	return (
+																		<Td key={num}>
+																			{item[qtyKey]} {itemDetail?.[unitKey]}
+																		</Td>
+																	);
+																})}
+																<Td>{lot_no}</Td>
+																<Td>{kanban?.items?.[id!]?.lot_no_imi}</Td>
+																<Td>{po?.dataPo?.nomor_po}</Td>
+																<Td>{e?.dataSppbIn?.nomor_surat}</Td>
+																<Td className="flex-col gap-2">
+																	{masterItem?.kategori_mesinn?.map(m => {
+																		// @ts-ignore
+																		return masterItem.instruksi[m].map(ins => (
+																			<DetailProcess
+																				key={ins.id_instruksi}
+																				id={ins.id_instruksi}
+																			/>
+																		));
 																	})}
-																	<Td>{lot_no}</Td>
-																	<Td>{kanban?.items?.[id!]?.lot_no_imi}</Td>
-																	<Td>{po?.dataPo?.nomor_po}</Td>
-																	<Td>{e?.dataSppbIn?.nomor_surat}</Td>
-																	<Td className="flex-col gap-2">
-																		{masterItem?.kategori_mesinn?.map(m => {
-																			// @ts-ignore
-																			return masterItem.instruksi[m].map(
-																				ins => (
-																					<DetailProcess
-																						key={ins.id_instruksi}
-																						id={ins.id_instruksi}
-																					/>
-																				),
-																			);
-																		})}
-																	</Td>
-																</Tr>
-															</>
-														);
-													},
-												)}
+																</Td>
+															</Tr>
+														</>
+													);
+												})}
 											</>
 										);
 									})}

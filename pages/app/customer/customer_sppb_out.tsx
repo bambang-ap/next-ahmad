@@ -184,6 +184,7 @@ export default function SPPBOUT() {
 				width={`w-[${widthSize}px]`}
 				ref={genPdfRef}
 				tagId="kanban-data-print"
+				splitPagePer={1}
 				useQueries={() =>
 					trpc.useQueries(t =>
 						selectedIdSppbIns.map(id => t.sppb.out.getDetail(id)),
