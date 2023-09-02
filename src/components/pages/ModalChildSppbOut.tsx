@@ -1,18 +1,18 @@
 import {FormValue} from "pages/app/customer/customer_sppb_out";
-import {Control, UseFormReset, useWatch} from "react-hook-form";
+import {useWatch} from "react-hook-form";
 
 import {Wrapper} from "@appComponent/Wrapper";
+import {FormProps} from "@appTypes/app.type";
 import {Button, Input, Select, selectMapper, Table, Text} from "@components";
 import {useSppbOut} from "@hooks";
+import type {SppbInRows} from "@trpc/routers/sppb/in";
+import type {GetFGRet} from "@trpc/routers/sppb/out";
 import {modalTypeParser, qtyMap} from "@utils";
 
 export function SppbOutModalChild({
 	control,
 	reset,
-}: {
-	reset: UseFormReset<FormValue>;
-	control: Control<FormValue>;
-}) {
+}: FormProps<FormValue, "control" | "reset">) {
 	const formData = useWatch({control});
 
 	const {dataCustomer, dataFg, dataKendaraan, invoiceId} = useSppbOut(
@@ -188,7 +188,7 @@ export function SppbOutModalChild({
 													e => e.id === id_item,
 												);
 
-											const {itemDetail: detail, lot_no} = sppbInItem ?? {};
+											const {lot_no} = sppbInItem ?? {};
 
 											return (
 												<>
@@ -209,31 +209,14 @@ export function SppbOutModalChild({
 													<Cell>{lot_no}</Cell>
 													<Cell>{item.lot_no_imi}</Cell>
 													<Cell className="flex gap-2">
-														{qtyMap(({qtyKey, unitKey, num}) => {
-															const jumlah = item[qtyKey];
-
-															if (!jumlah) return null;
-
-															return (
-																<Input
-																	key={jumlah}
-																	type="decimal"
-																	className="flex-1 bg-white"
-																	label={`Qty ${num}`}
-																	// @ts-ignore
-																	defaultValue={jumlah}
-																	rightAcc={<Text>{detail?.[unitKey]}</Text>}
-																	fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
-																	control={control}
-																	rules={{
-																		max: {
-																			value: jumlah,
-																			message: `max is ${jumlah}`,
-																		},
-																	}}
-																/>
-															);
-														})}
+														<RenderJumlah
+															i={i}
+															ii={ii}
+															item={item}
+															control={control}
+															id_item={id_item}
+															sppbInItem={sppbInItem}
+														/>
 													</Cell>
 												</>
 											);
@@ -243,6 +226,55 @@ export function SppbOutModalChild({
 							);
 						})}
 					</>
+				);
+			})}
+		</>
+	);
+}
+
+type RenderJumlahProps = {
+	i: number;
+	ii: number;
+	id_item: string;
+	item: GetFGRet["kanban"]["items"][string];
+	sppbInItem?: NonNullable<SppbInRows["items"]>[number];
+} & FormProps<FormValue>;
+
+function RenderJumlah({
+	sppbInItem,
+	item,
+	control,
+	i,
+	ii,
+	id_item,
+}: RenderJumlahProps) {
+	const {itemDetail: detail} = sppbInItem ?? {};
+
+	return (
+		<>
+			{qtyMap(({qtyKey, unitKey, num}) => {
+				const jumlah = item[qtyKey];
+
+				if (!jumlah) return null;
+
+				return (
+					<Input
+						key={jumlah}
+						type="decimal"
+						className="flex-1 bg-white"
+						label={`Qty ${num}`}
+						// @ts-ignore
+						defaultValue={jumlah}
+						rightAcc={<Text>{detail?.[unitKey]}</Text>}
+						fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
+						control={control}
+						rules={{
+							max: {
+								value: jumlah,
+								message: `max is ${jumlah}`,
+							},
+						}}
+					/>
 				);
 			})}
 		</>

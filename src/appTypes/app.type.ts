@@ -85,7 +85,7 @@ import type {
 
 export type FormProps<
 	T extends FieldValues,
-	K extends keyof UseFormReturn<T>,
+	K extends keyof UseFormReturn<T> = "control",
 > = Pick<UseFormReturn<T>, K>;
 
 export type TDataScan = {dataKanban: RouterOutput["kanban"]["get"]} & TScan;

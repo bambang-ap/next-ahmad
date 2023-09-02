@@ -45,7 +45,7 @@ const a = z
 	.array();
 
 type GetPage = PagingResult<TCustomerSPPBOut>;
-type YY = TScan & {
+export type GetFGRet = TScan & {
 	kanban: Omit<KanbanGetRow, "items"> & {
 		items: MyObject<TKanbanUpsertItem & {lot_no_imi?: string}>;
 	};
@@ -129,7 +129,7 @@ const sppbOutRouters = router({
 	}),
 	getFg: procedure
 		.input(z.string().optional())
-		.query(({input, ctx: {req, res}}): Promise<YY[]> => {
+		.query(({input, ctx: {req, res}}): Promise<GetFGRet[]> => {
 			const routerCaller = appRouter.createCaller({req, res});
 
 			return checkCredentialV2({req, res}, async () => {
@@ -165,9 +165,9 @@ const sppbOutRouters = router({
 					else ret[index] = calllasl(ret[index]!, cur);
 
 					return ret;
-				}, [] as YY[]);
+				}, [] as GetFGRet[]);
 
-				function calllasl(asd: YY, cur: YY): YY {
+				function calllasl(asd: GetFGRet, cur: GetFGRet): GetFGRet {
 					const nextItemsMap = new Map(
 						Object.entries(cur.kanban.items).map(([a, b]) => {
 							return [a, {...b, lot_no_imi: cur.lot_no_imi}];
