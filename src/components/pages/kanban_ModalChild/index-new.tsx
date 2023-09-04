@@ -12,7 +12,6 @@ import {
 	Select,
 	selectMapper,
 } from "@components";
-import {CRUD_ENABLED} from "@enum";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -36,9 +35,7 @@ export function NewKanbanModalChild({
 		trpc.kanban.po.get.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
 
 	const {data: dataCustomer, isLoading: isLoadingCustomer} =
-		trpc.basic.get.useQuery({
-			target: CRUD_ENABLED.CUSTOMER,
-		});
+		trpc.kanban.po.get_customer.useQuery();
 	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
 	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
 		enabled: !!idKanban,

@@ -73,6 +73,7 @@ export const focusInputClassName =
 export const inputClassName = "px-2 py-1 rounded bg-white";
 
 export const defaultExcludeColumn = []; // ['createdAt', 'updatedAt'];
+export const defaultExcludeColumns = ["createdAt", "updatedAt"];
 export const defaultOrderBy = {order: [["createdAt", "desc"] as OrderItem]};
 
 export const formatDate = "YYYY-MM-DD";

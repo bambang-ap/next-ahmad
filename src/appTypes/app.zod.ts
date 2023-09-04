@@ -85,8 +85,8 @@ export const unitQty = z.object({
 	qty1: zDecimal,
 	qty2: zDecimal.nullish(),
 	qty3: zDecimal.nullish(),
-	qty4: zDecimal.nullish(),
-	qty5: zDecimal.nullish(),
+	// qty4: zDecimal.nullish(),
+	// qty5: zDecimal.nullish(),
 });
 
 export type TPOItem = z.infer<typeof tPOItem>;
@@ -97,8 +97,8 @@ export const tPOItem = zId.extend({
 	unit1: tItemUnit,
 	unit2: tItemUnit.nullish(),
 	unit3: tItemUnit.nullish(),
-	unit4: tItemUnit.nullish(),
-	unit5: tItemUnit.nullish(),
+	// unit4: tItemUnit.nullish(),
+	// unit5: tItemUnit.nullish(),
 	...unitQty.shape,
 });
 

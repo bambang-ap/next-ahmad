@@ -11,8 +11,8 @@ export const unitQtyField = {
 	qty1: ormDecimalType("qty1"),
 	qty2: ormDecimalType("qty2"),
 	qty3: ormDecimalType("qty3"),
-	qty4: ormDecimalType("qty4"),
-	qty5: ormDecimalType("qty5"),
+	// qty4: ormDecimalType("qty4"),
+	// qty5: ormDecimalType("qty5"),
 };
 
 export default function initOrmCustomerPOItem(sequelize: Sequelize) {
@@ -25,8 +25,8 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 			unit1: STRING,
 			unit2: STRING,
 			unit3: STRING,
-			unit4: STRING,
-			unit5: STRING,
+			// unit4: STRING,
+			// unit5: STRING,
 			...unitQtyField,
 		},
 		{

@@ -8,7 +8,9 @@ import {
 	TPOItemSppbIn,
 	zId,
 } from "@appTypes/app.zod";
+import {defaultExcludeColumns as defaultExcludeColumn} from "@constants";
 import {
+	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerSPPBIn,
 	OrmKanbanItem,
@@ -19,8 +21,18 @@ import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 import {qtyMap} from "@utils";
 
+type KeyOf<T extends {}> = (keyof T)[];
+
 const kanbanPoRouters = router({
-	get: procedure.input(zId).query(({ctx, input}) => {
+	get_customer: procedure.query(({ctx}) => {
+		return checkCredentialV2(ctx, async () => {
+			const data = await OrmCustomer.findAll({
+				attributes: ["id", "name"] as KeyOf<TCustomerPO>,
+			});
+			return data.map(e => e.dataValues);
+		});
+	}),
+	get: procedure.input(zId).query(async ({ctx, input}) => {
 		type GG = TPOItemSppbIn & {
 			isClosed: boolean;
 			OrmMasterItem: Pick<TMasterItem, "id" | "name">;
@@ -30,7 +42,7 @@ const kanbanPoRouters = router({
 			isClosed: boolean;
 			OrmPOItemSppbIns: GG[];
 		};
-		type II = TCustomerPO & {
+		type II = Pick<TCustomerPO, "id" | "nomor_po"> & {
 			isClosed: boolean;
 			OrmCustomerSPPBIns: KJD[];
 		};
@@ -38,16 +50,35 @@ const kanbanPoRouters = router({
 		return checkCredentialV2(ctx, async (): Promise<II[]> => {
 			const listPo = await OrmCustomerPO.findAll({
 				where: {id_customer: input.id},
+				logging: true,
+				attributes: ["id", "nomor_po"] as KeyOf<TCustomerPO>,
 				include: [
 					{
 						model: OrmCustomerSPPBIn,
-						attributes: ["id", "nomor_surat"] as (keyof TCustomerSPPBIn)[],
+						attributes: ["id", "nomor_surat"] as KeyOf<TCustomerSPPBIn>,
 						include: [
 							{
 								separate: true,
 								model: OrmPOItemSppbIn,
+								attributes: {
+									exclude: [
+										...defaultExcludeColumn,
+										"lot_no",
+									] as KeyOf<TPOItemSppbIn>,
+								},
 								include: [
-									{model: OrmKanbanItem, separate: true},
+									{
+										separate: true,
+										model: OrmKanbanItem,
+										attributes: {
+											exclude: [
+												...defaultExcludeColumn,
+												"master_item_id",
+												"id_item_po",
+												"id_kanban",
+											] as KeyOf<TKanbanItem>,
+										},
+									},
 									{
 										model: OrmMasterItem,
 										attributes: ["id", "name"] as (keyof TMasterItem)[],
@@ -60,6 +91,7 @@ const kanbanPoRouters = router({
 			});
 
 			const result = listPo.map(({dataValues}) => {
+				// @ts-ignore
 				const val = dataValues as II;
 
 				const dataSppbIn = val.OrmCustomerSPPBIns.map(
