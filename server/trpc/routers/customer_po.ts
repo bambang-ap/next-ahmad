@@ -27,7 +27,7 @@ import {procedure, router} from "@trpc";
 
 import {appRouter} from ".";
 
-type GetPage = PagingResult<GetPageRows>;
+export type GetPage = PagingResult<GetPageRows>;
 export type GetPageRows = TCustomerPO & {
 	status: PO_STATUS;
 	OrmCustomer?: TCustomer;

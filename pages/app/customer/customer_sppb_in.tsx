@@ -2,7 +2,6 @@ import {FormEventHandler, useRef} from "react";
 
 import {useForm} from "react-hook-form";
 
-import {SelectAllButton} from "@appComponent/GeneratePdf";
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
@@ -15,14 +14,16 @@ import {
 	Form,
 	Modal,
 	ModalRef,
-	TableFilter,
+	TableFilterV2Ref,
+	TableFilterV3,
+	VRenderItem,
 } from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
-import {useExportData, useLoader, useTableFilter} from "@hooks";
+import {useLoader, useNewExportData} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
 import {SppbInRows} from "@trpc/routers/sppb/in";
-import {dateUtils, modalTypeParser, mutateCallback, sleep} from "@utils";
+import {dateUtils, modalTypeParser, mutateCallback, transformIds} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type FormType = {
@@ -36,19 +37,14 @@ SPPBIN.getLayout = getLayout;
 
 export default function SPPBIN() {
 	const modalRef = useRef<ModalRef>(null);
+	const tableRef = useRef<TableFilterV2Ref>(null);
 	const loader = useLoader();
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		defaultValues: {type: "add"},
 	});
 
-	const {formValue, hookForm} = useTableFilter();
-
 	const mutationOptions = mutateCallback(loader);
 
-	const {data, refetch} = trpc.sppb.in.getPage.useQuery({
-		type: "sppb_in",
-		...formValue,
-	});
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
@@ -58,35 +54,11 @@ export default function SPPBIN() {
 		trpc.sppb.in.delete.useMutation(mutationOptions);
 
 	const dataForm = watch();
-	const {type: modalType, idSppbIns} = dataForm;
+	const {type: modalType} = dataForm;
 
 	const {isPreview, modalTitle, isSelect} = modalTypeParser(
 		modalType,
 		"SPPB In",
-	);
-
-	const selectedIdSppbIns = Object.entries(idSppbIns ?? {}).reduce<string[]>(
-		(ret, [id, val]) => {
-			if (val) ret.push(id);
-			return ret;
-		},
-		[],
-	);
-
-	const {exportResult} = useExportData(
-		() =>
-			trpc.useQueries(t =>
-				selectedIdSppbIns.map(id =>
-					t.sppb.in.get({type: "sppb_in", where: {id}}),
-				),
-			),
-		// eslint-disable-next-line @typescript-eslint/no-shadow
-		({data}) => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const {detailPo, items, ...rest} = data?.[0] ?? {};
-
-			return rest;
-		},
 	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
@@ -100,7 +72,7 @@ export default function SPPBIN() {
 
 		function onSuccess() {
 			modalRef.current?.hide();
-			refetch();
+			tableRef.current?.refetch();
 		}
 	};
 
@@ -112,65 +84,43 @@ export default function SPPBIN() {
 		modalRef.current?.show();
 	}
 
-	async function exportData() {
-		if (selectedIdSppbIns.length <= 0) {
-			return alert("Silahkan pilih data terlebih dahulu");
-		}
-
-		exportResult();
-		reset(prev => ({...prev, type: undefined}));
-		await sleep(2500);
-		reset(prev => ({...prev, idSppbIns: {}}));
-	}
+	const selectedIds = transformIds(dataForm.idSppbIns);
+	const {exportResult} = useNewExportData(
+		() => {
+			return trpc.export.sppb.in.useQuery(
+				{ids: selectedIds!},
+				{
+					enabled: selectedIds.length! > 0,
+				},
+			);
+		},
+		exportedData => exportedData,
+	);
 
 	return (
 		<>
 			{loader.component}
-			<TableFilter
-				data={data}
-				form={hookForm}
-				keyExtractor={item => item?.id}
-				topComponent={
-					isSelect ? (
-						<>
-							<Button onClick={() => exportData()}>Export</Button>
-							<Button
-								onClick={() =>
-									reset(prev => ({...prev, type: undefined, idKanbans: {}}))
-								}>
-								Batal
-							</Button>
-						</>
-					) : (
-						<>
-							<Button
-								onClick={() => reset(prev => ({...prev, type: "select"}))}>
-								Select
-							</Button>
-							<Button onClick={() => showModal("add", {})}>Add</Button>
-						</>
-					)
+			<TableFilterV3
+				control={control}
+				reset={reset}
+				property="idSppbIns"
+				useQuery={form =>
+					trpc.sppb.in.getPage.useQuery({
+						type: "sppb_in",
+						...form,
+					})
 				}
+				exportResult={exportResult}
+				keyExtractor={item => item?.id}
+				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
 				header={[
-					isSelect && (
-						<SelectAllButton
-							form={dataForm}
-							property="idSppbIns"
-							key="btnSelectAll"
-							// @ts-ignore
-							data={data?.rows}
-							onClick={prev => reset(prev)}
-							selected={selectedIdSppbIns.length}
-							total={data?.rows.length}
-						/>
-					),
 					"Tanggal Surat Jalan",
 					"Nomor PO",
 					"Customer",
 					"Nomor Surat Jalan",
 					!isSelect && "Action",
 				]}
-				renderItem={({Cell, item}) => {
+				renderItem={({Cell, item}: VRenderItem<SppbInRows>) => {
 					const {id} = item;
 					return (
 						<>

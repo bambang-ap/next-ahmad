@@ -12,7 +12,11 @@ import TableRoot from "./TableRoot";
 export * from "./TableRoot";
 export {TableRoot as RootTable};
 
-type TRenderItem<T, R, V = {}> = (value: MMapValue<T> & V, index: number) => R;
+export type VRenderItem<T, V = Cells> = MMapValue<T> & V;
+export type TRenderItem<T, R, V = {}> = (
+	value: VRenderItem<T, V>,
+	index: number,
+) => R;
 
 type CellSelectProps<F extends FieldValues> = Omit<
 	WrappedProps<F, InputProps>,

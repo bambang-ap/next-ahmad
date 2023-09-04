@@ -1,49 +1,50 @@
-import {forwardRef} from "react";
+import {ForwardedRef, forwardRef, useImperativeHandle} from "react";
 
-import {Button} from "@mui/material";
 import {DeepPartialSkipArrayKey, FieldValues, useWatch} from "react-hook-form";
 
 import {SelectAllButton} from "@appComponent/GeneratePdf";
-import {FormProps, PagingResult} from "@appTypes/app.type";
-import {ModalTypeSelect} from "@appTypes/app.zod";
-import {useNewExportData} from "@hooks";
+import {FormProps, ModalTypeSelect} from "@appTypes/app.type";
+import {Button, TableFilterV2Props, TableFilterV2Ref} from "@components";
+import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {modalTypeParser, sleep, transformIds} from "@utils";
 
-import {TableFilter, TableFilterProps} from "./TableFilter";
+import {TableFilter} from "./TableFilter";
 
-type UU = {type: ModalTypeSelect} & FieldValues;
-type OO<
+type Fields = {type: ModalTypeSelect} & FieldValues;
+type TableFilterV3Props<
 	T,
-	F extends UU,
+	F extends Fields,
 	P extends keyof DeepPartialSkipArrayKey<F>,
 > = FormProps<F, "reset" | "control"> &
-	TableFilterProps<T> &
+	TableFilterV2Props<T> &
 	Partial<ReturnType<typeof useNewExportData>> & {
 		property: P;
 		onCancel?: NoopVoid;
-		dataRender?: PagingResult<any>;
 	};
 
 export const TableFilterV3 = forwardRef(TableFilterV3Component);
 
 function TableFilterV3Component<
 	T,
-	F extends UU,
+	F extends Fields,
 	P extends keyof DeepPartialSkipArrayKey<F>,
->(props: OO<T, F, P>) {
+>(props: TableFilterV3Props<T, F, P>, ref: ForwardedRef<TableFilterV2Ref>) {
 	const {
+		useQuery,
 		reset,
 		property,
 		control,
 		onCancel,
 		exportResult,
-		data,
-		dataRender,
 		topComponent: tC,
 		header = [],
 		...tableProps
 	} = props;
 
+	const {formValue, hookForm} = useTableFilter();
+	const {data, refetch} = useQuery(formValue);
+
+	const loader = useLoader();
 	const dataForm = useWatch({control});
 
 	const {type: modalType} = dataForm;
@@ -70,31 +71,45 @@ function TableFilterV3Component<
 			return alert("Silahkan pilih data terlebih dahulu");
 		}
 
+		loader?.show?.();
 		exportResult();
+		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
 		await sleep(2500);
 		reset(prev => ({...prev, [property]: {}}));
 	}
 
+	useImperativeHandle(ref, () => {
+		return {refetch};
+	});
+
 	return (
-		<TableFilter
-			{...tableProps}
-			data={data}
-			topComponent={topComponent}
-			header={[
-				isSelect && (
-					<SelectAllButton
-						form={dataForm}
-						property={property}
-						key="btnSelectAll"
-						data={dataRender?.rows}
-						onClick={prev => reset(prev)}
-						selected={selectedIds.length}
-						total={dataRender?.rows.length}
-					/>
-				),
-				...header,
-			]}
-		/>
+		<>
+			{/**
+			 * TODO: Add Generate PDF
+			 */}
+			{loader.component}
+			<TableFilter
+				{...tableProps}
+				form={hookForm}
+				data={data}
+				topComponent={topComponent}
+				header={[
+					isSelect && (
+						<SelectAllButton
+							// @ts-ignore
+							data={data?.rows}
+							form={dataForm}
+							property={property}
+							key="btnSelectAll"
+							onClick={prev => reset(prev)}
+							selected={selectedIds.length}
+							total={data?.rows.length}
+						/>
+					),
+					...header,
+				]}
+			/>
+		</>
 	);
 }
