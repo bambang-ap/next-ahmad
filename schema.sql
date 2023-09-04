@@ -515,7 +515,9 @@ CREATE TABLE public.scan (
     lot_no_imi character varying(100),
     item_qc_reject json DEFAULT '[]'::json,
     id_customer character varying(47),
-    notes text
+    notes text,
+    date json DEFAULT '{}'::json,
+    item_from_kanban json DEFAULT '{}'::json
 );
 
 

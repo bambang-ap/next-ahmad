@@ -3,6 +3,8 @@ import qr, {image_type} from "qr-image";
 import {z} from "zod";
 
 import {tCustomer} from "@appTypes/app.zod";
+import {isProd} from "@constants";
+import {ORM} from "@database";
 import {generateId, getNow} from "@server";
 import {procedure, router} from "@trpc";
 import {TRPCError} from "@trpc/server";
@@ -10,6 +12,23 @@ import {TRPCError} from "@trpc/server";
 const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
+	statsActivity: procedure.query(async () => {
+		if (isProd) throw new TRPCError({code: "NOT_FOUND"});
+		const [queries] = await ORM.query(
+			`SELECT * FROM pg_stat_activity WHERE wait_event IS NOT NULL AND backend_type = 'client backend';`,
+		);
+
+		return {count: queries.length, queries};
+	}),
+	dropTables: procedure.query(async () => {
+		if (isProd) throw new TRPCError({code: "NOT_FOUND"});
+		const [queries] = await ORM.query(
+			`select 'drop table if exists "' || tablename || '" cascade;' as query from pg_tables where schemaname = 'public' LIMIT 100 OFFSET 0`,
+		);
+
+		// @ts-ignore
+		return queries.map(e => e.query).join("");
+	}),
 	now: procedure.query(getNow),
 	generateId: procedure
 		.input(z.string().optional())
