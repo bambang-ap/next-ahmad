@@ -3,16 +3,17 @@ import {FormEventHandler, useRef} from "react";
 import {useForm} from "react-hook-form";
 
 import {ModalTypePreview} from "@appTypes/app.type";
-import {Button, Modal, ModalRef, TableFilter} from "@components";
+import {Button, CellSelect, Modal, ModalRef, TableFilterV3} from "@components";
 import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useTableFilter} from "@hooks";
+import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
-import {dateUtils} from "@utils";
+import {dateUtils, modalTypeParser, transformIds} from "@utils";
 import {trpc} from "@utils/trpc";
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
+	const loader = useLoader();
 	const modalRef = useRef<ModalRef>(null);
 
 	const insertPO = trpc.customer_po.add.useMutation(defaultErrorMutation);
@@ -32,16 +33,25 @@ export default function POCustomer() {
 		...formValue,
 	});
 
-	const modalType = watch("type");
-	const isDelete = modalType === "delete";
-	const {modalTitle} = {
-		get modalTitle() {
-			if (modalType === "add") return "Tambah Customer PO";
-			if (modalType === "edit") return "Edit Customer PO";
-			if (modalType === "delete") return "Hapus Customer PO";
-			return "Customer PO";
+	const dataForm = watch();
+	const {type: modalType} = dataForm;
+	const {isSelect, isDelete, modalTitle} = modalTypeParser(
+		modalType,
+		"SPPB In",
+	);
+
+	const selectedIds = transformIds(dataForm.idPo);
+	const {exportResult} = useNewExportData(
+		() => {
+			return trpc.export.po.useQuery(
+				{idPo: selectedIds!},
+				{
+					enabled: selectedIds.length! > 0,
+				},
+			);
 		},
-	};
+		exportedData => exportedData,
+	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -73,6 +83,7 @@ export default function POCustomer() {
 
 	return (
 		<>
+			{loader.component}
 			<Modal
 				ref={modalRef}
 				title={modalTitle}
@@ -82,7 +93,13 @@ export default function POCustomer() {
 				</form>
 			</Modal>
 			<div className="overflow-x-auto w-full">
-				<TableFilter
+				<TableFilterV3
+					exportResult={exportResult}
+					property="idPo"
+					onCancel={() => reset(prev => ({...prev, type: undefined, idPo: {}}))}
+					reset={reset}
+					control={control}
+					dataRender={data}
 					keyExtractor={item => item.id}
 					data={data}
 					form={hookForm}
@@ -109,6 +126,13 @@ export default function POCustomer() {
 
 						return (
 							<>
+								{isSelect && (
+									<CellSelect
+										noLabel
+										control={control}
+										fieldName={`idPo.${item.id}`}
+									/>
+								)}
 								<Cell>{nomor_po}</Cell>
 								<Cell>{customer?.name}</Cell>
 								<Cell>{dateUtils.date(tgl_po)}</Cell>

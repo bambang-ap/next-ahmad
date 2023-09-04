@@ -12,7 +12,7 @@ type AdditionalTableFilterV2Props<T> = {
 	) => UseTRPCQueryResult<PagingResult<T>, unknown>;
 };
 
-type TableFilterV2Props<T> = AdditionalTableFilterV2Props<T> &
+export type TableFilterV2Props<T> = AdditionalTableFilterV2Props<T> &
 	Omit<TableFilterProps<T>, "form" | "data">;
 
 export type TableFilterV2Ref = {refetch: NoopVoid};

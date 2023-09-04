@@ -11,6 +11,7 @@ export * from "./base/Modal";
 export * from "./base/Table";
 export * from "./base/Table/TableFilter";
 export * from "./base/Table/TableFilterV2";
+export * from "./base/Table/TableFilterV3";
 export * from "./base/Text";
 export * from "./base/Touchable";
 export * from "./base/Touchable/Button";

@@ -49,6 +49,7 @@ export default function SPPBOUT() {
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
 	const dataForm = watch();
+	console.log(dataForm);
 	const {type: modalType, idSppbOuts: idSppbIns} = dataForm;
 
 	const {isPreview, modalTitle, isAdd, isEdit, isSelect} = modalTypeParser(

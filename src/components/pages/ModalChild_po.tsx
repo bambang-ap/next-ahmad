@@ -27,6 +27,7 @@ export const qtyList = [1, 2, 3] as const;
 
 export type FormType = TCustomerPO & {
 	type: ModalTypePreview;
+	idPo?: MyObject<boolean>;
 } & Pick<TCustomerPOExtended, "po_item">;
 
 export default function PoModalChild({
