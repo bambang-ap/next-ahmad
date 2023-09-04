@@ -75,9 +75,9 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 	)}`;
 
 	const {itemDetail, lot_no} = itemSppbIn ?? {};
-	const {qty1, qty2, qty3, qty4, OrmMasterItem: masterItem} = item;
-	const {unit1, unit2, unit3, unit4} = itemDetail ?? {};
-	const [class1, class2, class3, class4] = [
+	const {qty1, qty2, qty3, OrmMasterItem: masterItem} = item;
+	const {unit1, unit2, unit3} = itemDetail ?? {};
+	const [class1, class2, class3] = [
 		classNames({
 			["text-white"]: !qty1 || !unit1,
 		}),
@@ -87,10 +87,7 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 		classNames({
 			["text-white"]: !qty3 || !unit3,
 		}),
-		classNames({
-			["text-white"]: !qty4 || !unit4,
-		}),
-	];
+	] as const;
 
 	type KK = Record<"nomorMesin" | "process" | "material", string[]> &
 		Pick<DataProcess, "hardness" | "parameter">;
@@ -239,7 +236,7 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 				</tr>
 				<tr>
 					<Td className={class3}>{`${qty3} ${unit3}`}</Td>
-					<Td className={class4}>{`${qty4} ${unit4}`}</Td>
+					<Td className="text-white">~</Td>
 				</tr>
 			</table>
 			<div className="mt-2 flex justify-between">
