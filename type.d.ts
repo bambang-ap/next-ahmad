@@ -1,4 +1,5 @@
 type TNextApi = (req: NextApiRequest, res: NextApiResponse) => void;
+type KeyOf<T extends {}> = (keyof T)[];
 
 // declare module 'next' {
 // 	import type {ReactElement, ReactNode} from 'react';
