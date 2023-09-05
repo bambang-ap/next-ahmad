@@ -789,6 +789,195 @@ ALTER TABLE ONLY public.inv_supplier_po
 
 
 --
+-- Name: createdby_1693939331115_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX createdby_1693939331115_index ON public.kanban USING btree ("createdBy");
+
+
+--
+-- Name: doc_id_1693939147464_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX doc_id_1693939147464_index ON public.kanban USING btree (doc_id);
+
+
+--
+-- Name: email_1693939633648_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX email_1693939633648_index ON public.user_pengguna USING btree (email);
+
+
+--
+-- Name: id_1693939527547_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_1693939527547_index ON public.customer USING btree (id);
+
+
+--
+-- Name: id_customer_1693938989246_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_customer_1693938989246_index ON public.po USING btree (id_customer);
+
+
+--
+-- Name: id_customer_1693939019302_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_customer_1693939019302_index ON public.customer_sppb_out USING btree (id_customer);
+
+
+--
+-- Name: id_item_1693939080499_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_item_1693939080499_index ON public.po_item_sppb_in USING btree (id_item);
+
+
+--
+-- Name: id_item_1693939117326_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_item_1693939117326_index ON public.kanban_item USING btree (id_item);
+
+
+--
+-- Name: id_kanban_1693939108665_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_kanban_1693939108665_index ON public.kanban_item USING btree (id_kanban);
+
+
+--
+-- Name: id_kanban_1693939168149_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_kanban_1693939168149_index ON public.scan USING btree (id_kanban);
+
+
+--
+-- Name: id_kategori_1693939411214_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_kategori_1693939411214_index ON public.hardness USING btree (id_kategori);
+
+
+--
+-- Name: id_kategori_1693939423366_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_kategori_1693939423366_index ON public.material USING btree (id_kategori);
+
+
+--
+-- Name: id_kategori_1693939433148_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_kategori_1693939433148_index ON public.parameter USING btree (id_kategori);
+
+
+--
+-- Name: id_kendaraan_1693939024312_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_kendaraan_1693939024312_index ON public.customer_sppb_out USING btree (id_kendaraan);
+
+
+--
+-- Name: id_po_1693939039051_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_po_1693939039051_index ON public.kanban USING btree (id_po);
+
+
+--
+-- Name: id_po_1693939054565_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_po_1693939054565_index ON public.po_itemm USING btree (id_po);
+
+
+--
+-- Name: id_po_1693939296738_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_po_1693939296738_index ON public.customer_sppb_in USING btree (id_po);
+
+
+--
+-- Name: id_po_1693939397429_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_po_1693939397429_index ON public.inv_supplier_po_item USING btree (id_po);
+
+
+--
+-- Name: id_sppb_in_1693939092480_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_sppb_in_1693939092480_index ON public.po_item_sppb_in USING btree (id_sppb_in);
+
+
+--
+-- Name: id_sppb_in_1693939278930_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_sppb_in_1693939278930_index ON public.kanban USING btree (id_sppb_in);
+
+
+--
+-- Name: id_supplier_item_1693939377317_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_supplier_item_1693939377317_index ON public.inv_supplier_po_item USING btree (id_supplier_item);
+
+
+--
+-- Name: item_id_1693939461883_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX item_id_1693939461883_index ON public.inv_supplier_item_relation USING btree (item_id);
+
+
+--
+-- Name: kategori_mesin_1693938962084_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX kategori_mesin_1693938962084_index ON public.master_item USING btree (kategori_mesin);
+
+
+--
+-- Name: kategori_mesin_1693938980082_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX kategori_mesin_1693938980082_index ON public.mesin USING btree (kategori_mesin);
+
+
+--
+-- Name: master_item_id_1693938881549_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX master_item_id_1693938881549_index ON public.po_itemm USING btree (master_item_id);
+
+
+--
+-- Name: master_item_id_1693938902665_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX master_item_id_1693938902665_index ON public.kanban_item USING btree (master_item_id);
+
+
+--
+-- Name: master_item_id_1693938923669_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX master_item_id_1693938923669_index ON public.po_item_sppb_in USING btree (master_item_id);
+
+
+--
 -- Name: name; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -800,6 +989,48 @@ CREATE UNIQUE INDEX name ON public.role USING btree (name);
 --
 
 CREATE UNIQUE INDEX name_1684686351854_index ON public.mesin_kategori USING btree (name);
+
+
+--
+-- Name: password_1693939643811_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX password_1693939643811_index ON public.user_pengguna USING btree (password);
+
+
+--
+-- Name: status_finish_good_1693939711768_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX status_finish_good_1693939711768_index ON public.scan USING btree (status_finish_good);
+
+
+--
+-- Name: status_produksi_1693939711768_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX status_produksi_1693939711768_index ON public.scan USING btree (status_produksi);
+
+
+--
+-- Name: status_qc_1693939711768_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX status_qc_1693939711768_index ON public.scan USING btree (status_qc);
+
+
+--
+-- Name: supplier_id_1693939467378_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX supplier_id_1693939467378_index ON public.inv_supplier_item_relation USING btree (supplier_id);
+
+
+--
+-- Name: updatedby_1693939331115_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX updatedby_1693939331115_index ON public.kanban USING btree ("updatedBy");
 
 
 --
