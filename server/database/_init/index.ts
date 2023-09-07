@@ -27,8 +27,6 @@ export const ORM = new Sequelize(
 	isProd ? PROD_PGSQL_USER : DEV_PGSQL_USER,
 	isProd ? PROD_PGSQL_PASSWORD : DEV_PGSQL_PASSWORD,
 	{
-		// query: {raw: true},
-		// logging: isProd ? false : true,
 		dialect: "postgres",
 		port: isProd ? PROD_PGSQL_PORT : DEV_PGSQL_PORT,
 		host: isProd ? PROD_PGSQL_HOST : DEV_PGSQL_HOST,

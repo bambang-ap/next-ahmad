@@ -70,7 +70,6 @@ const scanRouters = router({
 					order: scanOrder(target),
 					offset: (page - 1) * limit,
 					where: {[`status_${target}`]: true},
-					logging: true,
 				});
 				const allDataScan = data.map(async ({dataValues}) => {
 					const kanban = await OrmKanban.findOne({

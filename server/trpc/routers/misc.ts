@@ -23,7 +23,6 @@ const miscRouter = {
 	test: procedure.query(() => {
 		return OrmCustomerPO.findAll({
 			limit: 3,
-			logging: true,
 			include: [
 				OrmCustomer,
 				{
