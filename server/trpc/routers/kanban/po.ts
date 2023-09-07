@@ -55,7 +55,6 @@ const kanbanPoRouters = router({
 
 		return checkCredentialV2(ctx, async (): Promise<II[]> => {
 			const listPo = await OrmCustomerPO.findAll({
-				logging: true,
 				where: {id_customer: input.id},
 				attributes: ["id", "nomor_po"] as KeyOf<TCustomerPO>,
 				include: [
@@ -95,8 +94,40 @@ const kanbanPoRouters = router({
 			});
 
 			const result = listPo.map(async ({dataValues}) => {
-				const value = dataValues as II;
-				const listSppbIn = value.OrmCustomerSPPBIns;
+				const listSppbIn = await OrmCustomerSPPBIn.findAll({
+					logging: true,
+					where: {id_po: dataValues.id},
+					attributes: ["id", "nomor_surat"] as KeyOf<TCustomerSPPBIn>,
+					include: [
+						{
+							model: OrmPOItemSppbIn,
+							attributes: {
+								exclude: [
+									...defaultExcludeColumn,
+									"lot_no",
+								] as KeyOf<TPOItemSppbIn>,
+							},
+							include: [
+								{
+									model: OrmKanbanItem,
+									attributes: {
+										exclude: [
+											...defaultExcludeColumn,
+											"master_item_id",
+											"id_item_po",
+											"id_kanban",
+										] as KeyOf<TKanbanItem>,
+									},
+								},
+								{
+									model: OrmMasterItem,
+									attributes: ["id", "name"] as (keyof TMasterItem)[],
+								},
+							],
+						},
+					],
+				});
+
 				const dataSppbIn =
 					listSppbIn.length > 0
 						? listSppbIn.map(({dataValues: sppbIn}) => {
