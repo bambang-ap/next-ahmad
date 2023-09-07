@@ -69,6 +69,7 @@ export type {
 	TUserLogin,
 	TUserSignIn,
 	UnitQty,
+	UnitUnit,
 	USPPB,
 	ZId,
 } from "./app.zod";

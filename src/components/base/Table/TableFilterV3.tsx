@@ -77,23 +77,20 @@ function TableFilterV3Component<
 	const {isSelect} = modalTypeParser(modalType, "SPPB In");
 
 	const selectedIds = transformIds(dataForm[property]);
-	const topComponent =
-		enabledExport || enabledPdf ? (
-			isSelect ? (
-				<>
-					{enabledExport && <Button onClick={exportData}>Export</Button>}
-					{enabledPdf && <Button onClick={() => printData(true)}>Print</Button>}
-					<Button onClick={onCancel}>Batal</Button>
-				</>
-			) : (
-				<>
-					<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
-						Select
-					</Button>
-					{tC}
-				</>
-			)
-		) : null;
+	const topComponent = isSelect ? (
+		<>
+			{enabledExport && <Button onClick={exportData}>Export</Button>}
+			{enabledPdf && <Button onClick={() => printData(true)}>Print</Button>}
+			<Button onClick={onCancel}>Batal</Button>
+		</>
+	) : (
+		<>
+			<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
+				Select
+			</Button>
+			{tC}
+		</>
+	);
 
 	async function exportData() {
 		if (!enabledExport) return;

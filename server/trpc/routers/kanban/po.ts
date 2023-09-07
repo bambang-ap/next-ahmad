@@ -1,6 +1,12 @@
 import {Model} from "sequelize";
 
-import {TMasterItem, UQtyList} from "@appTypes/app.type";
+import {
+	TMasterItem,
+	TPOItem,
+	UnitUnit,
+	UQtyList,
+	ZId,
+} from "@appTypes/app.type";
 import {
 	TCustomerPO,
 	TCustomerSPPBIn,
@@ -12,6 +18,7 @@ import {defaultExcludeColumn} from "@constants";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
+	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmKanbanItem,
 	OrmMasterItem,
@@ -20,6 +27,21 @@ import {
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 import {qtyMap} from "@utils";
+
+export type GG = TPOItemSppbIn & {
+	isClosed: boolean;
+	OrmMasterItem: Pick<TMasterItem, "id" | "name" | "keterangan">;
+	OrmKanbanItems: TKanbanItem[];
+	OrmCustomerPOItem: Pick<TPOItem, keyof UnitUnit | keyof ZId>;
+};
+export type KJD = Pick<TCustomerSPPBIn, "id" | "nomor_surat"> & {
+	isClosed: boolean;
+	OrmPOItemSppbIns: GG[];
+};
+export type II = Pick<TCustomerPO, "id" | "nomor_po"> & {
+	isClosed: boolean;
+	OrmCustomerSPPBIns: KJD[];
+};
 
 const kanbanPoRouters = router({
 	get_customer: procedure.query(({ctx}) => {
@@ -31,20 +53,6 @@ const kanbanPoRouters = router({
 		});
 	}),
 	get: procedure.input(zId).query(async ({ctx, input}) => {
-		type GG = TPOItemSppbIn & {
-			isClosed: boolean;
-			OrmMasterItem: Pick<TMasterItem, "id" | "name">;
-			OrmKanbanItems: TKanbanItem[];
-		};
-		type KJD = Pick<TCustomerSPPBIn, "id" | "nomor_surat"> & {
-			isClosed: boolean;
-			OrmPOItemSppbIns: GG[];
-		};
-		type II = Pick<TCustomerPO, "id" | "nomor_po"> & {
-			isClosed: boolean;
-			OrmCustomerSPPBIns: KJD[];
-		};
-
 		return checkCredentialV2(ctx, async (): Promise<II[]> => {
 			const listPo = await OrmCustomerPO.findAll({
 				where: {id_customer: input.id},
@@ -67,6 +75,12 @@ const kanbanPoRouters = router({
 							},
 							include: [
 								{
+									model: OrmCustomerPOItem,
+									attributes: ["id", "unit1", "unit2", "unit3"] as KeyOf<
+										GG["OrmCustomerPOItem"]
+									>,
+								},
+								{
 									separate: true,
 									model: OrmKanbanItem,
 									attributes: {
@@ -80,7 +94,11 @@ const kanbanPoRouters = router({
 								},
 								{
 									model: OrmMasterItem,
-									attributes: ["id", "name"] as (keyof TMasterItem)[],
+									attributes: [
+										"id",
+										"name",
+										"keterangan",
+									] as (keyof TMasterItem)[],
 								},
 							],
 						},

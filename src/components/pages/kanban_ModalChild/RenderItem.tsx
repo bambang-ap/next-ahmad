@@ -1,65 +1,58 @@
-// @ts-nocheck
-
 import {ScanListFormType} from "pages/app/scan/[route]/list";
-import {Control, UseFormReset, useWatch} from "react-hook-form";
+import {useWatch} from "react-hook-form";
 
 import {Wrapper} from "@appComponent/Wrapper";
+import {FormProps, UnitQty} from "@appTypes/app.type";
 import {Button, Cells, Input, Table, Text} from "@components";
 import {defaultErrorMutation} from "@constants";
-import {modalTypeParser} from "@utils";
+import type {KJD} from "@trpc/routers/kanban/po";
+import {modalTypeParser, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
-import {qtyList} from "../ModalChild_po";
 import {RenderMesin} from "./RenderMesin";
 
-type RenderItemProps = {
-	control: Control<ScanListFormType>;
-	reset: UseFormReset<ScanListFormType>;
+type RenderItemProps = FormProps<ScanListFormType, "control" | "reset"> & {
+	selectedSppbIn?: KJD;
 };
 
-export function RenderItem({control, reset}: RenderItemProps) {
-	const [idKanban, idSppbIn, kanbanItems = {}, id_po, modalType] = useWatch({
-		control,
-		name: ["id", "id_sppb_in", "items", "id_po", "type"],
-	});
+export function RenderItem({
+	control,
+	reset,
+	selectedSppbIn: inn,
+}: RenderItemProps) {
+	const dataForm = useWatch({control});
+	const {
+		type: modalType,
+		id_sppb_in: idSppbIn,
+		items: kanbanItems = {},
+	} = dataForm;
+
 	const {mutate: mutateItem} =
 		trpc.kanban.deleteItem.useMutation(defaultErrorMutation);
-	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery(
-		{
-			type: "sppb_in",
-			where: {id_po},
-		},
-		{enabled: !!id_po},
-	);
 
 	const {isPreview, isPreviewEdit} = modalTypeParser(modalType);
 
-	const selectedSppbIn = dataSppbIn?.find(e => e.id === idSppbIn);
-	// const selectedKanban = dataKanban?.find(e => e.id === idKanban);
-	const {data: selectedKanban} = trpc.kanban.detail.useQuery(idKanban, {
-		enabled: !!idKanban,
-	});
-	const {data: selectedKanbans = []} = trpc.kanban.get.useQuery({
-		type: "kanban",
-		where: {id_sppb_in: idSppbIn},
-	});
+	const selectedSppbInItemId = Object.keys(kanbanItems)?.[0]!;
+	const selectedSppbInItem = inn?.OrmPOItemSppbIns.find(
+		e => e.id === selectedSppbInItemId,
+	);
 
-	const itemsInSelectedKanban = selectedKanbans
-		// dataKanban?.filter(e => e.id_sppb_in === idSppbIn)
-		.reduce<Record<string, Record<`qty${typeof qtyList[number]}`, number>>>(
-			(ret, e) => {
-				qtyList.forEach(num => {
-					const keyQty = `qty${num}` as const;
-					Object.entries(e.items ?? {}).forEach(([key, val]) => {
-						if (!ret[key]) ret[key] = {};
-						if (!ret[key][keyQty]) ret[key][keyQty] = 0;
-						ret[key][keyQty] += parseFloat(val[keyQty] ?? 0);
-					});
+	const qtyTotal = {
+		[selectedSppbInItemId]: selectedSppbInItem?.OrmKanbanItems.reduce(
+			(a, e) => {
+				qtyMap(({qtyKey}) => {
+					if (!a?.[qtyKey]) a[qtyKey] = 0;
+					a[qtyKey] += e[qtyKey]!;
 				});
-				return ret;
+				return a;
 			},
-			{},
-		);
+			{} as UnitQty,
+		),
+	};
+
+	const qtyMax = qtyMap(({qtyKey}) => {
+		return {[qtyKey]: selectedSppbInItem?.[qtyKey]!};
+	}).reduce((a, b) => ({...a, ...b}));
 
 	function deleteItem(id_item: string, id?: string) {
 		reset(({items, list_mesin, callbacks = [], ...prevValue}) => {
@@ -84,31 +77,29 @@ export function RenderItem({control, reset}: RenderItemProps) {
 				!isPreview && "Action",
 			]}
 			data={Object.entries(kanbanItems)}
-			renderItemEach={({Cell, item: [id_item, item]}, index) => {
-				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
-				const {keterangan} = item.OrmMasterItem ?? {};
+			renderItemEach={({Cell, item: [id_item]}) => {
+				const rowItem = selectedSppbInItem;
+				const keterangan = rowItem?.OrmMasterItem?.keterangan;
+
 				return (
 					<Cell colSpan={5} className="flex flex-col gap-2">
-						{!!keterangan && (
-							<Wrapper title="Keterangan">
-								{item.OrmMasterItem?.keterangan}
-							</Wrapper>
-						)}
+						{!!keterangan && <Wrapper title="Keterangan">{keterangan}</Wrapper>}
 						<RenderMesin
-							index={index}
 							reset={reset}
 							control={control}
-							masterId={rowItem?.master_item_id}
+							masterId={rowItem?.master_item_id!}
 							idItem={id_item}
 						/>
 					</Cell>
 				);
 			}}
 			renderItem={({Cell, item: [id_item, item]}) => {
-				if (item.id_sppb_in !== idSppbIn) return false;
+				if (item?.id_sppb_in !== idSppbIn) return false;
 
-				const rowItem = selectedSppbIn?.items?.find(e => e.id === id_item);
-				const selectedItem = selectedKanban?.items?.[id_item];
+				const rowItem = selectedSppbInItem;
+				const selectedItem = rowItem?.OrmKanbanItems.find(
+					e => e.id === item?.id,
+				);
 
 				return (
 					<>
@@ -126,22 +117,21 @@ export function RenderItem({control, reset}: RenderItemProps) {
 							defaultValue={rowItem?.id_item}
 							fieldName={`items.${id_item}.id_item_po`}
 						/>
-						<DetailItem idItem={rowItem?.master_item_id} Cell={Cell} />
+						<DetailItem idItem={rowItem?.master_item_id!} Cell={Cell} />
 						<Cell>{rowItem?.lot_no}</Cell>
 						<Cell>
 							<div className="flex gap-2">
-								{qtyList.map(num => {
-									const keyQty = `qty${num}` as const;
-									const keyUnit = `unit${num}` as const;
-
+								{qtyMap(({num, qtyKey: keyQty, unitKey: keyUnit}) => {
 									if (!rowItem?.[keyQty]) return null;
 
-									const maxValue = parseFloat(rowItem?.[keyQty] ?? 0);
-									const currentQty = selectedItem?.[keyQty] ?? 0;
+									const maxValue = parseFloat(qtyMax?.[keyQty]?.toString()!);
 
-									const calculatedQty = parseFloat(
-										itemsInSelectedKanban?.[id_item]?.[keyQty] ?? 0,
+									const currentQty = parseFloat(
+										selectedItem?.[keyQty]?.toString() ?? "0",
 									);
+									const calculatedQty =
+										qtyTotal?.[selectedSppbInItemId]?.[keyQty]!;
+
 									const defaultValue = isPreviewEdit
 										? maxValue - calculatedQty + currentQty
 										: maxValue - calculatedQty;
@@ -151,7 +141,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 											<Input
 												type="decimal"
 												control={control}
-												defaultValue={defaultValue as string}
+												defaultValue={defaultValue}
 												fieldName={`items.${id_item}.${keyQty}`}
 												label={`Jumlah ${num}`}
 												rules={{
@@ -166,7 +156,9 @@ export function RenderItem({control, reset}: RenderItemProps) {
 												control={control}
 												defaultValue={rowItem.id}
 												fieldName={`items.${id_item}.id_item`}
-												rightAcc={<Text>{rowItem?.itemDetail?.[keyUnit]}</Text>}
+												rightAcc={
+													<Text>{rowItem.OrmCustomerPOItem?.[keyUnit]}</Text>
+												}
 											/>
 										</div>
 									);
@@ -175,7 +167,7 @@ export function RenderItem({control, reset}: RenderItemProps) {
 						</Cell>
 						<Cell className="flex gap-2">
 							{!isPreview && (
-								<Button onClick={() => deleteItem(id_item, item.id)}>
+								<Button onClick={() => deleteItem(id_item, item?.id)}>
 									Delete
 								</Button>
 							)}

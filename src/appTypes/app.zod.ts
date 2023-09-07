@@ -89,16 +89,21 @@ export const unitQty = z.object({
 	// qty5: zDecimal.nullish(),
 });
 
-export type TPOItem = z.infer<typeof tPOItem>;
-export const tPOItem = zId.extend({
-	master_item_id: z.string(),
-	id_po: z.string(),
-	harga: zDecimal.optional(),
+export type UnitUnit = z.infer<typeof unitUnit>;
+export const unitUnit = z.object({
 	unit1: tItemUnit,
 	unit2: tItemUnit.nullish(),
 	unit3: tItemUnit.nullish(),
 	// unit4: tItemUnit.nullish(),
 	// unit5: tItemUnit.nullish(),
+});
+
+export type TPOItem = z.infer<typeof tPOItem>;
+export const tPOItem = zId.extend({
+	master_item_id: z.string(),
+	id_po: z.string(),
+	harga: zDecimal.optional(),
+	...unitUnit.shape,
 	...unitQty.shape,
 });
 

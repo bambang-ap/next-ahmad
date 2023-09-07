@@ -169,7 +169,11 @@ export function NewKanbanModalChild({
 			</div>
 
 			<div className="flex-1 overflow-y-auto flex flex-col gap-2">
-				<RenderItem control={control} reset={reset} />
+				<RenderItem
+					reset={reset}
+					control={control}
+					selectedSppbIn={selectedSppbIn}
+				/>
 			</div>
 
 			{!isPreview && <Button type="submit">Submit</Button>}
