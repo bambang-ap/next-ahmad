@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 import {defaultLimit} from "@constants";
-import {CRUD_ENABLED} from "@enum";
+import {CATEGORY_REJECT_DB, CRUD_ENABLED} from "@enum";
 
 const zDecimal = z
 	.string()
@@ -345,11 +345,18 @@ export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
 
 const scanItem = z.tuple([z.string()]).rest(z.number().or(z.string()));
 
+export const eCategoryReject = z.nativeEnum(CATEGORY_REJECT_DB);
+
 export type TScanItem = z.infer<typeof tScanItem>;
 export const tScanItem = z.object({
 	item_produksi: scanItem.array().optional(),
 	item_qc: scanItem.array().optional(),
 	item_qc_reject: scanItem.array().optional(),
+	item_qc_reject_category: z
+		.tuple([z.string()])
+		.rest(eCategoryReject)
+		.array()
+		.optional(),
 	item_finish_good: scanItem.array().optional(),
 	// item_out_barang: scanItem.array().optional(),
 });

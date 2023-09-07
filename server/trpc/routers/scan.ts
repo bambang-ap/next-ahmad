@@ -20,6 +20,7 @@ import {
 	OrmScan,
 	OrmScanOrder as scanOrder,
 } from "@database";
+import {CATEGORY_REJECT_DB} from "@enum";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
@@ -161,14 +162,52 @@ const scanRouters = router({
 
 					await OrmScan.update(
 						{[statusTarget]: true, date, ...rest},
-						// {[statusTarget]: false, date, ...rest},
 						{where: {id: dataScan.id}},
 					);
 
 					switch (target) {
 						case "qc":
+							const i = 0;
+							const {item_qc, item_qc_reject, item_qc_reject_category} = rest;
+							let updateFg = false;
+							let toKanban = {} as UnitQty;
+							qtyMap(({num, qtyKey}): any => {
+								const qty = item_qc_reject?.[i]?.[num]! as number;
+								const reason = item_qc_reject_category?.[i]?.[num]!;
+								switch (reason) {
+									case CATEGORY_REJECT_DB.A:
+									case CATEGORY_REJECT_DB.C:
+									case CATEGORY_REJECT_DB.B:
+										if (qty > 0) {
+											if (reason === CATEGORY_REJECT_DB.B)
+												return (toKanban[qtyKey] = qty);
+											else return (updateFg = true);
+										}
+										break;
+									default:
+										break;
+								}
+							});
+
+							const p = [
+								Object.keys(toKanban).length > 0 &&
+									OrmKanbanItem.update(toKanban, {
+										where: {id: item_qc![i]![0]},
+									}),
+								updateFg &&
+									OrmScan.update(
+										{
+											status_finish_good: true,
+											item_finish_good: item_qc,
+										},
+										{where: {id: dataScan.id}},
+									),
+							];
+
+							await Promise.all(p);
 							break;
-						default: {
+
+						default:
 							const promisedUpdateItem = rest[itemTarget]?.map(
 								async ([idItem, ...qtys]) => {
 									const f = qtyMap(({qtyKey}, i) => {
@@ -185,7 +224,7 @@ const scanRouters = router({
 								},
 							);
 							await Promise.all(promisedUpdateItem ?? []);
-						}
+							break;
 					}
 
 					return Success;

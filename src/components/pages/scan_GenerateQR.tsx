@@ -10,7 +10,9 @@ import {
 	TPOItem,
 	TScanTarget,
 } from "@appTypes/app.type";
-import {Input, Text} from "@components";
+import {eCategoryReject} from "@appTypes/app.zod";
+import {Input, Select, SelectPropsData, Text} from "@components";
+import {CATEGORY_REJECT, CATEGORY_REJECT_DB} from "@enum";
 import {useSession} from "@hooks";
 import {
 	dateUtils,
@@ -33,6 +35,9 @@ export function ScanDetailKanban({
 	control: Control<FormTypeScan>;
 }) {
 	const {id, notes, ...formData} = useWatch({control});
+	const categoryReject = Object.values(eCategoryReject.enum).map<
+		SelectPropsData<CATEGORY_REJECT_DB>
+	>(value => ({value, label: CATEGORY_REJECT[value]}));
 
 	const {data} = useSession();
 	const {mutate: editNotes} = trpc.scan.editNotes.useMutation();
@@ -120,12 +125,20 @@ export function ScanDetailKanban({
 								fieldName={`${fieldKey}.${i}.0`}
 							/>
 							{isQC && (
-								<Input
-									className="hidden"
-									defaultValue={item.id}
-									control={control}
-									fieldName={`item_qc_reject.${i}.0`}
-								/>
+								<>
+									<Input
+										className="hidden"
+										defaultValue={item.id}
+										control={control}
+										fieldName={`item_qc_reject.${i}.0`}
+									/>
+									<Input
+										control={control}
+										className="hidden"
+										defaultValue={item.id}
+										fieldName={`item_qc_reject_category.${i}.0`}
+									/>
+								</>
 							)}
 							<div className="flex-1 bg-white text-center">
 								{/* FIXME: */}
@@ -190,22 +203,33 @@ export function ScanDetailKanban({
 											jumlah - (formData.item_qc?.[i]?.[num] ?? 0);
 
 										return (
-											<Input
-												key={jumlah}
-												className="flex-1 bg-white"
-												type="decimal"
-												defaultValue={0}
-												control={control}
-												rules={{
-													max: {
-														value: rejectMax,
-														message: `max is ${rejectMax}`,
-													},
-												}}
-												rightAcc={<Text>{detail?.[unitKey]}</Text>}
-												fieldName={`item_qc_reject.${i}.${num}`}
-												label={`Jumlah Reject ${num}`}
-											/>
+											<div className="flex gap-2 bg-white">
+												<Input
+													key={jumlah}
+													className="flex-1"
+													type="decimal"
+													defaultValue={0}
+													control={control}
+													rules={{
+														max: {
+															value: rejectMax,
+															message: `max is ${rejectMax}`,
+														},
+													}}
+													rightAcc={<Text>{detail?.[unitKey]}</Text>}
+													fieldName={`item_qc_reject.${i}.${num}`}
+													label={`Jumlah Reject ${num}`}
+												/>
+												{formData.item_qc_reject?.[i]?.[num] ? (
+													<Select
+														shouldUnregister
+														className="flex-1"
+														control={control}
+														data={categoryReject}
+														fieldName={`item_qc_reject_category.${i}.${num}`}
+													/>
+												) : null}
+											</div>
 										);
 									})}
 								</div>

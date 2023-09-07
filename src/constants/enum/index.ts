@@ -1,5 +1,17 @@
 import {z} from "zod";
 
+export enum CATEGORY_REJECT {
+	A = "Test Piece",
+	B = "Re-Proses",
+	C = "Scrap",
+}
+
+export enum CATEGORY_REJECT_DB {
+	A = "A",
+	B = "B",
+	C = "C",
+}
+
 export enum PO_STATUS {
 	A = "PO",
 	B = "SPPB In",

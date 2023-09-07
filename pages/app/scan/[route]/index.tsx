@@ -156,11 +156,11 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 			reset(prev => {
 				const {
 					item_finish_good,
-					// item_out_barang,
 					item_produksi,
 					item_qc,
 					lot_no_imi,
 					item_qc_reject,
+					item_qc_reject_category,
 					notes,
 				} = data;
 				return {
@@ -169,13 +169,15 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 					item_qc_reject,
 					lot_no_imi,
 					item_finish_good,
-					// item_out_barang,
 					item_produksi,
+					item_qc_reject_category,
 					item_qc,
 				};
 			});
 		}
 	}, [data]);
+
+	console.log(status);
 
 	return (
 		<Form
