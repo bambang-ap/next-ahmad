@@ -796,6 +796,48 @@ CREATE INDEX createdby_1693939331115_index ON public.kanban USING btree ("create
 
 
 --
+-- Name: customer_sppb_in_createdAt_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "customer_sppb_in_createdAt_index" ON public.customer_sppb_in USING btree ("createdAt" DESC);
+
+
+--
+-- Name: customer_sppb_in_id_po_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX customer_sppb_in_id_po_index ON public.customer_sppb_in USING btree (id_po);
+
+
+--
+-- Name: customer_sppb_in_id_po_index2; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX customer_sppb_in_id_po_index2 ON public.customer_sppb_in USING btree (id_po);
+
+
+--
+-- Name: customer_sppb_in_id_po_index3; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX customer_sppb_in_id_po_index3 ON public.customer_sppb_in USING btree (id_po) INCLUDE (nomor_surat, "createdAt", tgl);
+
+
+--
+-- Name: customer_sppb_in_nomor_surat_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX customer_sppb_in_nomor_surat_index ON public.customer_sppb_in USING btree (nomor_surat);
+
+
+--
+-- Name: customer_sppb_in_tgl_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX customer_sppb_in_tgl_index ON public.customer_sppb_in USING btree (tgl);
+
+
+--
 -- Name: doc_id_1693939147464_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -835,13 +877,6 @@ CREATE INDEX id_customer_1693939019302_index ON public.customer_sppb_out USING b
 --
 
 CREATE INDEX id_item_1693939080499_index ON public.po_item_sppb_in USING btree (id_item);
-
-
---
--- Name: id_item_1693939117326_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX id_item_1693939117326_index ON public.kanban_item USING btree (id_item);
 
 
 --
@@ -901,13 +936,6 @@ CREATE INDEX id_po_1693939054565_index ON public.po_itemm USING btree (id_po);
 
 
 --
--- Name: id_po_1693939296738_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX id_po_1693939296738_index ON public.customer_sppb_in USING btree (id_po);
-
-
---
 -- Name: id_po_1693939397429_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -940,6 +968,20 @@ CREATE INDEX id_supplier_item_1693939377317_index ON public.inv_supplier_po_item
 --
 
 CREATE INDEX item_id_1693939461883_index ON public.inv_supplier_item_relation USING btree (item_id);
+
+
+--
+-- Name: kanban_item_createdAt_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "kanban_item_createdAt_index" ON public.kanban_item USING btree ("createdAt" DESC);
+
+
+--
+-- Name: kanban_item_id_item_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX kanban_item_id_item_index ON public.kanban_item USING btree (id_item);
 
 
 --
@@ -996,6 +1038,20 @@ CREATE UNIQUE INDEX name_1684686351854_index ON public.mesin_kategori USING btre
 --
 
 CREATE INDEX password_1693939643811_index ON public.user_pengguna USING btree (password);
+
+
+--
+-- Name: po_item_sppb_in_createdAt_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX "po_item_sppb_in_createdAt_index" ON public.po_item_sppb_in USING btree ("createdAt" DESC);
+
+
+--
+-- Name: po_item_sppb_in_id_sppb_in_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX po_item_sppb_in_id_sppb_in_index ON public.po_item_sppb_in USING btree (id_sppb_in);
 
 
 --
