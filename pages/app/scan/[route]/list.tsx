@@ -5,22 +5,26 @@ import {KanbanFormType as KanbanFormTypee} from "pages/app/kanban";
 import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
-import {
-	GeneratePdf,
-	GenPdfRef,
-	SelectAllButton,
-} from "@appComponent/GeneratePdf";
 import {Wrapper as Wrp, WrapperProps} from "@appComponent/Wrapper";
 import {Route} from "@appTypes/app.type";
-import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
+import {
+	Button,
+	Form,
+	Modal,
+	ModalRef,
+	TableFilterV3,
+	TableFilterV3Ref,
+	VRenderItem,
+} from "@components";
 import {getLayout} from "@hoc";
-import {useKanban, useLoader, useNewExportData, useTableFilter} from "@hooks";
+import {useKanban, useLoader, useNewExportData} from "@hooks";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {RenderData} from "@pageComponent/scan/list/RenderData";
 import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
-import {modalTypeParser} from "@utils";
+import type {ScanList} from "@trpc/routers/scan";
+import {modalTypeParser, transformIds} from "@utils";
 import {trpc} from "@utils/trpc";
 
 ListScanData.getLayout = getLayout;
@@ -32,17 +36,11 @@ export default function ListScanData() {
 
 	const loader = useLoader();
 	const modalRef = useRef<ModalRef>(null);
-	const genPdfRef = useRef<GenPdfRef>(null);
+	const tableRef = useRef<TableFilterV3Ref>(null);
 	const setTitle = useSetRecoilState(atomHeaderTitle);
 
 	const {isReady, ...router} = useRouter();
 	const {route} = router.query as Route;
-
-	const {formValue, hookForm} = useTableFilter();
-	const {data} = trpc.scan.list.useQuery({
-		...formValue,
-		target: route,
-	});
 
 	const {control, watch, reset} = useForm<ScanListFormType>();
 
@@ -52,53 +50,24 @@ export default function ListScanData() {
 
 	const {isPreview, isSelect, modalTitle} = modalTypeParser(modalType);
 
-	const isQC = route === "qc",
-		isProd = route === "produksi";
-	const idKanbans = Object.entries(formData.idKanbans ?? {}).reduce<string[]>(
-		(ret, [id, val]) => {
-			if (val) ret.push(id);
-			return ret;
-		},
-		[],
-	);
+	const isQC = route === "qc";
 
-	function preview(id: string) {
-		// setIdKanban(id);
-		reset({id, type: "preview"});
-		modalRef.current?.show();
-	}
-
+	const idKanbans = transformIds(formData.idKanbans);
 	const {exportResult} = useNewExportData(
 		() => {
 			return trpc.export.scan.useQuery(
 				{route, idKanbans},
-				{enabled: isProd && idKanbans.length > 0},
+				{enabled: idKanbans.length > 0},
 			);
 		},
-		item => item,
-		["produksi"],
+		exportedData => exportedData,
+		[route],
+		true,
 	);
 
-	async function exportList() {
-		exportResult();
-		reset(prev => ({...prev, type: undefined}));
-		setTimeout(() => reset(prev => ({...prev, idKanbans: {}})), 2500);
-	}
-
-	async function printData(idOrAll: true | string) {
-		loader?.show?.();
-		if (typeof idOrAll === "string") {
-			reset(prev => ({...prev, idKanbans: {[idOrAll]: true}}));
-		} else {
-			if (idKanbans.length <= 0) {
-				loader?.hide?.();
-				return alert("Silahkan pilih data terlebih dahulu");
-			}
-		}
-		await genPdfRef.current?.generate();
-		loader?.hide?.();
-		reset(prev => ({...prev, type: undefined}));
-		setTimeout(() => reset(prev => ({...prev, idKanbans: {}})), 2500);
+	function preview(id: string) {
+		reset({id, type: "preview"});
+		modalRef.current?.show();
 	}
 
 	useEffect(() => {
@@ -113,80 +82,60 @@ export default function ListScanData() {
 	return (
 		<>
 			{loader.component}
-			<GeneratePdf
-				splitPagePer={4}
-				orientation="l"
-				ref={genPdfRef}
-				width="w-[2200px]"
-				tagId={`${route}-generated`}
-				// eslint-disable-next-line @typescript-eslint/no-shadow
-				renderItem={({data}) => (
-					<RenderPdfData className="w-1/2" data={data!} route={route} />
-				)}
-				useQueries={() =>
-					trpc.useQueries(t =>
-						idKanbans.map(id =>
-							t.kanban.detail(id, {enabled: isQC && idKanbans.length > 0}),
-						),
-					)
-				}
-			/>
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form context={{disabled: isPreview, hideButton: isPreview}}>
 					<NewKanbanModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>
 
-			<TableFilter
-				data={data}
+			<TableFilterV3
+				ref={tableRef}
+				property="idKanbans"
+				selector="id_kanban"
+				control={control}
+				reset={reset}
+				useQuery={form =>
+					trpc.scan.list.useQuery({
+						...form,
+						target: route,
+					})
+				}
+				genPdfOptions={{
+					splitPagePer: 4,
+					orientation: "l",
+					width: "w-[2200px]",
+					tagId: `${route}-generated`,
+					renderItem: ({data}) => (
+						<RenderPdfData className="w-1/2" data={data!} route={route} />
+					),
+					useQueries: () =>
+						trpc.useQueries(t =>
+							idKanbans.map(id =>
+								t.kanban.detail(id, {enabled: isQC && idKanbans.length > 0}),
+							),
+						),
+				}}
 				keyExtractor={item => item.id}
-				form={hookForm}
-				topComponent={
-					isQC || isProd ? (
-						isSelect ? (
-							<>
-								{isQC && <Button onClick={() => printData(true)}>Print</Button>}
-								{isProd && <Button onClick={exportList}>Export</Button>}
-								<Button
-									onClick={() =>
-										reset(prev => ({...prev, type: undefined, idKanbans: {}}))
-									}>
-									Batal
-								</Button>
-							</>
-						) : (
-							<Button
-								onClick={() => reset(prev => ({...prev, type: "select"}))}>
-								Select
-							</Button>
-						)
-					) : null
+				enabledPdf={isQC}
+				enabledExport
+				exportResult={exportResult}
+				onCancel={() =>
+					reset(prev => ({...prev, type: undefined, idKanbans: {}}))
 				}
 				header={[
-					isSelect && (
-						<SelectAllButton
-							selector="id_kanban"
-							form={formData}
-							property="idKanbans"
-							data={data?.rows}
-							selected={idKanbans.length}
-							total={data?.rows.length}
-							onClick={prev => reset(prev)}
-						/>
-					),
 					"Tanggal",
 					"Nomor Kanban",
 					"Keterangan",
 					!isSelect && "Action",
 				]}
-				renderItem={item => {
+				renderItem={(item: VRenderItem<ScanList>) => {
 					return (
 						<RenderData
 							{...item}
 							control={control}
 							key={item.item.id_kanban}
 							route={route}
-							printOne={id => printData(id)}>
+							printOne={id => tableRef.current?.printData?.(id)}>
 							<Button
 								icon="faMagnifyingGlass"
 								onClick={() => preview(item.item.id_kanban)}

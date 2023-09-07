@@ -12,6 +12,7 @@ import {
 	TPOItemSppbIn,
 	TScan,
 	tScanTarget,
+	ZId,
 } from "@appTypes/app.zod";
 import {formatDateStringView, formatHour, qtyList} from "@constants";
 import {
@@ -21,9 +22,12 @@ import {
 	OrmCustomerSPPBIn,
 	OrmKanban,
 	OrmKanbanItem,
+	OrmKategoriMesin,
 	OrmMasterItem,
+	OrmMesin,
 	OrmPOItemSppbIn,
 	OrmScan,
+	OrmScanOrder,
 	processMapper,
 } from "@database";
 import {checkCredentialV2} from "@server";
@@ -39,19 +43,23 @@ const exportScanRouters = {
 		)
 		.query(({ctx, input}) => {
 			type JJJ = Record<
+				| "NO"
 				| "TANGGAL PROSES"
 				| "CUSTOMER"
 				| "PART NAME"
 				| "PART NO"
 				| "QTY / JUMLAH"
-				| "WAKTU / JAM"
-				| "PROSES"
+				| "WAKTU / JAM PROSES"
 				| "NO LOT CUSTOMER"
 				| "NO LOT IMI"
 				| "PROSES"
+				| "NOMOR KANBAN"
+				| "NOMOR MESIN"
+				| "NAMA MESIN"
 				| "KETERANGAN",
 				string
 			>;
+
 			type OO = TScan & {
 				OrmKanban: TKanban & {
 					OrmCustomerSPPBIn: TCustomerSPPBIn & {
@@ -61,7 +69,10 @@ const exportScanRouters = {
 						OrmCustomer: TCustomer;
 						OrmCustomerPOItems: TPOItem[];
 					};
-					OrmKanbanItems: (TKanbanItem & {OrmMasterItem: TMasterItem})[];
+					OrmKanbanItems: (TKanbanItem & {
+						OrmMasterItem: TMasterItem;
+						OrmPOItemSppbIn: ZId;
+					})[];
 				};
 			};
 			const {route, idKanbans: idScans} = input;
@@ -69,6 +80,7 @@ const exportScanRouters = {
 			return checkCredentialV2(ctx, async (): Promise<JJJ[]> => {
 				const data = await OrmScan.findAll({
 					where: {id_kanban: idScans, [`status_${route}`]: true},
+					order: OrmScanOrder(route),
 					include: [
 						{
 							model: OrmKanban,
@@ -78,13 +90,19 @@ const exportScanRouters = {
 									model: OrmCustomerPO,
 									include: [OrmCustomer, OrmCustomerPOItem],
 								},
-								{model: OrmKanbanItem, include: [OrmMasterItem]},
+								{
+									model: OrmKanbanItem,
+									include: [
+										OrmMasterItem,
+										{model: OrmPOItemSppbIn, attributes: ["id"]},
+									],
+								},
 							],
 						},
 					],
 				});
 
-				const promisedData = data.map(async ({dataValues}): Promise<JJJ> => {
+				const promisedData = data.map(async ({dataValues}, i): Promise<JJJ> => {
 					const val = dataValues as OO;
 
 					// return val
@@ -113,6 +131,11 @@ const exportScanRouters = {
 						kategori_mesinn: item?.OrmMasterItem.kategori_mesinn,
 					});
 
+					const mesinnnn = await OrmMesin.findAll({
+						where: {id: val.OrmKanban.list_mesin[item?.OrmPOItemSppbIn.id!]},
+						include: [{model: OrmKategoriMesin, as: OrmKategoriMesin._alias}],
+					});
+
 					return {
 						"TANGGAL PROSES": date
 							? moment(date).format(formatDateStringView)
@@ -121,11 +144,20 @@ const exportScanRouters = {
 						"PART NAME": item?.OrmMasterItem.name!,
 						"PART NO": item?.OrmMasterItem.kode_item!,
 						"QTY / JUMLAH": enIe?.join("|")!,
-						"WAKTU / JAM": date ? moment(date).format(formatHour) : "",
+						"WAKTU / JAM PROSES": date ? moment(date).format(formatHour) : "",
 						"NO LOT CUSTOMER": sppbInItem?.lot_no!,
 						"NO LOT IMI": val.lot_no_imi,
 						PROSES: instruksi,
-						KETERANGAN: val.OrmKanban.keterangan!,
+						"NOMOR KANBAN": val.OrmKanban.nomor_kanban,
+						"NAMA MESIN": mesinnnn
+							// @ts-ignore
+							.map(e => e.dataValues[OrmKategoriMesin._alias].name)
+							.join(" | "),
+						"NOMOR MESIN": mesinnnn
+							.map(e => e.dataValues.nomor_mesin)
+							.join(" | "),
+						NO: (i + 1).toString(),
+						KETERANGAN: val.OrmKanban.keterangan ?? "",
 					};
 				});
 

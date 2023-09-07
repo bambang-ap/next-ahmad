@@ -30,6 +30,7 @@ export function useNewExportData<
 	query: [useQuery: () => W, header: ObjKeyof<R>[]] | (() => W),
 	renderItem: (item: NonNullable<W["data"]>[number]) => R,
 	names?: Parameters<typeof exportData>[1],
+	debug?: true,
 ) {
 	let useQuery: () => W, header: ObjKeyof<R>[];
 	if (Array.isArray(query)) [useQuery, header] = query;
@@ -43,6 +44,8 @@ export function useNewExportData<
 		exportData(result, names, header);
 		callback?.();
 	}
+
+	if (debug) console.log(result);
 
 	return {exportResult};
 }

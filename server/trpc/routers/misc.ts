@@ -4,7 +4,15 @@ import {z} from "zod";
 
 import {tCustomer} from "@appTypes/app.zod";
 import {isProd} from "@constants";
-import {ORM} from "@database";
+import {
+	ORM,
+	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerSPPBIn,
+	OrmKanban,
+	OrmKanbanItem,
+	OrmPOItemSppbIn,
+} from "@database";
 import {generateId, getNow} from "@server";
 import {procedure, router} from "@trpc";
 import {TRPCError} from "@trpc/server";
@@ -12,6 +20,28 @@ import {TRPCError} from "@trpc/server";
 const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
+	test: procedure.query(() => {
+		return OrmCustomerPO.findAll({
+			limit: 3,
+			logging: true,
+			include: [
+				OrmCustomer,
+				{
+					separate: true,
+					model: OrmCustomerSPPBIn,
+					include: [
+						{
+							model: OrmPOItemSppbIn,
+							separate: true,
+							include: [
+								{model: OrmKanbanItem, separate: true, include: [OrmKanban]},
+							],
+						},
+					],
+				},
+			],
+		});
+	}),
 	statsActivity: procedure.query(async () => {
 		if (isProd) throw new TRPCError({code: "NOT_FOUND"});
 		const [queries] = await ORM.query(

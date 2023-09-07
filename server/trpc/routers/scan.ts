@@ -1,5 +1,4 @@
 import moment from "moment";
-import {literal} from "sequelize";
 
 import {PagingResult, TDataScan, TDocument, TScan} from "@appTypes/app.type";
 import {
@@ -14,6 +13,7 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	NumberOrderAttribute,
 	OrmDocument,
 	OrmKanban,
 	OrmKanbanItem,
@@ -65,7 +65,7 @@ const scanRouters = router({
 						"id",
 						"id_kanban",
 						"date",
-						[literal("ROW_NUMBER() OVER (ORDER BY id)"), "number"],
+						NumberOrderAttribute<TScan>("id"),
 					],
 					order: scanOrder(target),
 					offset: (page - 1) * limit,

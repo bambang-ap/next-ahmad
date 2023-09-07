@@ -1,4 +1,4 @@
-import {forwardRef, PropsWithChildren, useImperativeHandle} from "react";
+import {forwardRef, useImperativeHandle} from "react";
 
 import {jsPDFOptions} from "jspdf";
 
@@ -8,28 +8,21 @@ import {UseTRPCQueryResult} from "@trpc/react-query/shared";
 import {classNames, generatePDF, sleep} from "@utils";
 
 export type GenPdfRef = {generate: (timeout?: number) => Promise<void>};
-export type GenPdfProps = PropsWithChildren<{
+export type GenPdfProps<T, W extends UseTRPCQueryResult<T, unknown>> = {
+	debug?: boolean;
 	tagId: string;
+	width?: string;
 	filename?: string;
-	isReady?: boolean;
-}>;
+	splitPagePer?: number;
+	useQueries: () => W[];
+	renderItem: (item: W) => JSX.Element;
+	orientation?: jsPDFOptions["orientation"];
+};
 
 export const GeneratePdf = forwardRef(function GGenPdf<
 	T,
 	W extends UseTRPCQueryResult<T, unknown>,
->(
-	props: {
-		debug?: boolean;
-		tagId: string;
-		width?: string;
-		filename?: string;
-		splitPagePer?: number;
-		useQueries: () => W[];
-		renderItem: (item: W) => JSX.Element;
-		orientation?: jsPDFOptions["orientation"];
-	},
-	ref: React.ForwardedRef<GenPdfRef>,
-) {
+>(props: GenPdfProps<T, W>, ref: React.ForwardedRef<GenPdfRef>) {
 	const {
 		tagId,
 		debug,
