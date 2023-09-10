@@ -10,9 +10,15 @@ const {TBody, THead, Tr} = Table;
 type Data = [name: string, data?: J];
 
 export default function MainDashboard() {
-	const {data} = trpc.dashboard.main.po.useQuery();
+	const {data: dataPo} = trpc.dashboard.main.po.useQuery();
+	const {data: dataSppbIn} = trpc.dashboard.main.sppbIn.useQuery();
+	const {data: dataKanban} = trpc.dashboard.main.kanban.useQuery();
 
-	const dataList: Data[] = [["po", data]];
+	const dataList: Data[] = [
+		["PO", dataPo],
+		["SJ masuk", dataSppbIn],
+		["Kanban", dataKanban],
+	];
 
 	const header = dataList.map(e => e[0]);
 

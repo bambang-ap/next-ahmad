@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize, STRING} from "sequelize";
 
 import {TKanbanItem} from "@appTypes/app.zod";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {defaultExcludeColumn} from "@constants";
 import {TABLES} from "@enum";
 
 import {unitQtyField} from "./customer_po_item";
@@ -22,7 +22,7 @@ export default function initOrmKanbanItem(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.KANBAN_ITEM,
 			defaultScope: {
-				...defaultOrderBy,
+				// ...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
