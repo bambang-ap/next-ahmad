@@ -434,9 +434,9 @@ CREATE TABLE public.po_item_sppb_in (
     id character varying(47) NOT NULL,
     id_item character varying(47) NOT NULL,
     id_sppb_in character varying(47) NOT NULL,
-    qty1 numeric,
-    qty2 numeric,
-    qty3 numeric,
+    qty1 numeric DEFAULT '0'::numeric,
+    qty2 numeric DEFAULT '0'::numeric,
+    qty3 numeric DEFAULT '0'::numeric,
     qty4 numeric,
     qty5 numeric,
     "createdAt" timestamp without time zone,
@@ -510,7 +510,8 @@ CREATE TABLE public.scan (
     id_customer character varying(47),
     notes text,
     date json DEFAULT '{}'::json,
-    item_from_kanban json DEFAULT '{}'::json
+    item_from_kanban json DEFAULT '{}'::json,
+    item_qc_reject_category json DEFAULT '[]'::json
 );
 
 
@@ -873,13 +874,6 @@ CREATE INDEX id_customer_1693939019302_index ON public.customer_sppb_out USING b
 
 
 --
--- Name: id_item_1693939080499_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX id_item_1693939080499_index ON public.po_item_sppb_in USING btree (id_item);
-
-
---
 -- Name: id_kanban_1693939108665_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
@@ -933,6 +927,13 @@ CREATE INDEX id_po_1693939039051_index ON public.kanban USING btree (id_po);
 --
 
 CREATE INDEX id_po_1693939054565_index ON public.po_itemm USING btree (id_po);
+
+
+--
+-- Name: id_po_1693939296738_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE INDEX id_po_1693939296738_index ON public.customer_sppb_in USING btree (id_po);
 
 
 --
@@ -1045,13 +1046,6 @@ CREATE INDEX password_1693939643811_index ON public.user_pengguna USING btree (p
 --
 
 CREATE INDEX "po_item_sppb_in_createdAt_index" ON public.po_item_sppb_in USING btree ("createdAt" DESC);
-
-
---
--- Name: po_item_sppb_in_id_sppb_in_index; Type: INDEX; Schema: public; Owner: postgres
---
-
-CREATE INDEX po_item_sppb_in_id_sppb_in_index ON public.po_item_sppb_in USING btree (id_sppb_in);
 
 
 --

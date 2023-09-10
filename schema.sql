@@ -441,9 +441,9 @@ CREATE TABLE public.po_item_sppb_in (
     id character varying(47) NOT NULL,
     id_item character varying(47) NOT NULL,
     id_sppb_in character varying(47) NOT NULL,
-    qty1 numeric,
-    qty2 numeric,
-    qty3 numeric,
+    qty1 numeric DEFAULT '0'::numeric,
+    qty2 numeric DEFAULT '0'::numeric,
+    qty3 numeric DEFAULT '0'::numeric,
     qty4 numeric,
     qty5 numeric,
     "createdAt" timestamp without time zone,
@@ -517,7 +517,8 @@ CREATE TABLE public.scan (
     id_customer character varying(47),
     notes text,
     date json DEFAULT '{}'::json,
-    item_from_kanban json DEFAULT '{}'::json
+    item_from_kanban json DEFAULT '{}'::json,
+    item_qc_reject_category json DEFAULT '[]'::json
 );
 
 
