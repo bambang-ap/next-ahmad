@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize, STRING} from "sequelize";
 
 import {TPOItem} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {defaultExcludeColumn} from "@constants";
 import {ormDecimalType} from "@database";
 import {TABLES} from "@enum";
 
@@ -33,7 +33,7 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.CUSTOMER_PO_ITEM,
 			defaultScope: {
-				...defaultOrderBy,
+				// ...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

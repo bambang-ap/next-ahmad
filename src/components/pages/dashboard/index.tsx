@@ -6,12 +6,13 @@ import {DashboardSelectView} from "@constants";
 
 import BarChart from "./BarChart";
 import DonutChart from "./DonutChart";
+import MainDashboard from "./Main";
 import TotalCount from "./TotalCount";
 
 type J = {view: TDashboardView};
 
 export default function Dashboard() {
-	const {control} = useForm<J>();
+	const {control} = useForm<J>({defaultValues: {view: "main"}});
 
 	return (
 		<>
@@ -31,6 +32,8 @@ function RenderView({control}: {control: Control<J>}) {
 	const {view} = useWatch({control});
 
 	switch (view) {
+		case "main":
+			return <MainDashboard />;
 		case "bar":
 			return <BarChart />;
 		case "line":

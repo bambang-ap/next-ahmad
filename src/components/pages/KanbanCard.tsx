@@ -20,7 +20,7 @@ type TdProps = TdHTMLAttributes<HTMLTableCellElement> & {
 	center?: boolean;
 };
 
-function Td({center, top, className, ...props}: TdProps) {
+export function BorderTd({center, top, className, ...props}: TdProps) {
 	return (
 		<td
 			{...props}
@@ -131,30 +131,30 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 		<>
 			<table className="w-full table-fixed">
 				<tr className="border-0">
-					<Td rowSpan={2}>IMI</Td>
-					<Td rowSpan={2} colSpan={3} center>
+					<BorderTd rowSpan={2}>IMI</BorderTd>
+					<BorderTd rowSpan={2} colSpan={3} center>
 						PROCESSING CARD
-					</Td>
-					<Td center colSpan={2}>
+					</BorderTd>
+					<BorderTd center colSpan={2}>
 						{docDetail?.doc_no}
-					</Td>
+					</BorderTd>
 				</tr>
 				<tr>
-					<Td center>{dateUtils.dateS(docDetail?.tgl_efektif)}</Td>
-					<Td>Rev {docDetail?.revisi}</Td>
+					<BorderTd center>{dateUtils.dateS(docDetail?.tgl_efektif)}</BorderTd>
+					<BorderTd>Rev {docDetail?.revisi}</BorderTd>
 				</tr>
 				<tr>
-					<Td>Customer</Td>
-					<Td colSpan={2}>{OrmCustomerPO?.OrmCustomer.name}</Td>
-					<Td center>HARDNESS</Td>
-					<Td center colSpan={2}>
+					<BorderTd>Customer</BorderTd>
+					<BorderTd colSpan={2}>{OrmCustomerPO?.OrmCustomer.name}</BorderTd>
+					<BorderTd center>HARDNESS</BorderTd>
+					<BorderTd center colSpan={2}>
 						PARAMETER
-					</Td>
+					</BorderTd>
 				</tr>
 				<tr>
-					<Td>Purchase Order No</Td>
-					<Td colSpan={2}>{OrmCustomerPO?.nomor_po}</Td>
-					<Td rowSpan={4}>
+					<BorderTd>Purchase Order No</BorderTd>
+					<BorderTd colSpan={2}>{OrmCustomerPO?.nomor_po}</BorderTd>
+					<BorderTd rowSpan={4}>
 						<div className="flex h-full flex-col justify-between">
 							{rest?.hardness.mmap(({item: e, isLast}) => (
 								<Text
@@ -165,8 +165,8 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 								</Text>
 							))}
 						</div>
-					</Td>
-					<Td rowSpan={4} colSpan={2}>
+					</BorderTd>
+					<BorderTd rowSpan={4} colSpan={2}>
 						<div className="flex h-full flex-col justify-between">
 							{rest?.parameter.mmap(({item: e, isLast}) => (
 								<div
@@ -183,60 +183,62 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 								</div>
 							))}
 						</div>
-					</Td>
+					</BorderTd>
 				</tr>
 				<tr>
-					<Td>Delivery Order No</Td>
-					<Td colSpan={2}>{dataSppbIn?.nomor_surat}</Td>
+					<BorderTd>Delivery Order No</BorderTd>
+					<BorderTd colSpan={2}>{dataSppbIn?.nomor_surat}</BorderTd>
 				</tr>
 				<tr>
-					<Td>Incoming Date</Td>
-					<Td colSpan={2}>{moment(dataSppbIn?.tgl).format("D MMMM YYYY")}</Td>
+					<BorderTd>Incoming Date</BorderTd>
+					<BorderTd colSpan={2}>
+						{moment(dataSppbIn?.tgl).format("D MMMM YYYY")}
+					</BorderTd>
 				</tr>
 				<tr>
-					<Td>Nomor Kanban</Td>
-					<Td colSpan={2}>{nomor_kanban}</Td>
+					<BorderTd>Nomor Kanban</BorderTd>
+					<BorderTd colSpan={2}>{nomor_kanban}</BorderTd>
 				</tr>
 				<tr>
-					<Td>Part No</Td>
-					<Td colSpan={2}>{masterItem?.kode_item}</Td>
-					<Td colSpan={2} className="text-center">
+					<BorderTd>Part No</BorderTd>
+					<BorderTd colSpan={2}>{masterItem?.kode_item}</BorderTd>
+					<BorderTd colSpan={2} className="text-center">
 						PROCESS
-					</Td>
-					<Td className="text-center">MATERIAL</Td>
+					</BorderTd>
+					<BorderTd className="text-center">MATERIAL</BorderTd>
 				</tr>
 				<tr>
-					<Td>Part Name</Td>
-					<Td colSpan={2}>{masterItem?.name}</Td>
-					<Td rowSpan={2} colSpan={2}>
+					<BorderTd>Part Name</BorderTd>
+					<BorderTd colSpan={2}>{masterItem?.name}</BorderTd>
+					<BorderTd rowSpan={2} colSpan={2}>
 						{rest?.process.join(" & ")}
-					</Td>
-					<Td rowSpan={2}>{rest?.material.join(" & ")}</Td>
+					</BorderTd>
+					<BorderTd rowSpan={2}>{rest?.material.join(" & ")}</BorderTd>
 				</tr>
 				<tr>
-					<Td>Lot Customer</Td>
-					<Td colSpan={2}>{lot_no}</Td>
+					<BorderTd>Lot Customer</BorderTd>
+					<BorderTd colSpan={2}>{lot_no}</BorderTd>
 				</tr>
 				<tr>
-					<Td>Mesin</Td>
-					<Td colSpan={2}>{rest?.nomorMesin?.join(", ")}</Td>
-					<Td rowSpan={3} top>
+					<BorderTd>Mesin</BorderTd>
+					<BorderTd colSpan={2}>{rest?.nomorMesin?.join(", ")}</BorderTd>
+					<BorderTd rowSpan={3} top>
 						<Text>Keterangan :</Text>
 						<Text>{keterangan}</Text>
-					</Td>
-					<Td rowSpan={3}>{image && <img alt="" src={image} />}</Td>
-					<Td rowSpan={3}>
+					</BorderTd>
+					<BorderTd rowSpan={3}>{image && <img alt="" src={image} />}</BorderTd>
+					<BorderTd rowSpan={3}>
 						<img src={qrImage} alt="" />
-					</Td>
+					</BorderTd>
 				</tr>
 				<tr>
-					<Td rowSpan={2}>Qty / Jumlah</Td>
-					<Td className={class1}>{`${qty1} ${unit1}`}</Td>
-					<Td className={class2}>{`${qty2} ${unit2}`}</Td>
+					<BorderTd rowSpan={2}>Qty / Jumlah</BorderTd>
+					<BorderTd className={class1}>{`${qty1} ${unit1}`}</BorderTd>
+					<BorderTd className={class2}>{`${qty2} ${unit2}`}</BorderTd>
 				</tr>
 				<tr>
-					<Td className={class3}>{`${qty3} ${unit3}`}</Td>
-					<Td className="text-white">~</Td>
+					<BorderTd className={class3}>{`${qty3} ${unit3}`}</BorderTd>
+					<BorderTd className="text-white">~</BorderTd>
 				</tr>
 			</table>
 			<div className="mt-2 flex justify-between">

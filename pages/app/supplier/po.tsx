@@ -15,8 +15,8 @@ import {
 	ModalRef,
 	Select,
 	selectMapper,
-	Table,
 	TableFilter,
+	TableRoot,
 } from "@components";
 import {defaultErrorMutation, selectUnitData} from "@constants";
 import {getLayout} from "@hoc";
@@ -227,7 +227,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 				<Input type="checkbox" control={control} fieldName="ppn" label="PPN" />
 			</div>
 
-			<Table
+			<TableRoot
 				data={Object.entries(formData.items ?? {})}
 				header={["Nama", "Harga", "Jumlah", "Total", "∂"]}
 				className={classNames({

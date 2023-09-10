@@ -3,7 +3,8 @@ import {z} from "zod";
 import {defaultLimit} from "@constants";
 import {CATEGORY_REJECT_DB, CRUD_ENABLED} from "@enum";
 
-const zDecimal = z
+export type TDecimal = z.infer<typeof zDecimal>;
+export const zDecimal = z
 	.string()
 	.transform(str => parseFloat(str))
 	.or(z.number());
@@ -492,6 +493,7 @@ export const tSupplierPOUpsert = zId.extend({
 export type TDashboardView = z.infer<typeof tDashboardView>;
 export const tDashboardView = z
 	.literal("total")
+	.or(z.literal("main"))
 	.or(z.literal("bar"))
 	.or(z.literal("line"))
 	.or(z.literal("donut"));

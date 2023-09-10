@@ -29,6 +29,7 @@ export type {
 	TDashboardInput,
 	TDashboardTitle,
 	TDashboardView,
+	TDecimal,
 	TDocument,
 	THardness,
 	THardnessKategori,
@@ -90,7 +91,8 @@ export type FormProps<
 > = Pick<UseFormReturn<T>, K>;
 
 export type TDataScan = {dataKanban: RouterOutput["kanban"]["get"]} & TScan;
-export type UQtyList = `qty${typeof qtyList[number]}`;
+export type UQty = typeof qtyList[number];
+export type UQtyList = `qty${UQty}`;
 
 export type PagingResult<T> = {
 	rows: T[];

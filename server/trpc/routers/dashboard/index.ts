@@ -10,9 +10,11 @@ import {qtyMap} from "@utils";
 import {appRouter} from "..";
 
 import {defaultDashboardRouter} from "./default";
+import mainDashboardRouter from "./main";
 
 const dashboardRouters = router({
 	...defaultDashboardRouter,
+	main: mainDashboardRouter,
 	unitCountPoItem: procedure.query(({ctx}) => {
 		return checkCredentialV2(ctx, async () => {
 			const items = unitData.map(async unit => {
