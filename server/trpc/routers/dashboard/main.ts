@@ -1,7 +1,15 @@
 import {col, FindOptions, fn} from "sequelize";
+import {z} from "zod";
 
 import {TDecimal, TItemUnit, UQty} from "@appTypes/app.type";
-import {OrmCustomerPOItem, OrmKanbanItem, OrmPOItemSppbIn} from "@database";
+import {tScanTarget} from "@appTypes/app.zod";
+import {
+	ORM,
+	OrmCustomerPOItem,
+	OrmKanbanItem,
+	OrmPOItemSppbIn,
+	OrmScan,
+} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 import {qtyMap} from "@utils";
@@ -69,6 +77,7 @@ const mainDashboardRouter = router({
 			return {
 				group,
 				raw: true,
+				logging: true,
 				include: [
 					{
 						attributes: [],
@@ -93,6 +102,36 @@ const mainDashboardRouter = router({
 			return parseQueries(queries);
 		});
 	}),
+	scan: procedure
+		.input(z.object({target: tScanTarget}))
+		.query(({ctx, input}) => {
+			const {target} = input;
+			async function selector(num: UQty) {
+				const [query] = await ORM.query(
+					`SELECT
+							OrmCustomerPOItem.unit${num} AS unit,
+							SUM( (OrmScan.item_${target} -> 0 ->> ${num}) :: NUMERIC ) AS qty
+					FROM ${OrmScan.tableName} AS ${OrmScan.name}
+							LEFT OUTER JOIN ${OrmKanbanItem.tableName} AS ${OrmKanbanItem.name}
+								ON OrmScan.item_${target} -> 0 ->> 0 = OrmKanbanItem.id
+							LEFT OUTER JOIN ${OrmPOItemSppbIn.tableName} AS ${OrmPOItemSppbIn.name}
+								ON OrmKanbanItem.id_item = OrmPOItemSppbIn.id
+							LEFT OUTER JOIN ${OrmCustomerPOItem.tableName} AS ${OrmCustomerPOItem.name}
+								ON OrmPOItemSppbIn.id_item = OrmCustomerPOItem.id
+					WHERE
+							status_${target} = TRUE
+							AND item_${target} -> 0 IS NOT NULL
+					GROUP BY OrmCustomerPOItem.unit${num}`,
+					{logging: true},
+				);
+				return query;
+			}
+			return checkCredentialV2(ctx, async (): Promise<J> => {
+				const queries = [selector(1), selector(2), selector(3)];
+
+				return parseQueries(queries);
+			});
+		}),
 });
 
 export default mainDashboardRouter;

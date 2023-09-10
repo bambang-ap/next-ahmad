@@ -13,11 +13,23 @@ export default function MainDashboard() {
 	const {data: dataPo} = trpc.dashboard.main.po.useQuery();
 	const {data: dataSppbIn} = trpc.dashboard.main.sppbIn.useQuery();
 	const {data: dataKanban} = trpc.dashboard.main.kanban.useQuery();
+	const {data: dataProduksi} = trpc.dashboard.main.scan.useQuery({
+		target: "produksi",
+	});
+	const {data: dataQc} = trpc.dashboard.main.scan.useQuery({
+		target: "qc",
+	});
+	const {data: dataFg} = trpc.dashboard.main.scan.useQuery({
+		target: "finish_good",
+	});
 
 	const dataList: Data[] = [
 		["PO", dataPo],
 		["SJ masuk", dataSppbIn],
 		["Kanban", dataKanban],
+		["Produksi", dataProduksi],
+		["QC", dataQc],
+		["Finish Good", dataFg],
 	];
 
 	const header = dataList.map(e => e[0]);
