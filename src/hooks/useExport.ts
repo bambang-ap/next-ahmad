@@ -45,6 +45,7 @@ export function useNewExportData<
 		callback?.();
 	}
 
+	// eslint-disable-next-line no-console
 	if (debug) console.log(result);
 
 	return {exportResult};

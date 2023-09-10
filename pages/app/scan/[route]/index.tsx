@@ -177,8 +177,6 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 		}
 	}, [data]);
 
-	console.log(status);
-
 	return (
 		<Form
 			onSubmit={submit}

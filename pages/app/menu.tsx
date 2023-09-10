@@ -5,7 +5,7 @@ import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
 
 import {AllIcon} from "@appComponent/AllIcon";
 import {TMenu, TRole} from "@appTypes/app.type";
-import {Button, IconForm, Input, Modal, ModalRef, TableRoot} from "@components";
+import {Button, IconForm, Input, Modal, ModalRef, Table} from "@components";
 import {getLayout} from "@hoc";
 import {FormMenu, useMenu} from "@hooks";
 import {atomMenuChangeOrder, atomMenuIconKey} from "@recoil/atoms";
@@ -142,7 +142,7 @@ const RenderMenu = (props: {
 	const setKey = useSetRecoilState(atomMenuIconKey);
 
 	return (
-		<TableRoot
+		<Table
 			data={data ?? []}
 			header={noHeader ? undefined : ["Title", "Icon", "Role"]}
 			renderItemEach={({item: {subMenu}, Cell}) => {
