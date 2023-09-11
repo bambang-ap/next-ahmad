@@ -32,3 +32,8 @@ yarn-error.log*
 .vercel
 
 *.env
+
+data.sql
+dataServer.sql
+schema.sql
+schemaServer.sql

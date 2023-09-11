@@ -21,6 +21,7 @@ export function RenderItem({
 	selectedSppbIn: inn,
 }: RenderItemProps) {
 	const dataForm = useWatch({control});
+
 	const {
 		type: modalType,
 		id_sppb_in: idSppbIn,
@@ -130,11 +131,19 @@ export function RenderItem({
 										selectedItem?.[keyQty]?.toString() ?? "0",
 									);
 									const calculatedQty =
-										qtyTotal?.[selectedSppbInItemId]?.[keyQty]!;
+										qtyTotal?.[selectedSppbInItemId]?.[keyQty]! ?? 0;
 
 									const defaultValue = isPreviewEdit
 										? maxValue - calculatedQty + currentQty
 										: maxValue - calculatedQty;
+
+									prettyConsole({
+										num,
+										maxValue,
+										currentQty,
+										calculatedQty,
+										defaultValue,
+									});
 
 									return (
 										<div className="flex-1" key={`${rowItem.id}${num}`}>
