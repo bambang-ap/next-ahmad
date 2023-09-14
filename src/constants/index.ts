@@ -85,7 +85,10 @@ export const formatDateView = "DD/MM/YYYY";
 export const formatDateStringView = "D MMMM YYYY";
 export const formatFullView = `${formatDateView} - ${formatHour}`;
 
-export const decimalRegex = /^(0|[1-9]\d*)(\.\d{1,100})?$/;
+export const decimalValue = 2;
+export const decimalRegex = new RegExp(
+	`^(0|[1-9]\\d*)(\\.\\d{1,${decimalValue}})?$`,
+);
 export const decimalSchema = z.string().regex(decimalRegex); //.transform(Number);
 
 export const defaultInstruksi: TMasterItem["instruksi"][string][number] = {

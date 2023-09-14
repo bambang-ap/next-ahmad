@@ -11,6 +11,7 @@ import {FormContext, Icon, Modal, ModalRef, Text} from "@components";
 import {
 	decimalRegex,
 	decimalSchema,
+	decimalValue as decimalValuee,
 	defaultTextFieldProps,
 	formatDate,
 	formatDateView,
@@ -32,6 +33,7 @@ export type InputProps = {
 	disabled?: boolean;
 	multiline?: boolean;
 	forceEditable?: boolean;
+	decimalValue?: number;
 	type?:
 		| "number"
 		| "decimal"
@@ -65,6 +67,7 @@ export function InputComponent<F extends FieldValues>(
 		appliedRules,
 		multiline,
 		forceEditable,
+		decimalValue = decimalValuee,
 	} = props;
 
 	const formContext = useContext(FormContext);
@@ -193,7 +196,7 @@ export function InputComponent<F extends FieldValues>(
 
 						appliedRules?.({
 							pattern: {
-								message: `"${strValue}" is not a number format`,
+								message: `"${strValue}" is not a number format or max number after "." is ${decimalValue}`,
 								value: decimalRegex,
 							},
 						});
