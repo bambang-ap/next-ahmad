@@ -1,4 +1,3 @@
-import {moment} from "@utils";
 import NextAuth, {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import {Op} from "sequelize";
@@ -11,6 +10,7 @@ import {
 	ormUserLoginAttributes,
 } from "@database";
 import {TRPCError} from "@trpc/server";
+import {moment} from "@utils";
 
 const OrmUser = ORM.define("UserAuth", ...ormUserAttributes());
 const OrmUserLogin = ORM.define("UseLoginrAuth", ...ormUserLoginAttributes());

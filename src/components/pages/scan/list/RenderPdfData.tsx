@@ -1,9 +1,9 @@
-import {moment} from "@utils";
 import {Route} from "pages/app/scan/[route]";
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 
 import {KanbanGetRow} from "@appTypes/app.type";
 import {cuttingLineClassName, gap, padding} from "@constants";
+import {moment} from "@utils";
 import {classNames, scanMapperByStatus} from "@utils";
 
 import {RenderItem} from "./RenderItem";

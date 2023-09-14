@@ -4,7 +4,6 @@ import {TextField, useTheme} from "@mui/material";
 import {CalendarPicker} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {moment} from "@utils";
 import {FieldValues} from "react-hook-form";
 
 import {FormContext, Icon, Modal, ModalRef, Text} from "@components";
@@ -20,6 +19,7 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from "@formController";
+import {moment} from "@utils";
 import {classNames} from "@utils";
 
 import {CheckBox} from "./CheckBox";
