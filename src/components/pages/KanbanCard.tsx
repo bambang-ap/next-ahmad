@@ -1,11 +1,9 @@
 import {TdHTMLAttributes} from "react";
 
-import {moment} from "@utils";
-
 import {TKanbanUpsertItem} from "@appTypes/app.type";
 import {Text as Txt, TextProps} from "@components";
 import {DataProcess} from "@trpc/routers/kanban/get";
-import {classNames, dateUtils} from "@utils";
+import {classNames, dateUtils, moment} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {TxtBold} from "./sppbOut_GenerateQR";
@@ -131,8 +129,10 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 		<>
 			<table className="w-full table-fixed">
 				<tr className="border-0">
-					<BorderTd rowSpan={2}>IMI</BorderTd>
-					<BorderTd rowSpan={2} colSpan={3} center>
+					<BorderTd className="text-2xl" rowSpan={2} center>
+						IMI
+					</BorderTd>
+					<BorderTd className="text-2xl" rowSpan={2} colSpan={3} center>
 						PROCESSING CARD
 					</BorderTd>
 					<BorderTd center colSpan={2}>
