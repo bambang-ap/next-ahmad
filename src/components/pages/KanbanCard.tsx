@@ -144,15 +144,17 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 					<BorderTd>Rev {docDetail?.revisi}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Customer</BorderTd>
+					<BorderTd className="text-base">Customer</BorderTd>
 					<BorderTd colSpan={2}>{OrmCustomerPO?.OrmCustomer.name}</BorderTd>
-					<BorderTd center>HARDNESS</BorderTd>
-					<BorderTd center colSpan={2}>
+					<BorderTd center className="text-base">
+						HARDNESS
+					</BorderTd>
+					<BorderTd center colSpan={2} className="text-base">
 						PARAMETER
 					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Purchase Order No</BorderTd>
+					<BorderTd className="text-base">PO No</BorderTd>
 					<BorderTd colSpan={2}>{OrmCustomerPO?.nomor_po}</BorderTd>
 					<BorderTd rowSpan={4}>
 						<div className="flex h-full flex-col justify-between">
@@ -186,29 +188,31 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Delivery Order No</BorderTd>
+					<BorderTd className="text-base">DO No</BorderTd>
 					<BorderTd colSpan={2}>{dataSppbIn?.nomor_surat}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Incoming Date</BorderTd>
+					<BorderTd className="text-base">Incoming Date</BorderTd>
 					<BorderTd colSpan={2}>
 						{moment(dataSppbIn?.tgl).format("D MMMM YYYY")}
 					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Nomor Kanban</BorderTd>
+					<BorderTd className="text-base">Nomor Kanban</BorderTd>
 					<BorderTd colSpan={2}>{nomor_kanban}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Part No</BorderTd>
+					<BorderTd className="text-base">Part No</BorderTd>
 					<BorderTd colSpan={2}>{masterItem?.kode_item}</BorderTd>
-					<BorderTd colSpan={2} className="text-center">
+					<BorderTd colSpan={2} center className="text-base">
 						PROCESS
 					</BorderTd>
-					<BorderTd className="text-center">MATERIAL</BorderTd>
+					<BorderTd center className="text-base">
+						MATERIAL
+					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Part Name</BorderTd>
+					<BorderTd className="text-base">Part Name</BorderTd>
 					<BorderTd colSpan={2}>{masterItem?.name}</BorderTd>
 					<BorderTd rowSpan={2} colSpan={2}>
 						{rest?.process.join(" & ")}
@@ -216,11 +220,11 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 					<BorderTd rowSpan={2}>{rest?.material.join(" & ")}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Lot Customer</BorderTd>
+					<BorderTd className="text-base">Lot Customer</BorderTd>
 					<BorderTd colSpan={2}>{lot_no}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd>Mesin</BorderTd>
+					<BorderTd className="text-base">Mesin</BorderTd>
 					<BorderTd colSpan={2}>{rest?.nomorMesin?.join(", ")}</BorderTd>
 					<BorderTd rowSpan={3} top>
 						<Text>Keterangan :</Text>
@@ -232,7 +236,9 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd rowSpan={2}>Qty / Jumlah</BorderTd>
+					<BorderTd rowSpan={2} className="text-base">
+						Qty / Jumlah
+					</BorderTd>
 					<BorderTd className={class1}>{`${qty1} ${unit1}`}</BorderTd>
 					<BorderTd className={class2}>{`${qty2} ${unit2}`}</BorderTd>
 				</tr>
