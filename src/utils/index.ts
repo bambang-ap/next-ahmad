@@ -3,7 +3,7 @@ import {ReactNode} from "react";
 import classnames from "clsx";
 import jsPDF, {jsPDFOptions} from "jspdf";
 import clone from "just-clone";
-import moment from "moment";
+import * as momentTz from "moment-timezone";
 import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
@@ -24,6 +24,10 @@ import {UseTRPCMutationOptions} from "@trpc/react-query/shared";
 type Qty = typeof qtyList[number];
 
 let typingTimer: NodeJS.Timeout;
+
+momentTz.tz.setDefault("Asia/Jakarta");
+
+export const moment = momentTz.default;
 
 export function typingCallback(callback: () => void, timeout = 500) {
 	clearTimeout(typingTimer);

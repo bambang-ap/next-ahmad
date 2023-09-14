@@ -1,4 +1,4 @@
-import moment from "moment";
+import {moment} from "@utils";
 import {Route} from "pages/app/scan/[route]";
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 

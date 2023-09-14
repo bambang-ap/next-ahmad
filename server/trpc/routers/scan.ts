@@ -1,5 +1,3 @@
-import moment from "moment";
-
 import {PagingResult, TDataScan, TDocument, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
@@ -25,7 +23,7 @@ import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
-import {qtyMap} from "@utils";
+import {moment, qtyMap} from "@utils";
 
 export type ScanList = TScan & {number: string; OrmDocument: TDocument};
 type ListResult = PagingResult<ScanList>;
@@ -71,7 +69,6 @@ const scanRouters = router({
 					order: scanOrder(target),
 					offset: (page - 1) * limit,
 					where: {[`status_${target}`]: true},
-					logging: true,
 				});
 				const allDataScan = data.map(async ({dataValues}) => {
 					const kanban = await OrmKanban.findOne({

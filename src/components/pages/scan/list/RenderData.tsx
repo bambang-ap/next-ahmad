@@ -31,6 +31,8 @@ PropsWithChildren<
 		name: ["type", "idKanbans"],
 	});
 	const {isSelect} = modalTypeParser(modalType);
+	const date = item.date?.[`${route}_updatedAt`];
+	const theDate = !date ? "" : dateUtils.full(date);
 
 	return (
 		<>
@@ -45,7 +47,7 @@ PropsWithChildren<
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
 			<Cell>{data?.nomor_kanban}</Cell>
 			<Cell>{data?.keterangan}</Cell>
-			<Cell>{item.date?.[`${route}_updatedAt`]}</Cell>
+			<Cell>{theDate}</Cell>
 			{!isSelect && (
 				<Cell className="flex gap-2">
 					{/* <Button icon="faPrint" onClick={() => printOne?.(item.id_kanban)} /> */}

@@ -77,7 +77,6 @@ const mainDashboardRouter = router({
 			return {
 				group,
 				raw: true,
-				logging: true,
 				include: [
 					{
 						attributes: [],

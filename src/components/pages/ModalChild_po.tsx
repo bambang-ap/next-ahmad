@@ -1,6 +1,6 @@
 import {useEffect} from "react";
 
-import moment from "moment";
+import {moment} from "@utils";
 import {Control, useController, UseFormReset, useWatch} from "react-hook-form";
 
 import {

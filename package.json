@@ -51,6 +51,7 @@
 		"jspdf": "2.5.1",
 		"just-clone": "^6.2.0",
 		"moment": "2.29.4",
+		"moment-timezone": "^0.5.43",
 		"next": "13.3.0",
 		"next-auth": "4.22.0",
 		"next-images": "1.8.4",

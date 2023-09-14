@@ -17,7 +17,7 @@ import {
 	VRenderItem,
 } from "@components";
 import {getLayout} from "@hoc";
-import {useKanban, useLoader, useNewExportData} from "@hooks";
+import {useLoader, useNewExportData} from "@hooks";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {RenderData} from "@pageComponent/scan/list/RenderData";
 import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
@@ -32,8 +32,6 @@ export const Text = TxtBold;
 export type ScanListFormType = KanbanFormTypee;
 
 export default function ListScanData() {
-	useKanban();
-
 	const loader = useLoader();
 	const modalRef = useRef<ModalRef>(null);
 	const tableRef = useRef<TableFilterV3Ref>(null);
@@ -50,7 +48,18 @@ export default function ListScanData() {
 
 	const {isPreview, isSelect, modalTitle} = modalTypeParser(modalType);
 
+	const isProduksi = route === "produksi";
 	const isQC = route === "qc";
+	const isFG = route === "finish_good";
+
+	const dateHeaderCondition = isProduksi
+		? "Produksi"
+		: isQC
+		? "QC"
+		: isFG
+		? "Finish Good"
+		: "";
+	const dateHeader = `Tanggal ${dateHeaderCondition}`;
 
 	const idKanbans = transformIds(formData.idKanbans);
 	const {exportResult} = useNewExportData(
@@ -62,7 +71,6 @@ export default function ListScanData() {
 		},
 		exportedData => exportedData,
 		[route],
-		true,
 	);
 
 	function preview(id: string) {
@@ -126,6 +134,7 @@ export default function ListScanData() {
 					"Tanggal",
 					"Nomor Kanban",
 					"Keterangan",
+					dateHeader,
 					!isSelect && "Action",
 				]}
 				renderItem={(item: VRenderItem<ScanList>) => {

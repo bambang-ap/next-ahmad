@@ -1,4 +1,4 @@
-import moment from "moment";
+import {moment} from "@utils";
 import {z} from "zod";
 
 import {OrmUser, OrmUserLogin} from "@database";

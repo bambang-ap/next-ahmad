@@ -1,6 +1,6 @@
 import {TdHTMLAttributes} from "react";
 
-import moment from "moment";
+import {moment} from "@utils";
 
 import {TKanbanUpsertItem} from "@appTypes/app.type";
 import {Text as Txt, TextProps} from "@components";

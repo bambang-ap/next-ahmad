@@ -4,7 +4,7 @@ import {TextField, useTheme} from "@mui/material";
 import {CalendarPicker} from "@mui/x-date-pickers";
 import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import moment from "moment";
+import {moment} from "@utils";
 import {FieldValues} from "react-hook-form";
 
 import {FormContext, Icon, Modal, ModalRef, Text} from "@components";

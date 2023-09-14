@@ -1,4 +1,4 @@
-import moment from "moment";
+import {moment} from "@utils";
 import NextAuth, {NextAuthOptions} from "next-auth";
 import CredentialsProvider from "next-auth/providers/credentials";
 import {Op} from "sequelize";
