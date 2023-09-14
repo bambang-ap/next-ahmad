@@ -153,6 +153,9 @@ export function RenderItem({
 												defaultValue={defaultValue}
 												fieldName={`items.${id_item}.${keyQty}`}
 												label={`Jumlah ${num}`}
+												rightAcc={
+													<Text>{rowItem.OrmCustomerPOItem?.[keyUnit]}</Text>
+												}
 												rules={{
 													max: {
 														value: defaultValue,
@@ -165,9 +168,6 @@ export function RenderItem({
 												control={control}
 												defaultValue={rowItem.id}
 												fieldName={`items.${id_item}.id_item`}
-												rightAcc={
-													<Text>{rowItem.OrmCustomerPOItem?.[keyUnit]}</Text>
-												}
 											/>
 										</div>
 									);
