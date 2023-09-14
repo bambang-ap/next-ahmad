@@ -33,29 +33,32 @@ const itemRouters = router({
 			};
 		});
 	}),
-	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const routerCaller = appRouter.createCaller(ctx);
-		const {limit, page, search} = input;
-		return checkCredentialV2(ctx, async (): Promise<PagingResult<IUI>> => {
-			const {count, rows} = await OrmMasterItem.findAndCountAll({
-				limit,
-				attributes: ["id"],
-				order: [["id", "asc"]],
-				offset: (page - 1) * limit,
-				where: wherePages(
-					["name", "kode_item"] as (keyof TMasterItem)[],
-					search,
-				),
-			});
+	get: procedure
+		.input(tableFormValue.extend({withDetail: z.boolean().optional()}))
+		.query(({ctx, input}) => {
+			const routerCaller = appRouter.createCaller(ctx);
+			const {limit, page, search, withDetail} = input;
+			return checkCredentialV2(ctx, async (): Promise<PagingResult<IUI>> => {
+				const {count, rows} = await OrmMasterItem.findAndCountAll({
+					limit,
+					attributes: ["id", "name"],
+					order: [["id", "asc"]],
+					offset: (page - 1) * limit,
+					where: wherePages(
+						["name", "kode_item"] as (keyof TMasterItem)[],
+						search,
+					),
+				});
 
-			const data = rows.map(row => {
-				const json = row.toJSON() as GetItem;
-				return routerCaller.item.detail(json.id);
-			});
+				const data = rows.map(row => {
+					const json = row.toJSON() as GetItem;
+					if (!withDetail) return json;
+					return routerCaller.item.detail(json.id);
+				});
 
-			return pagingResult(count, page, limit, await Promise.all(data));
-		});
-	}),
+				return pagingResult(count, page, limit, await Promise.all(data));
+			});
+		}),
 
 	upsert: procedure
 		.input(tMasterItem.partial({id: true}))

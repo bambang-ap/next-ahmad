@@ -137,6 +137,7 @@ const exportScanRouters = {
 					});
 
 					return {
+						NO: (i + 1).toString(),
 						"TANGGAL PROSES": date
 							? moment(date).format(formatDateStringView)
 							: "",
@@ -156,7 +157,6 @@ const exportScanRouters = {
 						"NOMOR MESIN": mesinnnn
 							.map(e => e.dataValues.nomor_mesin)
 							.join(" | "),
-						NO: (i + 1).toString(),
 						KETERANGAN: val.OrmKanban.keterangan ?? "",
 					};
 				});

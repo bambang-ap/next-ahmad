@@ -25,7 +25,10 @@ export default function MasterItem() {
 		trpc.item.upsert.useMutation(defaultErrorMutation);
 	const {mutate: mutateDelete} =
 		trpc.item.delete.useMutation(defaultErrorMutation);
-	const {data, refetch} = trpc.item.get.useQuery(formValue);
+	const {data, refetch} = trpc.item.get.useQuery({
+		...formValue,
+		withDetail: true,
+	});
 
 	const {control, handleSubmit, watch, clearErrors, reset} =
 		useForm<FormType>();
