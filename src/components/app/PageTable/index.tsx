@@ -10,9 +10,9 @@ import {CRUD_ENABLED} from "@enum";
 import {useLoader, useTableFilter} from "@hooks";
 import {trpc} from "@utils/trpc";
 
-import {QRUserLogin, RenderTableCell, UserTokenCopy} from "./component";
 import {ModalChild} from "./ModalChild";
 import {RenderImportCustomer} from "./RenderImportCustomer";
+import {QRUserLogin, RenderTableCell, UserTokenCopy} from "./component";
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
