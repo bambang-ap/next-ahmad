@@ -322,7 +322,7 @@ export function sleep(timeout = 1000) {
 }
 
 export function mutateCallback(
-	{hide, show}: ReturnType<typeof useLoader>,
+	{hide, show}: Pick<ReturnType<typeof useLoader>, "hide" | "show">,
 	withDefault = true,
 ): any {
 	return {

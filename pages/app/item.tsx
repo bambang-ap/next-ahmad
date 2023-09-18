@@ -5,9 +5,8 @@ import {useForm} from "react-hook-form";
 import {ModalTypePreview} from "@appTypes/app.type";
 import {TMasterItem} from "@appTypes/app.zod";
 import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
-import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
-import {useTableFilter} from "@hooks";
+import {useLoader, useTableFilter} from "@hooks";
 import {
 	FormType,
 	ModalChildMasterItem,
@@ -20,11 +19,10 @@ MasterItem.getLayout = getLayout;
 export default function MasterItem() {
 	const modalRef = useRef<ModalRef>(null);
 
+	const {mutateOpts, ...loader} = useLoader();
 	const {formValue, hookForm} = useTableFilter();
-	const {mutate: mutateUpsert} =
-		trpc.item.upsert.useMutation(defaultErrorMutation);
-	const {mutate: mutateDelete} =
-		trpc.item.delete.useMutation(defaultErrorMutation);
+	const {mutate: mutateUpsert} = trpc.item.upsert.useMutation(mutateOpts);
+	const {mutate: mutateDelete} = trpc.item.delete.useMutation(mutateOpts);
 	const {data, refetch} = trpc.item.get.useQuery({
 		...formValue,
 		withDetail: true,
@@ -64,6 +62,7 @@ export default function MasterItem() {
 
 	return (
 		<>
+			{loader.component}
 			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<Form
 					context={{disabled: isPreview, hideButton: isPreview}}

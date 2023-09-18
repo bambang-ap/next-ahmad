@@ -19,7 +19,6 @@ import {
 	TableFilter,
 	TableProps,
 } from "@components";
-import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useNewExportData, useSppbOut, useTableFilter} from "@hooks";
 import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
@@ -36,16 +35,16 @@ export type FormValue = {
 
 export default function SPPBOUT() {
 	const {dataKendaraan, dataCustomer} = useSppbOut();
+	const {mutateOpts, ...loader} = useLoader();
 
 	const modalRef = useRef<ModalRef>(null);
 	const genPdfRef = useRef<GenPdfRef>(null);
-	const loader = useLoader();
 
 	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, handleSubmit, clearErrors} =
 		useForm<FormValue>();
-	const {mutate: mutateUpsert} = trpc.sppb.out.upsert.useMutation();
-	const {mutate: mutateDelete} = trpc.sppb.out.delete.useMutation();
+	const {mutate: mutateUpsert} = trpc.sppb.out.upsert.useMutation(mutateOpts);
+	const {mutate: mutateDelete} = trpc.sppb.out.delete.useMutation(mutateOpts);
 	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
 	const dataForm = watch();
@@ -127,7 +126,6 @@ export default function SPPBOUT() {
 		clearErrors();
 		handleSubmit(({type, ...values}) => {
 			const callbackOpt: MutateOptions<any, any, any> = {
-				...defaultErrorMutation,
 				onSuccess() {
 					refetch();
 					modalRef.current?.hide();

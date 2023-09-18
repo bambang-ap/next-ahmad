@@ -7,12 +7,13 @@ import {AllIcon} from "@appComponent/AllIcon";
 import {TMenu, TRole} from "@appTypes/app.type";
 import {Button, IconForm, Input, Modal, ModalRef, Table} from "@components";
 import {getLayout} from "@hoc";
-import {FormMenu, useMenu} from "@hooks";
+import {FormMenu, useLoader, useMenu} from "@hooks";
 import {atomMenuChangeOrder, atomMenuIconKey} from "@recoil/atoms";
 
 Menu.getLayout = getLayout;
 
 export default function Menu() {
+	const loader = useLoader();
 	const modalRef = useRef<ModalRef>(null);
 
 	const {
@@ -49,12 +50,16 @@ export default function Menu() {
 				return acc;
 			}, []);
 
+			loader.show?.();
 			mutateMenu(bodyParam ?? [], {
 				onSuccess: () => {
 					refetchMapped();
 					reftechUnMapped();
 					changeOrder(false);
 					if (alertShown) alert("Success");
+				},
+				onSettled() {
+					loader.hide?.();
 				},
 			});
 		})();
@@ -87,6 +92,7 @@ export default function Menu() {
 
 	return (
 		<>
+			{loader.component}
 			<Modal ref={modalRef} title="Select Icon">
 				<div className="max-h-[300px] overflow-y-auto">
 					<AllIcon

@@ -11,7 +11,6 @@ import {
 	TableFilterV2Ref,
 	VRenderItem,
 } from "@components";
-import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader} from "@hooks";
 import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
@@ -21,13 +20,13 @@ import {trpc} from "@utils/trpc";
 
 POCustomer.getLayout = getLayout;
 export default function POCustomer() {
-	const loader = useLoader();
 	const modalRef = useRef<ModalRef>(null);
 	const tableRef = useRef<TableFilterV2Ref>(null);
+	const {mutateOpts, ...loader} = useLoader();
 
-	const insertPO = trpc.customer_po.add.useMutation(defaultErrorMutation);
-	const updatePO = trpc.customer_po.update.useMutation(defaultErrorMutation);
-	const deletePO = trpc.customer_po.delete.useMutation(defaultErrorMutation);
+	const insertPO = trpc.customer_po.add.useMutation(mutateOpts);
+	const updatePO = trpc.customer_po.update.useMutation(mutateOpts);
+	const deletePO = trpc.customer_po.delete.useMutation(mutateOpts);
 
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		// resolver: zodResolver(validationSchema),

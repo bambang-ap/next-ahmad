@@ -2,8 +2,8 @@ import {useEffect, useRef, useState} from "react";
 
 import {TCustomer} from "@appTypes/app.type";
 import {Button, Modal, ModalRef, Table} from "@components";
-import {defaultErrorMutation} from "@constants";
 import {CRUD_ENABLED} from "@enum";
+import {useLoader} from "@hooks";
 import {exportData, importData} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -12,8 +12,9 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const [jsonData, setJsonData] = useState<TCustomer[]>();
 	const [file, setFile] = useState<File>();
 
+	const {mutateOpts, ...loader} = useLoader();
 	const {data: exampleData} = trpc.exampleData.get.useQuery("customer");
-	const {mutate} = trpc.basic.mutate.useMutation(defaultErrorMutation);
+	const {mutate} = trpc.basic.mutate.useMutation(mutateOpts);
 
 	function downloadExampleData() {
 		exportData(exampleData, ["example-customer"]);
@@ -55,6 +56,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 
 	return (
 		<>
+			{loader.component}
 			<Button onClick={() => modalRef.current?.show()}>Import</Button>
 			<Modal title="Import Customer" ref={modalRef}>
 				<div className="flex flex-col gap-2">

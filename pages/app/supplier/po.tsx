@@ -18,9 +18,9 @@ import {
 	Table,
 	TableFilter,
 } from "@components";
-import {defaultErrorMutation, selectUnitData} from "@constants";
+import {selectUnitData} from "@constants";
 import {getLayout} from "@hoc";
-import {useTableFilter} from "@hooks";
+import {useLoader, useTableFilter} from "@hooks";
 import {classNames, modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -38,12 +38,13 @@ type ModalChildProps = {
 export default function POSupplier() {
 	const modalRef = useRef<ModalRef>(null);
 
+	const {mutateOpts, ...loader} = useLoader();
 	const {formValue, hookForm} = useTableFilter();
 	const {data, refetch} = trpc.supplier.po.get.useQuery(formValue);
 	const {mutate: mutateUpsert} =
-		trpc.supplier.po.upsert.useMutation(defaultErrorMutation);
+		trpc.supplier.po.upsert.useMutation(mutateOpts);
 	const {mutate: mutateDelete} =
-		trpc.supplier.po.delete.useMutation(defaultErrorMutation);
+		trpc.supplier.po.delete.useMutation(mutateOpts);
 
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
@@ -79,6 +80,7 @@ export default function POSupplier() {
 
 	return (
 		<>
+			{loader.component}
 			<Modal
 				size="lg"
 				ref={modalRef}

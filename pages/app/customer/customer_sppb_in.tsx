@@ -23,7 +23,7 @@ import {getLayout} from "@hoc";
 import {useLoader, useNewExportData} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
 import {SppbInRows} from "@trpc/routers/sppb/in";
-import {dateUtils, modalTypeParser, mutateCallback, transformIds} from "@utils";
+import {dateUtils, modalTypeParser, transformIds} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type FormType = {
@@ -38,20 +38,17 @@ SPPBIN.getLayout = getLayout;
 export default function SPPBIN() {
 	const modalRef = useRef<ModalRef>(null);
 	const tableRef = useRef<TableFilterV2Ref>(null);
-	const loader = useLoader();
+	const {mutateOpts, ...loader} = useLoader();
+
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
 		defaultValues: {type: "add"},
 	});
 
-	const mutationOptions = mutateCallback(loader);
-
 	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
-	const {mutate: mutateUpsert} =
-		trpc.sppb.in.upsert.useMutation(mutationOptions);
-	const {mutate: mutateDelete} =
-		trpc.sppb.in.delete.useMutation(mutationOptions);
+	const {mutate: mutateUpsert} = trpc.sppb.in.upsert.useMutation(mutateOpts);
+	const {mutate: mutateDelete} = trpc.sppb.in.delete.useMutation(mutateOpts);
 
 	const dataForm = watch();
 	const {type: modalType} = dataForm;
@@ -64,7 +61,7 @@ export default function SPPBIN() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, po_item, ...rest}) => {
+		handleSubmit(({type, po_item = [], ...rest}) => {
 			if (type === "delete") return mutateDelete({id: rest.id}, {onSuccess});
 
 			mutateUpsert({...rest, po_item: po_item.filter(Boolean)}, {onSuccess});

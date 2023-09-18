@@ -5,14 +5,14 @@ import {useForm} from "react-hook-form";
 
 import {ModalType, TUser, ZId} from "@appTypes/app.type";
 import {Button, Modal, ModalRef, TableFilter, Text} from "@components";
-import {allowedPages, defaultErrorMutation} from "@constants";
+import {allowedPages} from "@constants";
 import {CRUD_ENABLED} from "@enum";
-import {useTableFilter} from "@hooks";
+import {useLoader, useTableFilter} from "@hooks";
 import {trpc} from "@utils/trpc";
 
+import {QRUserLogin, RenderTableCell, UserTokenCopy} from "./component";
 import {ModalChild} from "./ModalChild";
 import {RenderImportCustomer} from "./RenderImportCustomer";
-import {QRUserLogin, RenderTableCell, UserTokenCopy} from "./component";
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -24,7 +24,7 @@ export const PageTable = () => {
 	return <RenderPage path={asPath} />;
 };
 
-const RenderPage = ({path}: {path: string}) => {
+function RenderPage({path}: {path: string}) {
 	const {
 		text,
 		table,
@@ -33,8 +33,9 @@ const RenderPage = ({path}: {path: string}) => {
 	} = allowedPages[path as keyof typeof allowedPages] ?? {};
 
 	const modalRef = useRef<ModalRef>(null);
+	const {mutateOpts, ...loader} = useLoader();
 	const {mutate} = trpc.basic.mutate.useMutation({
-		...defaultErrorMutation,
+		...mutateOpts,
 		onSuccess() {
 			refetch();
 		},
@@ -83,6 +84,7 @@ const RenderPage = ({path}: {path: string}) => {
 
 	return (
 		<>
+			{loader.component}
 			<Modal title={modalTitle} ref={modalRef}>
 				<form onSubmit={submit} className="flex flex-col gap-2">
 					<ModalChild path={path} control={control} />
@@ -150,4 +152,4 @@ const RenderPage = ({path}: {path: string}) => {
 			</div>
 		</>
 	);
-};
+}

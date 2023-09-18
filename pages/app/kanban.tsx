@@ -27,13 +27,7 @@ import {useLoader, useNewExportData, useTableFilter} from "@hooks";
 import {RenderKanbanCardV2} from "@pageComponent/KanbanCardV2";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {atomDataKanban} from "@recoil/atoms";
-import {
-	classNames,
-	dateUtils,
-	modalTypeParser,
-	mutateCallback,
-	sleep,
-} from "@utils";
+import {classNames, dateUtils, modalTypeParser, sleep} from "@utils";
 import {trpc} from "@utils/trpc";
 
 Kanban.getLayout = getLayout;
@@ -50,8 +44,7 @@ export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
 	const genPdfRef = useRef<GenPdfRef>(null);
 	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
-	const loader = useLoader();
-
+	const {mutateOpts, ...loader} = useLoader();
 	const {formValue, hookForm} = useTableFilter({limit: 5});
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<KanbanFormType>();
@@ -61,14 +54,10 @@ export default function Kanban() {
 		isFetched,
 	} = trpc.kanban.getPage.useQuery(formValue!, {enabled: !!formValue});
 
-	const mutationOptions = mutateCallback(loader);
-
-	const {mutate: mutateUpsert} =
-		trpc.kanban.upsert.useMutation(mutationOptions);
-	const {mutate: mutateDelete} =
-		trpc.kanban.delete.useMutation(mutationOptions);
-	const {mutateAsync: mutatePrinted} =
-		trpc.kanban.printed.useMutation(mutationOptions);
+	const {mutate: mutateUpsert} = trpc.kanban.upsert.useMutation(mutateOpts);
+	const {mutate: mutateDelete} = trpc.kanban.delete.useMutation(mutateOpts);
+	const {mutateAsync: mutatePrint} =
+		trpc.kanban.printed.useMutation(mutateOpts);
 
 	const dataForm = watch();
 
@@ -163,7 +152,7 @@ export default function Kanban() {
 		}
 
 		await genPdfRef.current?.generate();
-		await mutatePrinted(kanbanIds);
+		await mutatePrint(kanbanIds);
 		refetch();
 		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
@@ -180,7 +169,6 @@ export default function Kanban() {
 	return (
 		<>
 			{loader.component}
-
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form
 					onSubmit={submit}
@@ -190,7 +178,6 @@ export default function Kanban() {
 			</Modal>
 
 			<GeneratePdfV2
-				debug
 				width="w-[1850px]"
 				splitPagePer={4}
 				orientation="l"

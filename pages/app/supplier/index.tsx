@@ -18,8 +18,8 @@ import {
 	TableFilterV2,
 	TableFilterV2Ref,
 } from "@components";
-import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
+import {useLoader} from "@hooks";
 import {modalTypeParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -31,12 +31,11 @@ export default function Supplier() {
 	const modalRef = useRef<ModalRef>(null);
 	const tableRef = useRef<TableFilterV2Ref>(null);
 
+	const {mutateOpts, ...loader} = useLoader();
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<SupplierForm>();
-	const {mutate: mutateUpsert} =
-		trpc.supplier.upsert.useMutation(defaultErrorMutation);
-	const {mutate: mutateDelete} =
-		trpc.supplier.delete.useMutation(defaultErrorMutation);
+	const {mutate: mutateUpsert} = trpc.supplier.upsert.useMutation(mutateOpts);
+	const {mutate: mutateDelete} = trpc.supplier.delete.useMutation(mutateOpts);
 
 	const modalForm = watch();
 
@@ -76,6 +75,7 @@ export default function Supplier() {
 
 	return (
 		<>
+			{loader.component}
 			<TableFilterV2<RouterOutput["supplier"]["get"]["rows"][number]>
 				ref={tableRef}
 				header={["Item", "Nama", "No. Telp", "NPWP", "Up", "Alamat", "Action"]}

@@ -2,7 +2,8 @@ import {useRef} from "react";
 
 import {TUser} from "@appTypes/app.type";
 import {Button, Modal, ModalRef, Text} from "@components";
-import {BodyArrayKey, defaultErrorMutation} from "@constants";
+import {BodyArrayKey} from "@constants";
+import {useLoader} from "@hooks";
 import {copyToClipboard, generatePDF} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -34,7 +35,8 @@ export function UserTokenCopy(user: TUser) {
 export function QRUserLogin(user: TUser) {
 	const tagId = `qr-user-${user.id}`;
 	const modalRef = useRef<ModalRef>(null);
-	const {mutate} = trpc.user_login.generate.useMutation(defaultErrorMutation);
+	const {mutateOpts, ...loader} = useLoader();
+	const {mutate} = trpc.user_login.generate.useMutation(mutateOpts);
 	const {data} = trpc.qr.useQuery<any, string>(user.id);
 	const {data: dataToken, refetch} = trpc.user_login.getToken.useQuery<
 		any,
@@ -55,6 +57,7 @@ export function QRUserLogin(user: TUser) {
 
 	return (
 		<>
+			{loader.component}
 			<Button onClick={generate}>Generate</Button>
 			<Modal title="QR Cutomer Login" ref={modalRef}>
 				<div id={tagId}>

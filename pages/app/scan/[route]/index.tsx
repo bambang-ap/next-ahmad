@@ -9,8 +9,8 @@ import {TScan, TScanItem, TScanTarget, ZId} from "@appTypes/app.zod";
 import {ScanIds} from "@appTypes/props.type";
 import {Scanner} from "@componentBlocks";
 import {Button, Form, Input, ModalRef} from "@components";
-import {defaultErrorMutation} from "@constants";
 import {getLayout} from "@hoc";
+import {useLoader} from "@hooks";
 import {ScanDetailKanban} from "@pageComponent/scan_GenerateQR";
 import Scrollbar from "@prevComp/Scrollbar";
 import {selectorScanIds} from "@recoil/selectors";
@@ -82,6 +82,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 	const qrcodeRef = useRef<ModalRef>(null);
 	const router = useRouter();
 
+	const {mutateOpts, ...loader} = useLoader();
 	const {route} = router.query as Route;
 	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
 	const {control, watch, handleSubmit, clearErrors, setValue, reset} =
@@ -93,11 +94,11 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 
 	const {data, refetch} = trpc.scan.get.useQuery(
 		{id, target: route},
-		{enabled: !!id, ...defaultErrorMutation},
+		{enabled: !!id},
 	);
 
 	const {mutateAsync: mutate} = trpc.scan.update.useMutation({
-		...defaultErrorMutation,
+		...mutateOpts,
 		onSuccess: () => refetch(),
 	});
 
@@ -178,31 +179,34 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 	}, [data]);
 
 	return (
-		<Form
-			onSubmit={submit}
-			className="flex flex-col gap-2 p-2 border"
-			context={{disableSubmit: status, disabled: status}}>
-			<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
-			<div className="flex gap-2 items-center">
-				<Input
-					disabled={false}
-					className="flex-1"
-					control={control}
-					fieldName="id"
-				/>
-				{/* <Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button> */}
-				<Button
-					icon={status ? "faTrash" : "faCircleXmark"}
-					onClick={removeUid}
-				/>
-				{id && !!data && (
-					<Button disabled={status} type="submit">
-						{submitText}
-					</Button>
-				)}
-			</div>
-			{data && <RenderDataKanban {...data} control={control} route={route} />}
-		</Form>
+		<>
+			{loader.component}
+			<Form
+				onSubmit={submit}
+				className="flex flex-col gap-2 p-2 border"
+				context={{disableSubmit: status, disabled: status}}>
+				<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
+				<div className="flex gap-2 items-center">
+					<Input
+						disabled={false}
+						className="flex-1"
+						control={control}
+						fieldName="id"
+					/>
+					{/* <Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button> */}
+					<Button
+						icon={status ? "faTrash" : "faCircleXmark"}
+						onClick={removeUid}
+					/>
+					{id && !!data && (
+						<Button disabled={status} type="submit">
+							{submitText}
+						</Button>
+					)}
+				</div>
+				{data && <RenderDataKanban {...data} control={control} route={route} />}
+			</Form>
+		</>
 	);
 }
 
