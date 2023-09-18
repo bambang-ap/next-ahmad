@@ -5,7 +5,6 @@ import {useForm} from "react-hook-form";
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
-	TCustomer,
 	TUpsertSppbIn,
 } from "@appTypes/app.type";
 import {
@@ -18,7 +17,6 @@ import {
 	TableFilterV3,
 	VRenderItem,
 } from "@components";
-import {CRUD_ENABLED} from "@enum";
 import {getLayout} from "@hoc";
 import {useLoader, useNewExportData} from "@hooks";
 import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
@@ -31,7 +29,7 @@ export type FormType = {
 	id_customer?: string;
 	idSppbIns?: MyObject<boolean>;
 } & TUpsertSppbIn &
-	Partial<Pick<SppbInRows, "items">>;
+	Partial<Pick<SppbInRows, "OrmCustomerPOItems">>;
 
 SPPBIN.getLayout = getLayout;
 
@@ -44,9 +42,6 @@ export default function SPPBIN() {
 		defaultValues: {type: "add"},
 	});
 
-	const {data: dataCustomer} = trpc.basic.get.useQuery<any, TCustomer[]>({
-		target: CRUD_ENABLED.CUSTOMER,
-	});
 	const {mutate: mutateUpsert} = trpc.sppb.in.upsert.useMutation(mutateOpts);
 	const {mutate: mutateDelete} = trpc.sppb.in.delete.useMutation(mutateOpts);
 
@@ -101,12 +96,7 @@ export default function SPPBIN() {
 				control={control}
 				reset={reset}
 				property="idSppbIns"
-				useQuery={form =>
-					trpc.sppb.in.getPage.useQuery({
-						type: "sppb_in",
-						...form,
-					})
-				}
+				useQuery={form => trpc.sppb.in.getPage.useQuery(form)}
 				exportResult={exportResult}
 				keyExtractor={item => item?.id}
 				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
@@ -129,13 +119,8 @@ export default function SPPBIN() {
 								/>
 							)}
 							<Cell>{dateUtils.date(item.tgl)}</Cell>
-							<Cell>{item.detailPo?.nomor_po}</Cell>
-							<Cell>
-								{
-									dataCustomer?.find(e => e.id === item.detailPo?.id_customer)
-										?.name
-								}
-							</Cell>
+							<Cell>{item.OrmCustomerPO?.nomor_po}</Cell>
+							<Cell>{item.OrmCustomerPO?.OrmCustomer.name}</Cell>
 							<Cell>{item.nomor_surat}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-2">

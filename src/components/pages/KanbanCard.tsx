@@ -67,12 +67,14 @@ export function RenderKanbanCard({idKanban, item: dataItem}: Props) {
 	});
 
 	const borderClassName = "border-black border-b-2 -mx-2 px-2 pb-2";
-	const itemSppbIn = dataSppbIn?.items?.find(e => e.id === id_item);
+	const itemSppbIn = dataSppbIn?.OrmCustomerPOItems?.find(
+		e => e.id === id_item,
+	);
 	const dateKanban = `Tgl Kanban ${moment(createdAt).format(
 		"D MMMM YYYY - HH.mm.ss",
 	)}`;
 
-	const {itemDetail, lot_no} = itemSppbIn ?? {};
+	const {OrmCustomerPOItem: itemDetail, lot_no} = itemSppbIn ?? {};
 	const {qty1, qty2, qty3, OrmMasterItem: masterItem} = item;
 	const {unit1, unit2, unit3} = itemDetail ?? {};
 	const [class1, class2, class3] = [

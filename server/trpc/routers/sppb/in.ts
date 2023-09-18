@@ -1,8 +1,8 @@
-import {Op} from "sequelize";
 import {z} from "zod";
 
 import {
 	PagingResult,
+	TCustomer,
 	TCustomerPO,
 	TCustomerSPPBIn,
 	TMasterItem,
@@ -17,11 +17,13 @@ import {
 } from "@appTypes/app.zod";
 import {defaultLimit} from "@constants";
 import {
+	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
+	wherePagesV2,
 } from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -32,9 +34,9 @@ import {GetPageRows} from "../customer_po";
 
 type GetPage = PagingResult<SppbInRows>;
 export type SppbInRows = TCustomerSPPBIn & {
-	detailPo?: TCustomerPO;
-	items?: (TPOItemSppbIn & {
-		itemDetail?: TPOItem & {OrmMasterItem: TMasterItem};
+	OrmCustomerPO?: TCustomerPO & {OrmCustomer: TCustomer};
+	OrmCustomerPOItems?: (TPOItemSppbIn & {
+		OrmCustomerPOItem?: TPOItem & {OrmMasterItem: TMasterItem};
 	})[];
 };
 
@@ -99,59 +101,34 @@ const sppbInRouters = router({
 			return rows;
 		}),
 	getPage: procedure
-		.input(
-			tableFormValue.partial().extend({
-				type: z.literal("sppb_in"),
-				where: tCustomerSPPBIn.partial().optional(),
-			}),
-		)
+		.input(tableFormValue.partial())
 		.query(({ctx: {req, res}, input}) => {
-			const {where, limit = defaultLimit, page = 1, search} = input;
-
-			const limitation = {
-				limit,
-				offset: (page - 1) * limit,
-				where: {
-					...(search && {
-						nomor_surat: {
-							[Op.iLike]: `%${search}%`,
-						},
-					}),
-				},
-			};
+			const {limit = defaultLimit, page = 1, search} = input;
 
 			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
-				const {count, rows: dataSppb} = await OrmCustomerSPPBIn.findAndCountAll(
-					where ? {where} : limitation,
-				);
-				const promises = dataSppb.map(async data => {
-					const detailPo = await OrmCustomerPO.findOne({
-						where: {id: data.dataValues.id_po},
-					});
-
-					const items = await OrmPOItemSppbIn.findAll({
-						where: {id_sppb_in: data.dataValues.id},
-					});
-
-					const promiseItemDetails = items.map(async item => {
-						const itemDetail = await OrmCustomerPOItem.findOne({
-							where: {id: item.dataValues.id_item},
-							include: [OrmMasterItem],
-						});
-
-						return {...item.dataValues, itemDetail: itemDetail?.dataValues};
-					});
-
-					return {
-						...data.dataValues,
-						detailPo: detailPo?.dataValues,
-						items: await Promise.all(promiseItemDetails),
-					} as SppbInRows;
+				const {count, rows: rr} = await OrmCustomerSPPBIn.findAndCountAll({
+					limit,
+					offset: (page - 1) * limit,
+					where: wherePagesV2<SppbInRows>(
+						[
+							"nomor_surat",
+							"$OrmCustomerPO.nomor_po$",
+							"$OrmCustomerPO.OrmCustomer.name$",
+						],
+						search,
+					),
+					include: [
+						{model: OrmCustomerPO, include: [OrmCustomer]},
+						{
+							separate: true,
+							model: OrmPOItemSppbIn,
+							include: [{model: OrmCustomerPOItem, include: [OrmMasterItem]}],
+						},
+					],
 				});
 
-				const allDataSppbIn = await Promise.all(promises);
-
-				return pagingResult(count, page, limit, allDataSppbIn);
+				// @ts-ignore
+				return pagingResult(count, page, limit, rr as SppbInRows);
 			});
 		}),
 	upsert: procedure

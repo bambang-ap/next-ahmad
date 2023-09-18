@@ -29,7 +29,7 @@ export function SppbInModalChild({
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
 	const [modalType, idSppbIn, idPo, idCustomer, itemsInPo] = useWatch({
 		control,
-		name: ["type", "id", "id_po", "id_customer", "items"],
+		name: ["type", "id", "id_po", "id_customer", "OrmCustomerPOItems"],
 	});
 
 	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: "sppb_in"});
@@ -142,9 +142,9 @@ export function SppbInModalChild({
 				renderItem={({Cell, item}, index) => {
 					const sppbItems =
 						selectedSppbIn?.map(sppb =>
-							sppb.items?.find(itemm => itemm.id_item === item.id),
+							sppb.OrmCustomerPOItems?.find(itemm => itemm.id_item === item.id),
 						) ?? [];
-					const selectedSppbItem = selectedSppbInn?.items?.find(
+					const selectedSppbItem = selectedSppbInn?.OrmCustomerPOItems?.find(
 						itemmm => itemmm?.id_item === item?.id,
 					);
 

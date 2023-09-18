@@ -1,6 +1,3 @@
-// FIXME:
-// @ts-nochecks
-
 import {PropsWithChildren} from "react";
 
 import {RouterOutput, TInstruksiKanban} from "@appTypes/app.type";
@@ -166,10 +163,13 @@ export function SPPBOutGenerateQR({
 											<>
 												{Object.entries(e.items).map(([id_item, item]) => {
 													index++;
-													const {id, itemDetail, lot_no} =
-														selectedSppbIn?.kanban.dataSppbIn?.items?.find(
-															eItem => eItem.id === id_item,
-														) ?? {};
+													const {
+														id,
+														OrmCustomerPOItem: itemDetail,
+														lot_no,
+													} = selectedSppbIn?.kanban.dataSppbIn?.OrmCustomerPOItems?.find(
+														eItem => eItem.id === id_item,
+													) ?? {};
 													const kanban = selectedSppbIn?.kanban;
 
 													const masterItem =

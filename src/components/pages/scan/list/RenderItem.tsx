@@ -56,12 +56,15 @@ export function RenderItem({
 	});
 
 	const selectedSppbIn = dataSppbIn?.[0];
-	const selectedSppbInItem = selectedSppbIn?.items?.find(e => e.id === id_item);
+	const selectedSppbInItem = selectedSppbIn?.OrmCustomerPOItems?.find(
+		e => e.id === id_item,
+	);
 	const selectedItem = dataPo?.[0]?.po_item.find(poItem => {
 		return (
 			poItem.id ===
-			selectedSppbIn?.items?.find(sppbInItem => sppbInItem.id === item.id_item)
-				?.id_item
+			selectedSppbIn?.OrmCustomerPOItems?.find(
+				sppbInItem => sppbInItem.id === item.id_item,
+			)?.id_item
 		);
 	});
 

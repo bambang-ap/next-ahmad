@@ -108,9 +108,9 @@ export function ScanDetailKanban({
 			</div>
 
 			{Object.entries(kanban.items).map(([id_item, item], i) => {
-				const detail = kanban.dataSppbIn?.items?.find(
+				const detail = kanban.dataSppbIn?.OrmCustomerPOItems?.find(
 					e => e.id === id_item,
-				)?.itemDetail;
+				)?.OrmCustomerPOItem;
 
 				// eslint-disable-next-line @typescript-eslint/no-shadow
 				const jj = dataPrev?.find(([id]) => id === item.id);

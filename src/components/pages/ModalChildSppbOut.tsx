@@ -29,10 +29,12 @@ export function SppbOutModalChild({
 
 	const dataAvailablePo = selectMapper(
 		dataFg.filter(
-			e => e.kanban.dataSppbIn?.detailPo?.id_customer === formData.id_customer,
+			e =>
+				e.kanban.dataSppbIn?.OrmCustomerPO?.id_customer ===
+				formData.id_customer,
 		),
 		"kanban.id_po",
-		"kanban.dataSppbIn.detailPo.nomor_po",
+		"kanban.dataSppbIn.OrmCustomerPO.nomor_po",
 	);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
@@ -184,7 +186,7 @@ export function SppbOutModalChild({
 										renderItem={({Cell, item: [id_item, item]}) => {
 											const masterItemDetail = item.OrmMasterItem;
 											const sppbInItem =
-												selectedSppbIn?.kanban.dataSppbIn?.items?.find(
+												selectedSppbIn?.kanban.dataSppbIn?.OrmCustomerPOItems?.find(
 													e => e.id === id_item,
 												);
 
@@ -237,7 +239,7 @@ type RenderJumlahProps = {
 	ii: number;
 	id_item: string;
 	item: GetFGRet["kanban"]["items"][string];
-	sppbInItem?: NonNullable<SppbInRows["items"]>[number];
+	sppbInItem?: NonNullable<SppbInRows["OrmCustomerPOItems"]>[number];
 } & FormProps<FormValue>;
 
 function RenderJumlah({
@@ -248,7 +250,7 @@ function RenderJumlah({
 	ii,
 	id_item,
 }: RenderJumlahProps) {
-	const {itemDetail: detail} = sppbInItem ?? {};
+	const {OrmCustomerPOItem: detail} = sppbInItem ?? {};
 
 	return (
 		<>
