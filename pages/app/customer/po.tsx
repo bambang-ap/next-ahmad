@@ -32,7 +32,7 @@ export default function POCustomer() {
 		// resolver: zodResolver(validationSchema),
 	});
 
-	const {refetch: refetchH} = trpc.customer_po.get.useQuery({
+	const {refetch} = trpc.customer_po.get.useQuery({
 		type: "customer_po",
 	});
 
@@ -46,7 +46,7 @@ export default function POCustomer() {
 		handleSubmit(({type, id, po_item = [], ...rest}) => {
 			const onSuccess = () => {
 				modalRef.current?.hide();
-				refetchH();
+				refetch();
 			};
 
 			switch (type) {

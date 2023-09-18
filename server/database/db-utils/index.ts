@@ -1,4 +1,5 @@
 import {Route} from "pages/app/scan/[route]";
+import {Path} from "react-hook-form";
 import {DECIMAL, literal, Op, Order} from "sequelize";
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from "zod";
 
@@ -52,6 +53,23 @@ export function wherePages(
 			},
 		};
 	}
+
+	return {
+		[Op.or]: searchKey.map(key => {
+			return {
+				[key]: {
+					[Op.iLike]: `%${search}%`,
+				},
+			};
+		}),
+	};
+}
+
+export function wherePagesV2<T extends {}>(
+	searchKey: (Path<NonArrayObject<T>> | `$${Path<NonArrayObject<T>>}$`)[],
+	search?: string,
+): any {
+	if (!search) return undefined;
 
 	return {
 		[Op.or]: searchKey.map(key => {

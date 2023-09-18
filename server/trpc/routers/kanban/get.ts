@@ -44,7 +44,7 @@ import {
 	OrmParameterKategori,
 	OrmScan,
 	OrmUser,
-	wherePages,
+	wherePagesV2,
 } from "@database";
 import {checkCredentialV2, pagingResult} from "@server";
 import {procedure} from "@trpc";
@@ -150,9 +150,18 @@ export const kanbanGet = {
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,
+				logging: true,
 				order: [["nomor_kanban", "desc"]],
 				offset: (page - 1) * limit,
-				where: wherePages("nomor_kanban", search),
+				where: wherePagesV2<UUU>(
+					[
+						"nomor_kanban",
+						"$OrmCustomerPO.nomor_po$",
+						"$OrmCustomerSPPBIn.nomor_surat$",
+						"$OrmCustomerPO.OrmCustomer.name$",
+					],
+					search,
+				),
 				include: [
 					OrmCustomerSPPBIn,
 					{
