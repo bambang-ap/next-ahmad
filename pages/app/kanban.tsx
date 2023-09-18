@@ -5,11 +5,8 @@ import {FormEventHandler, useEffect, useRef} from "react";
 import {useForm} from "react-hook-form";
 import {useSetRecoilState} from "recoil";
 
-import {
-	GeneratePdf,
-	GenPdfRef,
-	SelectAllButton,
-} from "@appComponent/GeneratePdf";
+import {GenPdfRef, SelectAllButton} from "@appComponent/GeneratePdf";
+import {GeneratePdfV2} from "@appComponent/GeneratePdfV2";
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
@@ -27,7 +24,7 @@ import {
 import {cuttingLineClassName, nonRequiredRefetch} from "@constants";
 import {getLayout} from "@hoc";
 import {useLoader, useNewExportData, useTableFilter} from "@hooks";
-import {RenderKanbanCard} from "@pageComponent/KanbanCard";
+import {RenderKanbanCardV2} from "@pageComponent/KanbanCardV2";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {atomDataKanban} from "@recoil/atoms";
 import {
@@ -192,32 +189,26 @@ export default function Kanban() {
 				</Form>
 			</Modal>
 
-			<GeneratePdf
+			<GeneratePdfV2
+				debug
 				width="w-[1850px]"
 				splitPagePer={4}
 				orientation="l"
 				ref={genPdfRef}
 				tagId="kanban-data-print"
-				useQueries={() =>
-					trpc.useQueries(t =>
-						selectedIdKanbans.map(id => t.kanban.detail(id, {enabled: !!id})),
+				useQuery={() =>
+					trpc.print.kanban.useQuery(
+						{id: selectedIdKanbans},
+						{enabled: selectedIdKanbans.length > 0},
 					)
 				}
-				renderItem={({data}) => {
-					const {items = {}, id} = data ?? {};
-
+				renderItem={data => {
 					return (
-						<>
-							{Object.entries(items).map(item => {
-								return (
-									<div
-										key={item[0]}
-										className={classNames("w-1/2 p-6", cuttingLineClassName)}>
-										<RenderKanbanCard idKanban={id!} item={item} />
-									</div>
-								);
-							})}
-						</>
+						<div
+							key={data.id}
+							className={classNames("w-1/2 p-6", cuttingLineClassName)}>
+							<RenderKanbanCardV2 {...data} />
+						</div>
 					);
 				}}
 			/>

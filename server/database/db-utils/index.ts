@@ -1,5 +1,6 @@
 import {Route} from "pages/app/scan/[route]";
 import {DECIMAL, literal, Op, Order} from "sequelize";
+import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from "zod";
 
 import {
 	Context,
@@ -14,6 +15,18 @@ import {PO_STATUS} from "@enum";
 import {appRouter} from "@trpc/routers";
 
 export * from "./relation";
+
+export function attrParser<
+	T extends ZodRawShape,
+	K extends ObjKeyof<T>,
+	Mask extends noUnrecognized<objectKeyMask<T>, T>,
+>(schema: ZodObject<T>, pick: K[]) {
+	const reducer = pick.reduce((a, b) => ({...a, [b]: true}), {} as Mask);
+	const obj = schema.pick(reducer);
+	// @ts-ignore
+	type ObjType = Pick<z.infer<typeof obj>, K>;
+	return {obj: obj as ObjType, keys: Object.keys(obj.keyof().Values) as K[]};
+}
 
 export function ormDecimalType(fieldName: string) {
 	return {
