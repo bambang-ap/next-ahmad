@@ -45,7 +45,7 @@ export default function Kanban() {
 	const genPdfRef = useRef<GenPdfRef>(null);
 	const setKanbanTableForm = useSetRecoilState(atomDataKanban);
 	const {mutateOpts, ...loader} = useLoader();
-	const {formValue, hookForm} = useTableFilter({limit: 5});
+	const {formValue, hookForm} = useTableFilter();
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<KanbanFormType>();
 	const {

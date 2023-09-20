@@ -121,7 +121,6 @@ const mainDashboardRouter = router({
 							status_${target} = TRUE
 							AND item_${target} -> 0 IS NOT NULL
 					GROUP BY OrmCustomerPOItem.unit${num}`,
-					{logging: true},
 				);
 				return query;
 			}

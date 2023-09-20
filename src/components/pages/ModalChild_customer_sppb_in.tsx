@@ -37,7 +37,7 @@ export function SppbInModalChild({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 
-	const {data: listPo = []} = trpc.sppb.in.po.get.useQuery();
+	const {data: listPo = [], isFetching} = trpc.sppb.in.po.get.useQuery();
 
 	const isEdit = modalType === "edit";
 	const isPreview = modalType === "preview";
@@ -86,6 +86,7 @@ export function SppbInModalChild({
 					control={control}
 					fieldName="id_po"
 					label="PO"
+					isLoading={isFetching}
 					firstOption="- Pilih PO -"
 					data={selectMapper(
 						isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),

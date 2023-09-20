@@ -37,7 +37,6 @@ type AProps = RouterOutput["print"]["kanban"][number];
 
 export function RenderKanbanCardV2(props: AProps) {
 	const {
-		id_kanban: idKanban,
 		id_item,
 		qty1,
 		qty2,
@@ -45,6 +44,7 @@ export function RenderKanbanCardV2(props: AProps) {
 		OrmKanban,
 		OrmPOItemSppbIn,
 		OrmMasterItem,
+		qr: qrImage,
 	} = props;
 	const {OrmCustomerSPPBIn: dataSppbIn} = OrmPOItemSppbIn;
 	const {unit1, unit2, unit3} = OrmPOItemSppbIn.OrmCustomerPOItem;
@@ -56,13 +56,8 @@ export function RenderKanbanCardV2(props: AProps) {
 		OrmDocument: docDetail,
 		OrmCustomerPO,
 		dataCreatedBy,
+		image,
 	} = OrmKanban;
-
-	const {data: image} = trpc.kanban.image.useQuery(idKanban);
-	const {data: qrImage} = trpc.qr.useQuery<any, string>(
-		{input: idKanban},
-		{enabled: !!idKanban},
-	);
 
 	const processes = OrmMasterItem?.instruksi;
 	const selectedMesin = list_mesin?.[id_item];
@@ -236,7 +231,7 @@ export function RenderKanbanCardV2(props: AProps) {
 					</BorderTd>
 					<BorderTd rowSpan={3}>{image && <img alt="" src={image} />}</BorderTd>
 					<BorderTd rowSpan={3}>
-						<img src={qrImage} alt="" />
+						{!!qrImage && <img src={qrImage as string} alt="" />}
 					</BorderTd>
 				</tr>
 				<tr>

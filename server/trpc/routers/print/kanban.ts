@@ -28,11 +28,14 @@ import {
 import {checkCredentialV2} from "@server";
 import {procedure} from "@trpc";
 
+import {appRouter, RouterOutput} from "..";
+
 export const printKanbanRouter = {
 	kanban: procedure
 		.input(z.object({id: z.string().array()}))
 		.query(({ctx, input}) => {
 			type UU = typeof A.obj & {
+				qr?: RouterOutput["qr"];
 				OrmMasterItem: typeof F.obj;
 				OrmPOItemSppbIn: typeof G.obj & {
 					OrmCustomerPOItem: typeof I.obj;
@@ -54,6 +57,7 @@ export const printKanbanRouter = {
 				"qty3",
 			]);
 			const B = attrParser(tKanban, [
+				"image",
 				"createdAt",
 				"keterangan",
 				"nomor_kanban",
@@ -69,6 +73,7 @@ export const printKanbanRouter = {
 			const J = attrParser(tCustomerSPPBIn, ["nomor_surat", "tgl"]);
 
 			return checkCredentialV2(ctx, async (): Promise<UU[]> => {
+				const routerCaller = appRouter.createCaller(ctx);
 				const data = await OrmKanbanItem.findAll({
 					where: {id_kanban: input.id},
 					attributes: A.keys,
@@ -115,18 +120,22 @@ export const printKanbanRouter = {
 					],
 				});
 
-				return (
-					data
-						.sort((a, b) => {
-							const aa = a.dataValues;
-							const bb = b.dataValues;
-							return (
-								input.id.indexOf(aa.id_kanban) - input.id.indexOf(bb.id_kanban)
-							);
-						})
+				const promisedData = data
+					.sort((a, b) => {
+						const aa = a.dataValues;
+						const bb = b.dataValues;
+						return (
+							input.id.indexOf(aa.id_kanban) - input.id.indexOf(bb.id_kanban)
+						);
+					})
+					.map(async e => {
 						// @ts-ignore
-						.map(e => e.dataValues as UU)
-				);
+						const val = e.dataValues as UU;
+						const qr = await routerCaller.qr({input: val.id_kanban});
+						return {...val, qr};
+					});
+
+				return Promise.all(promisedData);
 			});
 		}),
 };

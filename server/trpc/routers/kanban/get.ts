@@ -150,7 +150,6 @@ export const kanbanGet = {
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,
-				logging: true,
 				order: [["nomor_kanban", "desc"]],
 				offset: (page - 1) * limit,
 				where: wherePagesV2<UUU>(
