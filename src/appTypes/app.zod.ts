@@ -276,6 +276,13 @@ export const tCustomerSPPBOutPo = z.object({
 	sppb_in: tCustomerSPPBOutSppbIn.array(),
 });
 
+export type TCustomerSPPBOutItem = z.infer<typeof tCustomerSPPBOutItem>;
+export const tCustomerSPPBOutItem = z.object({
+	id_sppb_out: z.string(),
+	id_sppb_in_item: z.string(),
+	...unitQty.shape,
+});
+
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	invoice_no: z.string(),

@@ -4,7 +4,7 @@ import {useForm} from "react-hook-form";
 import {useRecoilState} from "recoil";
 
 import {TMenu, TRole} from "@appTypes/app.type";
-import {defaultErrorMutation} from "@constants";
+import {defaultErrorMutation, nonRequiredRefetch} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {atomMappedMenu} from "@recoil/atoms";
 import {trpc} from "@utils/trpc";
@@ -24,11 +24,15 @@ export function useMenu() {
 		trpc.menu.mutate.useMutation(defaultErrorMutation);
 	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
 		{type: "menu"},
+		nonRequiredRefetch,
 	);
-	const {data: mappedMenu, refetch: refetchMapped} = trpc.menu.get.useQuery({
-		type: "menu",
-		sorted: true,
-	});
+	const {data: mappedMenu, refetch: refetchMapped} = trpc.menu.get.useQuery(
+		{
+			type: "menu",
+			sorted: true,
+		},
+		nonRequiredRefetch,
+	);
 	const {data: dataRole} = trpc.basic.get.useQuery<TRole, TRole[]>({
 		target: CRUD_ENABLED.ROLE,
 	});

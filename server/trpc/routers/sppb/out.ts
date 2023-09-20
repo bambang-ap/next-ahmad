@@ -57,6 +57,15 @@ type KJ = Omit<TCustomerSPPBOut, "po"> & {
 };
 
 const sppbOutRouters = router({
+	getPOO: procedure.query(({ctx}) => {
+		return checkCredentialV2(ctx, async () => {
+			const dataFg = await OrmScan.findAndCountAll({
+				where: {status_finish_good: true},
+				logging: true,
+			});
+			return dataFg;
+		});
+	}),
 	getInvoice: procedure.query(() =>
 		genInvoice(
 			OrmCustomerSPPBOut,

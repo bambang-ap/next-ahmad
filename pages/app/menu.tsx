@@ -150,7 +150,7 @@ const RenderMenu = (props: {
 	return (
 		<Table
 			data={data ?? []}
-			header={noHeader ? undefined : ["Title", "Icon", "Role"]}
+			header={noHeader ? undefined : ["Icon", "Title", "Role"]}
 			renderItemEach={({item: {subMenu}, Cell}) => {
 				if (changeOrderEnabled || !subMenu || (subMenu && subMenu?.length <= 0))
 					return false;
@@ -174,7 +174,7 @@ const RenderMenu = (props: {
 				}
 				return (
 					<Fragment key={id}>
-						<Cell className="flex gap-2">
+						<Cell className="justify-center items-center gap-2">
 							{changeOrderEnabled && !parent_id && (
 								<>
 									<Button onClick={() => reorder(-1)} icon="faArrowUp" />
@@ -187,14 +187,6 @@ const RenderMenu = (props: {
 									/>
 								</>
 							)}
-							<Input
-								className="flex-1"
-								control={control}
-								fieldName={`${id}.title`}
-								noLabel
-							/>
-						</Cell>
-						<Cell>
 							<IconForm
 								control={control}
 								fieldName={`${id}.icon`}
@@ -204,19 +196,27 @@ const RenderMenu = (props: {
 								}}
 							/>
 						</Cell>
-						<Cell className="flex gap-2">
+						<Cell width={500} className="flex gap-2">
+							<Input
+								className="flex-1"
+								control={control}
+								fieldName={`${id}.title`}
+								noLabel
+							/>
+						</Cell>
+						<Cell className="flex flex-1 flex-wrap">
 							{dataRole?.map(role => {
 								if (role.name === "admin") return null;
 
 								return (
-									<Input
-										className="mr-2"
-										type="checkbox"
-										key={role.id}
-										control={control}
-										fieldName={`${id}.role.${role.id}`}
-										label={role.name.ucwords()}
-									/>
+									<div className="w-1/4 p-1" key={role.id}>
+										<Input
+											type="checkbox"
+											control={control}
+											fieldName={`${id}.role.${role.id}`}
+											label={role.name.ucwords()}
+										/>
+									</div>
 								);
 							})}
 						</Cell>
