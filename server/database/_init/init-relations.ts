@@ -6,6 +6,7 @@ import {
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
+	OrmCustomerSPPBOutItem,
 	OrmDocument,
 	OrmHardness,
 	OrmHardnessKategori,
@@ -42,11 +43,13 @@ export function initRelations() {
 	);
 	oneToMany(OrmCustomer, OrmCustomerPO, "id_customer");
 	oneToMany(OrmCustomer, OrmCustomerSPPBOut, "id_customer");
+	oneToMany(OrmCustomerSPPBOut, OrmCustomerSPPBOutItem, "id_sppb_out");
 	oneToMany(OrmKendaraan, OrmCustomerSPPBOut, "id_kendaraan");
 	oneToMany(OrmCustomerPO, OrmKanban, "id_po");
 	oneToMany(OrmCustomerPO, OrmCustomerPOItem, "id_po");
 	oneToMany(OrmCustomerPOItem, OrmPOItemSppbIn, "id_item");
 	oneToMany(OrmPOItemSppbIn, OrmKanbanItem, "id_item");
+	oneToMany(OrmPOItemSppbIn, OrmCustomerSPPBOutItem, "id_item");
 	oneToMany(OrmDocument, OrmKanban, "doc_id");
 	oneToMany(OrmKanban, OrmScan, "id_kanban");
 	oneToMany(OrmKanban, OrmKanbanItem, "id_kanban");

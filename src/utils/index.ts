@@ -8,6 +8,7 @@ import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
 
+import {TDecimal, UQtyList} from "@appTypes/app.type";
 import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
 	defaultErrorMutation,
@@ -20,6 +21,7 @@ import {
 } from "@constants";
 import {useLoader} from "@hooks";
 import {UseTRPCMutationOptions} from "@trpc/react-query/shared";
+import {UU} from "@trpc/routers/sppb/out";
 
 type Qty = typeof qtyList[number];
 
@@ -41,6 +43,20 @@ export const dateUtils = {
 	date: convertDate,
 	dateS: convertDateS,
 };
+
+export function itemInScanParser(
+	kanbans?: UU["OrmCustomerSPPBIns"][number]["OrmKanbans"],
+) {
+	return kanbans?.reduce((j, h) => {
+		h.OrmScans.forEach(({item_finish_good: k}) => {
+			qtyMap(({qtyKey, num}) => {
+				if (!j[qtyKey]) j[qtyKey] = 0;
+				j[qtyKey] += parseFloat(k?.[0]?.[num]?.toString() ?? "0");
+			});
+		});
+		return j;
+	}, {} as Record<UQtyList, TDecimal>);
+}
 
 export function qtyMap<T = ReactNode>(
 	callback: (

@@ -11,24 +11,37 @@ import {
 	tCustomerSPPBIn,
 	TCustomerSPPBOut,
 	tCustomerSPPBOut,
+	tCustomerSPPBOutItem,
 	tCustomerSPPBOutSppbIn,
+	tKanban,
+	tKanbanItem,
+	tMasterItem,
+	tPOItem,
+	tPOItemSppbIn,
+	tScan,
 	TScan,
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	attrParser,
 	OrmCustomer,
 	OrmCustomerPO,
+	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
+	OrmCustomerSPPBOutItem,
 	OrmKanban,
+	OrmKanbanItem,
 	OrmKendaraan,
+	OrmMasterItem,
+	OrmPOItemSppbIn,
 	OrmScan,
 } from "@database";
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 
-import {Op} from "sequelize";
+import {literal, Op} from "sequelize";
 import {z} from "zod";
 
 import {appRouter} from "..";
@@ -56,16 +69,83 @@ type KJ = Omit<TCustomerSPPBOut, "po"> & {
 	po: A;
 };
 
+const A = attrParser(tKanban, ["id"]);
+const B = attrParser(tCustomerSPPBIn);
+const C = attrParser(tCustomerPO);
+const D = attrParser(tScan, [
+	"item_finish_good",
+	"status_finish_good",
+	"lot_no_imi",
+]);
+const E = attrParser(tPOItemSppbIn, ["qty1", "qty2", "qty3", "lot_no"]);
+const F = attrParser(tCustomerSPPBOutItem, ["qty1", "qty2", "qty3"]);
+const G = attrParser(tMasterItem, ["name", "kode_item", "id"]);
+const H = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
+const I = attrParser(tKanbanItem, ["id", "qty1", "qty2", "qty3"]);
+
+export type UU = typeof C.obj & {
+	OrmCustomerSPPBIns: (typeof B.obj & {
+		OrmKanbans: (typeof A.obj & {
+			OrmScans: typeof D.obj[];
+		})[];
+		OrmPOItemSppbIns: (typeof E.obj & {
+			OrmCustomerPOItem: typeof H.obj;
+			OrmMasterItem: typeof G.obj;
+			OrmKanbanItems: typeof I.obj[];
+			OrmCustomerSPPBOutItems: (typeof F.obj & {})[];
+		})[];
+	})[];
+};
+
 const sppbOutRouters = router({
-	getPOO: procedure.query(({ctx}) => {
-		return checkCredentialV2(ctx, async () => {
-			const dataFg = await OrmScan.findAndCountAll({
-				where: {status_finish_good: true},
-				logging: true,
+	getPOO: procedure
+		.input(tCustomerSPPBOut.pick({id_customer: true}).partial())
+		.query(({ctx, input: {id_customer}}) => {
+			return checkCredentialV2(ctx, async () => {
+				const itemFg = literal("item_finish_good->0");
+
+				const dataFgg = await OrmCustomerPO.findAll({
+					logging: true,
+					attributes: C.keys,
+					where: {
+						id_customer,
+						"$OrmCustomerSPPBIns->OrmKanbans->OrmScans.status_finish_good$":
+							true,
+					},
+					include: [
+						{
+							attributes: B.keys,
+							model: OrmCustomerSPPBIn,
+							include: [
+								{
+									model: OrmKanban,
+									attributes: A.keys,
+									include: [
+										{model: OrmScan, attributes: D.keys},
+										{model: OrmKanbanItem, attributes: I.keys},
+									],
+								},
+								{
+									model: OrmPOItemSppbIn,
+									attributes: E.keys,
+									include: [
+										{model: OrmCustomerSPPBOutItem, attributes: F.keys},
+										{model: OrmMasterItem, attributes: G.keys},
+										{model: OrmCustomerPOItem, attributes: H.keys},
+									],
+								},
+							],
+						},
+					],
+				});
+
+				return dataFgg.map(e => {
+					const val = e.dataValues as UU;
+
+					return val;
+				});
 			});
-			return dataFg;
-		});
-	}),
+		}),
 	getInvoice: procedure.query(() =>
 		genInvoice(
 			OrmCustomerSPPBOut,

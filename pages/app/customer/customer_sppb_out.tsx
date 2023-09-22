@@ -53,7 +53,7 @@ export default function SPPBOUT() {
 
 	const {isPreview, modalTitle, isAdd, isEdit, isSelect} = modalTypeParser(
 		modalType,
-		"SPPB In",
+		"SPPB Out",
 	);
 
 	const widthSize = 1100;

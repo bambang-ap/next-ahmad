@@ -5,6 +5,7 @@ import initOrmCustomerPO from "../models/customer_po";
 import initOrmCustomerPOItem from "../models/customer_po_item";
 import initOrmCustomerSPPBIn from "../models/customer_sppb_in";
 import initOrmCustomerSPPBOut from "../models/customer_sppb_out";
+import initOrmCustomerSPPBOutItem from "../models/customer_sppb_out_item";
 import initOrmDocument from "../models/document";
 import initOrmHardness from "../models/hardness";
 import initOrmHardnessKategori from "../models/hardness_kategori";
@@ -62,6 +63,7 @@ export function initOrm(ORM: Sequelize) {
 	initOrmSupplierPO(ORM);
 	initOrmSupplierPOItem(ORM);
 	initOrmSupItemRelation(ORM);
+	initOrmCustomerSPPBOutItem(ORM);
 
 	return Promise.resolve();
 }

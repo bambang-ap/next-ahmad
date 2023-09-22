@@ -277,9 +277,9 @@ export const tCustomerSPPBOutPo = z.object({
 });
 
 export type TCustomerSPPBOutItem = z.infer<typeof tCustomerSPPBOutItem>;
-export const tCustomerSPPBOutItem = z.object({
+export const tCustomerSPPBOutItem = zId.extend({
 	id_sppb_out: z.string(),
-	id_sppb_in_item: z.string(),
+	id_item: z.string(),
 	...unitQty.shape,
 });
 
@@ -356,7 +356,8 @@ export const tMenu: z.ZodType<TMenu> = baseTMenu.extend({
 	subMenu: z.lazy(() => tMenu.array()).optional(),
 });
 
-const scanItem = z.tuple([z.string()]).rest(z.number().or(z.string()));
+export type ScanItem = z.infer<typeof scanItem>;
+export const scanItem = z.tuple([z.string()]).rest(z.number().or(z.string()));
 
 export const eCategoryReject = z.nativeEnum(CATEGORY_REJECT_DB);
 
