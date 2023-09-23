@@ -154,20 +154,19 @@ const sppbOutRouters = router({
 			"qty3",
 		]);
 		const B = attrParser(tCustomerSPPBOut);
-		const E = attrParser(tPOItemSppbIn, [
+		const C = attrParser(tPOItemSppbIn, [
 			"id_item",
 			"id_sppb_in",
 			"master_item_id",
 		]);
-		const F = attrParser(tCustomerSPPBIn, ["id_po"]);
-		const G = attrParser(tCustomerPO, ["id"]);
-		const H = attrParser(tCustomer, ["name"]);
+		const D = attrParser(tCustomerSPPBIn, ["id_po"]);
+		const E = attrParser(tCustomer, ["name"]);
 
 		type Ret = typeof B.obj & {
-			OrmCustomer: typeof H.obj;
+			OrmCustomer: typeof E.obj;
 			OrmCustomerSPPBOutItems: (typeof A.obj & {
-				OrmPOItemSppbIn: typeof E.obj & {
-					OrmCustomerSPPBIn: typeof F.obj;
+				OrmPOItemSppbIn: typeof C.obj & {
+					OrmCustomerSPPBIn: typeof D.obj;
 				};
 			})[];
 		};
@@ -180,7 +179,7 @@ const sppbOutRouters = router({
 				attributes: B.keys,
 				logging: true,
 				include: [
-					{model: OrmCustomer, attributes: H.keys},
+					{model: OrmCustomer, attributes: E.keys},
 					{
 						model: OrmCustomerSPPBOutItem,
 						attributes: A.keys,
@@ -188,8 +187,8 @@ const sppbOutRouters = router({
 						include: [
 							{
 								model: OrmPOItemSppbIn,
-								attributes: E.keys,
-								include: [{attributes: F.keys, model: OrmCustomerSPPBIn}],
+								attributes: C.keys,
+								include: [{attributes: D.keys, model: OrmCustomerSPPBIn}],
 							},
 						],
 					},
