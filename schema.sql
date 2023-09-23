@@ -83,6 +83,26 @@ CREATE TABLE public.customer_sppb_out (
 ALTER TABLE public.customer_sppb_out OWNER TO postgres;
 
 --
+-- Name: customer_sppb_out_item; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.customer_sppb_out_item (
+    id character varying(47) NOT NULL,
+    id_item character varying(47) NOT NULL,
+    id_sppb_out character varying(47) NOT NULL,
+    qty1 numeric,
+    qty2 numeric,
+    qty3 numeric,
+    qty4 numeric,
+    qty5 numeric,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.customer_sppb_out_item OWNER TO postgres;
+
+--
 -- Name: document_number; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -578,6 +598,14 @@ ALTER TABLE ONLY public.customer
 
 ALTER TABLE ONLY public.customer_sppb_in
     ADD CONSTRAINT customer_sppb_in_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: customer_sppb_out_item customer_sppb_out_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.customer_sppb_out_item
+    ADD CONSTRAINT customer_sppb_out_item_pkey PRIMARY KEY (id);
 
 
 --
