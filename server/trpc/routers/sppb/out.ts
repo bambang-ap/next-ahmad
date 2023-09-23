@@ -28,7 +28,6 @@ import {
 import {Success} from "@constants";
 import {
 	attrParser,
-	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
@@ -36,7 +35,6 @@ import {
 	OrmCustomerSPPBOutItem,
 	OrmKanban,
 	OrmKanbanItem,
-	OrmKendaraan,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
@@ -163,53 +161,6 @@ const sppbOutRouters = router({
 			"invoice_no",
 		),
 	),
-	getDetail: procedure.input(z.string()).query(({ctx, input}) => {
-		// const routerCaller = appRouter.createCaller(ctx);
-		return checkCredentialV2(ctx, async (): Promise<KJ> => {
-			const data = (await OrmCustomerSPPBOut.findOne({
-				where: {id: input},
-				include: [OrmCustomer, OrmKendaraan],
-			}))!;
-
-			const detailPo = data.dataValues?.po?.map(async ({id_po, sppb_in}) => {
-				const dataPo = await OrmCustomerPO.findOne({where: {id: id_po}});
-
-				const dataSppbIn = sppb_in.map(async ({id_sppb_in, items}) => {
-					const sppbInData = await OrmCustomerSPPBIn.findOne({
-						where: {id: id_sppb_in},
-					});
-
-					const kanban = await OrmKanban.findOne({
-						attributes: ["id"],
-						where: {id_sppb_in},
-					});
-
-					const lot_no_imi = (
-						await OrmScan.findOne({where: {id_kanban: kanban?.dataValues.id}})
-					)?.dataValues.lot_no_imi;
-
-					return {
-						items,
-						id_sppb_in,
-						lot_no_imi,
-						dataSppbIn: sppbInData?.dataValues,
-					};
-				});
-
-				return {
-					id_po,
-					sppb_in: await Promise.all(dataSppbIn),
-					dataPo: dataPo?.dataValues,
-				};
-			});
-
-			// @ts-ignore
-			return {
-				...data?.dataValues,
-				po: await Promise.all(detailPo),
-			};
-		});
-	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, search = ""} = input;
 		const A = attrParser(tCustomerSPPBOutItem, [

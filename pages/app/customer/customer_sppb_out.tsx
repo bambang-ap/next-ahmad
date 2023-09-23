@@ -84,7 +84,7 @@ export default function SPPBOUT() {
 	const {exportResult} = useNewExportData(
 		() =>
 			trpc.export.sppb.out.useQuery(
-				{ids: selectedIdSppbIns},
+				{id: selectedIdSppbIns},
 				{enabled: selectedIdSppbIns.length > 0},
 			),
 		exportedData => exportedData,
@@ -169,7 +169,7 @@ export default function SPPBOUT() {
 		<>
 			{loader.component}
 			<GeneratePdfV2
-				debug
+				// TODO: multiple print sppb out orientation error
 				width={`w-[${widthSize}px]`}
 				ref={genPdfRef}
 				tagId="kanban-data-print"

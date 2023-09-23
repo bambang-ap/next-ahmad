@@ -55,6 +55,7 @@ const printRouters = router({
 					"instruksi",
 					"kategori_mesinn",
 					"name",
+					"keterangan",
 				]);
 				const G = attrParser(tPOItem, ["unit1", "unit2", "unit3"]);
 				const H = attrParser(tCustomerPO);
@@ -129,6 +130,7 @@ const printRouters = router({
 						],
 					});
 
+					// @ts-ignore
 					return data.map(e => e.dataValues);
 				});
 			}),

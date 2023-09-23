@@ -13,7 +13,6 @@ import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
-	OrmCustomerSPPBOut,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	processMapper,
@@ -21,6 +20,8 @@ import {
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 import {qtyMap} from "@utils";
+
+import {appRouter} from "..";
 
 type InResult = Record<
 	| "NO"
@@ -111,74 +112,54 @@ const exportSppbRouters = router({
 			});
 		}),
 	out: procedure
-		.input(z.object({ids: z.string().array()}))
+		.input(z.object({id: z.string().array()}))
 		.query(({input, ctx}) => {
 			return checkCredentialV2(ctx, async (): Promise<OutResult[]> => {
+				let i = 0;
+				const routerCaller = appRouter.createCaller(ctx);
+				const dataSppbOut = await routerCaller.print.sppb.out(input);
 				const result: OutResult[] = [];
 
-				const data = await OrmCustomerSPPBOut.findAll({
-					where: {id: input.ids},
-					include: [OrmCustomer],
-				});
-				let i = 0;
-				for (const {dataValues} of data) {
-					const {po: listPo, invoice_no, date} = dataValues;
+				for (const {
+					date,
+					invoice_no,
+					OrmCustomer,
+					OrmCustomerSPPBOutItems,
+				} of dataSppbOut) {
+					for (const {
+						OrmPOItemSppbIn,
+						...OrmCustomerSPPBOutItem
+					} of OrmCustomerSPPBOutItems) {
+						const {OrmCustomerPOItem, OrmCustomerSPPBIn, OrmMasterItem} =
+							OrmPOItemSppbIn;
+						const {OrmCustomerPO} = OrmCustomerPOItem;
 
-					for (const po of listPo) {
-						const poo = await OrmCustomerPO.findOne({
-							where: {id: po.id_po},
-							include: [OrmCustomer],
+						const instruksi = await processMapper(ctx, {
+							instruksi: OrmMasterItem.instruksi,
+							kategori_mesinn: OrmMasterItem.kategori_mesinn,
 						});
-						const poooo = poo?.dataValues as TCustomerPO & {
-							OrmCustomer: TCustomer;
-						};
 
-						for (const inn of po.sppb_in) {
-							const sppbIn = await OrmCustomerSPPBIn.findOne({
-								where: {id: inn.id_sppb_in},
-							});
+						const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
+							const qty = OrmCustomerSPPBOutItem[qtyKey];
+							if (!qty) return {[qtyKey.toUpperCase()]: ""};
+							return {
+								[qtyKey.toUpperCase()]: `${qty} ${OrmCustomerPOItem[unitKey]}`,
+							};
+						});
 
-							const sppbInnnn = sppbIn?.dataValues;
-
-							for (const [id_item, item] of Object.entries(inn.items)) {
-								const dd = await OrmPOItemSppbIn.findOne({
-									where: {id: id_item},
-									include: [OrmMasterItem, {model: OrmCustomerPOItem}],
-								});
-
-								const ddddd = dd?.dataValues as TPOItemSppbIn & {
-									OrmMasterItem: TMasterItem;
-									OrmCustomerPOItem: TPOItem;
-								};
-
-								const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
-									const qty = item[qtyKey];
-									if (!qty) return {[qtyKey.toUpperCase()]: ""};
-									return {
-										[qtyKey.toUpperCase()]: `${qty} ${ddddd.OrmCustomerPOItem[unitKey]}`,
-									};
-								});
-
-								const instruksi = await processMapper(ctx, {
-									instruksi: ddddd.OrmMasterItem.instruksi,
-									kategori_mesinn: ddddd.OrmMasterItem.kategori_mesinn,
-								});
-
-								result.push({
-									NO: i.toString(),
-									CUSTOMER: poooo.OrmCustomer.name,
-									"NO PO": poooo.nomor_po!,
-									"NO SURAT JALAN MASUK": sppbInnnn?.nomor_surat!,
-									"NO SURAT JALAN KELUAR": invoice_no,
-									"TANGGAL SJ KELUAR ": date,
-									"PART NAME / ITEM": ddddd.OrmMasterItem.name!,
-									...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
-									PROSES: instruksi,
-									KETERANGAN: ddddd.OrmMasterItem.keterangan!,
-								});
-								i++;
-							}
-						}
+						i++;
+						result.push({
+							NO: i.toString(),
+							CUSTOMER: OrmCustomer.name,
+							"NO PO": OrmCustomerPO.nomor_po!,
+							"NO SURAT JALAN MASUK": OrmCustomerSPPBIn?.nomor_surat!,
+							"NO SURAT JALAN KELUAR": invoice_no,
+							"TANGGAL SJ KELUAR ": date,
+							"PART NAME / ITEM": OrmMasterItem.name!,
+							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+							PROSES: instruksi,
+							KETERANGAN: OrmMasterItem.keterangan!,
+						});
 					}
 				}
 
