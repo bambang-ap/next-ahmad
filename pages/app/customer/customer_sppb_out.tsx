@@ -4,11 +4,8 @@ import {FormEventHandler, useRef} from "react";
 import {MutateOptions} from "@tanstack/react-query";
 import {useForm} from "react-hook-form";
 
-import {
-	GeneratePdf,
-	GenPdfRef,
-	SelectAllButton,
-} from "@appComponent/GeneratePdf";
+import {GenPdfRef, SelectAllButton} from "@appComponent/GeneratePdf";
+import {GeneratePdfV2} from "@appComponent/GeneratePdfV2";
 import {ModalTypeSelect, TCustomerSPPBOutUpsert} from "@appTypes/app.type";
 import {
 	Button,
@@ -171,18 +168,14 @@ export default function SPPBOUT() {
 	return (
 		<>
 			{loader.component}
-			<GeneratePdf
+			<GeneratePdfV2
+				debug
 				width={`w-[${widthSize}px]`}
 				ref={genPdfRef}
 				tagId="kanban-data-print"
 				splitPagePer={1}
-				useQueries={() =>
-					trpc.useQueries(t =>
-						selectedIdSppbIns.map(id => t.sppb.out.getDetail(id)),
-					)
-				}
-				// eslint-disable-next-line @typescript-eslint/no-shadow
-				renderItem={({data}) => {
+				useQuery={() => trpc.print.sppb.out.useQuery({id: selectedIdSppbIns})}
+				renderItem={data => {
 					return (
 						<>
 							<SPPBOutGenerateQR detail={data} width={widthSize} />

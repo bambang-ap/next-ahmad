@@ -19,8 +19,7 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from "@formController";
-import {moment} from "@utils";
-import {classNames} from "@utils";
+import {classNames, moment} from "@utils";
 
 import {CheckBox} from "./CheckBox";
 

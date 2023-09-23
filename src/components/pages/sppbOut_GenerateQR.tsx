@@ -9,7 +9,6 @@ import {
 } from "@components";
 import {IMIConst} from "@constants";
 import {CRUD_ENABLED} from "@enum";
-import {useSppbOut} from "@hooks";
 import {classNames, dateUtils, paperSizeCalculator, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
@@ -70,15 +69,15 @@ export function SPPBOutGenerateQR({
 	detail,
 	width: widthSize,
 }: {
-	detail?: Partial<RouterOutput["sppb"]["out"]["getDetail"]>;
+	detail?: Partial<RouterOutput["print"]["sppb"]["out"][number]>;
 	width: number;
 }) {
-	let index = 0;
-	const {dataFg} = useSppbOut(detail?.id_customer);
-	const doc = dataFg?.[0]?.kanban.OrmDocument;
-
 	const [width, height] = paperSizeCalculator(widthSize, {minus: 45});
+
 	const tagId = `data-${detail?.id}`;
+	const doc =
+		detail?.OrmCustomerSPPBOutItems?.[0]?.OrmPOItemSppbIn?.OrmCustomerSPPBIn
+			?.OrmKanbans?.[0]?.OrmDocument;
 
 	return (
 		<div
@@ -152,62 +151,43 @@ export function SPPBOutGenerateQR({
 							<Td>Proses</Td>
 						</Tr>
 
-						{detail?.po?.map(po => {
+						{detail?.OrmCustomerSPPBOutItems?.map((itemm, index) => {
+							const {OrmPOItemSppbIn, ...item} = itemm;
+							const {OrmMasterItem, OrmCustomerPOItem, OrmCustomerSPPBIn} =
+								OrmPOItemSppbIn;
+							const lot_no_imi = OrmCustomerSPPBIn?.OrmKanbans?.map(
+								e => e.OrmScans?.[0]?.lot_no_imi,
+							).join(" | ");
+
 							return (
 								<>
-									{po.sppb_in.map(e => {
-										const selectedSppbIn = dataFg.find(
-											eee => e.id_sppb_in === eee.kanban?.dataSppbIn?.id,
-										);
-										return (
-											<>
-												{Object.entries(e.items).map(([id_item, item]) => {
-													index++;
-													const {
-														id,
-														OrmCustomerPOItem: itemDetail,
-														lot_no,
-													} = selectedSppbIn?.kanban.dataSppbIn?.OrmCustomerPOItems?.find(
-														eItem => eItem.id === id_item,
-													) ?? {};
-													const kanban = selectedSppbIn?.kanban;
-
-													const masterItem =
-														kanban?.items[id_item]?.OrmMasterItem;
-													return (
-														<>
-															<Tr>
-																<Td>{index}</Td>
-																<Td>{masterItem?.name}</Td>
-																{qtyMap(({num, qtyKey, unitKey}) => {
-																	return (
-																		<Td key={num}>
-																			{item[qtyKey]} {itemDetail?.[unitKey]}
-																		</Td>
-																	);
-																})}
-																<Td>{lot_no}</Td>
-																<Td>{kanban?.items?.[id!]?.lot_no_imi}</Td>
-																<Td>{po?.dataPo?.nomor_po}</Td>
-																<Td>{e?.dataSppbIn?.nomor_surat}</Td>
-																<Td className="flex-col gap-2">
-																	{masterItem?.kategori_mesinn?.map(m => {
-																		// @ts-ignore
-																		return masterItem.instruksi[m].map(ins => (
-																			<DetailProcess
-																				key={ins.id_instruksi}
-																				id={ins.id_instruksi}
-																			/>
-																		));
-																	})}
-																</Td>
-															</Tr>
-														</>
-													);
-												})}
-											</>
-										);
-									})}
+									<Tr>
+										<Td>{index + 1}</Td>
+										<Td>{OrmMasterItem?.name}</Td>
+										{qtyMap(({num, qtyKey, unitKey}) => {
+											if (!item[qtyKey]) return <Td />;
+											return (
+												<Td key={num}>
+													{item[qtyKey]}
+													{OrmCustomerPOItem?.[unitKey]}
+												</Td>
+											);
+										})}
+										<Td>{OrmPOItemSppbIn.lot_no}</Td>
+										<Td>{lot_no_imi}</Td>
+										<Td>{OrmCustomerPOItem.OrmCustomerPO.nomor_po}</Td>
+										<Td>{OrmCustomerSPPBIn.nomor_surat}</Td>
+										<Td className="flex-col gap-2">
+											{OrmMasterItem?.kategori_mesinn?.map(m => {
+												return OrmMasterItem.instruksi[m]!.map(ins => (
+													<DetailProcess
+														key={ins.id_instruksi}
+														id={ins.id_instruksi}
+													/>
+												));
+											})}
+										</Td>
+									</Tr>
 								</>
 							);
 						})}

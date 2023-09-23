@@ -24,7 +24,7 @@ export function SppbOutModalChild({
 		trpc.sppb.out.getPO.useQuery({id_customer}, {enabled: !!id_customer});
 
 	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut(id_customer);
-	const {isDelete, isAdd, isEdit} = modalTypeParser(modalType);
+	const {isDelete, isEdit} = modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
@@ -214,8 +214,6 @@ export function SppbOutModalChild({
 													const hj = OrmCustomerSPPBOutItems.find(
 														e => e.id === items?.id,
 													);
-
-													console.log(hj);
 
 													return (
 														<>
