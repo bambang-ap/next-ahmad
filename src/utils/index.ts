@@ -8,7 +8,7 @@ import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
 
-import {TDecimal, UQtyList} from "@appTypes/app.type";
+import {RouterOutput, TDecimal, UnitQty, UQtyList} from "@appTypes/app.type";
 import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
 	defaultErrorMutation,
@@ -21,7 +21,6 @@ import {
 } from "@constants";
 import {useLoader} from "@hooks";
 import {UseTRPCMutationOptions} from "@trpc/react-query/shared";
-import {UU} from "@trpc/routers/sppb/out";
 
 type Qty = typeof qtyList[number];
 
@@ -44,8 +43,47 @@ export const dateUtils = {
 	dateS: convertDateS,
 };
 
+export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
+	return poData.map(po => {
+		const uu = po.OrmCustomerSPPBIns.map(bin => {
+			const dd = bin.OrmPOItemSppbIns?.map(item => {
+				const itemInScan = itemInScanParser(bin?.OrmKanbans);
+
+				const currentQty = qtyReduce((ret, {qtyKey: num}) => {
+					item.OrmCustomerSPPBOutItems.forEach(itm => {
+						ret[num] += itm[num]!;
+					});
+					return ret;
+				});
+
+				const compare = qtyMap(({qtyKey}) => {
+					return currentQty?.[qtyKey] == (itemInScan?.[qtyKey] ?? 0);
+				});
+
+				return {
+					...item,
+					itemInScan,
+					currentQty,
+					isClosed: !compare.includes(false),
+				};
+			});
+			return {
+				...bin,
+				OrmPOItemSppbIns: dd,
+				isClosed: !dd.map(e => e.isClosed).includes(false),
+			};
+		});
+
+		return {
+			...po,
+			OrmCustomerSPPBIns: uu,
+			isClosed: !uu.map(e => e.isClosed).includes(false),
+		};
+	});
+}
+
 export function itemInScanParser(
-	kanbans?: UU["OrmCustomerSPPBIns"][number]["OrmKanbans"],
+	kanbans?: RouterOutput["sppb"]["out"]["getPO"][number]["OrmCustomerSPPBIns"][number]["OrmKanbans"],
 ) {
 	return kanbans?.reduce((j, h) => {
 		h.OrmScans.forEach(({item_finish_good: k}) => {
@@ -58,15 +96,27 @@ export function itemInScanParser(
 	}, {} as Record<UQtyList, TDecimal>);
 }
 
-export function qtyMap<T = ReactNode>(
-	callback: (
-		value: {
-			qtyKey: `qty${Qty}`;
-			unitKey: `unit${Qty}`;
-			num: Qty;
+type V = {
+	qtyKey: `qty${Qty}`;
+	unitKey: `unit${Qty}`;
+	num: Qty;
+};
+
+export function qtyReduce(
+	callback: (ret: UnitQty, value: V, index: number) => UnitQty,
+) {
+	return qtyList.reduce<UnitQty>(
+		(ret, num, i) => {
+			const qtyKey = `qty${num}` as const;
+			const unitKey = `unit${num}` as const;
+			return callback(ret, {qtyKey, unitKey, num}, i);
 		},
-		index: number,
-	) => T,
+		{qty1: 0, qty2: 0, qty3: 0},
+	);
+}
+
+export function qtyMap<T = ReactNode>(
+	callback: (value: V, index: number) => T,
 	filtered?: boolean,
 ) {
 	const result = qtyList.map((num, i) => {

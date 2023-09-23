@@ -289,8 +289,14 @@ export const tCustomerSPPBOut = zId.extend({
 	date: z.string(),
 	id_kendaraan: z.string(),
 	id_customer: z.string(),
-	po: tCustomerSPPBOutPo.array(),
 	keterangan: z.string().optional(),
+});
+
+export type TCustomerSPPBOutUpsert = z.infer<typeof tCustomerSPPBOutUpsert>;
+export const tCustomerSPPBOutUpsert = tCustomerSPPBOut.extend({
+	po: tCustomerSPPBOutPo.array(),
+	OrmCustomer: tCustomer.optional(),
+	OrmKendaraan: tKendaraan.optional(),
 });
 
 export type TMaterial = z.infer<typeof tMaterial>;

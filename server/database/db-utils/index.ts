@@ -21,10 +21,14 @@ export function attrParser<
 	T extends ZodRawShape,
 	K extends ObjKeyof<T>,
 	Mask extends noUnrecognized<objectKeyMask<T>, T>,
->(schema: ZodObject<T>, pick?: K[]) {
+>(schema: ZodObject<T>, attributes?: K[]) {
+	// TODO: Add omit options
 	let obj = schema;
-	if (pick) {
-		const reducer = pick.reduce((a, b) => ({...a, [b]: true}), {} as Mask);
+	if (attributes) {
+		const reducer = attributes.reduce(
+			(a, b) => ({...a, [b]: true}),
+			{} as Mask,
+		);
 		obj = schema.pick(reducer);
 	}
 	// @ts-ignore

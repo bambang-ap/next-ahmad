@@ -9,7 +9,7 @@ import {
 	GenPdfRef,
 	SelectAllButton,
 } from "@appComponent/GeneratePdf";
-import {ModalTypeSelect, TCustomerSPPBOut} from "@appTypes/app.type";
+import {ModalTypeSelect, TCustomerSPPBOutUpsert} from "@appTypes/app.type";
 import {
 	Button,
 	CellSelect,
@@ -31,7 +31,7 @@ SPPBOUT.getLayout = getLayout;
 export type FormValue = {
 	type: ModalTypeSelect;
 	idSppbOuts?: MyObject<boolean>;
-} & TCustomerSPPBOut;
+} & TCustomerSPPBOutUpsert;
 
 export default function SPPBOUT() {
 	const {dataKendaraan, dataCustomer} = useSppbOut();
@@ -109,15 +109,7 @@ export default function SPPBOUT() {
 			<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
 				Select
 			</Button>
-			<Button
-				onClick={() =>
-					showModal({
-						type: "add",
-						po: [{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]}],
-					})
-				}>
-				Add
-			</Button>
+			<Button onClick={() => showModal({type: "add"})}>Add</Button>
 		</>
 	);
 
@@ -226,7 +218,7 @@ export default function SPPBOUT() {
 								<CellSelect
 									noLabel
 									control={control}
-									fieldName={`idSppbOuts.${item.id}`}
+									fieldName={`idSppbOuts.${id}`}
 								/>
 							)}
 							<Cell>{item.invoice_no}</Cell>
@@ -236,7 +228,7 @@ export default function SPPBOUT() {
 
 							{!isSelect && (
 								<Cell className="flex gap-2">
-									<Button icon="faPrint" onClick={() => printData(item.id)} />
+									<Button icon="faPrint" onClick={() => printData(id)} />
 									<Button
 										icon="faMagnifyingGlass"
 										onClick={() => showModal({...item, type: "preview"})}

@@ -5,23 +5,32 @@ import {Wrapper} from "@appComponent/Wrapper";
 import {FormProps} from "@appTypes/app.type";
 import {Button, Input, Select, selectMapper, Table, Text} from "@components";
 import {useSppbOut} from "@hooks";
-import {itemInScanParser, modalTypeParser, qtyMap} from "@utils";
+import {
+	isClosedParser,
+	itemInScanParser,
+	modalTypeParser,
+	qtyMap,
+	qtyReduce,
+} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export function SppbOutModalChild({
 	control,
 	reset,
 }: FormProps<FormValue, "control" | "reset">) {
-	const formData = useWatch({control});
-	const {id_customer} = formData;
-	const {data: poData} = trpc.sppb.out.getPOO.useQuery({id_customer});
+	const {id_customer, type: modalType, po: listPO} = useWatch({control});
+
+	const {data: poDataa = [], isFetched: isRefetching} =
+		trpc.sppb.out.getPO.useQuery({id_customer}, {enabled: !!id_customer});
 
 	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut(id_customer);
-	const {isDelete} = modalTypeParser(formData.type);
-
+	const {isDelete, isAdd, isEdit} = modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
+
+	const selectedPoIds = listPO?.map(e => e.id_po) ?? [];
+	const poData = isClosedParser(poDataa);
 
 	return (
 		<>
@@ -73,18 +82,26 @@ export function SppbOutModalChild({
 						Add PO
 					</Button>
 
-					{formData.po?.map((po, i) => {
+					{listPO?.map((po, i) => {
 						const poSelected = poData?.find(e => e.id === po.id_po);
+						const selectedSppbInIds = po.sppb_in?.map(e => e.id_sppb_in) ?? [];
+						const availablePo = poData?.filter(e => {
+							if (po.id_po === e.id) return true;
+							return !e.isClosed || !selectedPoIds.includes(e.id);
+						});
+
+						const poKey = `${isRefetching}${id_customer}${po.id_po}`;
+
 						return (
 							<>
 								<div className="flex gap-2">
 									<Select
 										className="flex-1"
-										key={formData.id_customer}
+										key={poKey}
 										label="PO"
 										control={control}
 										fieldName={`po.${i}.id_po`}
-										data={selectMapper(poData ?? [], "id", "nomor_po")}
+										data={selectMapper(availablePo, "id", "nomor_po")}
 									/>
 
 									<Button
@@ -115,8 +132,34 @@ export function SppbOutModalChild({
 										e => e.id === sppb.id_sppb_in,
 									);
 
-									const listItems = Object.entries(
-										sppbInSelected?.OrmPOItemSppbIns ?? {},
+									const listItems = sppbInSelected?.OrmPOItemSppbIns;
+									const sppbKey = `${poKey}${sppb.id_sppb_in}`;
+
+									const dd = listItems?.map(item => {
+										const itemInScan = itemInScanParser(
+											sppbInSelected?.OrmKanbans,
+										);
+
+										const currentQty = qtyReduce((ret, {qtyKey: num}) => {
+											item.OrmCustomerSPPBOutItems.forEach(itm => {
+												ret[num] += itm[num]!;
+											});
+											return ret;
+										});
+
+										return {...item, itemInScan, currentQty};
+									});
+
+									const availableSppbIn =
+										poSelected?.OrmCustomerSPPBIns?.filter(e => {
+											if (sppb.id_sppb_in === e.id) return true;
+											return !e.isClosed || !selectedSppbInIds.includes(e.id);
+										});
+
+									const sppbInSelection = selectMapper(
+										availableSppbIn ?? [],
+										"id",
+										"nomor_surat",
 									);
 
 									return (
@@ -125,14 +168,10 @@ export function SppbOutModalChild({
 												<Select
 													control={control}
 													className="flex-1"
-													key={`${formData.id_customer}${formData.po?.[i]?.id_po}`}
+													key={sppbKey}
 													fieldName={`po.${i}.sppb_in.${ii}.id_sppb_in`}
 													label="Surat Jalan Masuk"
-													data={selectMapper(
-														poSelected?.OrmCustomerSPPBIns ?? [],
-														"id",
-														"nomor_surat",
-													)}
+													data={sppbInSelection}
 												/>
 												<Button
 													onClick={() => {
@@ -149,7 +188,7 @@ export function SppbOutModalChild({
 												</Button>
 											</div>
 											<Table
-												data={listItems}
+												data={dd}
 												header={[
 													"Kode Item",
 													"Nama Item",
@@ -157,38 +196,55 @@ export function SppbOutModalChild({
 													"Nomor Lot IMI",
 													"Jumlah",
 												]}
-												renderItem={({Cell, item: [id_item, item]}) => {
-													const masterItemDetail = item.OrmMasterItem;
-
+												renderItem={({Cell, item}) => {
+													const {
+														OrmMasterItem,
+														id: id_item,
+														lot_no,
+														currentQty,
+														OrmCustomerPOItem,
+														OrmCustomerSPPBOutItems,
+														itemInScan,
+													} = item ?? {};
+													const items = sppb.items?.[id_item];
 													const lot_no_imi = sppbInSelected?.OrmKanbans?.map(
 														e => e.OrmScans?.[0]?.lot_no_imi,
 													).join(" | ");
 
-													const itemInScan = itemInScanParser(
-														sppbInSelected?.OrmKanbans,
+													const hj = OrmCustomerSPPBOutItems.find(
+														e => e.id === items?.id,
 													);
+
+													console.log(hj);
 
 													return (
 														<>
 															<Input
 																control={control}
 																className="hidden"
-																defaultValue={masterItemDetail?.id}
+																shouldUnregister
+																defaultValue={OrmMasterItem?.id}
 																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
 															/>
 															<Input
 																control={control}
 																className="hidden"
-																defaultValue={item.OrmCustomerPOItem.id}
+																shouldUnregister
+																defaultValue={OrmCustomerPOItem.id}
 																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
 															/>
-															<Cell>{masterItemDetail?.name}</Cell>
-															<Cell>{masterItemDetail?.kode_item}</Cell>
-															<Cell>{item.lot_no}</Cell>
+															<Cell>{OrmMasterItem?.name}</Cell>
+															<Cell>{OrmMasterItem?.kode_item}</Cell>
+															<Cell>{lot_no}</Cell>
 															<Cell>{lot_no_imi}</Cell>
 															<Cell className="flex gap-2">
 																{qtyMap(({qtyKey, unitKey, num}) => {
-																	const jumlah = itemInScan?.[qtyKey];
+																	const qtyLeft =
+																		itemInScan?.[qtyKey]! - currentQty[qtyKey]!;
+																	const cur = hj?.[qtyKey];
+																	const jumlah = cur ?? qtyLeft;
+
+																	const max = isEdit ? qtyLeft + cur! : jumlah;
 
 																	if (!jumlah) return null;
 
@@ -197,20 +253,20 @@ export function SppbOutModalChild({
 																			key={jumlah}
 																			type="decimal"
 																			shouldUnregister
+																			control={control}
 																			className="flex-1 bg-white"
 																			label={`Qty ${num}`}
 																			defaultValue={jumlah.toString()}
+																			fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
 																			rightAcc={
 																				<Text>
-																					{item.OrmCustomerPOItem?.[unitKey]}
+																					{OrmCustomerPOItem?.[unitKey]}
 																				</Text>
 																			}
-																			fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
-																			control={control}
 																			rules={{
 																				max: {
-																					value: jumlah,
-																					message: `max is ${jumlah}`,
+																					value: max,
+																					message: `max is ${max}`,
 																				},
 																			}}
 																		/>

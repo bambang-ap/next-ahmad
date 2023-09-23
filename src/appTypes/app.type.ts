@@ -27,6 +27,7 @@ export type {
 	TCustomerSPPBOutPo,
 	TCustomerSPPBOutPoItems,
 	TCustomerSPPBOutSppbIn,
+	TCustomerSPPBOutUpsert,
 	TDashboard,
 	TDashboardInput,
 	TDashboardTitle,

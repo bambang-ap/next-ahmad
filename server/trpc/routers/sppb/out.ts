@@ -2,6 +2,8 @@ import {
 	KanbanGetRow,
 	PagingResult,
 	TCustomer,
+	TCustomerSPPBOutItem,
+	TCustomerSPPBOutUpsert,
 	TKanbanUpsertItem,
 	TKendaraan,
 } from "@appTypes/app.type";
@@ -13,6 +15,7 @@ import {
 	tCustomerSPPBOut,
 	tCustomerSPPBOutItem,
 	tCustomerSPPBOutSppbIn,
+	tCustomerSPPBOutUpsert,
 	tKanban,
 	tKanbanItem,
 	tMasterItem,
@@ -41,7 +44,6 @@ import {
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 
-import {literal, Op} from "sequelize";
 import {z} from "zod";
 
 import {appRouter} from "..";
@@ -57,7 +59,7 @@ const a = z
 	})
 	.array();
 
-type GetPage = PagingResult<TCustomerSPPBOut>;
+type GetPage = PagingResult<TCustomerSPPBOutUpsert>;
 export type GetFGRet = TScan & {
 	kanban: Omit<KanbanGetRow, "items"> & {
 		items: MyObject<TKanbanUpsertItem & {lot_no_imi?: string}>;
@@ -69,43 +71,50 @@ type KJ = Omit<TCustomerSPPBOut, "po"> & {
 	po: A;
 };
 
-const A = attrParser(tKanban, ["id"]);
-const B = attrParser(tCustomerSPPBIn);
-const C = attrParser(tCustomerPO);
-const D = attrParser(tScan, [
-	"item_finish_good",
-	"status_finish_good",
-	"lot_no_imi",
-]);
-const E = attrParser(tPOItemSppbIn, ["qty1", "qty2", "qty3", "lot_no"]);
-const F = attrParser(tCustomerSPPBOutItem, ["qty1", "qty2", "qty3"]);
-const G = attrParser(tMasterItem, ["name", "kode_item", "id"]);
-const H = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
-const I = attrParser(tKanbanItem, ["id", "qty1", "qty2", "qty3"]);
-
-export type UU = typeof C.obj & {
-	OrmCustomerSPPBIns: (typeof B.obj & {
-		OrmKanbans: (typeof A.obj & {
-			OrmScans: typeof D.obj[];
-		})[];
-		OrmPOItemSppbIns: (typeof E.obj & {
-			OrmCustomerPOItem: typeof H.obj;
-			OrmMasterItem: typeof G.obj;
-			OrmKanbanItems: typeof I.obj[];
-			OrmCustomerSPPBOutItems: (typeof F.obj & {})[];
-		})[];
-	})[];
-};
-
 const sppbOutRouters = router({
-	getPOO: procedure
+	getPO: procedure
 		.input(tCustomerSPPBOut.pick({id_customer: true}).partial())
 		.query(({ctx, input: {id_customer}}) => {
-			return checkCredentialV2(ctx, async () => {
-				const itemFg = literal("item_finish_good->0");
+			const A = attrParser(tKanban, ["id"]);
+			const B = attrParser(tCustomerSPPBIn);
+			const C = attrParser(tCustomerPO);
+			const D = attrParser(tScan, [
+				"item_finish_good",
+				"status_finish_good",
+				"lot_no_imi",
+			]);
+			const E = attrParser(tPOItemSppbIn, [
+				"id",
+				"qty1",
+				"qty2",
+				"qty3",
+				"lot_no",
+			]);
+			const F = attrParser(tCustomerSPPBOutItem, [
+				"id",
+				"qty1",
+				"qty2",
+				"qty3",
+			]);
+			const G = attrParser(tMasterItem, ["name", "kode_item", "id"]);
+			const H = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
+			const I = attrParser(tKanbanItem, ["id", "qty1", "qty2", "qty3"]);
 
-				const dataFgg = await OrmCustomerPO.findAll({
-					logging: true,
+			type UU = typeof C.obj & {
+				OrmCustomerSPPBIns: (typeof B.obj & {
+					OrmKanbans: (typeof A.obj & {
+						OrmScans: typeof D.obj[];
+					})[];
+					OrmPOItemSppbIns: (typeof E.obj & {
+						OrmCustomerPOItem: typeof H.obj;
+						OrmMasterItem: typeof G.obj;
+						OrmKanbanItems: typeof I.obj[];
+						OrmCustomerSPPBOutItems: (typeof F.obj & {})[];
+					})[];
+				})[];
+			};
+			return checkCredentialV2(ctx, async () => {
+				const dataPO = await OrmCustomerPO.findAll({
 					attributes: C.keys,
 					where: {
 						id_customer,
@@ -129,9 +138,13 @@ const sppbOutRouters = router({
 									model: OrmPOItemSppbIn,
 									attributes: E.keys,
 									include: [
-										{model: OrmCustomerSPPBOutItem, attributes: F.keys},
 										{model: OrmMasterItem, attributes: G.keys},
 										{model: OrmCustomerPOItem, attributes: H.keys},
+										{
+											separate: true,
+											attributes: F.keys,
+											model: OrmCustomerSPPBOutItem,
+										},
 									],
 								},
 							],
@@ -139,11 +152,7 @@ const sppbOutRouters = router({
 					],
 				});
 
-				return dataFgg.map(e => {
-					const val = e.dataValues as UU;
-
-					return val;
-				});
+				return dataPO.map(e => e.dataValues as UU);
 			});
 		}),
 	getInvoice: procedure.query(() =>
@@ -162,7 +171,7 @@ const sppbOutRouters = router({
 				include: [OrmCustomer, OrmKendaraan],
 			}))!;
 
-			const detailPo = data.dataValues.po.map(async ({id_po, sppb_in}) => {
+			const detailPo = data.dataValues?.po?.map(async ({id_po, sppb_in}) => {
 				const dataPo = await OrmCustomerPO.findOne({where: {id: id_po}});
 
 				const dataSppbIn = sppb_in.map(async ({id_sppb_in, items}) => {
@@ -203,15 +212,101 @@ const sppbOutRouters = router({
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, search = ""} = input;
+		const A = attrParser(tCustomerSPPBOutItem, [
+			"id",
+			"id_item",
+			"qty1",
+			"qty2",
+			"qty3",
+		]);
+		const B = attrParser(tCustomerSPPBOut);
+		const E = attrParser(tPOItemSppbIn, [
+			"id_item",
+			"id_sppb_in",
+			"master_item_id",
+		]);
+		const F = attrParser(tCustomerSPPBIn, ["id_po"]);
+
+		type Ret = typeof B.obj & {
+			OrmCustomerSPPBOutItems: (typeof A.obj & {
+				OrmPOItemSppbIn: typeof E.obj & {
+					OrmCustomerSPPBIn: typeof F.obj;
+				};
+			})[];
+		};
+
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
 				limit,
-				order: [["id", "asc"]],
 				offset: (page - 1) * limit,
-				where: {invoice_no: {[Op.iLike]: `%${search}%`}},
-				// where: wherePages([""], search),
+				// where: {invoice_no: {[Op.iLike]: `%${search}%`}},
+				attributes: B.keys,
+				include: [
+					{
+						model: OrmCustomerSPPBOutItem,
+						attributes: A.keys,
+						separate: true,
+						include: [
+							{
+								model: OrmPOItemSppbIn,
+								attributes: E.keys,
+								include: [{attributes: F.keys, model: OrmCustomerSPPBIn}],
+							},
+						],
+					},
+				],
 			});
-			const allDataSppbIn = data.map(e => e.dataValues);
+
+			// @ts-ignore
+			const allDataSppbIn = data.map<TCustomerSPPBOutUpsert>(e => {
+				// @ts-ignore
+				const {OrmCustomerSPPBOutItems, ...rest} = e.dataValues as Ret;
+				const po = OrmCustomerSPPBOutItems.reduce<TCustomerSPPBOutUpsert["po"]>(
+					(ret, cure) => {
+						const {OrmPOItemSppbIn, id_item, ...cur} =
+							// @ts-ignore
+							cure?.dataValues as Ret["OrmCustomerSPPBOutItems"][number];
+						const id_po = OrmPOItemSppbIn.OrmCustomerSPPBIn.id_po;
+						const id_sppb_in = OrmPOItemSppbIn.id_sppb_in;
+
+						const iPo = ret.findIndex(e => e.id_po === id_po);
+
+						if (iPo >= 0) {
+							const iSppbIn = ret[iPo]!.sppb_in.findIndex(
+								f => f.id_sppb_in === id_sppb_in,
+							);
+							if (iSppbIn >= 0) {
+							} else {
+								ret[iPo]?.sppb_in;
+							}
+						} else {
+							ret.push({
+								id_po,
+								sppb_in: [
+									{
+										id_sppb_in,
+										// @ts-ignore
+										items: {
+											[id_item]: {
+												...cur,
+												id_item_po: OrmPOItemSppbIn.id_item,
+												master_item_id: OrmPOItemSppbIn.master_item_id,
+												id: cur.id,
+											},
+										},
+									},
+								],
+							});
+						}
+						return ret;
+					},
+					[],
+				);
+
+				prettyConsole(po);
+
+				return {...rest, po};
+			});
 
 			return pagingResult(count, page, limit, allDataSppbIn);
 		});
@@ -279,12 +374,35 @@ const sppbOutRouters = router({
 			});
 		}),
 	upsert: procedure
-		.input(tCustomerSPPBOut.partial({id: true}))
+		.input(tCustomerSPPBOutUpsert.partial({id: true}))
 		.mutation(({ctx: {req, res}, input}) => {
 			return checkCredentialV2({req, res}, async () => {
-				await OrmCustomerSPPBOut.upsert({
-					...input,
+				const {po, ...rest} = input;
+				const [dataSppbOut] = await OrmCustomerSPPBOut.upsert({
+					...rest,
 					id: input.id ?? generateId("SPPBO_"),
+				});
+
+				const items = po.reduce<TCustomerSPPBOutItem[]>((ret, cur) => {
+					cur.sppb_in.forEach(bin => {
+						Object.entries(bin.items).forEach(([id_item, item]) => {
+							ret.push({
+								id_item,
+								qty1: item.qty1,
+								qty2: item.qty2,
+								qty3: item.qty3,
+								id: item.id ?? generateId("SJOI-"),
+								id_sppb_out: dataSppbOut.dataValues.id,
+							});
+						});
+					});
+					return ret;
+				}, []);
+
+				prettyConsole(items, po);
+
+				await OrmCustomerSPPBOutItem.bulkCreate(items, {
+					updateOnDuplicate: ["id"],
 				});
 
 				return Success;
@@ -293,6 +411,7 @@ const sppbOutRouters = router({
 	delete: procedure.input(zId).mutation(({ctx: {req, res}, input}) => {
 		return checkCredentialV2({req, res}, async () => {
 			await OrmCustomerSPPBOut.destroy({where: input});
+			await OrmCustomerSPPBOutItem.destroy({where: {id_sppb_out: input.id}});
 
 			return Success;
 		});
