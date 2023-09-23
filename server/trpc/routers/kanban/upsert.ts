@@ -61,8 +61,6 @@ export const kanbanUpsert = {
 					return {...ret, ...result};
 				}, dataScan?.dataValues.item_from_kanban);
 
-				console.log(item_from_kanban);
-
 				await OrmScan.upsert({
 					...dataScan?.dataValues!,
 					id: dataScan?.dataValues.id || generateId("SCAN_"),

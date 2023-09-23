@@ -141,14 +141,6 @@ export function RenderItem({
 											? maxValue - calculatedQty + currentQty
 											: maxValue - calculatedQty;
 
-										prettyConsole({
-											num,
-											maxValue,
-											currentQty,
-											calculatedQty,
-											defaultValue,
-										});
-
 										return (
 											<div className="flex-1" key={`${rowItem.id}${num}`}>
 												<Input

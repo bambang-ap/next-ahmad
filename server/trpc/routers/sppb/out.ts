@@ -1,20 +1,17 @@
 import {
 	KanbanGetRow,
 	PagingResult,
-	TCustomer,
 	TCustomerSPPBOutItem,
 	TCustomerSPPBOutUpsert,
 	TKanbanUpsertItem,
-	TKendaraan,
 } from "@appTypes/app.type";
 import {
 	tableFormValue,
+	tCustomer,
 	tCustomerPO,
 	tCustomerSPPBIn,
-	TCustomerSPPBOut,
 	tCustomerSPPBOut,
 	tCustomerSPPBOutItem,
-	tCustomerSPPBOutSppbIn,
 	tCustomerSPPBOutUpsert,
 	tKanban,
 	tKanbanItem,
@@ -28,6 +25,7 @@ import {
 import {Success} from "@constants";
 import {
 	attrParser,
+	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
@@ -38,6 +36,7 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
+	wherePagesV2,
 } from "@database";
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -46,27 +45,11 @@ import {z} from "zod";
 
 import {appRouter} from "..";
 
-type A = z.infer<typeof a>;
-const a = z
-	.object({
-		id_po: z.string(),
-		sppb_in: tCustomerSPPBOutSppbIn
-			.extend({dataSppbIn: tCustomerSPPBIn.nullish()})
-			.array(),
-		dataPo: tCustomerPO.nullish(),
-	})
-	.array();
-
 type GetPage = PagingResult<TCustomerSPPBOutUpsert>;
 export type GetFGRet = TScan & {
 	kanban: Omit<KanbanGetRow, "items"> & {
 		items: MyObject<TKanbanUpsertItem & {lot_no_imi?: string}>;
 	};
-};
-type KJ = Omit<TCustomerSPPBOut, "po"> & {
-	OrmKendaraan: TKendaraan;
-	OrmCustomer: TCustomer;
-	po: A;
 };
 
 const sppbOutRouters = router({
@@ -177,8 +160,11 @@ const sppbOutRouters = router({
 			"master_item_id",
 		]);
 		const F = attrParser(tCustomerSPPBIn, ["id_po"]);
+		const G = attrParser(tCustomerPO, ["id"]);
+		const H = attrParser(tCustomer, ["name"]);
 
 		type Ret = typeof B.obj & {
+			OrmCustomer: typeof H.obj;
 			OrmCustomerSPPBOutItems: (typeof A.obj & {
 				OrmPOItemSppbIn: typeof E.obj & {
 					OrmCustomerSPPBIn: typeof F.obj;
@@ -190,9 +176,11 @@ const sppbOutRouters = router({
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
 				limit,
 				offset: (page - 1) * limit,
-				// where: {invoice_no: {[Op.iLike]: `%${search}%`}},
+				where: wherePagesV2<Ret>(["invoice_no", "$OrmCustomer.name$"], search),
 				attributes: B.keys,
+				logging: true,
 				include: [
+					{model: OrmCustomer, attributes: H.keys},
 					{
 						model: OrmCustomerSPPBOutItem,
 						attributes: A.keys,
@@ -253,8 +241,6 @@ const sppbOutRouters = router({
 					},
 					[],
 				);
-
-				prettyConsole(po);
 
 				return {...rest, po};
 			});
@@ -349,8 +335,6 @@ const sppbOutRouters = router({
 					});
 					return ret;
 				}, []);
-
-				prettyConsole(items, po);
 
 				await OrmCustomerSPPBOutItem.bulkCreate(items, {
 					updateOnDuplicate: ["id"],
