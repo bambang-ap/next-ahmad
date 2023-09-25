@@ -6,6 +6,7 @@ import {tScanTarget} from "@appTypes/app.zod";
 import {
 	ORM,
 	OrmCustomerPOItem,
+	OrmCustomerSPPBOutItem,
 	OrmKanbanItem,
 	OrmPOItemSppbIn,
 	OrmScan,
@@ -130,6 +131,37 @@ const mainDashboardRouter = router({
 				return parseQueries(queries);
 			});
 		}),
+
+	sppbOut: procedure.query(({ctx}) => {
+		function selector(num: UQty): FindOptions {
+			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
+			return {
+				group,
+				raw: true,
+				include: [
+					{
+						attributes: [],
+						model: OrmPOItemSppbIn,
+						include: [{model: OrmCustomerPOItem, attributes: []}],
+					},
+				],
+				attributes: [
+					[col(group), "unit"],
+					[fn("sum", col(`OrmCustomerSPPBOutItem.qty${num}`)), "qty"],
+				],
+			};
+		}
+
+		return checkCredentialV2(ctx, async (): Promise<J> => {
+			const queries = [
+				OrmCustomerSPPBOutItem.findAll(selector(1)),
+				OrmCustomerSPPBOutItem.findAll(selector(2)),
+				OrmCustomerSPPBOutItem.findAll(selector(3)),
+			];
+
+			return parseQueries(queries);
+		});
+	}),
 });
 
 export default mainDashboardRouter;

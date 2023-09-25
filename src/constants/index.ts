@@ -58,11 +58,9 @@ export const ScanTarget: TScanTarget[] = ["produksi", "qc", "finish_good"];
 export const paperA4: [width: number, height: number] = [210, 297];
 
 export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
-	{value: "main", label: "Dashboard Utama"},
 	{value: "total", label: "Total Records"},
+	{value: "main", label: "Dashboard Utama"},
 	{value: "bar", label: "Business Process"},
-	// {value: "line"},
-	{value: "donut", label: "Quantity Unit"},
 ];
 
 export const cuttingLineClassName =

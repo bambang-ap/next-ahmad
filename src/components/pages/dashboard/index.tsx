@@ -5,14 +5,13 @@ import {ButtonGroup} from "@components";
 import {DashboardSelectView} from "@constants";
 
 import BarChart from "./BarChart";
-import DonutChart from "./DonutChart";
 import MainDashboard from "./Main";
 import TotalCount from "./TotalCount";
 
 type J = {view: TDashboardView};
 
 export default function Dashboard() {
-	const {control} = useForm<J>({defaultValues: {view: "main"}});
+	const {control} = useForm<J>();
 
 	return (
 		<>
@@ -38,8 +37,6 @@ function RenderView({control}: {control: Control<J>}) {
 			return <BarChart />;
 		case "line":
 			return <BarChart type="line" />;
-		case "donut":
-			return <DonutChart />;
 		default:
 			return <TotalCount />;
 	}

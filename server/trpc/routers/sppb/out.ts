@@ -177,7 +177,6 @@ const sppbOutRouters = router({
 				offset: (page - 1) * limit,
 				where: wherePagesV2<Ret>(["invoice_no", "$OrmCustomer.name$"], search),
 				attributes: B.keys,
-				logging: true,
 				include: [
 					{model: OrmCustomer, attributes: E.keys},
 					{

@@ -1,7 +1,7 @@
 import {DataTypes, Model, Sequelize, STRING} from "sequelize";
 
 import {TCustomerSPPBOutItem} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
+import {defaultExcludeColumn} from "@constants";
 import {TABLES} from "@enum";
 
 import {unitQtyField} from "./customer_po_item";
@@ -20,7 +20,6 @@ export default function initOrmCustomerSPPBOutItem(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.CUSTOMER_SPPB_OUT_ITEM,
 			defaultScope: {
-				...defaultOrderBy,
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
