@@ -1,33 +1,10 @@
-import {TdHTMLAttributes} from "react";
-
 import {RouterOutput} from "@appTypes/app.type";
-import {Text as Txt, TextProps} from "@components";
+import {BorderTd, Text as Txt, TextProps} from "@components";
 import {DataProcess} from "@trpc/routers/kanban/get";
 import {classNames, dateUtils, moment} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {TxtBold} from "./sppbOut_GenerateQR";
-
-type TdProps = TdHTMLAttributes<HTMLTableCellElement> & {
-	top?: boolean;
-	center?: boolean;
-};
-
-export function BorderTd({center, top, className, ...props}: TdProps) {
-	return (
-		<td
-			{...props}
-			className={classNames(
-				"border-black border-2",
-				"flex-1 px-2 py-1",
-				"font-semibold",
-				"pb-2",
-				{["text-center"]: center, ["align-top"]: top},
-				className,
-			)}
-		/>
-	);
-}
 
 function Text(props: TextProps) {
 	return <Txt {...props} color="black" />;

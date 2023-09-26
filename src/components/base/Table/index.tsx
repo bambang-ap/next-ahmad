@@ -9,6 +9,7 @@ import {classNames} from "@utils";
 
 import TableRoot from "./TableRoot";
 
+export * from "./BorderTd";
 export * from "./TableRoot";
 export {TableRoot as RootTable};
 

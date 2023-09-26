@@ -2,10 +2,9 @@ import {useWatch} from "react-hook-form";
 
 import {FormProps} from "@appTypes/app.type";
 import {Icon} from "@baseComps/Icon";
-import {RootTable as Table} from "@baseComps/Table";
+import {BorderTd, RootTable as Table} from "@baseComps/Table";
 import {unitData} from "@constants";
 import {useQtyData} from "@hooks";
-import {BorderTd} from "@pageComponent/KanbanCard";
 import {classNames} from "@utils";
 
 import {FormValue} from "./";
