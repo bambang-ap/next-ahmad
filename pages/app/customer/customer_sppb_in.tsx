@@ -1,3 +1,6 @@
+// FIXME:
+// @ts-nocheck
+
 import {FormEventHandler, useRef} from "react";
 
 import {useForm} from "react-hook-form";

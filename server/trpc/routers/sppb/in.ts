@@ -170,6 +170,7 @@ const sppbInRouters = router({
 			}),
 		)
 		.query(async ({ctx, input}): Promise<any[]> => {
+			// FIXME: the type
 			const routerCaller = appRouter.createCaller(ctx);
 
 			const {rows} = await routerCaller.sppb.in.getPage({

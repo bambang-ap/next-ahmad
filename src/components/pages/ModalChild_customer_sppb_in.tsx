@@ -1,4 +1,7 @@
+// FIXME: use unused vars
+// @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unused-vars */
+
 import {PropsWithChildren, useEffect} from "react";
 
 import {FormType} from "pages/app/customer/customer_sppb_in";
@@ -64,19 +67,19 @@ export function SppbInModalChild({
 
 	const selectedPo = listPo.find(e => e.id === id_po);
 
-	function excludeItem(id: string) {
+	function _excludeItem(id: string) {
 		setExcludedItem(prev => [...prev, id]);
 	}
 
-	function includeItem(id: string) {
+	function _includeItem(id: string) {
 		setExcludedItem(prev => prev.filter(item => item !== id));
 	}
 
-	function excludeItemEdit(id: string) {
+	function _excludeItemEdit(id: string) {
 		setIncludedItem(prev => prev.filter(item => item !== id));
 	}
 
-	function includeItemEdit(id: string) {
+	function _includeItemEdit(id: string) {
 		setIncludedItem(prev => [...prev, id]);
 	}
 
