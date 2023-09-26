@@ -13,8 +13,8 @@ import {
 	Form,
 	Modal,
 	ModalRef,
-	TableFilterV2Ref,
 	TableFilterV3,
+	TableFilterV3Ref,
 	VRenderItem,
 } from "@components";
 import {getLayout} from "@hoc";
@@ -29,13 +29,13 @@ export type FormType = {
 	id_customer?: string;
 	idSppbIns?: MyObject<boolean>;
 } & TUpsertSppbIn &
-	Partial<Pick<SppbInRows, "OrmCustomerPOItems">>;
+	Partial<Pick<SppbInRows, "OrmPOItemSppbIns" | "OrmCustomerPO">>;
 
 SPPBIN.getLayout = getLayout;
 
 export default function SPPBIN() {
 	const modalRef = useRef<ModalRef>(null);
-	const tableRef = useRef<TableFilterV2Ref>(null);
+	const tableRef = useRef<TableFilterV3Ref>(null);
 	const {mutateOpts, ...loader} = useLoader();
 
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
@@ -64,7 +64,7 @@ export default function SPPBIN() {
 
 		function onSuccess() {
 			modalRef.current?.hide();
-			tableRef.current?.refetch();
+			tableRef.current?.refetch?.();
 		}
 	};
 
@@ -93,6 +93,7 @@ export default function SPPBIN() {
 		<>
 			{loader.component}
 			<TableFilterV3
+				ref={tableRef}
 				control={control}
 				reset={reset}
 				property="idSppbIns"

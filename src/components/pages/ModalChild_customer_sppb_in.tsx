@@ -1,11 +1,11 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {PropsWithChildren, useEffect} from "react";
 
 import {FormType} from "pages/app/customer/customer_sppb_in";
 import {useWatch} from "react-hook-form";
 import {useRecoilState} from "recoil";
 
-import {TCustomer} from "@appTypes/app.type";
-import {FormScreenProps} from "@appTypes/props.type";
+import {FormProps, TCustomer} from "@appTypes/app.type";
 import {
 	Button,
 	Cells,
@@ -17,6 +17,7 @@ import {
 } from "@components";
 import {CRUD_ENABLED} from "@enum";
 import {atomExcludedItem, atomIncludedItem} from "@recoil/atoms";
+import {modalTypeParser, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {qtyList} from "./ModalChild_po";
@@ -24,30 +25,33 @@ import {qtyList} from "./ModalChild_po";
 export function SppbInModalChild({
 	control,
 	reset,
-}: FormScreenProps<FormType, "control" | "reset">) {
+}: FormProps<FormType, "control" | "reset">) {
+	const dataForm = useWatch({control});
+
 	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
-	const [modalType, idSppbIn, idPo, idCustomer, itemsInPo] = useWatch({
-		control,
-		name: ["type", "id", "id_po", "id_customer", "OrmCustomerPOItems"],
-	});
 
-	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({type: "sppb_in"});
+	const {
+		id_customer = "",
+		OrmCustomerPO,
+		OrmPOItemSppbIns,
+		id_po,
+		type,
+	} = dataForm;
+
 	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
 	});
+	const {data: listPo = [], isFetching} = trpc.sppb.in.po.gett.useQuery(
+		{id_customer},
+		{enabled: !!id_customer},
+	);
 
-	const {data: listPo = [], isFetching} = trpc.sppb.in.po.get.useQuery();
-
-	const isEdit = modalType === "edit";
-	const isPreview = modalType === "preview";
-	const isDelete = modalType === "delete";
-	const isPreviewEdit = isEdit || isPreview;
-	const selectedPo = listPo?.find(e => e.id === idPo);
+	const {isPreview, isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
 
 	useEffect(() => {
-		reset(prev => ({...prev, id_customer: selectedPo?.id_customer}));
-	}, [selectedPo?.id_customer]);
+		reset(prev => ({...prev, id_customer: OrmCustomerPO?.OrmCustomer?.id}));
+	}, [OrmCustomerPO?.OrmCustomer?.id]);
 
 	useEffect(() => {
 		return () => {
@@ -58,8 +62,7 @@ export function SppbInModalChild({
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
-	const selectedSppbIn = dataSppbIn?.filter(e => e.id_po === idPo);
-	const selectedSppbInn = dataSppbIn?.find(e => e.id === idSppbIn);
+	const selectedPo = listPo.find(e => e.id === id_po);
 
 	function excludeItem(id: string) {
 		setExcludedItem(prev => [...prev, id]);
@@ -81,6 +84,15 @@ export function SppbInModalChild({
 		<div className="flex flex-col gap-2">
 			<div className="flex gap-2">
 				<Select
+					disabled={isPreviewEdit}
+					key={id_customer}
+					className="flex-1"
+					control={control}
+					fieldName="id_customer"
+					label="Customer"
+					data={selectMapper(dataCustomer, "id", "name")}
+				/>
+				<Select
 					className="flex-1"
 					disabled={isPreviewEdit}
 					control={control}
@@ -89,19 +101,10 @@ export function SppbInModalChild({
 					isLoading={isFetching}
 					firstOption="- Pilih PO -"
 					data={selectMapper(
-						isPreviewEdit ? listPo : listPo?.filter(e => !e.isClosed),
+						isPreviewEdit ? listPo : listPo.filter(e => !e.isClosed),
 						"id",
 						"nomor_po",
 					)}
-				/>
-				<Select
-					disabled
-					key={idCustomer}
-					className="flex-1"
-					control={control}
-					fieldName="id_customer"
-					label="Customer"
-					data={selectMapper(dataCustomer, "id", "name")}
 				/>
 				<Input
 					className="flex-1"
@@ -111,14 +114,6 @@ export function SppbInModalChild({
 					placeholder="Nomor surat jalan"
 					label="Nomor Surat"
 				/>
-				{/* <Input
-					className="flex-1"
-					disabled={isPreview}
-					control={control}
-					fieldName="lot_no"
-					placeholder="Nomor Lot"
-					label="Nomor Lot"
-				/> */}
 				<Input
 					className="flex-1"
 					disabled={isPreview}
@@ -129,7 +124,6 @@ export function SppbInModalChild({
 					label="Tanggal"
 				/>
 			</div>
-
 			<Table
 				header={[
 					"Kode Item",
@@ -137,61 +131,12 @@ export function SppbInModalChild({
 					"Nomor Lot",
 					// @ts-ignore
 					["Jumlah", qtyList.length],
-					!isPreview && "Action",
+					// !isPreview && "Action",
 				]}
-				data={selectedPo?.po_item}
+				data={selectedPo?.OrmCustomerPOItems}
 				renderItem={({Cell, item}, index) => {
-					const sppbItems =
-						selectedSppbIn?.map(sppb =>
-							sppb.OrmCustomerPOItems?.find(itemm => itemm.id_item === item.id),
-						) ?? [];
-					const selectedSppbItem = selectedSppbInn?.OrmCustomerPOItems?.find(
-						itemmm => itemmm?.id_item === item?.id,
-					);
-
-					const isOnEditModal = !selectedSppbItem && isEdit;
-					const isOnPreviewModal = !selectedSppbItem && isPreview;
-
-					if (isOnPreviewModal || (item.isClosed && !isPreviewEdit)) {
-						return false;
-					}
-
-					if (excludedItem.includes(item.id)) {
-						return (
-							<RenderReAddItem Cell={Cell} onClick={() => includeItem(item.id)}>
-								{item.OrmMasterItem.kode_item}
-							</RenderReAddItem>
-						);
-					}
-
-					if (isOnEditModal && !includedItem.includes(item.id)) {
-						if (item.isClosed) return false;
-
-						return (
-							<RenderReAddItem
-								Cell={Cell}
-								onClick={() => includeItemEdit(item.id)}>
-								{item.OrmMasterItem.kode_item}
-							</RenderReAddItem>
-						);
-					}
-
-					const assignedQty = qtyList.reduce<Record<string, number>>(
-						(ret, num) => {
-							const key = `qty${num}` as const;
-							const qty = item?.[key] as number;
-
-							if (!ret[key]) ret[key] = qty;
-
-							sppbItems.forEach(itemSppb => {
-								if (itemSppb?.id_sppb_in !== idSppbIn && itemSppb?.[key]) {
-									ret[key] -= itemSppb[key] ?? 0;
-								}
-							});
-
-							return ret;
-						},
-						{},
+					const selectedItem = OrmPOItemSppbIns?.find(
+						e => e.id_item === item.id,
 					);
 
 					return (
@@ -214,10 +159,9 @@ export function SppbInModalChild({
 								className="hidden"
 								control={control}
 								shouldUnregister
-								defaultValue={selectedSppbItem?.id}
+								defaultValue={selectedItem?.id}
 								fieldName={`po_item.${index}.id`}
 							/>
-
 							<Cell>{item.OrmMasterItem.kode_item}</Cell>
 							<Cell>{item.OrmMasterItem.name}</Cell>
 							<Cell>
@@ -225,62 +169,45 @@ export function SppbInModalChild({
 									className="flex-1"
 									label="Nomor Lot"
 									control={control}
-									defaultValue={itemsInPo?.[index]?.lot_no}
+									defaultValue={selectedItem?.lot_no}
 									fieldName={`po_item.${index}.lot_no`}
 								/>
 							</Cell>
-
-							{qtyList.map(num => {
-								const unit = item[`unit${num}`];
-
+							{qtyMap(({num, qtyKey, unitKey}) => {
+								const unit = item[unitKey];
 								if (!unit) return <Cell key={num} />;
 
+								const currentQty =
+									item[qtyKey]! -
+									(item.totalQty[qtyKey]! ?? 0) +
+									(isEdit ? selectedItem?.[qtyKey]! : 0);
+
+								const jumlah = isPreviewEdit
+									? selectedItem?.[qtyKey]
+									: currentQty;
+								const max = isEdit ? item[qtyKey]! - currentQty : currentQty;
+
 								return (
-									<Cell key={num}>
+									<Cell>
 										<Input
 											className="flex-1"
 											disabled={isPreview}
 											type="decimal"
 											control={control}
 											shouldUnregister
-											fieldName={`po_item.${index}.qty${num}`}
 											label={`Jumlah ${num}`}
+											defaultValue={jumlah}
 											rightAcc={<Text>{unit}</Text>}
-											rules={{
-												max: {
-													// @ts-ignore
-													value: assignedQty[`qty${num}`],
-													message: `max is ${assignedQty[`qty${num}`]}`,
-												},
-											}}
-											defaultValue={
-												isPreviewEdit
-													? selectedSppbItem?.[`qty${num}`] ||
-													  assignedQty[`qty${num}`]
-													: assignedQty[`qty${num}`]
-											}
+											fieldName={`po_item.${index}.qty${num}`}
+											rules={{max: {value: max, message: `max is ${max}`}}}
 										/>
 									</Cell>
 								);
 							})}
-
-							{!isPreview && (
-								<Cell>
-									<Button
-										onClick={() =>
-											isOnEditModal
-												? excludeItemEdit(item.id)
-												: excludeItem(item.id)
-										}>
-										Delete
-									</Button>
-								</Cell>
-							)}
 						</>
 					);
 				}}
 			/>
-
 			{!isPreview && <Button type="submit">Submit</Button>}
 		</div>
 	);
