@@ -23,7 +23,7 @@ import {
 } from "@components";
 import {cuttingLineClassName, nonRequiredRefetch} from "@constants";
 import {getLayout} from "@hoc";
-import {useLoader, useNewExportData, useTableFilter} from "@hooks";
+import {useExport, useLoader, useTableFilter} from "@hooks";
 import {RenderKanbanCardV2} from "@pageComponent/KanbanCardV2";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {atomDataKanban} from "@recoil/atoms";
@@ -82,13 +82,11 @@ export default function Kanban() {
 		return JSON.stringify(rest);
 	});
 
-	const {exportResult} = useNewExportData(
-		() =>
-			trpc.export.kanban.useQuery(
-				{idKanbans: selectedIdKanbans},
-				{enabled: selectedIdKanbans.length > 0},
-			),
-		data => data,
+	const exportResult = useExport({loader, renderItem: item => item}, () =>
+		trpc.export.kanban.useQuery(
+			{idKanbans: selectedIdKanbans},
+			{enabled: selectedIdKanbans.length > 0},
+		),
 	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
@@ -129,7 +127,7 @@ export default function Kanban() {
 			return alert("Silahkan pilih data terlebih dahulu");
 		}
 
-		exportResult();
+		await exportResult();
 		reset(prev => ({...prev, type: undefined}));
 		await sleep(2500);
 		reset(prev => ({...prev, idKanbans: {}}));
