@@ -42,13 +42,12 @@ export function SppbInModalChild({
 		type,
 	} = dataForm;
 
-	const {data: dataCustomer = []} = trpc.basic.get.useQuery<any, TCustomer[]>({
-		target: CRUD_ENABLED.CUSTOMER,
-	});
-	const {data: listPo = [], isFetching} = trpc.sppb.in.po.gett.useQuery(
-		{id_customer},
-		{enabled: !!id_customer},
-	);
+	const {data: dataCustomer = [], isFetching: isFetchingCustomer} =
+		trpc.basic.get.useQuery<any, TCustomer[]>({
+			target: CRUD_ENABLED.CUSTOMER,
+		});
+	const {data: listPo = [], isFetching: isFetchingPo} =
+		trpc.sppb.in.po.gett.useQuery({id_customer}, {enabled: !!id_customer});
 
 	const {isPreview, isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
 
@@ -93,6 +92,7 @@ export function SppbInModalChild({
 					control={control}
 					fieldName="id_customer"
 					label="Customer"
+					isLoading={isFetchingCustomer}
 					data={selectMapper(dataCustomer, "id", "name")}
 				/>
 				<Select
@@ -101,7 +101,7 @@ export function SppbInModalChild({
 					control={control}
 					fieldName="id_po"
 					label="PO"
-					isLoading={isFetching}
+					isLoading={isFetchingPo}
 					firstOption="- Pilih PO -"
 					data={selectMapper(
 						isPreviewEdit ? listPo : listPo.filter(e => !e.isClosed),
