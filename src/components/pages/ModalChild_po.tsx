@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {Fragment, useEffect} from "react";
 
 import {Control, useController, UseFormReset, useWatch} from "react-hook-form";
 
@@ -46,6 +46,10 @@ export default function PoModalChild({
 	const {data: dataMasterItem} = trpc.item.get.useQuery({
 		limit: 10000,
 	});
+
+	const listItems = dataMasterItem?.rows ?? [];
+
+	const itemSelections = selectMapper(listItems, "id", "name");
 
 	const {
 		field: {onChange: onChangePoItem},
@@ -153,21 +157,19 @@ export default function PoModalChild({
 					header={headerTable}
 					className="overflow-y-auto"
 					renderItem={({item, Cell}, index) => {
-						const listItems = dataMasterItem?.rows ?? [];
-
-						const selectedItem = dataMasterItem?.rows.find(
+						const selectedItem = listItems.find(
 							e => e.id === item.master_item_id,
 						);
 
 						return (
-							<>
+							<Fragment key={item.id}>
 								<Cell>{index + 1}</Cell>
 								<Cell width="25%">
 									<Select
 										className="flex-1"
 										label="Nama Item"
 										control={control}
-										data={selectMapper(listItems, "id", "name")}
+										data={itemSelections}
 										fieldName={`po_item.${index}.master_item_id`}
 									/>
 								</Cell>
@@ -210,7 +212,7 @@ export default function PoModalChild({
 										<Button onClick={() => removeItem(index)} icon="faTrash" />
 									</Cell>
 								)}
-							</>
+							</Fragment>
 						);
 					}}
 				/>

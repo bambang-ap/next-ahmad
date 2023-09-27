@@ -80,6 +80,7 @@ function SelectComponent<F extends FieldValues>({
 	label: labelProps,
 }: ControlledComponentProps<F, SelectProps>) {
 	const formContext = useContext(FormContext);
+	const tick = useTicker(isLoading, 5);
 
 	const {
 		field: {value, onChange, name},
@@ -89,8 +90,9 @@ function SelectComponent<F extends FieldValues>({
 
 	const isDisabled = formContext?.disabled || disabled;
 	const selectedValue = data.find(e => e.value === value);
-
-	const tick = useTicker(isLoading, 5);
+	const filteredData = selectedValue?.value
+		? [selectedValue, ...data.filter(e => e.value !== selectedValue.value)]
+		: data;
 
 	const isLoadingText = !isLoading
 		? ""
@@ -117,8 +119,7 @@ function SelectComponent<F extends FieldValues>({
 				loading={isLoading}
 				loadingText={isLoadingText}
 				disableClearable={disableClear}
-				disablePortal
-				options={data}
+				options={filteredData}
 				disabled={isDisabled}
 				defaultValue={selectedValue}
 				onChange={(_, option) => onChange(option?.value)}
@@ -130,7 +131,7 @@ function SelectComponent<F extends FieldValues>({
 					const isSelected = selectedValue?.value === option.value;
 
 					return (
-						<Box component="li" {...props} className="m-0">
+						<Box component="li" {...props} key={option.value} className="m-0">
 							<div
 								className={classNames(
 									"w-full p-4 cursor-pointer",
