@@ -1,6 +1,3 @@
-// FIXME:
-// @ts-nocheck
-
 import {useEffect, useState} from "react";
 
 import {KanbanFormType} from "pages/app/kanban";
@@ -111,7 +108,7 @@ export function ScanDetailKanban({
 			</div>
 
 			{Object.entries(kanban.items).map(([id_item, item], i) => {
-				const detail = kanban.dataSppbIn?.OrmCustomerPOItems?.find(
+				const detail = kanban.dataSppbIn?.OrmPOItemSppbIns.find(
 					e => e.id === id_item,
 				)?.OrmCustomerPOItem;
 

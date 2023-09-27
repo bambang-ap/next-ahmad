@@ -2,7 +2,6 @@ import {z} from "zod";
 
 import {
 	PagingResult,
-	RouterOutput,
 	TCustomerPO,
 	TMasterItem,
 	TPOItem,
@@ -11,7 +10,6 @@ import {
 } from "@appTypes/app.type";
 import {
 	tableFormValue,
-	tCustomer,
 	tCustomerPO,
 	tCustomerSPPBIn,
 	tMasterItem,
@@ -29,6 +27,7 @@ import {
 	OrmCustomerSPPBIn,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
+	sppbInGetPage,
 	wherePagesV2,
 } from "@database";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
@@ -40,8 +39,8 @@ import {qtyMap, qtyReduce} from "@utils";
 
 import {GetPageRows} from "../customer_po";
 
-type GetPage = RouterOutput["sppb"]["in"]["getPage"];
-export type SppbInRows = GetPage["rows"][number];
+type GetPage = PagingResult<SppbInRows>;
+export type SppbInRows = ReturnType<typeof sppbInGetPage>["Ret"];
 
 const sppbInRouters = router({
 	po: router({
@@ -169,7 +168,7 @@ const sppbInRouters = router({
 				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)
-		.query(async ({ctx, input}): Promise<any[]> => {
+		.query(async ({ctx, input}): Promise<SppbInRows[]> => {
 			// FIXME: the type
 			const routerCaller = appRouter.createCaller(ctx);
 
@@ -183,64 +182,43 @@ const sppbInRouters = router({
 	getPage: procedure
 		.input(tableFormValue.partial())
 		.query(({ctx: {req, res}, input}) => {
+			const {A, B, C, D, E, F} = sppbInGetPage();
 			const {limit = defaultLimit, page = 1, search} = input;
-			const A = attrParser(tCustomerSPPBIn, [
-				"tgl",
-				"id",
-				"id_po",
-				"nomor_surat",
-			]);
-			const B = attrParser(tCustomerPO, ["nomor_po"]);
-			const C = attrParser(tCustomer, ["name", "id"]);
-			const D = attrParser(tPOItemSppbIn);
-			const E = attrParser(tPOItem);
-			const F = attrParser(tMasterItem);
 
-			type Ret = typeof A.obj & {
-				OrmCustomerPO: typeof B.obj & {OrmCustomer: typeof C.obj};
-				OrmPOItemSppbIns: (typeof D.obj & {
-					OrmCustomerPOItem: typeof E.obj;
-					OrmMasterItem: typeof F.obj;
-				})[];
-			};
-
-			return checkCredentialV2(
-				{req, res},
-				async (): Promise<PagingResult<Ret>> => {
-					const {count, rows: rr} = await OrmCustomerSPPBIn.findAndCountAll({
-						limit,
-						attributes: A.keys,
-						offset: (page - 1) * limit,
-						where: wherePagesV2<SppbInRows>(
-							[
-								"nomor_surat",
-								"$OrmCustomerPO.nomor_po$",
-								"$OrmCustomerPO.OrmCustomer.name$",
-							],
-							search,
-						),
-						include: [
-							{
-								model: OrmCustomerPO,
-								attributes: B.keys,
-								include: [{model: OrmCustomer, attributes: C.keys}],
-							},
-							{
-								separate: true,
-								model: OrmPOItemSppbIn,
-								attributes: D.keys,
-								include: [
-									{model: OrmCustomerPOItem, attributes: E.keys},
-									{model: OrmMasterItem, attributes: F.keys},
-								],
-							},
+			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
+				const {count, rows: rr} = await OrmCustomerSPPBIn.findAndCountAll({
+					limit,
+					attributes: A.keys,
+					offset: (page - 1) * limit,
+					where: wherePagesV2<SppbInRows>(
+						[
+							"nomor_surat",
+							"$OrmCustomerPO.nomor_po$",
+							"$OrmCustomerPO.OrmCustomer.name$",
 						],
-					});
+						search,
+					),
+					include: [
+						{
+							model: OrmCustomerPO,
+							attributes: B.keys,
+							include: [{model: OrmCustomer, attributes: C.keys}],
+						},
+						{
+							separate: true,
+							model: OrmPOItemSppbIn,
+							attributes: D.keys,
+							include: [
+								{model: OrmCustomerPOItem, attributes: E.keys},
+								{model: OrmMasterItem, attributes: F.keys},
+							],
+						},
+					],
+				});
 
-					// @ts-ignore
-					return pagingResult(count, page, limit, rr as SppbInRows);
-				},
-			);
+				// @ts-ignore
+				return pagingResult(count, page, limit, rr as SppbInRows);
+			});
 		}),
 	upsert: procedure
 		.input(tUpsertSppbIn)

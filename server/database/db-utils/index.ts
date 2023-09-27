@@ -15,6 +15,7 @@ import {ORM, OrmCustomerSPPBIn, OrmKanban, OrmScan} from "@database";
 import {PO_STATUS} from "@enum";
 import {appRouter} from "@trpc/routers";
 
+export * from "./attributes";
 export * from "./relation";
 
 export function attrParser<
@@ -151,30 +152,3 @@ export function OrmScanOrder(target: Route["route"]): Order {
 export function NumberOrderAttribute<T extends {}>(order: ObjKeyof<T>) {
 	return [literal(`ROW_NUMBER() OVER (ORDER BY ${order})`), "number"] as const;
 }
-
-// FIXME: Seharusnya cek apakah datanya sudah closed atau belum
-// export async function getCurrentPOStatusExpected(id_po: string): Promise<PO_STATUS> {
-// 	const listSppbIn = (
-// 		await OrmCustomerSPPBIn.findAll({
-// 			where: {id_po},
-// 			attributes: ["id"] as (keyof TCustomerSPPBIn)[],
-// 		})
-// 	).map(async ({dataValues: sppbIn}) => {
-// 		const listKanban = (
-// 			await OrmKanban.findAll({
-// 				where: {id_po, id_sppb_in: sppbIn.id},
-// 				attributes: ["id", "id_sppb_in"] as (keyof TKanban)[],
-// 			})
-// 		).map(async ({dataValues: kanban}) => {
-// 			return kanban;
-// 		});
-
-// 		return {sppbIn, listKanban: await Promise.all(listKanban)};
-// 	});
-
-// 	prettyConsole(await Promise.all(listSppbIn), "\n--------\n");
-
-// 	if (!!listSppbIn) return PO_STATUS.B;
-
-// 	return PO_STATUS.A;
-// }
