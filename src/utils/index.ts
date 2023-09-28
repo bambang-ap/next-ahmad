@@ -402,7 +402,7 @@ export function mutateCallback(
 	} as UseTRPCMutationOptions<any, any, any>;
 }
 
-export function transformIds(dataObj?: MyObject<boolean>) {
+export function transformIds(dataObj?: MyObject<undefined | boolean>) {
 	const selectedIds = Object.entries(dataObj ?? {}).reduce<string[]>(
 		(ret, [id, val]) => {
 			if (val) ret.push(id);

@@ -19,7 +19,7 @@ export type TRenderItem<T, R, V = {}> = (
 	index: number,
 ) => R;
 
-type CellSelectProps<F extends FieldValues> = Omit<
+export type CellSelectProps<F extends FieldValues> = Omit<
 	WrappedProps<F, InputProps>,
 	"type"
 > & {
