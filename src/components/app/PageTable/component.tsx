@@ -67,7 +67,7 @@ export function QRUserLogin(user: TUser) {
 					<div className="flex gap-2">
 						<Button
 							className="flex-1"
-							onClick={() => generatePDF(tagId, "customer")}>
+							onClick={() => generatePDF([tagId], "customer")}>
 							Print
 						</Button>
 						<Button
