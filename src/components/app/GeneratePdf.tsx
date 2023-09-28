@@ -50,18 +50,15 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 		  ).datas
 		: [datas];
 
-	async function generate(timeout = 2500) {
+	const elementsId = pageDatas?.map((_, index) => `${tagId}-Page-${index}`);
+
+	async function generatePrint(timeout = 2500) {
 		await sleep(timeout);
-		// generatePDF([tagId, tagId, tagId], filename, orientation);
-		generatePDF(
-			datas.map(({}, index) => `${tagId}-Page-${index}`),
-			filename,
-			orientation,
-		);
+		generatePDF(elementsId, filename, orientation);
 	}
 
 	useImperativeHandle(ref, () => {
-		return {generate};
+		return {generate: generatePrint};
 	});
 
 	return (
@@ -70,7 +67,7 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 				return (
 					<div
 						key={index}
-						id={`${tagId}-Page-${index}`}
+						id={elementsId![index]}
 						className={classNames("flex flex-wrap", width)}>
 						{dataList.map(item => renderItem(item))}
 					</div>

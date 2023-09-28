@@ -239,54 +239,40 @@ export function toBase64(
 }
 
 export async function generatePDF(
-	ids: string | string[],
+	ids: string[],
 	filename = "a4",
 	orientation: jsPDFOptions["orientation"] = "p",
 ) {
-	return new Promise<void>(async resolve => {
-		const format = paperA4;
+	let doc = new jsPDF({unit: "mm", orientation, format: "a4"});
 
-		const doc = new jsPDF({unit: "mm", orientation, format});
+	const pageHeight = doc.internal.pageSize.getHeight();
+	const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
+	const scaleWidth =
+		orientation === "p" || orientation === "portrait" ? paperA4[0] : paperA4[1];
 
-		const elements = Array.isArray(ids)
-			? ids.map(id => document.getElementById(id))
-			: [document.getElementById(ids)];
+	for (let index = 0; index < elements.length; index++) {
+		const element = elements[index];
+		if (index + 1 < elements.length) doc.addPage();
+		doc = await htmlPage(doc, element!, index);
+	}
 
-		await htmlPage(doc, elements.filter(Boolean));
-		resolve();
-	});
+	return doc.save(filename, {returnPromise: true});
 
-	function htmlPage(doc: jsPDF, pages: HTMLElement[], index = 0) {
-		const scaleWidth =
-			orientation === "p" || orientation === "portrait"
-				? paperA4[0]
-				: paperA4[1];
-		const hasPages = pages.length > 0;
-		const pageHeight = doc.internal.pageSize.getHeight();
-
-		const element = pages[0];
-
-		if (!hasPages) {
-			return doc.save(`${filename}.pdf`, {returnPromise: true});
-		}
-
-		return Promise.resolve<void>(
-			doc.html(element!, {
+	function htmlPage(pdf: jsPDF, element: HTMLElement, i: number) {
+		return new Promise<jsPDF>(resolve => {
+			pdf.html(element, {
 				x: 0,
 				margin: 0,
-				y: index * pageHeight,
+				y: i * pageHeight,
 				html2canvas: {
-					width: document.body.clientWidth,
-					scale: scaleWidth / element!.clientWidth,
+					width: element.clientWidth,
+					scale: scaleWidth / element.clientWidth,
 				},
-				callback(pdf) {
-					if (index > 0 && pages.length > 1) pdf.addPage("a4", "l");
-					const restPages = pages.slice();
-					restPages.splice(0, 1);
-					htmlPage(pdf, restPages, index + 1);
+				callback(pdfCallback) {
+					resolve(pdfCallback);
 				},
-			}),
-		);
+			});
+		});
 	}
 }
 

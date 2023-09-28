@@ -1,5 +1,4 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-
 import {FormEventHandler, useEffect, useRef} from "react";
 
 import {useForm} from "react-hook-form";
@@ -152,10 +151,8 @@ export default function Kanban() {
 		await genPdfRef.current?.generate();
 		await mutatePrint(kanbanIds);
 		refetch();
-		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
-		await sleep(2500);
-		reset(prev => ({...prev, idKanbans: {}}));
+		loader?.hide?.();
 	}
 
 	useEffect(() => {

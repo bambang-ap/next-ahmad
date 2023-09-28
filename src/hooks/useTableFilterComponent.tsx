@@ -143,7 +143,6 @@ export function useTableFilterComponent<
 		await genPdfRef.current?.generate();
 		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
-		setTimeout(() => reset(prev => ({...prev, [property]: {}})), 2500);
 	}
 
 	function CellSelect(cellProps: G<F>) {

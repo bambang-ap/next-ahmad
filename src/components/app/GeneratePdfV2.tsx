@@ -54,13 +54,11 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 		  ).datas
 		: [datas];
 
+	const elementsId = pageDatas?.map((_, index) => `${tagId}-Page-${index}`);
+
 	async function generatePrint(timeout: number) {
 		await sleep(timeout);
-		generatePDF(
-			datas?.map(({}, index) => `${tagId}-Page-${index}`) ?? [],
-			filename,
-			orientation,
-		);
+		await generatePDF(elementsId!, filename, orientation);
 	}
 
 	async function generate(timeout = 2500) {
@@ -87,7 +85,7 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 				return (
 					<div
 						key={index}
-						id={`${tagId}-Page-${index}`}
+						id={elementsId![index]}
 						className={classNames("flex flex-wrap", width)}>
 						{dataList?.map(item => renderItem(item))}
 					</div>
