@@ -92,14 +92,17 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 	const currentKey = `status_${route}` as const;
 	const [, , submitText] = scanMapperByStatus(route);
 
-	const {data, refetch} = trpc.scan.get.useQuery(
+	const {data, refetch, isRefetching} = trpc.scan.get.useQuery(
 		{id, target: route},
 		{enabled: !!id},
 	);
 
 	const {mutateAsync: mutate} = trpc.scan.update.useMutation({
+		async onSuccess() {
+			refetch();
+			loader.hide?.();
+		},
 		...mutateOpts,
-		onSuccess: () => refetch(),
 	});
 
 	const status = data?.[currentKey];
@@ -199,7 +202,7 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 						onClick={removeUid}
 					/>
 					{id && !!data && (
-						<Button disabled={status} type="submit">
+						<Button disabled={status || isRefetching} type="submit">
 							{submitText}
 						</Button>
 					)}

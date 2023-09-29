@@ -4,46 +4,32 @@ import {Route} from "pages/app/scan/[route]";
 import {ScanListFormType} from "pages/app/scan/[route]/list";
 import {Control, useWatch} from "react-hook-form";
 
-import {Cells, CellSelect} from "@components";
+import {TableFilterProps} from "@hooks";
 import type {ScanList} from "@trpc/routers/scan";
 import {dateUtils, modalTypeParser} from "@utils";
-import {trpc} from "@utils/trpc";
 
-export function RenderData({
-	Cell,
-	item,
-	children,
-	route,
-	control,
-}: // printOne,
-PropsWithChildren<
-	MMapValue<ScanList> &
-		Cells &
-		Route & {
-			control: Control<ScanListFormType>;
-			printOne?: (idKanban: string) => void;
-		}
->) {
-	const {data} = trpc.kanban.detail.useQuery(item.id_kanban as string);
+type Props = {
+	control: Control<ScanListFormType>;
+	printOne?: (idKanban: string) => void;
+} & GetProps<
+	NonNullable<TableFilterProps<ScanList, ScanListFormType>["renderItem"]>
+> &
+	Route;
 
-	const [modalType, idKanbans] = useWatch({
-		control,
-		name: ["type", "idKanbans"],
-	});
+export function RenderData(props: PropsWithChildren<Props>) {
+	const {Cell, item, children, route, control, CellSelect} = props;
+
+	const {type: modalType} = useWatch({control});
+
 	const {isSelect} = modalTypeParser(modalType);
+
+	const data = item.OrmKanban;
 	const date = item.date?.[`${route}_updatedAt`];
 	const theDate = !date ? "" : dateUtils.full(date);
 
 	return (
 		<>
-			{isSelect && (
-				<CellSelect
-					noLabel
-					control={control}
-					key={`${idKanbans?.[item.id_kanban]}`}
-					fieldName={`idKanbans.${item.id_kanban}`}
-				/>
-			)}
+			{isSelect && <CellSelect fieldName={`idScans.${item.id}`} />}
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
 			<Cell>{data?.nomor_kanban}</Cell>
 			<Cell>{data?.keterangan}</Cell>

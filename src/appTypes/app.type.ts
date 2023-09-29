@@ -55,6 +55,7 @@ export type {
 	TPOItem,
 	TPOItemSppbIn,
 	TRole,
+	TRoute,
 	TScan,
 	TScanDate,
 	TScanItem,
@@ -76,6 +77,7 @@ export type {
 	UnitUnit,
 	USPPB,
 	ZId,
+	ZIds,
 } from "./app.zod";
 
 import type {

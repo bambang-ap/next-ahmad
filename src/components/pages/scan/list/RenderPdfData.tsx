@@ -1,10 +1,9 @@
 import {Route} from "pages/app/scan/[route]";
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 
-import {KanbanGetRow} from "@appTypes/app.type";
+import {RouterOutput} from "@appTypes/app.type";
 import {cuttingLineClassName, gap, padding} from "@constants";
-import {moment} from "@utils";
-import {classNames, scanMapperByStatus} from "@utils";
+import {classNames, moment, scanMapperByStatus} from "@utils";
 
 import {RenderItem} from "./RenderItem";
 
@@ -12,8 +11,7 @@ export function RenderPdfData({
 	data,
 	route,
 	className,
-}: Route & {data?: null | KanbanGetRow; className?: string}) {
-	const items = Object.entries(data?.items ?? {});
+}: Route & {data: RouterOutput["print"]["scan"][number]; className?: string}) {
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
@@ -40,15 +38,13 @@ export function RenderPdfData({
 					</div>
 				</div>
 				<Wrapper title="Customer">
-					{data?.OrmCustomerPO?.OrmCustomer.name}
+					{data?.OrmKanban?.OrmCustomerPO?.OrmCustomer.name}
 				</Wrapper>
 				<Wrapper title="Tgl / Bln / Thn">
 					{moment(data?.createdAt).format("D MMMM YYYY")}
 				</Wrapper>
-				<Wrapper title="Nomor Lot IMI">{data?.dataScan?.lot_no_imi}</Wrapper>
-				{items.map(item => (
-					<RenderItem key={item[0]} item={item} />
-				))}
+				<Wrapper title="Nomor Lot IMI">{data?.lot_no_imi}</Wrapper>
+				<RenderItem data={data} route={route} />
 			</div>
 		</div>
 	);

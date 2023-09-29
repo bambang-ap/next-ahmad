@@ -33,9 +33,11 @@ import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 
 import {printKanbanRouter} from "./kanban";
+import {printScanRouter} from "./scan";
 
 const printRouters = router({
 	...printKanbanRouter,
+	...printScanRouter,
 	sppb: router({
 		out: procedure
 			.input(z.object({id: z.string().array()}))

@@ -1,4 +1,4 @@
-import {PagingResult, TDataScan, TDocument, TScan} from "@appTypes/app.type";
+import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
 	tScan,
@@ -11,12 +11,11 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
-	NumberOrderAttribute,
-	OrmDocument,
 	OrmKanban,
 	OrmKanbanItem,
 	OrmScan,
 	OrmScanOrder as scanOrder,
+	scanListAttributes,
 } from "@database";
 import {CATEGORY_REJECT_DB} from "@enum";
 import {checkCredentialV2, pagingResult} from "@server";
@@ -25,10 +24,10 @@ import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
 import {moment, qtyMap} from "@utils";
 
-export type ScanList = TScan & {number: string; OrmDocument: TDocument};
+export type ScanList = ReturnType<typeof scanListAttributes>["Ret"];
 type ListResult = PagingResult<ScanList>;
 
-function enabled(target: TScanTarget, dataScan?: TDataScan) {
+function enabled(target: TScanTarget, dataScan?: TScan) {
 	switch (target) {
 		case "produksi":
 			return true;
@@ -57,34 +56,24 @@ const scanRouters = router({
 		.input(tableFormValue.extend({target: tScanTarget}))
 		.query(({ctx, input}) => {
 			const {limit, page, target} = input;
+
+			const {A, B, num, Ret} = scanListAttributes();
+
 			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
 				const {count, rows: data} = await OrmScan.findAndCountAll({
 					limit,
-					attributes: [
-						"id",
-						"id_kanban",
-						"date",
-						NumberOrderAttribute<TScan>("id"),
-					],
+					logging: true,
+					attributes: [num, ...A.keys],
 					order: scanOrder(target),
 					offset: (page - 1) * limit,
 					where: {[`status_${target}`]: true},
-				});
-				const allDataScan = data.map(async ({dataValues}) => {
-					const kanban = await OrmKanban.findOne({
-						attributes: [],
-						include: [OrmDocument],
-						where: {id: dataValues.id_kanban},
-					});
-					return {...dataValues, ...kanban?.dataValues};
+					include: [{model: OrmKanban, attributes: B.keys}],
 				});
 
-				return pagingResult(
-					count,
-					page,
-					limit,
-					(await Promise.all(allDataScan)) as ScanList[],
-				);
+				// @ts-ignore
+				const allDataScan = data.map(e => e.dataValues as typeof Ret);
+
+				return pagingResult(count, page, limit, allDataScan);
 			});
 		}),
 	get: procedure
@@ -132,13 +121,12 @@ const scanRouters = router({
 			return checkCredentialV2(
 				{req, res},
 				async (): Promise<{message: string}> => {
-					const routerCaller = appRouter.createCaller({req, res});
-
 					const {id, target, ...rest} = input;
 					const statusTarget = `status_${target}` as const;
 					const itemTarget = `item_${target}` as const;
 
-					const dataScan = await routerCaller.scan.get({id, target});
+					// const dataScan = await routerCaller.scan.get({id, target});
+					const dataScan = await OrmScan.findOne({where: {id_kanban: id}});
 
 					if (!dataScan) {
 						throw new TRPCError({
@@ -147,19 +135,18 @@ const scanRouters = router({
 						});
 					}
 
-					if (!enabled(target, dataScan)) {
+					if (!enabled(target, dataScan?.dataValues!)) {
 						throw new TRPCError({code: "BAD_REQUEST", message: "Failed"});
 					}
 
-					const prevDate = await OrmScan.findOne({where: {id: dataScan.id}});
 					const date: TScanDate = {
-						...prevDate?.dataValues.date,
+						...dataScan?.dataValues.date,
 						[`${target}_updatedAt`]: moment(),
 					};
 
 					await OrmScan.update(
 						{[statusTarget]: true, date, ...rest},
-						{where: {id: dataScan.id}},
+						{where: {id: dataScan.dataValues.id}},
 					);
 
 					switch (target) {
@@ -197,7 +184,7 @@ const scanRouters = router({
 											status_finish_good: true,
 											item_finish_good: item_qc,
 										},
-										{where: {id: dataScan.id}},
+										{where: {id: dataScan.dataValues.id}},
 									),
 							];
 

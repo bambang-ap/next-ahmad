@@ -1,21 +1,9 @@
-import {moment} from "@utils";
 import {z} from "zod";
 
-import {
-	TCustomer,
-	TCustomerPO,
-	TCustomerSPPBIn,
-	TKanban,
-	TKanbanItem,
-	TMasterItem,
-	TPOItem,
-	TPOItemSppbIn,
-	TScan,
-	tScanTarget,
-	ZId,
-} from "@appTypes/app.zod";
+import {tScanTarget} from "@appTypes/app.zod";
 import {formatDateStringView, formatHour, qtyList} from "@constants";
 import {
+	exportScanAttributes,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -32,69 +20,54 @@ import {
 } from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure} from "@trpc";
+import {moment} from "@utils";
 
 const exportScanRouters = {
 	scan: procedure
 		.input(
 			z.object({
 				route: tScanTarget,
-				idKanbans: z.string().array(),
+				idScans: z.string().array(),
 			}),
 		)
 		.query(({ctx, input}) => {
-			type JJJ = Record<
-				| "NO"
-				| "TANGGAL PROSES"
-				| "CUSTOMER"
-				| "PART NAME"
-				| "PART NO"
-				| "QTY / JUMLAH"
-				| "WAKTU / JAM PROSES"
-				| "NO LOT CUSTOMER"
-				| "NO LOT IMI"
-				| "PROSES"
-				| "NOMOR KANBAN"
-				| "NOMOR MESIN"
-				| "NAMA MESIN"
-				| "KETERANGAN",
-				string
-			>;
+			const {route, idScans} = input;
 
-			type OO = TScan & {
-				OrmKanban: TKanban & {
-					OrmCustomerSPPBIn: TCustomerSPPBIn & {
-						OrmPOItemSppbIns: TPOItemSppbIn[];
-					};
-					OrmCustomerPO: TCustomerPO & {
-						OrmCustomer: TCustomer;
-						OrmCustomerPOItems: TPOItem[];
-					};
-					OrmKanbanItems: (TKanbanItem & {
-						OrmMasterItem: TMasterItem;
-						OrmPOItemSppbIn: ZId;
-					})[];
-				};
-			};
-			const {route, idKanbans: idScans} = input;
+			const {A, B, C, D, E, F, G, H, I, J, Ret, Output} =
+				exportScanAttributes(route);
+
+			type JJJ = typeof Output;
+			type OO = typeof Ret;
 
 			return checkCredentialV2(ctx, async (): Promise<JJJ[]> => {
 				const data = await OrmScan.findAll({
-					where: {id_kanban: idScans, [`status_${route}`]: true},
+					where: {id: idScans, [`status_${route}`]: true},
 					order: OrmScanOrder(route),
+					attributes: A.keys,
 					include: [
 						{
+							attributes: B.keys,
 							model: OrmKanban,
 							include: [
-								{model: OrmCustomerSPPBIn, include: [OrmPOItemSppbIn]},
+								{
+									attributes: C.keys,
+									model: OrmCustomerSPPBIn,
+									include: [{model: OrmPOItemSppbIn, attributes: D.keys}],
+								},
 								{
 									model: OrmCustomerPO,
-									include: [OrmCustomer, OrmCustomerPOItem],
+									attributes: E.keys,
+									include: [
+										{attributes: F.keys, model: OrmCustomer},
+										{attributes: G.keys, model: OrmCustomerPOItem},
+									],
 								},
 								{
 									model: OrmKanbanItem,
+									attributes: H.keys,
 									include: [
-										OrmMasterItem,
-										{model: OrmPOItemSppbIn, attributes: ["id"]},
+										{model: OrmMasterItem, attributes: I.keys},
+										{model: OrmPOItemSppbIn, attributes: J.keys},
 									],
 								},
 							],
@@ -103,6 +76,7 @@ const exportScanRouters = {
 				});
 
 				const promisedData = data.map(async ({dataValues}, i): Promise<JJJ> => {
+					// @ts-ignore
 					const val = dataValues as OO;
 
 					// return val

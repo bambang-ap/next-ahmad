@@ -6,4 +6,5 @@ export * from "./useMenu";
 export * from "./useQtyData";
 export * from "./useSppbOut";
 export * from "./useTable";
+export * from "./useTableFilterComponent";
 export * from "./useTicker";

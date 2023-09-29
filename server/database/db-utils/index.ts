@@ -149,6 +149,8 @@ export function OrmScanOrder(target: Route["route"]): Order {
 	return [[`date.${target}_updatedAt`, "DESC NULLS LAST"]];
 }
 
-export function NumberOrderAttribute<T extends {}>(order: ObjKeyof<T>) {
+export function NumberOrderAttribute<T extends {}>(
+	order: LiteralUnion<ObjKeyof<T>>,
+) {
 	return [literal(`ROW_NUMBER() OVER (ORDER BY ${order})`), "number"] as const;
 }

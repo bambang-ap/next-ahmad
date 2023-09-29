@@ -36,6 +36,9 @@ export const tableFormValue = z.object({
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
+export type ZIds = z.infer<typeof zIds>;
+export const zIds = z.object({ids: z.string().array()});
+
 export type TUser = z.infer<typeof tUser>;
 export const tUser = zId.extend({
 	email: z.string().email(),
@@ -401,6 +404,8 @@ export const tScan = zId.extend({
 	notes: z.string().optional(),
 	date: tScanDate.optional(),
 	item_from_kanban: z.record(unitQty).optional(),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
 });
 
 export type TScanTarget = z.infer<typeof tScanTarget>;
@@ -410,6 +415,9 @@ export const tScanTarget = z.union([
 	z.literal("finish_good"),
 	// z.literal("out_barang"),
 ]);
+
+export type TRoute = z.infer<typeof tRoute>;
+export const tRoute = z.object({route: tScanTarget});
 
 export type TDashboardTitle = z.infer<typeof tDashboardTitle>;
 export const tDashboardTitle = z

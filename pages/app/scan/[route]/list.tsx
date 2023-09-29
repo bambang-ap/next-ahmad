@@ -7,76 +7,28 @@ import {useSetRecoilState} from "recoil";
 
 import {Wrapper as Wrp, WrapperProps} from "@appComponent/Wrapper";
 import {Route} from "@appTypes/app.type";
-import {
-	Button,
-	Form,
-	Modal,
-	ModalRef,
-	TableFilterV3,
-	TableFilterV3Ref,
-	VRenderItem,
-} from "@components";
+import {Button, Form, Modal, ModalRef} from "@components";
 import {getLayout} from "@hoc";
-import {useLoader, useNewExportData} from "@hooks";
+import {useTableFilterComponent} from "@hooks";
 import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
 import {RenderData} from "@pageComponent/scan/list/RenderData";
 import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
-import type {ScanList} from "@trpc/routers/scan";
-import {modalTypeParser, transformIds} from "@utils";
+import {modalTypeParser, scanRouterParser, transformIds} from "@utils";
 import {trpc} from "@utils/trpc";
 
-ListScanData.getLayout = getLayout;
+ScanListData.getLayout = getLayout;
 export const Text = TxtBold;
-export type ScanListFormType = KanbanFormTypee;
+export type ScanListFormType = Omit<KanbanFormTypee, "idKanbans"> & {
+	idScans: MyObject<boolean>;
+};
 
-export default function ListScanData() {
-	const loader = useLoader();
-	const modalRef = useRef<ModalRef>(null);
-	const tableRef = useRef<TableFilterV3Ref>(null);
+export default function ScanListData() {
 	const setTitle = useSetRecoilState(atomHeaderTitle);
-
 	const {isReady, ...router} = useRouter();
+
 	const {route} = router.query as Route;
-
-	const {control, watch, reset} = useForm<ScanListFormType>();
-
-	const formData = watch();
-
-	const {type: modalType} = formData;
-
-	const {isPreview, isSelect, modalTitle} = modalTypeParser(modalType);
-
-	const isProduksi = route === "produksi";
-	const isQC = route === "qc";
-	const isFG = route === "finish_good";
-
-	const dateHeaderCondition = isProduksi
-		? "Produksi"
-		: isQC
-		? "QC"
-		: isFG
-		? "Finish Good"
-		: "";
-	const dateHeader = `Tanggal ${dateHeaderCondition}`;
-
-	const idKanbans = transformIds(formData.idKanbans);
-	const {exportResult} = useNewExportData(
-		() => {
-			return trpc.export.scan.useQuery(
-				{route, idKanbans},
-				{enabled: idKanbans.length > 0},
-			);
-		},
-		exportedData => exportedData,
-		[route],
-	);
-
-	function preview(id: string) {
-		reset({id, type: "preview"});
-		modalRef.current?.show();
-	}
 
 	useEffect(() => {
 		if (isReady && route) {
@@ -87,72 +39,83 @@ export default function ListScanData() {
 
 	if (!isReady) return null;
 
+	return <RenderScanList />;
+}
+
+function RenderScanList() {
+	const {...router} = useRouter();
+	const {route} = router.query as Route;
+
+	const {control, watch, reset} = useForm<ScanListFormType>();
+
+	const formData = watch();
+	const modalRef = useRef<ModalRef>(null);
+
+	const {type} = formData;
+	const {isSelect, modalTitle, isPreview} = modalTypeParser(type);
+	const {title, isQC} = scanRouterParser(route);
+
+	const dateHeader = `Tanggal ${title}`;
+	const selectedIds = transformIds(formData.idScans);
+
+	const {component, refetch} = useTableFilterComponent({
+		control,
+		reset,
+		property: "idScans",
+		header: [
+			"Tanggal",
+			"Nomor Kanban",
+			"Keterangan",
+			dateHeader,
+			!isSelect && "Action",
+		],
+		genPdfOptions: isQC
+			? {
+					splitPagePer: 4,
+					orientation: "l",
+					width: "w-[2200px]",
+					tagId: `${route}-generated`,
+					renderItem: data => (
+						<RenderPdfData className="w-1/2" data={data!} route={route} />
+					),
+					useQuery: () =>
+						trpc.print.scan.useQuery(
+							{ids: selectedIds, route},
+							{enabled: isQC && selectedIds.length > 0},
+						),
+			  }
+			: undefined,
+		exportUseQuery: () =>
+			trpc.export.scan.useQuery(
+				{route, idScans: selectedIds},
+				{enabled: selectedIds.length > 0},
+			),
+		exportRenderItem: item => item,
+		useQuery: form => trpc.scan.list.useQuery({...form, target: route}),
+		renderItem(item) {
+			return (
+				<RenderData
+					{...item}
+					route={route}
+					control={control}
+					key={item.item.id_kanban}>
+					<Button
+						icon="faMagnifyingGlass"
+						// onClick={() => preview(item.item.id_kanban)}
+					/>
+				</RenderData>
+			);
+		},
+	});
+
 	return (
 		<>
-			{loader.component}
+			{component}
 			<Modal title={modalTitle} size="xl" ref={modalRef}>
 				<Form context={{disabled: isPreview, hideButton: isPreview}}>
 					<NewKanbanModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>
-
-			<TableFilterV3
-				ref={tableRef}
-				property="idKanbans"
-				selector="id_kanban"
-				control={control}
-				reset={reset}
-				useQuery={form =>
-					trpc.scan.list.useQuery({
-						...form,
-						target: route,
-					})
-				}
-				genPdfOptions={{
-					splitPagePer: 4,
-					orientation: "l",
-					width: "w-[2200px]",
-					tagId: `${route}-generated`,
-					renderItem: ({data}) => (
-						<RenderPdfData className="w-1/2" data={data!} route={route} />
-					),
-					useQueries: () =>
-						trpc.useQueries(t =>
-							idKanbans.map(id =>
-								t.kanban.detail(id, {enabled: isQC && idKanbans.length > 0}),
-							),
-						),
-				}}
-				keyExtractor={item => item.id}
-				enabledPdf={isQC}
-				enabledExport
-				exportResult={exportResult}
-				onCancel={() =>
-					reset(prev => ({...prev, type: undefined, idKanbans: {}}))
-				}
-				header={[
-					"Tanggal",
-					"Nomor Kanban",
-					"Keterangan",
-					dateHeader,
-					!isSelect && "Action",
-				]}
-				renderItem={(item: VRenderItem<ScanList>) => {
-					return (
-						<RenderData
-							{...item}
-							control={control}
-							key={item.item.id_kanban}
-							route={route}
-							printOne={id => tableRef.current?.printData?.(id)}>
-							<Button
-								icon="faMagnifyingGlass"
-								onClick={() => preview(item.item.id_kanban)}
-							/>
-						</RenderData>
-					);
-				}}
-			/>
 		</>
 	);
 }

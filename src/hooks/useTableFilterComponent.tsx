@@ -30,7 +30,7 @@ import {TableFilter} from "../components/base/Table/TableFilter";
 type PrintData = (id: string) => void;
 type Fields = {type: ModalTypeSelect} & FieldValues;
 type G<F extends FieldValues> = Pick<CellSelectProps<F>, "fieldName">;
-type TableFilterProps<T, F extends Fields> = Omit<
+export type TableFilterProps<T, F extends Fields> = Omit<
 	TableProps<
 		T,
 		Cells & {printData: PrintData; CellSelect: (props: G<F>) => JSX.Element}
@@ -91,7 +91,7 @@ export function useTableFilterComponent<
 	} = props;
 
 	const {formValue, hookForm} = useTableFilter();
-	const {data} = useQuery(formValue);
+	const {data, refetch, isFetching} = useQuery(formValue);
 	const genPdfRef = useRef<GenPdfRef>(null);
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
@@ -151,7 +151,7 @@ export function useTableFilterComponent<
 		return <SelectCell noLabel control={control} {...cellProps} />;
 	}
 
-	return (
+	const component = (
 		<>
 			{loader.component}
 			{enabledPdf && <GeneratePdfV2 ref={genPdfRef} {...genPdfOptions} />}
@@ -159,6 +159,7 @@ export function useTableFilterComponent<
 				{...tableProps}
 				form={hookForm}
 				data={data}
+				isLoading={isFetching}
 				topComponent={topComponent}
 				renderItem={(item, i) =>
 					renderItem?.({...item, printData, CellSelect}, i)!
@@ -185,4 +186,6 @@ export function useTableFilterComponent<
 			/>
 		</>
 	);
+
+	return {component, refetch};
 }

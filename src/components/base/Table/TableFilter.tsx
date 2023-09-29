@@ -36,8 +36,6 @@ export function TableFilter<T>({
 
 	const formValue = watch();
 
-	console.log(formValue);
-
 	const searching = formValue.search && formValue.search.length > 0;
 
 	const doSearch = handleSubmit(({search}) => {

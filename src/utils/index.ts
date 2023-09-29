@@ -8,7 +8,13 @@ import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
 
-import {RouterOutput, TDecimal, UnitQty, UQtyList} from "@appTypes/app.type";
+import {
+	Route,
+	RouterOutput,
+	TDecimal,
+	UnitQty,
+	UQtyList,
+} from "@appTypes/app.type";
 import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
 	defaultErrorMutation,
@@ -20,7 +26,10 @@ import {
 	qtyList,
 } from "@constants";
 import {useLoader} from "@hooks";
-import {UseTRPCMutationOptions} from "@trpc/react-query/shared";
+import {
+	UseTRPCMutationOptions,
+	UseTRPCQueryResult,
+} from "@trpc/react-query/shared";
 
 type Qty = typeof qtyList[number];
 
@@ -185,6 +194,22 @@ export function copyToClipboard(str: string) {
 	document.execCommand("copy");
 	document.body.removeChild(el);
 	alert("Token copied");
+}
+
+export function scanRouterParser(route: Route["route"]) {
+	const isProduksi = route === "produksi";
+	const isQC = route === "qc";
+	const isFG = route === "finish_good";
+
+	const title = isProduksi
+		? "Produksi"
+		: isQC
+		? "QC"
+		: isFG
+		? "Finish Good"
+		: "";
+
+	return {isProduksi, isQC, isFG, title};
 }
 
 export function modalTypeParser(type?: ModalTypeSelect, pageName = "") {
@@ -383,6 +408,7 @@ export function mutateCallback(
 			show?.();
 		},
 		onSettled() {
+			console.log(567890);
 			hide?.();
 		},
 	} as UseTRPCMutationOptions<any, any, any>;
@@ -398,4 +424,15 @@ export function transformIds(dataObj?: MyObject<undefined | boolean>) {
 	);
 
 	return selectedIds;
+}
+
+export function nullUseQuery() {
+	type Ret = UseTRPCQueryResult<{}[], unknown>;
+
+	return {
+		data: [] as {}[],
+		refetch: noopVoid,
+		isFetching: false,
+		isFetched: true,
+	} as Ret;
 }

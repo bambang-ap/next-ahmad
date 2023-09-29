@@ -1,81 +1,72 @@
-// FIXME:
-// @ts-nocheck
-
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 
 import {
+	Route,
+	RouterOutput,
 	THardness,
 	TInstruksiKanban,
-	TKanbanUpsertItem,
 	TParameter,
 } from "@appTypes/app.type";
-import {gap, qtyList} from "@constants";
+import {gap} from "@constants";
 import {CRUD_ENABLED} from "@enum";
-import {classNames} from "@utils";
+import {classNames, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
-export function RenderItem({
-	item: [id_item, item],
-}: {
-	item: [string, TKanbanUpsertItem];
-}) {
-	const masterItem = item.OrmMasterItem;
+type Props = Route & {
+	data: RouterOutput["print"]["scan"][number];
+};
+
+export function RenderItem({data, route}: Props) {
+	const [id_item, ...item] = data[`item_${route}`]![0] ?? [];
+
+	const knbItem = data.OrmKanban.OrmKanbanItems.find(e => e.id === id_item);
+
+	const masterItem = knbItem?.OrmMasterItem;
 
 	const process = Object.values(masterItem?.instruksi ?? {})?.[0];
 	const detailProcess = process?.[0];
 
 	const {data: qrImageKanban} = trpc.qr.useQuery<any, string>(
-		{input: item.id_kanban},
-		{enabled: !!item.id_kanban},
+		{input: data.id_kanban},
+		{enabled: !!data.id_kanban},
 	);
 
-	const {data: dataKanban} = trpc.kanban.detail.useQuery(
-		item.id_kanban as string,
+	const {data: processData} = trpc.basic.get.useQuery<any, TInstruksiKanban[]>(
+		{
+			target: CRUD_ENABLED.INSTRUKSI_KANBAN,
+			where: JSON.stringify({id: process?.map(e => e.id_instruksi)}),
+		},
+		{enabled: !!detailProcess},
 	);
 
-	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({
-		type: "sppb_in",
-		where: {id: dataKanban?.id_sppb_in},
-	});
-
-	const {data: dataPo} = trpc.customer_po.get.useQuery({
-		type: "customer_po",
-		id: dataKanban?.id_po,
-	});
-
-	const {data: processData} = trpc.basic.get.useQuery<any, TInstruksiKanban[]>({
-		target: CRUD_ENABLED.INSTRUKSI_KANBAN,
-		where: JSON.stringify({id: process?.map(e => e.id_instruksi)}),
-	});
-
-	const {data: materialData} = trpc.basic.get.useQuery<any, TParameter[]>({
-		target: CRUD_ENABLED.MATERIAL,
-		where: JSON.stringify({id: detailProcess?.material} as Partial<TParameter>),
-	});
-
-	const {data: hardnessData} = trpc.basic.get.useQuery<any, THardness[]>({
-		target: CRUD_ENABLED.HARDNESS,
-		where: JSON.stringify({id: detailProcess?.hardness} as Partial<THardness>),
-	});
-
-	const selectedSppbIn = dataSppbIn?.[0];
-	const selectedSppbInItem = selectedSppbIn?.OrmCustomerPOItems?.find(
-		e => e.id === id_item,
+	const {data: materialData} = trpc.basic.get.useQuery<any, TParameter[]>(
+		{
+			target: CRUD_ENABLED.MATERIAL,
+			where: JSON.stringify({
+				id: detailProcess?.material,
+			} as Partial<TParameter>),
+		},
+		{enabled: !!detailProcess},
 	);
-	const selectedItem = dataPo?.[0]?.po_item.find(poItem => {
-		return (
-			poItem.id ===
-			selectedSppbIn?.OrmCustomerPOItems?.find(
-				sppbInItem => sppbInItem.id === item.id_item,
-			)?.id_item
-		);
-	});
+
+	const {data: hardnessData} = trpc.basic.get.useQuery<any, THardness[]>(
+		{
+			target: CRUD_ENABLED.HARDNESS,
+			where: JSON.stringify({
+				id: detailProcess?.hardness,
+			} as Partial<THardness>),
+		},
+		{enabled: !!detailProcess},
+	);
+
+	const selectedSppbInItem = knbItem?.OrmPOItemSppbIn;
+	const selectedSppbIn = selectedSppbInItem?.OrmCustomerSPPBIn;
 
 	return (
 		<>
 			<Wrapper title="Nomor Lot">{selectedSppbInItem?.lot_no}</Wrapper>
 			<Wrapper title="SPPB In">{selectedSppbIn?.nomor_surat}</Wrapper>
-			<Wrapper title="Nomor Kanban">{dataKanban?.nomor_kanban}</Wrapper>
+			<Wrapper title="Nomor Kanban">{data.OrmKanban?.nomor_kanban}</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
 			<Wrapper title="Material">
@@ -86,15 +77,14 @@ export function RenderItem({
 			</Wrapper>
 			<Wrapper title="Hardness Aktual" />
 			<Wrapper title="Jumlah">
-				{qtyList
-					.map(num => {
-						const qty = item[`qty${num}`];
-						const unit = selectedItem?.[`unit${num}`];
+				{qtyMap(({num, unitKey}) => {
+					const qty = item[num];
+					const unit = knbItem?.OrmPOItemSppbIn.OrmCustomerPOItem[unitKey];
 
-						if (!qty) return null;
+					if (!qty) return null;
 
-						return `${qty} ${unit}`;
-					})
+					return `${qty} ${unit}`;
+				})
 					.filter(Boolean)
 					.join(" | ")}
 			</Wrapper>
