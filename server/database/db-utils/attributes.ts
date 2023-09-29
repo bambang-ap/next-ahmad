@@ -2,6 +2,8 @@ import {
 	tCustomer,
 	tCustomerPO,
 	tCustomerSPPBIn,
+	tKanban,
+	tKanbanItem,
 	tMasterItem,
 	tPOItem,
 	tPOItemSppbIn,
@@ -26,4 +28,46 @@ export function sppbInGetPage() {
 	};
 
 	return {A, B, C, D, E, F, Ret: {} as Ret};
+}
+
+export function exportKanbanAttributes() {
+	const A = attrParser(tKanban, ["nomor_kanban", "keterangan"]);
+	const B = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
+	const C = attrParser(tPOItemSppbIn, ["id_item", "id"]);
+	const D = attrParser(tCustomerPO, ["nomor_po"]);
+	const E = attrParser(tCustomer, ["name"]);
+	const F = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
+	const G = attrParser(tKanbanItem, ["id_item", "qty1", "qty2", "qty3"]);
+	const H = attrParser(tMasterItem, [
+		"kode_item",
+		"name",
+		"instruksi",
+		"kategori_mesinn",
+	]);
+
+	type Ret = typeof A.obj & {
+		OrmCustomerSPPBIn: typeof B.obj & {
+			OrmPOItemSppbIns: typeof C.obj[];
+		};
+		OrmCustomerPO: typeof D.obj & {
+			OrmCustomer: typeof E.obj;
+			OrmCustomerPOItems: typeof F.obj[];
+		};
+		OrmKanbanItems: (typeof G.obj & {OrmMasterItem: typeof H.obj})[];
+	};
+
+	type Output = Record<
+		| "CUSTOMER"
+		| "NOMOR PO"
+		| "NOMOR SJ"
+		| "NOMOR KANBAN"
+		| "PART NAME"
+		| "PART NO"
+		| "QTY / JUMLAH"
+		| "PROSES"
+		| "KETERANGAN",
+		string
+	>;
+
+	return {A, B, C, D, E, F, G, H, Ret: {} as Ret, Output: {} as Output};
 }

@@ -1,16 +1,7 @@
 import {z} from "zod";
 
 import {
-	TCustomer,
-	TCustomerPO,
-	TCustomerSPPBIn,
-	TKanban,
-	TKanbanItem,
-	TMasterItem,
-	TPOItem,
-	TPOItemSppbIn,
-} from "@appTypes/app.zod";
-import {
+	exportKanbanAttributes,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -30,45 +21,39 @@ const exportKanbanRouters = {
 		.input(z.object({idKanbans: z.string().array()}))
 		.query(({ctx, input}) => {
 			const {idKanbans} = input;
+			const {A, B, C, D, E, F, G, H, Ret, Output} = exportKanbanAttributes();
 
-			type JJJ = Record<
-				| "CUSTOMER"
-				| "NOMOR PO"
-				| "NOMOR SJ"
-				| "NOMOR KANBAN"
-				| "PART NAME"
-				| "PART NO"
-				| "QTY / JUMLAH"
-				| "PROSES"
-				| "KETERANGAN",
-				string
-			>;
-			type OOO = TKanban & {
-				OrmCustomerSPPBIn: TCustomerSPPBIn & {
-					OrmPOItemSppbIns: TPOItemSppbIn[];
-				};
-				OrmCustomerPO: TCustomerPO & {
-					OrmCustomer: TCustomer;
-					OrmCustomerPOItems: TPOItem[];
-				};
-				OrmKanbanItems: (TKanbanItem & {OrmMasterItem: TMasterItem})[];
-			};
+			type JJJ = typeof Output;
 
 			return checkCredentialV2(ctx, async (): Promise<JJJ[]> => {
 				const data = await OrmKanban.findAll({
 					where: {id: idKanbans},
+					attributes: A.keys,
 					include: [
-						{model: OrmCustomerSPPBIn, include: [OrmPOItemSppbIn]},
+						{
+							model: OrmCustomerSPPBIn,
+							attributes: B.keys,
+							include: [{model: OrmPOItemSppbIn, attributes: C.keys}],
+						},
 						{
 							model: OrmCustomerPO,
-							include: [OrmCustomer, OrmCustomerPOItem],
+							attributes: D.keys,
+							include: [
+								{attributes: E.keys, model: OrmCustomer},
+								{attributes: F.keys, model: OrmCustomerPOItem},
+							],
 						},
-						{model: OrmKanbanItem, include: [OrmMasterItem]},
+						{
+							model: OrmKanbanItem,
+							attributes: G.keys,
+							include: [{model: OrmMasterItem, attributes: H.keys}],
+						},
 					],
 				});
 
 				const promisedData = data.map<Promise<JJJ>>(async ({dataValues}) => {
-					const val = dataValues as OOO;
+					// @ts-ignore
+					const val = dataValues as typeof Ret;
 
 					const item = val.OrmKanbanItems?.[0];
 					const {instruksi, kategori_mesinn, kode_item, name} =

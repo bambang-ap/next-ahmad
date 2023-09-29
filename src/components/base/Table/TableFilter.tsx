@@ -4,16 +4,8 @@ import {Pagination} from "@mui/material";
 import {useForm, UseFormReturn} from "react-hook-form";
 
 import {PagingResult, TableFormValue} from "@appTypes/app.type";
-import {
-	Button,
-	Cells,
-	Input,
-	Select,
-	SelectPropsData,
-	Table,
-	TableProps,
-} from "@components";
-import {defaultLimit} from "@constants";
+import {Button, Cells, Input, Select, Table, TableProps} from "@components";
+import {dataPerPageSelection} from "@constants";
 import {classNames} from "@utils";
 
 export type TableFilterProps<T> = Omit<
@@ -44,11 +36,9 @@ export function TableFilter<T>({
 
 	const formValue = watch();
 
+	console.log(formValue);
+
 	const searching = formValue.search && formValue.search.length > 0;
-	const selectData = Array.from({length: 10}).map<SelectPropsData>((_, i) => ({
-		// @ts-ignore
-		value: (i + 1) * defaultLimit,
-	}));
 
 	const doSearch = handleSubmit(({search}) => {
 		resetForm(prev => ({...prev, search}));
@@ -82,8 +72,9 @@ export function TableFilter<T>({
 						<Select
 							className={classNames({["flex-1"]: disableSearch})}
 							disableClear
+							topSelected={false}
 							label="Data per halaman"
-							data={selectData}
+							data={dataPerPageSelection}
 							control={control}
 							fieldName="limit"
 						/>

@@ -128,8 +128,6 @@ export default function Kanban() {
 
 		await exportResult();
 		reset(prev => ({...prev, type: undefined}));
-		await sleep(2500);
-		reset(prev => ({...prev, idKanbans: {}}));
 	}
 
 	async function printData(

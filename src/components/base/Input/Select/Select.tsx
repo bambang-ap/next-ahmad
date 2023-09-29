@@ -17,7 +17,7 @@ import {classNames} from "@utils";
 
 import {InputComponent} from "..";
 
-export type SelectPropsData<T extends string = string> = {
+export type SelectPropsData<T extends number | string = string> = {
 	label?: string;
 	value: T;
 };
@@ -25,11 +25,12 @@ export type SelectPropsData<T extends string = string> = {
 export type SelectProps = {
 	firstOption?: string;
 	disabled?: boolean;
-	data?: SelectPropsData[];
+	data?: SelectPropsData<string | number>[];
 	label?: string;
 	noLabel?: boolean;
 	disableClear?: boolean;
 	isLoading?: boolean;
+	topSelected?: boolean;
 };
 
 export const Select = withReactFormController(SelectComponent);
@@ -76,6 +77,7 @@ function SelectComponent<F extends FieldValues>({
 	firstOption,
 	className,
 	isLoading = false,
+	topSelected = true,
 	noLabel,
 	label: labelProps,
 }: ControlledComponentProps<F, SelectProps>) {
@@ -90,9 +92,10 @@ function SelectComponent<F extends FieldValues>({
 
 	const isDisabled = formContext?.disabled || disabled;
 	const selectedValue = data.find(e => e.value === value);
-	const filteredData = selectedValue?.value
-		? [selectedValue, ...data.filter(e => e.value !== selectedValue.value)]
-		: data;
+	const filteredData =
+		topSelected && selectedValue?.value
+			? [selectedValue, ...data.filter(e => e.value !== selectedValue.value)]
+			: data;
 
 	const isLoadingText = !isLoading
 		? ""
@@ -125,7 +128,7 @@ function SelectComponent<F extends FieldValues>({
 				onChange={(_, option) => onChange(option?.value)}
 				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}
 				getOptionLabel={({value: optionValue, label: optionLabel}) =>
-					optionLabel || optionValue
+					optionLabel || (optionValue as string)
 				}
 				renderOption={(props, option) => {
 					const isSelected = selectedValue?.value === option.value;

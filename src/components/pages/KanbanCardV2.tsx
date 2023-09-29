@@ -1,5 +1,6 @@
 import {RouterOutput} from "@appTypes/app.type";
 import {BorderTd, Text as Txt, TextProps} from "@components";
+import {nonRequiredRefetch} from "@constants";
 import {DataProcess} from "@trpc/routers/kanban/get";
 import {classNames, dateUtils, moment} from "@utils";
 import {trpc} from "@utils/trpc";
@@ -39,10 +40,13 @@ export function RenderKanbanCardV2(props: AProps) {
 	const processes = OrmMasterItem?.instruksi;
 	const selectedMesin = list_mesin?.[id_item];
 
-	const {data: dataMesinProcess} = trpc.kanban.mesinProcess.useQuery({
-		process: processes,
-		selectedMesin,
-	});
+	const {data: dataMesinProcess} = trpc.kanban.mesinProcess.useQuery(
+		{
+			process: processes,
+			selectedMesin,
+		},
+		nonRequiredRefetch,
+	);
 
 	const borderClassName = "border-black border-b-2 -mx-2 px-2 pb-2";
 	const itemSppbIn = OrmPOItemSppbIn;

@@ -44,6 +44,14 @@ export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
 	}),
 );
 
+export const dataPerPageSelection: SelectPropsData<number>[] = [
+	{value: 5},
+	{value: 10},
+	{value: 20},
+	{value: 30},
+	{value: 50},
+];
+
 export const Success = {message: "Success"};
 
 export const isProd = process.env.NODE_ENV === "production";
