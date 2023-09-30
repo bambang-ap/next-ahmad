@@ -33,7 +33,7 @@ function MultipleSelectComponent<F extends FieldValues>({
 		field: {value: val = [], onChange, name},
 	} = controller;
 
-	const value = val as string[];
+	const value = val as (string | number)[];
 	const label = !noLabel && (labelProps || name);
 
 	const isDisabled = formContext?.disabled ?? disabled;
@@ -43,7 +43,7 @@ function MultipleSelectComponent<F extends FieldValues>({
 	const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
 	const checkedIcon = <CheckBoxIcon fontSize="small" />;
 
-	function onClick(option: SelectPropsData) {
+	function onClick(option: SelectPropsData<string | number>) {
 		onChange(
 			selectedValues.includes(option.value)
 				? selectedValues.filter(e => e !== option.value)
@@ -76,7 +76,7 @@ function MultipleSelectComponent<F extends FieldValues>({
 				value={selectedValue}
 				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}
 				getOptionLabel={({value: optionValue, label: optionLabel}) =>
-					optionLabel || optionValue
+					optionLabel || (optionValue as string)
 				}
 				renderTags={(tagValue, getTagProps) =>
 					tagValue.map((option, index) => (

@@ -173,10 +173,10 @@ export default function SPPBOUT() {
 				tagId="kanban-data-print"
 				splitPagePer={1}
 				useQuery={() => trpc.print.sppb.out.useQuery({id: selectedIdSppbIns})}
-				renderItem={data => {
+				renderItem={pdfData => {
 					return (
 						<>
-							<SPPBOutGenerateQR detail={data} width={widthSize} />
+							<SPPBOutGenerateQR detail={pdfData} width={widthSize} />
 						</>
 					);
 				}}

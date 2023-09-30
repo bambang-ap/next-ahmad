@@ -21,7 +21,7 @@ import {trpc} from "@utils/trpc";
 ScanListData.getLayout = getLayout;
 export const Text = TxtBold;
 export type ScanListFormType = Omit<KanbanFormTypee, "idKanbans"> & {
-	idScans: MyObject<boolean>;
+	idScans?: MyObject<boolean>;
 };
 
 export default function ScanListData() {
@@ -58,7 +58,7 @@ function RenderScanList() {
 	const dateHeader = `Tanggal ${title}`;
 	const selectedIds = transformIds(formData.idScans);
 
-	const {component, refetch} = useTableFilterComponent({
+	const {component} = useTableFilterComponent({
 		control,
 		reset,
 		property: "idScans",
