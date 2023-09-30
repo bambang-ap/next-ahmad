@@ -1,6 +1,7 @@
 import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
+	tRoute,
 	tScan,
 	TScanDate,
 	tScanItem,
@@ -11,10 +12,18 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	getScanAttributes,
+	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
 	OrmKanban,
 	OrmKanbanItem,
+	OrmMasterItem,
+	OrmPOItemSppbIn,
 	OrmScan,
 	OrmScanOrder as scanOrder,
+	OrmUser,
 	scanListAttributes,
 } from "@database";
 import {CATEGORY_REJECT_DB} from "@enum";
@@ -25,6 +34,7 @@ import {TRPCError} from "@trpc/server";
 import {moment, qtyMap} from "@utils";
 
 export type ScanList = ReturnType<typeof scanListAttributes>["Ret"];
+export type ScanGet = ReturnType<typeof getScanAttributes>["Ret"];
 type ListResult = PagingResult<ScanList>;
 
 function enabled(target: TScanTarget, dataScan?: TScan) {
@@ -76,6 +86,59 @@ const scanRouters = router({
 				return pagingResult(count, page, limit, allDataScan);
 			});
 		}),
+	getV2: procedure.input(zId.extend(tRoute.shape)).query(({ctx, input}) => {
+		const {id: id_kanban, route} = input;
+
+		const {A, B, C, D, E, F, G, H, I, J, Ret} = getScanAttributes(route);
+
+		return checkCredentialV2(ctx, async () => {
+			const data = await OrmScan.findOne({
+				where: {id_kanban},
+				attributes: A.keys,
+				logging: true,
+				include: [
+					{
+						model: OrmKanban,
+						attributes: B.keys,
+						include: [
+							{
+								model: OrmUser,
+								as: OrmKanban._aliasCreatedBy,
+								attributes: C.keys,
+							},
+							{
+								model: OrmCustomerSPPBIn,
+								attributes: F.keys,
+								include: [
+									{
+										model: OrmCustomerPO,
+										attributes: D.keys,
+										include: [{model: OrmCustomer, attributes: E.keys}],
+									},
+								],
+							},
+							{
+								separate: true,
+								attributes: G.keys,
+								model: OrmKanbanItem,
+								include: [
+									{model: OrmMasterItem, attributes: J.keys},
+									{
+										model: OrmPOItemSppbIn,
+										attributes: H.keys,
+										include: [{model: OrmCustomerPOItem, attributes: I.keys}],
+									},
+								],
+							},
+						],
+					},
+				],
+			});
+
+			// @ts-ignore
+			return data?.dataValues as typeof Ret;
+		});
+	}),
 	get: procedure
 		.input(zId.extend({target: tScanTarget}))
 		.query(async ({input: {id, target}, ctx: {req, res}}) => {

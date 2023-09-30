@@ -10,8 +10,10 @@ import {
 	tPOItemSppbIn,
 	TScan,
 	tScan,
+	tUser,
 } from "@appTypes/app.zod";
 
+import {OrmKanban} from "../models/kanban";
 import {attrParser, NumberOrderAttribute} from "./";
 
 export function sppbInGetPage() {
@@ -172,4 +174,46 @@ export function printScanAttributes(route: TScanTarget) {
 	};
 
 	return {A, B, C, D, E, F, G, H, I, Ret: {} as Ret};
+}
+
+export function getScanAttributes(route: TScanTarget) {
+	const A = attrParser(tScan, [
+		"lot_no_imi",
+		"item_qc_reject",
+		"item_qc_reject_category",
+		"notes",
+		"item_from_kanban",
+		`item_${route}`,
+		`status_${route}`,
+	]);
+	const B = attrParser(tKanban, [
+		"id",
+		"nomor_kanban",
+		"keterangan",
+		"list_mesin",
+		"createdAt",
+	]);
+	const C = attrParser(tUser, ["name"]);
+	const D = attrParser(tCustomerPO, ["nomor_po"]);
+	const E = attrParser(tCustomer, ["name"]);
+	const F = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
+	const G = attrParser(tKanbanItem, ["id_item", "id", "qty1", "qty2", "qty3"]);
+	const H = attrParser(tPOItemSppbIn, ["id"]);
+	const I = attrParser(tPOItem);
+	const J = attrParser(tMasterItem, ["kode_item", "name"]);
+
+	type Ret = typeof A.obj & {
+		OrmKanban: typeof B.obj & {
+			[OrmKanban._aliasCreatedBy]: typeof C.obj;
+			OrmCustomerSPPBIn: typeof F.obj & {
+				OrmCustomerPO: typeof D.obj & {OrmCustomer: typeof E.obj};
+			};
+			OrmKanbanItems: (typeof G.obj & {
+				OrmMasterItem: typeof J.obj;
+				OrmPOItemSppbIn: typeof H & {OrmCustomerPOItem: typeof I.obj};
+			})[];
+		};
+	};
+
+	return {A, B, C, D, E, F, G, H, I, J, Ret: {} as Ret};
 }

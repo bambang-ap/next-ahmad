@@ -4,16 +4,12 @@ import {KanbanFormType} from "pages/app/kanban";
 import {FormTypeScan} from "pages/app/scan/[route]";
 import {Control, useForm, useWatch} from "react-hook-form";
 
-import {
-	KanbanGetRow,
-	RouterOutput,
-	TPOItem,
-	TScanTarget,
-} from "@appTypes/app.type";
+import {KanbanGetRow, TPOItem, TScanTarget} from "@appTypes/app.type";
 import {eCategoryReject} from "@appTypes/app.zod";
 import {Input, Select, SelectPropsData, Text} from "@components";
 import {CATEGORY_REJECT, CATEGORY_REJECT_DB} from "@enum";
 import {useSession} from "@hooks";
+import type {ScanGet} from "@trpc/routers/scan";
 import {
 	dateUtils,
 	prevDataScan,
@@ -28,8 +24,8 @@ import {RenderMesin} from "./kanban_ModalChild/RenderMesin";
 export function ScanDetailKanban({
 	route,
 	control,
-	...kanban
-}: RouterOutput["kanban"]["get"][number] & {
+	...dataScan
+}: ScanGet & {
 	route: TScanTarget;
 	status?: boolean;
 	control: Control<FormTypeScan>;
@@ -38,6 +34,8 @@ export function ScanDetailKanban({
 	const categoryReject = Object.values(eCategoryReject.enum).map<
 		SelectPropsData<CATEGORY_REJECT_DB>
 	>(value => ({value, label: CATEGORY_REJECT[value]}));
+
+	const {OrmKanban: kanban} = dataScan;
 
 	const {data} = useSession();
 	const {mutate: editNotes} = trpc.scan.editNotes.useMutation();
@@ -59,25 +57,25 @@ export function ScanDetailKanban({
 	return (
 		<div className="bg-slate-700 p-[1px] flex flex-col gap-[1px]">
 			<div className="bg-white">
-				date kanban : {dateUtils.full(kanban.createdAt)}
+				date kanban : {dateUtils.full(kanban?.createdAt)}
 			</div>
 			<div className="flex gap-[1px]">
 				<div className="flex-1 bg-white text-center">
 					current : {data?.user?.name}
 				</div>
 				<div className="flex-1 bg-white text-center">
-					created by : {kanban.dataCreatedBy?.name}
+					created by : {kanban?.dataCreatedBy?.name}
 				</div>
 				<div className="flex-1 bg-white text-center">
-					customer : {kanban.OrmCustomerPO?.OrmCustomer.name}
+					customer : {kanban.OrmCustomerSPPBIn.OrmCustomerPO?.OrmCustomer.name}
 				</div>
 			</div>
 			<div className="flex gap-[1px]">
 				<div className="flex-1 bg-white text-center">
-					nomor po : {kanban.OrmCustomerPO?.nomor_po}
+					nomor po : {kanban.OrmCustomerSPPBIn.OrmCustomerPO?.nomor_po}
 				</div>
 				<div className="flex-1 bg-white text-center">
-					nomor surat : {kanban.dataSppbIn?.nomor_surat}
+					nomor surat : {kanban.OrmCustomerSPPBIn?.nomor_surat}
 				</div>
 			</div>
 			<div className="flex gap-[1px]">
@@ -107,13 +105,10 @@ export function ScanDetailKanban({
 				)}
 			</div>
 
-			{Object.entries(kanban.items).map(([id_item, item], i) => {
-				const detail = kanban.dataSppbIn?.OrmPOItemSppbIns.find(
-					e => e.id === id_item,
-				)?.OrmCustomerPOItem;
-
-				// eslint-disable-next-line @typescript-eslint/no-shadow
-				const jj = dataPrev?.find(([id]) => id === item.id);
+			{kanban.OrmKanbanItems.map((item, i) => {
+				const detail = item.OrmPOItemSppbIn.OrmCustomerPOItem;
+				const id_item = item.id_item;
+				const jj = dataPrev?.find(([kanbanItemId]) => kanbanItemId === item.id);
 
 				return (
 					<div key={id_item}>
@@ -154,7 +149,7 @@ export function ScanDetailKanban({
 								{qtyMap(({qtyKey, unitKey, num}) => {
 									const jumlah =
 										(isProduksi
-											? kanban.dataScan?.item_from_kanban?.[item?.id!]?.[qtyKey]
+											? dataScan?.item_from_kanban?.[item?.id!]?.[qtyKey]
 											: undefined) ??
 										jj?.[num] ??
 										item[qtyKey];

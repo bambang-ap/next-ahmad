@@ -4,7 +4,6 @@ import {useRouter} from "next/router";
 import {Control, useForm} from "react-hook-form";
 import {useRecoilState} from "recoil";
 
-import {TDataScan} from "@appTypes/app.type";
 import {TScan, TScanItem, TScanTarget, ZId} from "@appTypes/app.zod";
 import {ScanIds} from "@appTypes/props.type";
 import {Scanner} from "@componentBlocks";
@@ -14,6 +13,7 @@ import {useLoader} from "@hooks";
 import {ScanDetailKanban} from "@pageComponent/scan_GenerateQR";
 import Scrollbar from "@prevComp/Scrollbar";
 import {selectorScanIds} from "@recoil/selectors";
+import type {ScanGet} from "@trpc/routers/scan";
 import {scanMapperByStatus} from "@utils";
 import {StorageScan} from "@utils/storage";
 import {trpc} from "@utils/trpc";
@@ -92,8 +92,8 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 	const currentKey = `status_${route}` as const;
 	const [, , submitText] = scanMapperByStatus(route);
 
-	const {data, refetch, isRefetching} = trpc.scan.get.useQuery(
-		{id, target: route},
+	const {data, refetch, isRefetching} = trpc.scan.getV2.useQuery(
+		{id, route},
 		{enabled: !!id},
 	);
 
@@ -214,27 +214,15 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 }
 
 function RenderDataKanban(
-	kanban: TDataScan & Route & {control: Control<FormTypeScan>},
+	scanData: ScanGet & Route & {control: Control<FormTypeScan>},
 ) {
-	const {dataKanban, route, control, ...rest} = kanban;
-
-	const [kanbans] = dataKanban ?? [];
+	const {OrmKanban: dataKanban, route, ...rest} = scanData;
 
 	const currentKey = `status_${route}` as const;
 
 	const currentStatus = rest[currentKey];
 
-	if (!kanbans) return null;
+	if (!dataKanban) return null;
 
-	return (
-		<>
-			{currentStatus}
-			<ScanDetailKanban
-				route={route}
-				control={control}
-				status={currentStatus}
-				{...kanbans}
-			/>
-		</>
-	);
+	return <ScanDetailKanban {...scanData} status={currentStatus} />;
 }
