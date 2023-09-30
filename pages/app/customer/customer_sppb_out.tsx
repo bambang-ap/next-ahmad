@@ -4,23 +4,18 @@ import {FormEventHandler, useRef} from "react";
 import {MutateOptions} from "@tanstack/react-query";
 import {useForm} from "react-hook-form";
 
-import {GenPdfRef, SelectAllButton} from "@appComponent/GeneratePdf";
-import {GeneratePdfV2} from "@appComponent/GeneratePdfV2";
 import {ModalTypeSelect, TCustomerSPPBOutUpsert} from "@appTypes/app.type";
-import {
-	Button,
-	CellSelect,
-	Form,
-	Modal,
-	ModalRef,
-	TableFilter,
-	TableProps,
-} from "@components";
+import {Button, Form, Modal, ModalRef} from "@components";
 import {getLayout} from "@hoc";
-import {useLoader, useNewExportData, useSppbOut, useTableFilter} from "@hooks";
+import {useTableFilterComponent} from "@hooks";
 import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
 import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
-import {modalTypeParser, sleep} from "@utils";
+import {
+	modalTypeParser,
+	nullRenderItem,
+	nullUseQuery,
+	transformIds,
+} from "@utils";
 import {trpc} from "@utils/trpc";
 
 SPPBOUT.getLayout = getLayout;
@@ -30,85 +25,86 @@ export type FormValue = {
 	idSppbOuts?: MyObject<boolean>;
 } & TCustomerSPPBOutUpsert;
 
+const widthSize = 1100;
+
 export default function SPPBOUT() {
-	const {dataKendaraan, dataCustomer} = useSppbOut();
-	const {mutateOpts, ...loader} = useLoader();
-
-	const modalRef = useRef<ModalRef>(null);
-	const genPdfRef = useRef<GenPdfRef>(null);
-
-	const {formValue, hookForm} = useTableFilter({limit: 5});
-	const {control, watch, reset, handleSubmit, clearErrors} =
+	const {control, reset, watch, clearErrors, handleSubmit} =
 		useForm<FormValue>();
-	const {mutate: mutateUpsert} = trpc.sppb.out.upsert.useMutation(mutateOpts);
-	const {mutate: mutateDelete} = trpc.sppb.out.delete.useMutation(mutateOpts);
-	const {data, refetch} = trpc.sppb.out.get.useQuery(formValue);
 
 	const dataForm = watch();
+	const modalRef = useRef<ModalRef>(null);
 
-	const {type: modalType, idSppbOuts: idSppbIns} = dataForm;
+	const {type: modalType} = dataForm;
 
-	const {isPreview, modalTitle, isAdd, isEdit, isSelect} = modalTypeParser(
+	const {isSelect, isAdd, isEdit, isPreview, modalTitle} = modalTypeParser(
 		modalType,
-		"SPPB Out",
+		"Surat Jalan Keluar",
 	);
 
-	const widthSize = 1100;
-	const selectedIdSppbIns = Object.entries(idSppbIns ?? {}).reduce<string[]>(
-		(ret, [id, val]) => {
-			if (val) ret.push(id);
-			return ret;
+	const selectedIds = transformIds(dataForm.idSppbOuts);
+
+	const {component, mutateOpts, refetch} = useTableFilterComponent({
+		reset,
+		control,
+		property: "idSppbOuts",
+		exportUseQuery: nullUseQuery,
+		exportRenderItem: nullRenderItem,
+		header: [
+			"Nomor Surat",
+			"Kendaraan",
+			"Customer",
+			"Keterangan",
+			!isSelect && "Action",
+		],
+		genPdfOptions: {
+			width: `w-[${widthSize}px]`,
+			tagId: "kanban-data-print",
+			splitPagePer: 1,
+			useQuery: () =>
+				trpc.print.sppb.out.useQuery(
+					{id: selectedIds},
+					{enabled: selectedIds.length > 0},
+				),
+			renderItem: pdfData => {
+				return <SPPBOutGenerateQR detail={pdfData} width={widthSize} />;
+			},
 		},
-		[],
-	);
+		useQuery: form => trpc.sppb.out.get.useQuery(form),
+		renderItem({Cell, CellSelect, item}) {
+			const {id} = item;
 
-	const tableHeader: TableProps["header"] = [
-		isSelect && (
-			<SelectAllButton
-				form={dataForm}
-				property="idSppbOuts"
-				key="btnSelectAll"
-				data={data?.rows}
-				onClick={prev => reset(prev)}
-				selected={selectedIdSppbIns.length}
-				total={data?.rows.length}
-			/>
-		),
-		"Nomor Surat",
-		"Kendaraan",
-		"Customer",
-		"Keterangan",
-		!isSelect && "Action",
-	];
+			return (
+				<>
+					<CellSelect fieldName={`idSppbOuts.${id}`} />
+					<Cell>{item.invoice_no}</Cell>
+					<Cell>{item.OrmKendaraan?.name}</Cell>
+					<Cell>{item.OrmCustomer?.name}</Cell>
+					<Cell>{item.keterangan}</Cell>
 
-	const {exportResult} = useNewExportData(
-		() =>
-			trpc.export.sppb.out.useQuery(
-				{id: selectedIdSppbIns},
-				{enabled: selectedIdSppbIns.length > 0},
-			),
-		exportedData => exportedData,
-	);
+					{!isSelect && (
+						<Cell className="flex gap-2">
+							{/* <Button icon="faPrint" onClick={() => printData(id)} /> */}
+							<Button
+								icon="faMagnifyingGlass"
+								onClick={() => showModal({...item, type: "preview"})}
+							/>
+							<Button
+								onClick={() => showModal({...item, type: "edit"})}
+								icon="faEdit"
+							/>
+							<Button
+								onClick={() => showModal({id, type: "delete"})}
+								icon="faTrash"
+							/>
+						</Cell>
+					)}
+				</>
+			);
+		},
+	});
 
-	const topComponent = isSelect ? (
-		<>
-			<Button onClick={() => printData(true)}>Print</Button>
-			<Button onClick={() => exportData()}>Export</Button>
-			<Button
-				onClick={() =>
-					reset(prev => ({...prev, type: undefined, idKanbans: {}}))
-				}>
-				Batal
-			</Button>
-		</>
-	) : (
-		<>
-			<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
-				Select
-			</Button>
-			<Button onClick={() => showModal({type: "add"})}>Add</Button>
-		</>
-	);
+	const {mutate: mutateUpsert} = trpc.sppb.out.upsert.useMutation(mutateOpts);
+	const {mutate: mutateDelete} = trpc.sppb.out.delete.useMutation(mutateOpts);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -131,57 +127,9 @@ export default function SPPBOUT() {
 		modalRef.current?.show();
 	}
 
-	async function exportData() {
-		if (selectedIdSppbIns.length <= 0) {
-			return alert("Silahkan pilih data terlebih dahulu");
-		}
-
-		exportResult();
-		reset(prev => ({...prev, type: undefined}));
-		await sleep(2500);
-		reset(prev => ({...prev, idSppbIns: {}}));
-	}
-
-	async function printData(
-		idOrAll: true | string,
-		sppbOutIds = selectedIdSppbIns,
-	): Promise<any> {
-		loader?.show?.();
-		if (typeof idOrAll === "string") {
-			reset(prev => ({...prev, idSppbOuts: {[idOrAll]: true}}));
-			return printData(true, [idOrAll]);
-		} else {
-			if (sppbOutIds.length <= 0) {
-				loader?.hide?.();
-				return alert("Silahkan pilih data terlebih dahulu");
-			}
-		}
-
-		await genPdfRef.current?.generate();
-		refetch();
-		loader?.hide?.();
-		reset(prev => ({...prev, type: undefined}));
-	}
-
 	return (
 		<>
-			{loader.component}
-			<GeneratePdfV2
-				// TODO: multiple print sppb out orientation error
-				width={`w-[${widthSize}px]`}
-				ref={genPdfRef}
-				tagId="kanban-data-print"
-				splitPagePer={1}
-				useQuery={() => trpc.print.sppb.out.useQuery({id: selectedIdSppbIns})}
-				renderItem={pdfData => {
-					return (
-						<>
-							<SPPBOutGenerateQR detail={pdfData} width={widthSize} />
-						</>
-					);
-				}}
-			/>
-
+			{component}
 			<Modal size="xl" title={modalTitle} ref={modalRef}>
 				<Form
 					onSubmit={submit}
@@ -192,52 +140,6 @@ export default function SPPBOUT() {
 					{(isAdd || isEdit) && <Button type="submit">Submit</Button>}
 				</Form>
 			</Modal>
-
-			<TableFilter
-				data={data}
-				form={hookForm}
-				header={tableHeader}
-				keyExtractor={item => item.id}
-				topComponent={topComponent}
-				renderItem={({Cell, item}) => {
-					const {id, id_kendaraan, id_customer} = item;
-					const kendaraan = dataKendaraan.find(e => e.id === id_kendaraan);
-					const customer = dataCustomer.find(e => e.id === id_customer);
-					return (
-						<>
-							{isSelect && (
-								<CellSelect
-									noLabel
-									control={control}
-									fieldName={`idSppbOuts.${id}`}
-								/>
-							)}
-							<Cell>{item.invoice_no}</Cell>
-							<Cell>{kendaraan?.name}</Cell>
-							<Cell>{customer?.name}</Cell>
-							<Cell>{item.keterangan}</Cell>
-
-							{!isSelect && (
-								<Cell className="flex gap-2">
-									<Button icon="faPrint" onClick={() => printData(id)} />
-									<Button
-										icon="faMagnifyingGlass"
-										onClick={() => showModal({...item, type: "preview"})}
-									/>
-									<Button
-										onClick={() => showModal({...item, type: "edit"})}
-										icon="faEdit"
-									/>
-									<Button
-										onClick={() => showModal({id, type: "delete"})}
-										icon="faTrash"
-									/>
-								</Cell>
-							)}
-						</>
-					);
-				}}
-			/>
 		</>
 	);
 }

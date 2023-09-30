@@ -244,6 +244,37 @@ export function poGetAttributes() {
 	return {A, B, C, D, Ret: {} as Ret};
 }
 
+export function sppbOutGetAttributes() {
+	const A = attrParser(tCustomerSPPBOutItem, [
+		"id",
+		"id_item",
+		"qty1",
+		"qty2",
+		"qty3",
+	]);
+	const B = attrParser(tCustomerSPPBOut);
+	const C = attrParser(tPOItemSppbIn, [
+		"id_item",
+		"id_sppb_in",
+		"master_item_id",
+	]);
+	const D = attrParser(tCustomerSPPBIn, ["id_po"]);
+	const E = attrParser(tCustomer, ["name"]);
+	const F = attrParser(tKendaraan, ["name"]);
+
+	type Ret = typeof B.obj & {
+		OrmCustomer: typeof E.obj;
+		OrmKendaraan: typeof F.obj;
+		OrmCustomerSPPBOutItems: (typeof A.obj & {
+			OrmPOItemSppbIn: typeof C.obj & {
+				OrmCustomerSPPBIn: typeof D.obj;
+			};
+		})[];
+	};
+
+	return {A, B, C, D, E, F, Ret: {} as Ret};
+}
+
 export function printSppbOutAttributes() {
 	const A = attrParser(tCustomerSPPBOut, [
 		"id",
@@ -292,4 +323,36 @@ export function printSppbOutAttributes() {
 	};
 
 	return {A, B, C, D, E, F, G, H, I, J, K, L, Ret: {} as Ret};
+}
+
+export function sppbOutGetPoAttributes() {
+	const A = attrParser(tKanban, ["id"]);
+	const B = attrParser(tCustomerSPPBIn);
+	const C = attrParser(tCustomerPO);
+	const D = attrParser(tScan, [
+		"item_finish_good",
+		"status_finish_good",
+		"lot_no_imi",
+	]);
+	const E = attrParser(tPOItemSppbIn, ["id", "qty1", "qty2", "qty3", "lot_no"]);
+	const F = attrParser(tCustomerSPPBOutItem, ["id", "qty1", "qty2", "qty3"]);
+	const G = attrParser(tMasterItem, ["name", "kode_item", "id"]);
+	const H = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
+	const I = attrParser(tKanbanItem, ["id", "qty1", "qty2", "qty3"]);
+
+	type Ret = typeof C.obj & {
+		OrmCustomerSPPBIns: (typeof B.obj & {
+			OrmKanbans: (typeof A.obj & {
+				OrmScans: typeof D.obj[];
+			})[];
+			OrmPOItemSppbIns: (typeof E.obj & {
+				OrmCustomerPOItem: typeof H.obj;
+				OrmMasterItem: typeof G.obj;
+				OrmKanbanItems: typeof I.obj[];
+				OrmCustomerSPPBOutItems: (typeof F.obj & {})[];
+			})[];
+		})[];
+	};
+
+	return {A, B, C, D, E, F, G, H, I, Ret: {} as Ret};
 }

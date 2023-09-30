@@ -7,24 +7,13 @@ import {
 } from "@appTypes/app.type";
 import {
 	tableFormValue,
-	tCustomer,
-	tCustomerPO,
-	tCustomerSPPBIn,
 	tCustomerSPPBOut,
-	tCustomerSPPBOutItem,
 	tCustomerSPPBOutUpsert,
-	tKanban,
-	tKanbanItem,
-	tMasterItem,
-	tPOItem,
-	tPOItemSppbIn,
-	tScan,
 	TScan,
 	zId,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
-	attrParser,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -33,9 +22,12 @@ import {
 	OrmCustomerSPPBOutItem,
 	OrmKanban,
 	OrmKanbanItem,
+	OrmKendaraan,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
+	sppbOutGetAttributes,
+	sppbOutGetPoAttributes,
 	wherePagesV2,
 } from "@database";
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
@@ -56,44 +48,10 @@ const sppbOutRouters = router({
 	getPO: procedure
 		.input(tCustomerSPPBOut.pick({id_customer: true}).partial())
 		.query(({ctx, input: {id_customer}}) => {
-			const A = attrParser(tKanban, ["id"]);
-			const B = attrParser(tCustomerSPPBIn);
-			const C = attrParser(tCustomerPO);
-			const D = attrParser(tScan, [
-				"item_finish_good",
-				"status_finish_good",
-				"lot_no_imi",
-			]);
-			const E = attrParser(tPOItemSppbIn, [
-				"id",
-				"qty1",
-				"qty2",
-				"qty3",
-				"lot_no",
-			]);
-			const F = attrParser(tCustomerSPPBOutItem, [
-				"id",
-				"qty1",
-				"qty2",
-				"qty3",
-			]);
-			const G = attrParser(tMasterItem, ["name", "kode_item", "id"]);
-			const H = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
-			const I = attrParser(tKanbanItem, ["id", "qty1", "qty2", "qty3"]);
+			type UU = typeof Ret;
 
-			type UU = typeof C.obj & {
-				OrmCustomerSPPBIns: (typeof B.obj & {
-					OrmKanbans: (typeof A.obj & {
-						OrmScans: typeof D.obj[];
-					})[];
-					OrmPOItemSppbIns: (typeof E.obj & {
-						OrmCustomerPOItem: typeof H.obj;
-						OrmMasterItem: typeof G.obj;
-						OrmKanbanItems: typeof I.obj[];
-						OrmCustomerSPPBOutItems: (typeof F.obj & {})[];
-					})[];
-				})[];
-			};
+			const {A, B, C, D, E, F, G, H, I, Ret} = sppbOutGetPoAttributes();
+
 			return checkCredentialV2(ctx, async () => {
 				const dataPO = await OrmCustomerPO.findAll({
 					attributes: C.keys,
@@ -145,39 +103,28 @@ const sppbOutRouters = router({
 		),
 	),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, search = ""} = input;
-		const A = attrParser(tCustomerSPPBOutItem, [
-			"id",
-			"id_item",
-			"qty1",
-			"qty2",
-			"qty3",
-		]);
-		const B = attrParser(tCustomerSPPBOut);
-		const C = attrParser(tPOItemSppbIn, [
-			"id_item",
-			"id_sppb_in",
-			"master_item_id",
-		]);
-		const D = attrParser(tCustomerSPPBIn, ["id_po"]);
-		const E = attrParser(tCustomer, ["name"]);
+		const {limit, page, search} = input;
+		const {A, B, C, D, E, F, Ret} = sppbOutGetAttributes();
 
-		type Ret = typeof B.obj & {
-			OrmCustomer: typeof E.obj;
-			OrmCustomerSPPBOutItems: (typeof A.obj & {
-				OrmPOItemSppbIn: typeof C.obj & {
-					OrmCustomerSPPBIn: typeof D.obj;
-				};
-			})[];
-		};
+		type RetType = typeof Ret;
 
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
 				limit,
+				logging: true,
 				offset: (page - 1) * limit,
-				where: wherePagesV2<Ret>(["invoice_no", "$OrmCustomer.name$"], search),
+				where: wherePagesV2<RetType>(
+					[
+						"invoice_no",
+						"keterangan",
+						"$OrmCustomer.name$",
+						"$OrmKendaraan.name$",
+					],
+					search,
+				),
 				attributes: B.keys,
 				include: [
+					{model: OrmKendaraan, attributes: F.keys},
 					{model: OrmCustomer, attributes: E.keys},
 					{
 						model: OrmCustomerSPPBOutItem,
@@ -197,16 +144,17 @@ const sppbOutRouters = router({
 			// @ts-ignore
 			const allDataSppbIn = data.map<TCustomerSPPBOutUpsert>(e => {
 				// @ts-ignore
-				const {OrmCustomerSPPBOutItems, ...rest} = e.dataValues as Ret;
+				const {OrmCustomerSPPBOutItems, ...rest} = e.dataValues as RetType;
 				const po = OrmCustomerSPPBOutItems.reduce<TCustomerSPPBOutUpsert["po"]>(
 					(ret, cure) => {
-						const {OrmPOItemSppbIn, id_item, ...cur} =
+						// @ts-ignore
+						const {OrmPOItemSppbIn: sppbinItem, id_item, ...cur} =
 							// @ts-ignore
-							cure?.dataValues as Ret["OrmCustomerSPPBOutItems"][number];
-						const id_po = OrmPOItemSppbIn.OrmCustomerSPPBIn.id_po;
-						const id_sppb_in = OrmPOItemSppbIn.id_sppb_in;
+							cure?.dataValues as RetType["OrmCustomerSPPBOutItems"][number];
+						const id_po = sppbinItem.OrmCustomerSPPBIn.id_po;
+						const id_sppb_in = sppbinItem.id_sppb_in;
 
-						const iPo = ret.findIndex(e => e.id_po === id_po);
+						const iPo = ret.findIndex(itm => itm.id_po === id_po);
 
 						if (iPo >= 0) {
 							const iSppbIn = ret[iPo]!.sppb_in.findIndex(
@@ -226,8 +174,8 @@ const sppbOutRouters = router({
 										items: {
 											[id_item]: {
 												...cur,
-												id_item_po: OrmPOItemSppbIn.id_item,
-												master_item_id: OrmPOItemSppbIn.master_item_id,
+												id_item_po: sppbinItem.id_item,
+												master_item_id: sppbinItem.master_item_id,
 												id: cur.id,
 											},
 										},
