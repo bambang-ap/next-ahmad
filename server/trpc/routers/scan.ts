@@ -25,6 +25,7 @@ import {
 	OrmScanOrder as scanOrder,
 	OrmUser,
 	scanListAttributes,
+	wherePagesV2,
 } from "@database";
 import {CATEGORY_REJECT_DB} from "@enum";
 import {checkCredentialV2, pagingResult} from "@server";
@@ -65,9 +66,9 @@ const scanRouters = router({
 	list: procedure
 		.input(tableFormValue.extend({target: tScanTarget}))
 		.query(({ctx, input}) => {
-			const {limit, page, target} = input;
+			const {limit, page, search, target} = input;
 
-			const {A, B, num, Ret} = scanListAttributes();
+			const {A, B, C, D, E, num, Ret} = scanListAttributes();
 
 			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
 				const {count, rows: data} = await OrmScan.findAndCountAll({
@@ -76,8 +77,33 @@ const scanRouters = router({
 					attributes: [num, ...A.keys],
 					order: scanOrder(target),
 					offset: (page - 1) * limit,
-					where: {[`status_${target}`]: true},
-					include: [{model: OrmKanban, attributes: B.keys}],
+					where: {
+						[`status_${target}`]: true,
+						...wherePagesV2<ScanList>(
+							[
+								"$OrmKanban.keterangan$",
+								"$OrmKanban.nomor_kanban$",
+								"$OrmKanban.OrmCustomerPO.nomor_po$",
+								"$OrmKanban.OrmCustomerSPPBIn.nomor_surat$",
+								"$OrmKanban.OrmCustomerPO.OrmCustomer.name$",
+							],
+							search,
+						),
+					},
+					include: [
+						{
+							model: OrmKanban,
+							attributes: B.keys,
+							include: [
+								{model: OrmCustomerSPPBIn, attributes: C.keys},
+								{
+									attributes: D.keys,
+									model: OrmCustomerPO,
+									include: [{model: OrmCustomer, attributes: E.keys}],
+								},
+							],
+						},
+					],
 				});
 
 				// @ts-ignore

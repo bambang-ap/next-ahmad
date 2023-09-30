@@ -65,6 +65,9 @@ function RenderScanList() {
 		property: "idScans",
 		header: [
 			"Tanggal",
+			"Customer",
+			"Nomor PO",
+			"Nomor Surat",
 			"Nomor Kanban",
 			"Keterangan",
 			dateHeader,

@@ -31,6 +31,9 @@ export function RenderData(props: PropsWithChildren<Props>) {
 		<>
 			{isSelect && <CellSelect fieldName={`idScans.${item.id}`} />}
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
+			<Cell>{data.OrmCustomerPO.OrmCustomer.name}</Cell>
+			<Cell>{data.OrmCustomerPO.nomor_po}</Cell>
+			<Cell>{data.OrmCustomerSPPBIn.nomor_surat}</Cell>
 			<Cell>{data?.nomor_kanban}</Cell>
 			<Cell>{data?.keterangan}</Cell>
 			<Cell>{theDate}</Cell>

@@ -3,8 +3,12 @@ import {
 	tCustomer,
 	tCustomerPO,
 	tCustomerSPPBIn,
+	tCustomerSPPBOut,
+	tCustomerSPPBOutItem,
+	tDocument,
 	tKanban,
 	tKanbanItem,
+	tKendaraan,
 	tMasterItem,
 	tPOItem,
 	tPOItemSppbIn,
@@ -134,15 +138,21 @@ export function exportScanAttributes(route: Route["route"]) {
 export function scanListAttributes() {
 	const A = attrParser(tScan, ["id", "id_kanban", "date"]);
 	const B = attrParser(tKanban, ["nomor_kanban", "createdAt", "keterangan"]);
+	const C = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
+	const D = attrParser(tCustomerPO, ["nomor_po"]);
+	const E = attrParser(tCustomer, ["name"]);
 
 	const num = NumberOrderAttribute<TScan>('"OrmScan"."id"');
 
 	type Ret = typeof A.obj & {
 		number?: number;
-		OrmKanban: typeof B.obj;
+		OrmKanban: typeof B.obj & {
+			OrmCustomerPO: typeof D.obj & {OrmCustomer: typeof E.obj};
+			OrmCustomerSPPBIn: typeof C.obj;
+		};
 	};
 
-	return {A, B, num, Ret: {} as Ret};
+	return {A, B, C, D, E, num, Ret: {} as Ret};
 }
 
 export function printScanAttributes(route: TScanTarget) {
@@ -232,4 +242,54 @@ export function poGetAttributes() {
 	};
 
 	return {A, B, C, D, Ret: {} as Ret};
+}
+
+export function printSppbOutAttributes() {
+	const A = attrParser(tCustomerSPPBOut, [
+		"id",
+		"id_customer",
+		"date",
+		"invoice_no",
+		"keterangan",
+	]);
+	const B = attrParser(tKendaraan, ["name"]);
+	const C = attrParser(tCustomer, ["name", "alamat"]);
+	const D = attrParser(tCustomerSPPBOutItem, ["qty1", "qty2", "qty3"]);
+	const E = attrParser(tPOItemSppbIn, ["lot_no"]);
+	const F = attrParser(tMasterItem, [
+		"instruksi",
+		"kategori_mesinn",
+		"name",
+		"keterangan",
+	]);
+	const G = attrParser(tPOItem, ["unit1", "unit2", "unit3"]);
+	const H = attrParser(tCustomerPO);
+	const I = attrParser(tCustomerSPPBIn);
+	const J = attrParser(tKanban, ["id"]);
+	const K = attrParser(tScan, ["lot_no_imi"]);
+	const L = attrParser(tDocument, [
+		"doc_no",
+		"tgl_efektif",
+		"revisi",
+		"terbit",
+	]);
+
+	type Ret = typeof A.obj & {
+		OrmKendaraan: typeof B.obj;
+		OrmCustomer: typeof C.obj;
+		OrmCustomerSPPBOutItems: (typeof D.obj & {
+			OrmPOItemSppbIn: typeof E.obj & {
+				OrmCustomerSPPBIn: typeof I.obj & {
+					OrmKanbans: (typeof J.obj & {
+						OrmScans: typeof K.obj[];
+						OrmDocument: typeof L.obj;
+					})[];
+				};
+				OrmMasterItem: typeof F.obj;
+				OrmCustomerPOItem: typeof G.obj & {OrmCustomerPO: typeof H.obj};
+			};
+		})[];
+	};
+
+	return {A, B, C, D, E, F, G, H, I, J, K, L, Ret: {} as Ret};
 }
