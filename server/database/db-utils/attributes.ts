@@ -12,6 +12,7 @@ import {
 	tScan,
 	tUser,
 } from "@appTypes/app.zod";
+import {PO_STATUS} from "@enum";
 
 import {OrmKanban} from "../models/kanban";
 import {attrParser, NumberOrderAttribute} from "./";
@@ -216,4 +217,19 @@ export function getScanAttributes(route: TScanTarget) {
 	};
 
 	return {A, B, C, D, E, F, G, H, I, J, Ret: {} as Ret};
+}
+
+export function poGetAttributes() {
+	const A = attrParser(tCustomerPO);
+	const B = attrParser(tCustomer, ["name"]);
+	const C = attrParser(tPOItem);
+	const D = attrParser(tMasterItem);
+
+	type Ret = typeof A.obj & {
+		status: PO_STATUS;
+		OrmCustomer: typeof B.obj;
+		OrmCustomerPOItems: (typeof C.obj & {OrmMasterItem: typeof D.obj})[];
+	};
+
+	return {A, B, C, D, Ret: {} as Ret};
 }

@@ -41,7 +41,7 @@ const itemRouters = router({
 			return checkCredentialV2(ctx, async (): Promise<PagingResult<IUI>> => {
 				const {count, rows} = await OrmMasterItem.findAndCountAll({
 					limit,
-					attributes: ["id", "name"],
+					attributes: ["id", "name", "kode_item"],
 					order: [["id", "asc"]],
 					offset: (page - 1) * limit,
 					where: wherePages(

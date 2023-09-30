@@ -2,12 +2,7 @@ import {Fragment, useEffect} from "react";
 
 import {Control, useController, UseFormReset, useWatch} from "react-hook-form";
 
-import {
-	ModalTypePreview,
-	TCustomer,
-	TCustomerPO,
-	TCustomerPOExtended,
-} from "@appTypes/app.type";
+import {ModalTypePreview, TCustomer} from "@appTypes/app.type";
 import {
 	Button,
 	Input,
@@ -19,16 +14,17 @@ import {
 } from "@components";
 import {formatDate, selectUnitData} from "@constants";
 import {CRUD_ENABLED} from "@enum";
-import {moment} from "@utils";
+import type {PoGetV2} from "@trpc/routers/customer_po";
+import {moment, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export type UQtyList = `qty${typeof qtyList[number]}`;
 export const qtyList = [1, 2, 3] as const;
 
-export type FormType = TCustomerPO & {
+export type FormType = PoGetV2 & {
 	type: ModalTypePreview;
 	idPo?: MyObject<boolean>;
-} & Pick<TCustomerPOExtended, "po_item">;
+}; //& Pick<TCustomerPOExtended, "OrmCustomerPOItems">;
 
 export default function PoModalChild({
 	control,
@@ -37,7 +33,8 @@ export default function PoModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
-	const {type: modalType, po_item: poItem = [], tgl_po} = useWatch({control});
+	const dataForm = useWatch({control});
+	const {type: modalType, OrmCustomerPOItems: poItem = [], tgl_po} = dataForm;
 
 	const {data} = trpc.basic.get.useQuery<any, TCustomer[]>({
 		target: CRUD_ENABLED.CUSTOMER,
@@ -53,7 +50,7 @@ export default function PoModalChild({
 
 	const {
 		field: {onChange: onChangePoItem},
-	} = useController({control, name: "po_item"});
+	} = useController({control, name: "OrmCustomerPOItems"});
 
 	const {headerTable, isPreview} = {
 		get isPreview() {
@@ -85,10 +82,13 @@ export default function PoModalChild({
 	}
 
 	function addItem() {
-		resetForm(({po_item = [], ...prev}) => {
+		resetForm(({OrmCustomerPOItems = [], ...prev}) => {
 			return {
 				...prev,
-				po_item: [...po_item, {} as typeof po_item[number]],
+				OrmCustomerPOItems: [
+					...OrmCustomerPOItems,
+					{} as typeof OrmCustomerPOItems[number],
+				],
 			};
 		});
 	}
@@ -170,7 +170,7 @@ export default function PoModalChild({
 										label="Nama Item"
 										control={control}
 										data={itemSelections}
-										fieldName={`po_item.${index}.master_item_id`}
+										fieldName={`OrmCustomerPOItems.${index}.master_item_id`}
 									/>
 								</Cell>
 								<Cell>{selectedItem?.kode_item}</Cell>
@@ -180,11 +180,11 @@ export default function PoModalChild({
 										disabled={isPreview}
 										control={control}
 										type="decimal"
-										fieldName={`po_item.${index}.harga`}
+										fieldName={`OrmCustomerPOItems.${index}.harga`}
 										label="Harga"
 									/>
 								</Cell>
-								{qtyList.map(num => {
+								{qtyMap(({num, qtyKey, unitKey}) => {
 									return (
 										<Cell key={num} className="gap-2">
 											<Input
@@ -192,7 +192,7 @@ export default function PoModalChild({
 												disabled={isPreview}
 												control={control}
 												type="decimal"
-												fieldName={`po_item.${index}.qty${num}`}
+												fieldName={`OrmCustomerPOItems.${index}.${qtyKey}`}
 												label="Qty"
 											/>
 											<Select
@@ -200,7 +200,7 @@ export default function PoModalChild({
 												className="flex-1"
 												firstOption="- Pilih unit -"
 												control={control}
-												fieldName={`po_item.${index}.unit${num}`}
+												fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
 												data={selectUnitData}
 												label="Unit"
 											/>

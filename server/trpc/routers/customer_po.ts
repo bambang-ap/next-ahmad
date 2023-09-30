@@ -20,6 +20,8 @@ import {
 	OrmCustomerSPPBIn,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
+	poGetAttributes,
+	wherePagesV2,
 } from "@database";
 import {PO_STATUS} from "@enum";
 import {checkCredentialV2, generateId, pagingResult} from "@server";
@@ -27,6 +29,7 @@ import {procedure, router} from "@trpc";
 
 import {appRouter} from ".";
 
+export type PoGetV2 = ReturnType<typeof poGetAttributes>["Ret"];
 export type GetPage = PagingResult<GetPageRows>;
 export type GetPageRows = TCustomerPO & {
 	status: PO_STATUS;
@@ -62,6 +65,42 @@ const customer_poRouters = router({
 				return {po_item, id_customer, id, isClosed, nomor_po} as III;
 			});
 		}),
+	getV2: procedure.input(tableFormValue).query(({ctx, input}) => {
+		const {limit, search, page} = input;
+
+		const {A, B, C, D} = poGetAttributes();
+
+		return checkCredentialV2(ctx, async () => {
+			const {count, rows} = await OrmCustomerPO.findAndCountAll({
+				limit,
+				attributes: A.keys,
+				offset: (page - 1) * limit,
+				where: wherePagesV2<PoGetV2>(
+					["nomor_po", "$OrmCustomer.name$"],
+					search,
+				),
+				include: [
+					{model: OrmCustomer, attributes: B.keys},
+					{
+						separate: true,
+						attributes: C.keys,
+						model: OrmCustomerPOItem,
+						include: [{model: OrmMasterItem, attributes: D.keys}],
+					},
+				],
+			});
+
+			const promisedRows = rows.map(async e => {
+				const val = e.dataValues as PoGetV2;
+
+				const status = await getCurrentPOStatus(val.id);
+
+				return {...val, status};
+			});
+
+			return pagingResult(count, page, limit, await Promise.all(promisedRows));
+		});
+	}),
 	getPage: procedure
 		.input(
 			tableFormValue.partial().extend({

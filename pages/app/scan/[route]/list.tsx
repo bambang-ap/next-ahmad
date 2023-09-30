@@ -61,6 +61,7 @@ function RenderScanList() {
 	const {component} = useTableFilterComponent({
 		control,
 		reset,
+		enabledExport: true,
 		property: "idScans",
 		header: [
 			"Tanggal",

@@ -54,6 +54,7 @@ type Props<
 > = {
 	property: P;
 	selector?: ObjKeyof<T>;
+	enabledExport?: boolean;
 	useQuery: (
 		form: TableFormValue,
 	) => UseTRPCQueryResult<PagingResult<T>, unknown>;
@@ -82,6 +83,7 @@ export function useTableFilterComponent<
 		control,
 		reset,
 		property,
+		enabledExport = false,
 		exportRenderItem,
 		exportUseQuery,
 		renderItem,
@@ -105,7 +107,6 @@ export function useTableFilterComponent<
 	const {isSelect} = modalTypeParser(dataForm.type);
 	const selectedIds = transformIds(dataForm[property]);
 	const enabledPdf = !!genPdfOptions;
-	const enabledExport = !!exportUseQuery;
 
 	const topComponent = isSelect ? (
 		<>
@@ -187,5 +188,5 @@ export function useTableFilterComponent<
 		</>
 	);
 
-	return {component, refetch};
+	return {component, mutateOpts, loader, refetch};
 }

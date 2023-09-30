@@ -436,3 +436,7 @@ export function nullUseQuery() {
 		isFetched: true,
 	} as Ret;
 }
+
+export function nullRenderItem() {
+	return {};
+}
