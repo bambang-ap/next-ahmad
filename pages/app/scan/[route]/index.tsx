@@ -107,7 +107,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const {data, refetch, isSuccess, isFetching} = trpc.scan.getV3.useQuery(
 		{id: dataForm.id_kanban!, route},
-		{enabled: !!keys.id},
+		{enabled: !!dataForm.id_kanban},
 	);
 	const {mutate: editNotes} = trpc.scan.editNotes.useMutation();
 	const {mutateAsync: mutate} = trpc.scan.updateV3.useMutation({
@@ -160,6 +160,16 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	}
 
 	useEffect(() => {
+		if (data) {
+			StorageScan.get(route!)?.set(prev => {
+				const prevSet = new Set(prev);
+				prevSet.add(id_kanban);
+				return [...prevSet].filter(Boolean);
+			});
+		}
+	}, [data, id_kanban]);
+
+	useEffect(() => {
 		if (notes?.length > 0) {
 			typingCallback(() => {
 				editNotes({notes, id: id_kanban, status: route});
@@ -203,7 +213,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									className="flex-1"
 									control={control}
 									fieldName="id_kanban"
-									defaultValue={keys.id ?? id_kanban}
+									defaultValue={keys.id}
 								/>
 								<Button
 									icon={status ? "faTrash" : "faCircleXmark"}
