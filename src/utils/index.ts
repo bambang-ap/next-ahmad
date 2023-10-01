@@ -151,7 +151,7 @@ export function scanMapperByStatus(
 	switch (target) {
 		case "produksi":
 			return [
-				"Jumlah planning",
+				"Jumlah Planning",
 				"Jumlah Produksi",
 				"send to QC",
 				"PROD",
@@ -159,14 +159,14 @@ export function scanMapperByStatus(
 			];
 		case "qc":
 			return [
-				"Jumlah produksi",
+				"Jumlah Produksi",
 				"Jumlah QC",
 				"Send to Finish Good",
 				"QC",
 				"KARTU BARANG OK",
 			];
 		case "finish_good":
-			return ["Jumlah qc", "Jumlah FG", "Diterima", "FG", "KARTU BARANG OK"];
+			return ["Jumlah QC", "Jumlah FG", "Diterima", "FG", "KARTU BARANG OK"];
 		default:
 			return [];
 	}
@@ -408,7 +408,6 @@ export function mutateCallback(
 			show?.();
 		},
 		onSettled() {
-			console.log(567890);
 			hide?.();
 		},
 	} as UseTRPCMutationOptions<any, any, any>;
@@ -439,4 +438,8 @@ export function nullUseQuery() {
 
 export function nullRenderItem() {
 	return {};
+}
+
+export function renderItemAsIs(item: any) {
+	return item;
 }

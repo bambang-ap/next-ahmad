@@ -22,6 +22,8 @@ import {
 	OrmParameterKategori,
 	OrmPOItemSppbIn,
 	OrmScan,
+	OrmScanNew,
+	OrmScanNewItem,
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
@@ -67,6 +69,9 @@ export function initRelations() {
 	oneToMany(OrmHardnessKategori, OrmHardness, "id_kategori");
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id_kategori");
 	oneToMany(OrmParameterKategori, OrmParameter, "id_kategori");
+
+	oneToMany(OrmKanban, OrmScanNew, "id_kanban");
+	oneToMany(OrmScanNew, OrmScanNewItem, "id_scan");
 
 	manyToMany(
 		[OrmSupplier, "id"],

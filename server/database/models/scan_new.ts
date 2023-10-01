@@ -1,4 +1,4 @@
-import {Model, Sequelize, STRING} from "sequelize";
+import {BOOLEAN, Model, Sequelize, STRING} from "sequelize";
 
 import {TScanNew, TScanNewItem, TScanRejectItem} from "@appTypes/app.type";
 import {defaultExcludeColumn} from "@constants";
@@ -17,6 +17,7 @@ export function initOrmScanNew(sequelize: Sequelize) {
 			id_customer: STRING,
 			status: STRING,
 			notes: STRING,
+			is_rejected: BOOLEAN,
 		},
 		{
 			sequelize,
@@ -35,6 +36,7 @@ export function initOrmScanNewItem(sequelize: Sequelize) {
 		{
 			...unitQtyField,
 			id_scan: STRING,
+			id_kanban_item: STRING,
 			id: {type: STRING, primaryKey: true},
 		},
 		{

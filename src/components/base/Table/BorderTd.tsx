@@ -7,7 +7,13 @@ type TdProps = TdHTMLAttributes<HTMLTableCellElement> & {
 	center?: boolean;
 };
 
-export function BorderTd({center, top, className, ...props}: TdProps) {
+export function BorderTd({
+	children,
+	center,
+	top,
+	className,
+	...props
+}: TdProps) {
 	return (
 		<td
 			{...props}
@@ -16,9 +22,15 @@ export function BorderTd({center, top, className, ...props}: TdProps) {
 				"flex-1 px-2 py-1",
 				"font-semibold",
 				"pb-2",
-				{["text-center"]: center, ["align-top"]: top},
-				className,
-			)}
-		/>
+			)}>
+			<div
+				className={classNames(
+					"flex",
+					{["justify-center"]: center, ["items-start"]: top},
+					className,
+				)}>
+				{children}
+			</div>
+		</td>
 	);
 }

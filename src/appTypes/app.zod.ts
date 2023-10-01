@@ -425,12 +425,14 @@ export const tScanNew = zId.extend({
 	updatedAt: z.string().optional(),
 	lot_no_imi: z.string().min(1),
 	id_customer: z.string(),
+	is_rejected: z.boolean().optional(),
 });
 
 export type TScanNewItem = z.infer<typeof tScanNewItem>;
 export const tScanNewItem = zId.extend({
 	...unitQty.shape,
 	id_scan: z.string(),
+	id_kanban_item: z.string(),
 });
 
 export type TScanItemReject = z.infer<typeof tScanItemReject>;

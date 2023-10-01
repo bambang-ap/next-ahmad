@@ -1,3 +1,6 @@
+import {Includeable} from "sequelize";
+import {z} from "zod";
+
 import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
@@ -5,6 +8,8 @@ import {
 	tScan,
 	TScanDate,
 	tScanItem,
+	tScanNew,
+	tScanNewItem,
 	TScanTarget,
 	tScanTarget,
 	UnitQty,
@@ -13,6 +18,7 @@ import {
 import {Success} from "@constants";
 import {
 	getScanAttributes,
+	getScanAttributesV2,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -22,20 +28,24 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
+	OrmScanNew,
+	OrmScanNewItem,
 	OrmScanOrder as scanOrder,
 	OrmUser,
 	scanListAttributes,
 	wherePagesV2,
 } from "@database";
 import {CATEGORY_REJECT_DB} from "@enum";
-import {checkCredentialV2, pagingResult} from "@server";
+import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
-import {moment, qtyMap} from "@utils";
+import {moment, qtyMap, qtyReduce, scanRouterParser} from "@utils";
 
 export type ScanList = ReturnType<typeof scanListAttributes>["Ret"];
 export type ScanGet = ReturnType<typeof getScanAttributes>["Ret"];
+export type ScanGetV2 = ReturnType<typeof getScanAttributesV2>["Ret"];
+
 type ListResult = PagingResult<ScanList>;
 
 function enabled(target: TScanTarget, dataScan?: TScan) {
@@ -55,10 +65,10 @@ function enabled(target: TScanTarget, dataScan?: TScan) {
 
 const scanRouters = router({
 	editNotes: procedure
-		.input(tScan.pick({id: true, notes: true}).partial())
-		.mutation(({ctx, input: {id, notes}}) => {
+		.input(tScanNew.pick({id: true, status: true, notes: true}).partial())
+		.mutation(({ctx, input: {id, notes, status}}) => {
 			return checkCredentialV2(ctx, async () => {
-				await OrmScan.update({notes}, {where: {id_kanban: id}});
+				await OrmScanNew.update({notes}, {where: {id_kanban: id, status}});
 
 				return Success;
 			});
@@ -73,7 +83,6 @@ const scanRouters = router({
 			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
 				const {count, rows: data} = await OrmScan.findAndCountAll({
 					limit,
-					logging: true,
 					attributes: [num, ...A.keys],
 					order: scanOrder(target),
 					offset: (page - 1) * limit,
@@ -121,7 +130,6 @@ const scanRouters = router({
 			const data = await OrmScan.findOne({
 				where: {id_kanban},
 				attributes: A.keys,
-				logging: true,
 				include: [
 					{
 						model: OrmKanban,
@@ -165,6 +173,139 @@ const scanRouters = router({
 			return data?.dataValues as typeof Ret;
 		});
 	}),
+	getV3: procedure.input(zId.extend(tRoute.shape)).query(({ctx, input}) => {
+		const {id, route} = input;
+
+		const {
+			scn,
+			knb,
+			scItem,
+			knbItem,
+			user,
+			bin,
+			binItem,
+			cust,
+			mItem,
+			po,
+			poItem,
+		} = getScanAttributesV2();
+
+		const asd: Includeable = {
+			attributes: knb.keys,
+			include: [
+				{
+					model: user.orm,
+					as: OrmKanban._aliasCreatedBy,
+					attributes: user.keys,
+				},
+				{
+					model: bin.orm,
+					attributes: bin.keys,
+					include: [
+						{
+							model: po.orm,
+							attributes: po.keys,
+							include: [{model: cust.orm, attributes: cust.keys}],
+						},
+					],
+				},
+				{
+					separate: true,
+					attributes: knbItem.keys,
+					model: knbItem.orm,
+					include: [
+						{model: mItem.orm, attributes: mItem.keys},
+						{
+							model: binItem.orm,
+							attributes: binItem.keys,
+							include: [{model: poItem.orm, attributes: poItem.keys}],
+						},
+					],
+				},
+			],
+		};
+
+		function asdd(status: TScanTarget) {
+			return scn.orm.findOne({
+				where: {id_kanban: id, status},
+				include: [
+					Object.assign(asd, {model: knb.orm}),
+					{model: scItem.orm, attributes: scItem.keys},
+				],
+			});
+		}
+
+		return checkCredentialV2(ctx, async (): Promise<ScanGetV2> => {
+			const {isFG, isProduksi, isQC} = scanRouterParser(route);
+			const status: TScanTarget = isQC ? "produksi" : isFG ? "qc" : route;
+			const count = await OrmScanNew.count({
+				where: {id_kanban: id, status},
+			});
+
+			if (!isProduksi && count <= 0) {
+				throw new TRPCError({code: "NOT_FOUND"});
+			}
+
+			const data = await asdd(route);
+
+			if (!data) {
+				const prevData = await asdd(
+					route === "qc" ? "produksi" : route === "finish_good" ? "qc" : route,
+				);
+
+				if (prevData)
+					return {...prevData.dataValues, id: undefined} as ScanGetV2;
+
+				const kanban = await knb.orm.findOne({where: {id}, ...asd});
+				// @ts-ignore
+				return {OrmKanban: kanban?.dataValues as ScanGetV2["OrmKanban"]};
+			}
+
+			return data.dataValues as ScanGetV2;
+		});
+	}),
+
+	updateV3: procedure
+		.input(
+			tScanNew.partial({id: true}).extend({
+				items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
+				tempItems: z.record(tScanNewItem.partial()),
+			}),
+		)
+		.mutation(({ctx, input}) => {
+			const {items, status, id_kanban, ...scanData} = input;
+
+			return checkCredentialV2(ctx, async () => {
+				// 	const {id, target, id_customer, lot_no_imi} = input;
+				const existingScan = await OrmScanNew.findOne({
+					where: {id_kanban, status},
+				});
+				const [{dataValues: updatedScan}] = await OrmScanNew.upsert({
+					...scanData,
+					status,
+					id_kanban,
+					id: existingScan?.dataValues.id ?? generateId("SN_"),
+				});
+
+				for (const [id_item, item] of Object.entries(items)) {
+					const qtys = qtyReduce((ret, {qtyKey}) => {
+						return {...ret, [qtyKey]: item[qtyKey]};
+					});
+
+					const existingItem = await OrmScanNewItem.findOne({
+						where: {id_kanban_item: id_item, id_scan: updatedScan.id},
+					});
+					OrmScanNewItem.upsert({
+						...qtys,
+						id: existingItem?.dataValues.id ?? generateId("SNI_"),
+						id_scan: updatedScan.id,
+						id_kanban_item: id_item,
+					});
+				}
+
+				return Success;
+			});
+		}),
 	get: procedure
 		.input(zId.extend({target: tScanTarget}))
 		.query(async ({input: {id, target}, ctx: {req, res}}) => {
@@ -198,7 +339,6 @@ const scanRouters = router({
 				},
 			);
 		}),
-
 	update: procedure
 		.input(
 			tScanItem.extend({
@@ -234,7 +374,7 @@ const scanRouters = router({
 					};
 
 					await OrmScan.update(
-						{[statusTarget]: true, date, ...rest},
+						{[statusTarget]: false, date, ...rest},
 						{where: {id: dataScan.dataValues.id}},
 					);
 

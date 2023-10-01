@@ -22,7 +22,6 @@ export const printScanRouter = {
 
 		return checkCredentialV2(ctx, async () => {
 			const data = await OrmScan.findAll({
-				logging: true,
 				where: {id: ids},
 				attributes: A.keys,
 				include: [

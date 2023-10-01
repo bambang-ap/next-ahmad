@@ -1,6 +1,6 @@
 import {Route} from "pages/app/scan/[route]";
 import {Path} from "react-hook-form";
-import {DECIMAL, literal, Op, Order} from "sequelize";
+import {DECIMAL, literal, Model, ModelStatic, Op, Order} from "sequelize";
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from "zod";
 
 import {
@@ -34,7 +34,15 @@ export function attrParser<
 	}
 	// @ts-ignore
 	type ObjType = Pick<z.infer<typeof obj>, K>;
-	return {obj: obj as ObjType, keys: Object.keys(obj.keyof().Values) as K[]};
+	return {obj: {} as ObjType, keys: attributes as K[]};
+}
+
+export function attrParserV2<T extends {}, K extends keyof T>(
+	orm: ModelStatic<Model<T>>,
+	attributes?: K[],
+) {
+	type ObjType = Pick<T, K>;
+	return {orm, obj: {} as ObjType, keys: attributes as K[]};
 }
 
 export function ormDecimalType(fieldName: string) {

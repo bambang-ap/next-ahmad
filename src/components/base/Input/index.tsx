@@ -82,7 +82,7 @@ export function InputComponent<F extends FieldValues>(
 
 	const errorMessage = fieldState.error?.message && (
 		<Text className="text-red-700 flex items-center">
-			<Icon name="faWarning" className="mr-2" />
+			<Icon name="faWarning" className="mr-2 text-red-700" />
 			{fieldState.error?.message}
 		</Text>
 	);

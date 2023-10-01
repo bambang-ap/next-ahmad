@@ -16,10 +16,22 @@ import {
 	tScan,
 	tUser,
 } from "@appTypes/app.zod";
+import {
+	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
+	OrmKanban,
+	OrmKanbanItem,
+	OrmMasterItem,
+	OrmPOItemSppbIn,
+	OrmScanNew,
+	OrmScanNewItem,
+	OrmUser,
+} from "@database";
 import {PO_STATUS} from "@enum";
 
-import {OrmKanban} from "../models/kanban";
-import {attrParser, NumberOrderAttribute} from "./";
+import {attrParser, attrParserV2, NumberOrderAttribute} from "./";
 
 export function sppbInGetPage() {
 	const A = attrParser(tCustomerSPPBIn, ["tgl", "id", "id_po", "nomor_surat"]);
@@ -187,6 +199,61 @@ export function printScanAttributes(route: TScanTarget) {
 	return {A, B, C, D, E, F, G, H, I, Ret: {} as Ret};
 }
 
+export function getScanAttributesV2() {
+	const scn = attrParserV2(OrmScanNew);
+	const knb = attrParserV2(OrmKanban, [
+		"id",
+		"list_mesin",
+		"keterangan",
+		"createdAt",
+	]);
+	const scItem = attrParserV2(OrmScanNewItem);
+	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
+	const user = attrParserV2(OrmUser, ["name"]);
+	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
+	const po = attrParserV2(OrmCustomerPO, ["nomor_po"]);
+	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
+	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
+	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
+	const poItem = attrParserV2(OrmCustomerPOItem, ["unit1", "unit2", "unit3"]);
+
+	type Ret = Partial<typeof scn.obj> & {
+		OrmScanNewItems?: typeof scItem.obj[];
+		OrmKanban: typeof knb.obj & {
+			[OrmKanban._aliasCreatedBy]: typeof user.obj;
+			OrmCustomerSPPBIn: typeof bin.obj & {
+				OrmCustomerPO: typeof po.obj & {OrmCustomer: typeof cust.obj};
+			};
+			OrmKanbanItems: (typeof knbItem.obj & {
+				OrmMasterItem: typeof mItem.obj;
+				OrmPOItemSppbIn: typeof binItem.obj & {
+					OrmCustomerPOItem: typeof poItem.obj;
+				};
+			})[];
+		};
+	};
+
+	// A: scn,
+	// B: knb,
+	// C: scItem,
+	// D: knbItem,
+	// E: user,
+	return {
+		scn,
+		knb,
+		scItem,
+		knbItem,
+		user,
+		bin,
+		po,
+		cust,
+		mItem,
+		binItem,
+		poItem,
+		Ret: {} as Ret,
+	};
+}
+
 export function getScanAttributes(route: TScanTarget) {
 	const A = attrParser(tScan, [
 		"lot_no_imi",
@@ -194,6 +261,7 @@ export function getScanAttributes(route: TScanTarget) {
 		"item_qc_reject_category",
 		"notes",
 		"item_from_kanban",
+		"id_customer",
 		`item_${route}`,
 		`status_${route}`,
 	]);

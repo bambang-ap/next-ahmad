@@ -1,24 +1,43 @@
-import {FormEventHandler, useEffect, useRef} from "react";
+import {FormEventHandler, Fragment, useEffect, useState} from "react";
 
+import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
-import {Control, useForm} from "react-hook-form";
+import {KanbanFormType} from "pages/app/kanban";
+import {useForm} from "react-hook-form";
 import {useRecoilState} from "recoil";
 
-import {TScan, TScanItem, TScanTarget, ZId} from "@appTypes/app.zod";
+import {
+	KanbanGetRow,
+	RouterInput,
+	TRoute,
+	TScan,
+	TScanItem,
+	TScanTarget,
+	ZId,
+} from "@appTypes/app.type";
 import {ScanIds} from "@appTypes/props.type";
-import {Scanner} from "@componentBlocks";
-import {Button, Form, Input, ModalRef} from "@components";
+import {BorderTd, Button, Form, Input, RootTable, Text} from "@components";
 import {getLayout} from "@hoc";
 import {useLoader} from "@hooks";
-import {ScanDetailKanban} from "@pageComponent/scan_GenerateQR";
+import {RenderMesin} from "@pageComponent/kanban_ModalChild/RenderMesin";
 import Scrollbar from "@prevComp/Scrollbar";
 import {selectorScanIds} from "@recoil/selectors";
-import type {ScanGet} from "@trpc/routers/scan";
-import {scanMapperByStatus} from "@utils";
+import {
+	classNames,
+	dateUtils,
+	qtyMap,
+	scanMapperByStatus,
+	scanRouterParser,
+	typingCallback,
+} from "@utils";
 import {StorageScan} from "@utils/storage";
 import {trpc} from "@utils/trpc";
 
 Scan.getLayout = getLayout;
+
+const {TBody, THead, Tr} = RootTable;
+
+const Td = BorderTd;
 
 export type Route = {route: TScanTarget};
 
@@ -44,10 +63,6 @@ export default function Scan() {
 		push(`${asPath}/list`);
 	}
 
-	// useEffect(() => {
-	// 	return () => setIds([{key: uuid(), id: ""}]);
-	// }, [route]);
-
 	useEffect(() => {
 		if (!!route) {
 			const prev = StorageScan.get(route)!.get()!;
@@ -59,7 +74,7 @@ export default function Scan() {
 	if (!isReady) return null;
 
 	return (
-		<div className="flex flex-col gap-2 h-full">
+		<div key={route} className="flex flex-col gap-2 h-full">
 			<div className="flex gap-2">
 				<Button className="flex-1" icon="faPlus" onClick={addNew}>
 					Tambah
@@ -71,41 +86,45 @@ export default function Scan() {
 
 			<Scrollbar>
 				{ids.map(uId => (
-					<RenderScanPage key={uId.key} data={uId} />
+					<RenderNewScanPage key={uId.key} keys={uId} route={route} />
 				))}
 			</Scrollbar>
 		</div>
 	);
 }
 
-function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
-	const qrcodeRef = useRef<ModalRef>(null);
-	const router = useRouter();
+type ScanFormType = RouterInput["scan"]["updateV3"];
 
+function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
+	const {route, keys} = props;
+
+	const {data: session} = useSession();
 	const {mutateOpts, ...loader} = useLoader();
-	const {route} = router.query as Route;
-	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
-	const {control, watch, handleSubmit, clearErrors, setValue, reset} =
-		useForm<FormTypeScan>({defaultValues: {id: uId}});
-
-	const id = watch("id");
-	const currentKey = `status_${route}` as const;
-	const [, , submitText] = scanMapperByStatus(route);
-
-	const {data, refetch, isRefetching} = trpc.scan.getV2.useQuery(
-		{id, route},
-		{enabled: !!id},
+	const {control, watch, handleSubmit, clearErrors} = useForm<ScanFormType>();
+	const {data, refetch, isSuccess, isFetching} = trpc.scan.getV3.useQuery(
+		{id: keys.id, route},
+		{enabled: !!keys.id},
 	);
-
-	const {mutateAsync: mutate} = trpc.scan.update.useMutation({
+	const {mutate: editNotes} = trpc.scan.editNotes.useMutation();
+	const {mutateAsync: mutate} = trpc.scan.updateV3.useMutation({
+		...mutateOpts,
 		async onSuccess() {
 			refetch();
 			loader.hide?.();
 		},
-		...mutateOpts,
 	});
 
-	const status = data?.[currentKey];
+	const {OrmKanban, OrmScanNewItems} = data ?? {};
+	const {OrmCustomerSPPBIn, dataCreatedBy, OrmKanbanItems} = OrmKanban ?? {};
+	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
+	const {OrmCustomer} = OrmCustomerPO ?? {};
+
+	const [notes = "", id_kanban] = watch(["notes", "id"]);
+	const [, , submitText] = scanMapperByStatus(route);
+	const {isProduksi} = scanRouterParser(route);
+	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
+
+	const status = route === data?.status;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -114,115 +133,228 @@ function RenderScanPage({data: {id: uId, key}}: {data: ScanIds}) {
 		handleSubmit(values => {
 			if (route === "qc") {
 				if (confirm("Apakah Anda yakin data tersebut sudah benar?"))
-					return mutateScan(values);
+					return mutate(values);
 
 				return;
 			}
 
-			return mutateScan(values);
+			return mutate(values);
 		})();
 	};
 
-	function onRead(result: string) {
-		setValue("id", result);
-	}
-
-	function removeUid() {
-		StorageScan.get(route!)?.set(prev => {
-			const prevSet = new Set(prev);
-			prevSet.delete(id);
-			return [...prevSet];
-		});
-		setIds(prev => {
-			const index = ids.findIndex(_id => _id.key === key);
-
-			if (!status) {
-				const idsData = prev.replace(index, {...prev[index]!, id: ""});
-				reset(form => ({...form, id: ""}));
-				return idsData;
-			}
-			return prev.remove(index);
-		});
-	}
-
-	async function mutateScan(values: FormTypeScan) {
-		await mutate({...values, id, target: route});
-		refetch();
-	}
-
 	useEffect(() => {
-		if (data) {
-			StorageScan.get(route!)?.set(prev => {
-				const prevSet = new Set(prev);
-				prevSet.add(id);
-				return [...prevSet];
-			});
-			reset(prev => {
-				const {
-					item_finish_good,
-					item_produksi,
-					item_qc,
-					lot_no_imi,
-					item_qc_reject,
-					item_qc_reject_category,
-					notes,
-				} = data;
-				return {
-					...prev,
-					notes,
-					item_qc_reject,
-					lot_no_imi,
-					item_finish_good,
-					item_produksi,
-					item_qc_reject_category,
-					item_qc,
-				};
-			});
+		if (notes?.length > 0) {
+			typingCallback(() => {
+				editNotes({notes, id: id_kanban, status: route});
+			}, 1000);
 		}
-	}, [data]);
+	}, [id_kanban, notes, route]);
 
 	return (
 		<>
 			{loader.component}
 			<Form
 				onSubmit={submit}
-				className="flex flex-col gap-2 p-2 border"
 				context={{disableSubmit: status, disabled: status}}>
-				<Scanner ref={qrcodeRef} title={`Scan ${route}`} onRead={onRead} />
-				<div className="flex gap-2 items-center">
-					<Input
-						disabled={false}
-						className="flex-1"
-						control={control}
-						fieldName="id"
-					/>
-					{/* <Button onClick={() => qrcodeRef.current?.show()}>Scan Camera</Button> */}
-					<Button
-						icon={status ? "faTrash" : "faCircleXmark"}
-						onClick={removeUid}
-					/>
-					{id && !!data && (
-						<Button disabled={status || isRefetching} type="submit">
-							{submitText}
-						</Button>
-					)}
-				</div>
-				{data && <RenderDataKanban {...data} control={control} route={route} />}
+				<RootTable>
+					<THead>
+						<Tr>
+							<Td colSpan={4} className="flex gap-2 items-center">
+								<Input
+									hidden
+									className="flex-1"
+									control={control}
+									defaultValue={data?.id ?? keys.id}
+									fieldName="id"
+								/>
+								<Input
+									hidden
+									className="flex-1"
+									control={control}
+									defaultValue={OrmCustomer?.id}
+									fieldName="id_customer"
+								/>
+								<Input
+									hidden
+									className="flex-1"
+									control={control}
+									defaultValue={route}
+									fieldName="status"
+								/>
+								<Input
+									forceEditable
+									className="flex-1"
+									control={control}
+									fieldName="id_kanban"
+									defaultValue={id_kanban}
+								/>
+								<Button
+									type="submit"
+									className="h-10"
+									disabled={status || isFetching}>
+									{submitText}
+								</Button>
+							</Td>
+						</Tr>
+					</THead>
+					<TBody className={classNames({"!hidden": !isSuccess || isFetching})}>
+						<Tr>
+							<Td width="25%" className="justify-between">
+								<div>Tanggal Kanban :</div>
+								<div>{dateUtils.full(data?.OrmKanban?.createdAt)}</div>
+							</Td>
+							<Td width="25%" className="justify-between">
+								<div>User :</div>
+								<div>{session?.user?.name}</div>
+							</Td>
+							<Td width="25%" className="justify-between">
+								<div>Created by :</div>
+								<div>{dataCreatedBy?.name}</div>
+							</Td>
+							<Td width="25%" className="justify-between">
+								<div>Customer :</div>
+								<div>{OrmCustomer?.name}</div>
+							</Td>
+						</Tr>
+						<Tr>
+							<Td>NO PO : {OrmCustomerPO?.nomor_po}</Td>
+							<Td>NO Surat : {OrmCustomerSPPBIn?.nomor_surat}</Td>
+							<Td>
+								<Input
+									className="flex-1"
+									control={control}
+									fieldName="lot_no_imi"
+									defaultValue={data?.lot_no_imi}
+								/>
+							</Td>
+							<Td>
+								<Input
+									forceEditable
+									className="flex-1"
+									control={control}
+									fieldName="notes"
+									defaultValue={data?.notes}
+								/>
+							</Td>
+						</Tr>
+						<Tr>
+							<Td colSpan={4} center>
+								Items
+							</Td>
+						</Tr>
+						<Tr>
+							<Td>Kode Item</Td>
+							<Td>Nama Item</Td>
+							<Td>{jumlahPrev}</Td>
+							<Td>{jumlahNext}</Td>
+						</Tr>
+						{OrmKanbanItems?.map(restItem => {
+							const {id, OrmMasterItem, OrmPOItemSppbIn, ...item} = restItem;
+							const poItem = OrmPOItemSppbIn.OrmCustomerPOItem;
+
+							const curItem = OrmScanNewItems?.find(
+								e => e.id_kanban_item === id,
+							);
+							const prevItem = isProduksi ? item : curItem;
+
+							return (
+								<Fragment key={id}>
+									<Tr>
+										<Input
+											hidden
+											control={control}
+											fieldName={`items.${id}.id_kanban_item`}
+											defaultValue={id}
+										/>
+										<Td>{OrmMasterItem.kode_item}</Td>
+										<Td>{OrmMasterItem.name}</Td>
+										<Td>
+											{qtyMap(({unitKey, qtyKey, num}) => {
+												if (!poItem[unitKey]) return null;
+												return (
+													<Input
+														className="flex-1"
+														disabled
+														control={control}
+														label={`Qty ${num}`}
+														defaultValue={prevItem?.[qtyKey]!.toString()}
+														rightAcc={<Text>{poItem[unitKey]}</Text>}
+														fieldName={`tempItems.${id}.${qtyKey}`}
+													/>
+												);
+											})}
+										</Td>
+										<Td>
+											{qtyMap(({unitKey, qtyKey, num}) => {
+												if (!poItem[unitKey]) return null;
+
+												const max = prevItem?.[qtyKey]!;
+
+												return (
+													<Input
+														className="flex-1"
+														label={`Qty ${num}`}
+														control={control}
+														type="decimal"
+														rightAcc={<Text>{poItem[unitKey]}</Text>}
+														rules={{
+															max: {value: max, message: `Max is ${max}`},
+														}}
+														defaultValue={curItem?.[qtyKey]?.toString()}
+														fieldName={`items.${id}.${qtyKey}`}
+													/>
+												);
+											})}
+										</Td>
+									</Tr>
+									<Tr>
+										<Td colSpan={4}>
+											<RenderListMesin
+												master_item_id={OrmMasterItem.id}
+												id_item={OrmPOItemSppbIn.id}
+												list_mesin={OrmKanban?.list_mesin!}
+											/>
+										</Td>
+									</Tr>
+								</Fragment>
+							);
+						})}
+					</TBody>
+				</RootTable>
 			</Form>
 		</>
 	);
 }
 
-function RenderDataKanban(
-	scanData: ScanGet & Route & {control: Control<FormTypeScan>},
-) {
-	const {OrmKanban: dataKanban, route, ...rest} = scanData;
+function RenderListMesin({
+	master_item_id,
+	id_item,
+	list_mesin,
+}: {
+	id_item: string;
+	master_item_id?: string;
+	list_mesin: KanbanGetRow["list_mesin"];
+}) {
+	const [keyMesin, setKeyMesin] = useState(uuid());
+	const {control, reset} = useForm<KanbanFormType>({
+		defaultValues: {list_mesin},
+	});
 
-	const currentKey = `status_${route}` as const;
+	useEffect(() => {
+		setTimeout(() => setKeyMesin(uuid()), 500);
+	}, []);
 
-	const currentStatus = rest[currentKey];
+	if (!master_item_id) return null;
 
-	if (!dataKanban) return null;
-
-	return <ScanDetailKanban {...scanData} status={currentStatus} />;
+	return (
+		<div className="bg-white flex-1">
+			<RenderMesin
+				key={keyMesin}
+				reset={reset}
+				control={control}
+				masterId={master_item_id}
+				idItem={id_item}
+			/>
+		</div>
+	);
 }

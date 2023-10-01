@@ -59,6 +59,19 @@ const miscRouter = {
 		// @ts-ignore
 		return queries.map(e => e.query).join("");
 	}),
+	dropIndexes: procedure.query(async () => {
+		if (isProd) throw new TRPCError({code: "NOT_FOUND"});
+		const [queries] = await ORM.query(
+			`select 
+			schemaname, indexname, 			tablename, 			format('drop index %I.%I;',
+			schemaname, indexname) as drop_statement
+from pg_indexes
+where schemaname not in ('pg_catalog', 'pg_toast')`,
+		);
+
+		// @ts-ignore
+		return queries.map(e => e.drop_statement).join("");
+	}),
 	now: procedure.query(getNow),
 	generateId: procedure
 		.input(z.string().optional())
