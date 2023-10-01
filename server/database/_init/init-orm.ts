@@ -1,5 +1,11 @@
 import {Sequelize} from "sequelize";
 
+import {
+	initOrmScanNew,
+	initOrmScanNewItem,
+	initOrmScanNewItemReject,
+} from "@database";
+
 import initOrmCustomer from "../models/customer";
 import initOrmCustomerPO from "../models/customer_po";
 import initOrmCustomerPOItem from "../models/customer_po_item";
@@ -64,6 +70,10 @@ export function initOrm(ORM: Sequelize) {
 	initOrmSupplierPOItem(ORM);
 	initOrmSupItemRelation(ORM);
 	initOrmCustomerSPPBOutItem(ORM);
+
+	initOrmScanNew(ORM);
+	initOrmScanNewItem(ORM);
+	initOrmScanNewItemReject(ORM);
 
 	return Promise.resolve();
 }

@@ -54,6 +54,9 @@ export enum TABLES {
 	USER = "user_pengguna",
 	USER_LOGIN = "user_login",
 	ITEM = "master_item",
+	NEW_SCAN = "scan_new",
+	NEW_SCAN_ITEM = "scan_new_item",
+	NEW_SCAN_ITEM_REJECT = "scan_new_item_reject",
 }
 
 export enum CRUD_ENABLED {

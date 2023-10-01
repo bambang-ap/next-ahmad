@@ -416,6 +416,29 @@ export const tScanTarget = z.union([
 	// z.literal("out_barang"),
 ]);
 
+export type TScanNew = z.infer<typeof tScanNew>;
+export const tScanNew = zId.extend({
+	id_kanban: z.string(),
+	status: tScanTarget,
+	notes: z.string().optional(),
+	createdAt: z.string().optional(),
+	updatedAt: z.string().optional(),
+	lot_no_imi: z.string().min(1),
+	id_customer: z.string(),
+});
+
+export type TScanNewItem = z.infer<typeof tScanNewItem>;
+export const tScanNewItem = zId.extend({
+	...unitQty.shape,
+	id_scan: z.string(),
+});
+
+export type TScanItemReject = z.infer<typeof tScanItemReject>;
+export const tScanItemReject = zId.extend({
+	...unitQty.shape,
+	id_item: z.string(),
+});
+
 export type TRoute = z.infer<typeof tRoute>;
 export const tRoute = z.object({route: tScanTarget});
 

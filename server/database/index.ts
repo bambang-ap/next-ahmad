@@ -23,6 +23,7 @@ export * from "./models/parameter_kategori";
 export * from "./models/po_item_sppb_in";
 export * from "./models/role";
 export * from "./models/scan";
+export * from "./models/scan_new";
 export * from "./models/supplier";
 export * from "./models/supplier_item";
 export * from "./models/supplier_item_relation";
