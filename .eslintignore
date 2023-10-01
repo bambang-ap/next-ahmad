@@ -2,4 +2,6 @@
 dist
 .next
 build
-node_modules/
+node_modules
+schema.sql
+schemaServer.sql

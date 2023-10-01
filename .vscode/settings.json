@@ -55,6 +55,7 @@
 	"javascript.preferences.quoteStyle": "single",
 	"prettier.configPath": ".prettierrc.js",
 	"eslint.nodePath": ".eslintrc.js",
+	"eslint.onIgnoredFiles": "off",
 	"prettier.packageManager": "yarn",
 	"prettier.singleQuote": true,
 	"prettier.trailingComma": "es5",
