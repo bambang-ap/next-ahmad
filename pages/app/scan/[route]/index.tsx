@@ -4,7 +4,7 @@ import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
 import {KanbanFormType} from "pages/app/kanban";
 import {useForm} from "react-hook-form";
-import {useRecoilState} from "recoil";
+import {useRecoilState, useSetRecoilState} from "recoil";
 
 import {
 	KanbanGetRow,
@@ -101,8 +101,12 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const {data: session} = useSession();
 	const {mutateOpts, ...loader} = useLoader();
 	const {control, watch, handleSubmit, clearErrors} = useForm<ScanFormType>();
+
+	const dataForm = watch();
+	const setIds = useSetRecoilState(selectorScanIds.get(route)!);
+
 	const {data, refetch, isSuccess, isFetching} = trpc.scan.getV3.useQuery(
-		{id: keys.id, route},
+		{id: dataForm.id_kanban!, route},
 		{enabled: !!keys.id},
 	);
 	const {mutate: editNotes} = trpc.scan.editNotes.useMutation();
@@ -114,17 +118,18 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		},
 	});
 
+	const status = route === data?.status;
+
 	const {OrmKanban, OrmScanNewItems} = data ?? {};
 	const {OrmCustomerSPPBIn, dataCreatedBy, OrmKanbanItems} = OrmKanban ?? {};
 	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
 	const {OrmCustomer} = OrmCustomerPO ?? {};
 
-	const [notes = "", id_kanban] = watch(["notes", "id"]);
-	const [, , submitText] = scanMapperByStatus(route);
-	const {isProduksi} = scanRouterParser(route);
-	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
+	const {notes = "", id_kanban} = dataForm;
+	const {isProduksi, isQC, width, colSpan} = scanRouterParser(route);
 
-	const status = route === data?.status;
+	const [, , submitText] = scanMapperByStatus(route);
+	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -141,6 +146,18 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 			return mutate(values);
 		})();
 	};
+
+	function removeUid() {
+		StorageScan.get(route!)?.set(prev => {
+			const prevSet = new Set(prev);
+			prevSet.delete(id_kanban);
+			return [...prevSet];
+		});
+		setIds(prev => {
+			const index = prev.findIndex(ids => ids.key === keys.key);
+			return prev.remove(index);
+		});
+	}
 
 	useEffect(() => {
 		if (notes?.length > 0) {
@@ -159,12 +176,12 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 				<RootTable>
 					<THead>
 						<Tr>
-							<Td colSpan={4} className="flex gap-2 items-center">
+							<Td colSpan={colSpan} className="flex gap-2 items-center">
 								<Input
 									hidden
 									className="flex-1"
 									control={control}
-									defaultValue={data?.id ?? keys.id}
+									defaultValue={data?.id}
 									fieldName="id"
 								/>
 								<Input
@@ -186,35 +203,39 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									className="flex-1"
 									control={control}
 									fieldName="id_kanban"
-									defaultValue={id_kanban}
+									defaultValue={keys.id ?? id_kanban}
 								/>
 								<Button
-									type="submit"
-									className="h-10"
-									disabled={status || isFetching}>
-									{submitText}
-								</Button>
+									icon={status ? "faTrash" : "faCircleXmark"}
+									onClick={removeUid}
+								/>
+								{!isFetching && !!data && (
+									<Button type="submit" className="h-10" disabled={status}>
+										{submitText}
+									</Button>
+								)}
 							</Td>
 						</Tr>
 					</THead>
 					<TBody className={classNames({"!hidden": !isSuccess || isFetching})}>
 						<Tr>
-							<Td width="25%" className="justify-between">
+							<Td width={width} className="flex-col">
 								<div>Tanggal Kanban :</div>
 								<div>{dateUtils.full(data?.OrmKanban?.createdAt)}</div>
 							</Td>
-							<Td width="25%" className="justify-between">
+							<Td width={width} className="flex-col">
 								<div>User :</div>
 								<div>{session?.user?.name}</div>
 							</Td>
-							<Td width="25%" className="justify-between">
+							<Td width={width} className="flex-col">
 								<div>Created by :</div>
 								<div>{dataCreatedBy?.name}</div>
 							</Td>
-							<Td width="25%" className="justify-between">
+							<Td width={width} className="flex-col">
 								<div>Customer :</div>
 								<div>{OrmCustomer?.name}</div>
 							</Td>
+							{isQC && <Td rowSpan={2} />}
 						</Tr>
 						<Tr>
 							<Td>NO PO : {OrmCustomerPO?.nomor_po}</Td>
@@ -238,7 +259,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							</Td>
 						</Tr>
 						<Tr>
-							<Td colSpan={4} center>
+							<Td colSpan={colSpan} center>
 								Items
 							</Td>
 						</Tr>
@@ -247,6 +268,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							<Td>Nama Item</Td>
 							<Td>{jumlahPrev}</Td>
 							<Td>{jumlahNext}</Td>
+							{isQC && <Td>Jumlah Reject</Td>}
 						</Tr>
 						{OrmKanbanItems?.map(restItem => {
 							const {id, OrmMasterItem, OrmPOItemSppbIn, ...item} = restItem;
@@ -254,6 +276,9 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 							const curItem = OrmScanNewItems?.find(
 								e => e.id_kanban_item === id,
+							);
+							const rejectedItem = curItem?.OrmScanNewItemRejects.find(
+								e => e.id_item === curItem.id,
 							);
 							const prevItem = isProduksi ? item : curItem;
 
@@ -306,9 +331,38 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 												);
 											})}
 										</Td>
+										{isQC && (
+											<Td>
+												{qtyMap(({unitKey, qtyKey, num}) => {
+													if (!poItem[unitKey]) return null;
+
+													const max =
+														prevItem?.[qtyKey]! -
+														parseFloat(
+															dataForm?.items?.[id]?.[qtyKey]!.toString() ??
+																"0",
+														);
+
+													return (
+														<Input
+															className="flex-1"
+															label={`Qty ${num}`}
+															control={control}
+															type="decimal"
+															rightAcc={<Text>{poItem[unitKey]}</Text>}
+															fieldName={`rejectItems.${id}.${qtyKey}`}
+															defaultValue={rejectedItem?.[qtyKey]!.toString()}
+															rules={{
+																max: {value: max, message: `Max is ${max}`},
+															}}
+														/>
+													);
+												})}
+											</Td>
+										)}
 									</Tr>
 									<Tr>
-										<Td colSpan={4}>
+										<Td colSpan={colSpan}>
 											<RenderListMesin
 												master_item_id={OrmMasterItem.id}
 												id_item={OrmPOItemSppbIn.id}

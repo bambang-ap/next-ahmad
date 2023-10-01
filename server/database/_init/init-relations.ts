@@ -24,6 +24,7 @@ import {
 	OrmScan,
 	OrmScanNew,
 	OrmScanNewItem,
+	OrmScanNewItemReject,
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
@@ -72,6 +73,7 @@ export function initRelations() {
 
 	oneToMany(OrmKanban, OrmScanNew, "id_kanban");
 	oneToMany(OrmScanNew, OrmScanNewItem, "id_scan");
+	oneToMany(OrmScanNewItem, OrmScanNewItemReject, "id_item");
 
 	manyToMany(
 		[OrmSupplier, "id"],

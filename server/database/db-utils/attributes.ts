@@ -27,6 +27,7 @@ import {
 	OrmPOItemSppbIn,
 	OrmScanNew,
 	OrmScanNewItem,
+	OrmScanNewItemReject,
 	OrmUser,
 } from "@database";
 import {PO_STATUS} from "@enum";
@@ -200,14 +201,26 @@ export function printScanAttributes(route: TScanTarget) {
 }
 
 export function getScanAttributesV2() {
-	const scn = attrParserV2(OrmScanNew);
+	const scn = attrParserV2(OrmScanNew, [
+		"id",
+		"status",
+		"notes",
+		"lot_no_imi",
+		"id_customer",
+	]);
 	const knb = attrParserV2(OrmKanban, [
 		"id",
 		"list_mesin",
 		"keterangan",
 		"createdAt",
 	]);
-	const scItem = attrParserV2(OrmScanNewItem);
+	const scItem = attrParserV2(OrmScanNewItem, [
+		"qty1",
+		"qty2",
+		"qty3",
+		"id",
+		"id_kanban_item",
+	]);
 	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
 	const user = attrParserV2(OrmUser, ["name"]);
 	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
@@ -215,10 +228,18 @@ export function getScanAttributesV2() {
 	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
 	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
 	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
+	const sciReject = attrParserV2(OrmScanNewItemReject, [
+		"qty1",
+		"qty2",
+		"qty3",
+		"id_item",
+	]);
 	const poItem = attrParserV2(OrmCustomerPOItem, ["unit1", "unit2", "unit3"]);
 
 	type Ret = Partial<typeof scn.obj> & {
-		OrmScanNewItems?: typeof scItem.obj[];
+		OrmScanNewItems?: (typeof scItem.obj & {
+			OrmScanNewItemRejects: typeof sciReject.obj[];
+		})[];
 		OrmKanban: typeof knb.obj & {
 			[OrmKanban._aliasCreatedBy]: typeof user.obj;
 			OrmCustomerSPPBIn: typeof bin.obj & {
@@ -233,11 +254,6 @@ export function getScanAttributesV2() {
 		};
 	};
 
-	// A: scn,
-	// B: knb,
-	// C: scItem,
-	// D: knbItem,
-	// E: user,
 	return {
 		scn,
 		knb,
@@ -250,6 +266,7 @@ export function getScanAttributesV2() {
 		mItem,
 		binItem,
 		poItem,
+		sciReject,
 		Ret: {} as Ret,
 	};
 }

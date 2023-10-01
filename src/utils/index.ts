@@ -209,7 +209,14 @@ export function scanRouterParser(route: Route["route"]) {
 		? "Finish Good"
 		: "";
 
-	return {isProduksi, isQC, isFG, title};
+	return {
+		isQC,
+		isFG,
+		title,
+		isProduksi,
+		colSpan: isQC ? 5 : 4,
+		width: isQC ? "20%" : "25%",
+	};
 }
 
 export function modalTypeParser(type?: ModalTypeSelect, pageName = "") {

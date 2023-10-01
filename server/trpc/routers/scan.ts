@@ -1,4 +1,4 @@
-import {Includeable} from "sequelize";
+import {Includeable, Op} from "sequelize";
 import {z} from "zod";
 
 import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
@@ -8,6 +8,7 @@ import {
 	tScan,
 	TScanDate,
 	tScanItem,
+	tScanItemReject,
 	tScanNew,
 	tScanNewItem,
 	TScanTarget,
@@ -30,6 +31,7 @@ import {
 	OrmScan,
 	OrmScanNew,
 	OrmScanNewItem,
+	OrmScanNewItemReject,
 	OrmScanOrder as scanOrder,
 	OrmUser,
 	scanListAttributes,
@@ -185,12 +187,13 @@ const scanRouters = router({
 			bin,
 			binItem,
 			cust,
+			sciReject,
 			mItem,
 			po,
 			poItem,
 		} = getScanAttributesV2();
 
-		const asd: Includeable = {
+		const includeAble: Includeable = {
 			attributes: knb.keys,
 			include: [
 				{
@@ -229,8 +232,12 @@ const scanRouters = router({
 			return scn.orm.findOne({
 				where: {id_kanban: id, status},
 				include: [
-					Object.assign(asd, {model: knb.orm}),
-					{model: scItem.orm, attributes: scItem.keys},
+					Object.assign(includeAble, {model: knb.orm}),
+					{
+						model: scItem.orm,
+						attributes: scItem.keys,
+						include: [{model: sciReject.orm, attributes: sciReject.keys}],
+					},
 				],
 			});
 		}
@@ -238,8 +245,24 @@ const scanRouters = router({
 		return checkCredentialV2(ctx, async (): Promise<ScanGetV2> => {
 			const {isFG, isProduksi, isQC} = scanRouterParser(route);
 			const status: TScanTarget = isQC ? "produksi" : isFG ? "qc" : route;
+
 			const count = await OrmScanNew.count({
-				where: {id_kanban: id, status},
+				where: {
+					status,
+					id_kanban: id,
+					...wherePagesV2<ScanGetV2>(
+						["$OrmScanNewItems.OrmScanNewItemRejects.id_item$"],
+						{[Op.is]: null},
+						false,
+					),
+				},
+				include: [
+					{
+						model: scItem.orm,
+						attributes: scItem.keys,
+						include: [{model: sciReject.orm, attributes: sciReject.keys}],
+					},
+				],
 			});
 
 			if (!isProduksi && count <= 0) {
@@ -253,14 +276,17 @@ const scanRouters = router({
 					route === "qc" ? "produksi" : route === "finish_good" ? "qc" : route,
 				);
 
-				if (prevData)
+				if (prevData) {
+					// @ts-ignore
 					return {...prevData.dataValues, id: undefined} as ScanGetV2;
+				}
 
-				const kanban = await knb.orm.findOne({where: {id}, ...asd});
+				const kanban = await knb.orm.findOne({where: {id}, ...includeAble});
 				// @ts-ignore
 				return {OrmKanban: kanban?.dataValues as ScanGetV2["OrmKanban"]};
 			}
 
+			// @ts-ignore
 			return data.dataValues as ScanGetV2;
 		});
 	}),
@@ -269,11 +295,14 @@ const scanRouters = router({
 		.input(
 			tScanNew.partial({id: true}).extend({
 				items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
+				rejectItems: z.record(tScanItemReject.partial()).optional(),
 				tempItems: z.record(tScanNewItem.partial()),
 			}),
 		)
 		.mutation(({ctx, input}) => {
-			const {items, status, id_kanban, ...scanData} = input;
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			const {items, rejectItems, tempItems, status, id_kanban, ...scanData} =
+				input;
 
 			return checkCredentialV2(ctx, async () => {
 				// 	const {id, target, id_customer, lot_no_imi} = input;
@@ -295,12 +324,25 @@ const scanRouters = router({
 					const existingItem = await OrmScanNewItem.findOne({
 						where: {id_kanban_item: id_item, id_scan: updatedScan.id},
 					});
-					OrmScanNewItem.upsert({
+					const [{dataValues}] = await OrmScanNewItem.upsert({
 						...qtys,
 						id: existingItem?.dataValues.id ?? generateId("SNI_"),
 						id_scan: updatedScan.id,
 						id_kanban_item: id_item,
 					});
+
+					const hasRejectValue = qtyMap(({qtyKey}) => {
+						return !!rejectItems?.[id_item]?.[qtyKey];
+					}).includes(true);
+
+					if (hasRejectValue) {
+						// @ts-ignore
+						await OrmScanNewItemReject.create({
+							...rejectItems?.[id_item]!,
+							id: generateId("SIR_"),
+							id_item: dataValues.id,
+						});
+					}
 				}
 
 				return Success;
