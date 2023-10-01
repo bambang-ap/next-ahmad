@@ -15,8 +15,17 @@ import {
 	TScanTarget,
 	ZId,
 } from "@appTypes/app.type";
+import {getRejectSelection} from "@appTypes/app.zod";
 import {ScanIds} from "@appTypes/props.type";
-import {BorderTd, Button, Form, Input, RootTable, Text} from "@components";
+import {
+	BorderTd,
+	Button,
+	Form,
+	Input,
+	RootTable,
+	Select,
+	Text,
+} from "@components";
 import {getLayout} from "@hoc";
 import {useLoader} from "@hooks";
 import {RenderMesin} from "@pageComponent/kanban_ModalChild/RenderMesin";
@@ -100,11 +109,12 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const {data: session} = useSession();
 	const {mutateOpts, ...loader} = useLoader();
-	const {control, watch, handleSubmit, clearErrors} = useForm<ScanFormType>();
+	const {control, reset, watch, handleSubmit, clearErrors} =
+		useForm<ScanFormType>({defaultValues: {reject: false}});
 
 	const dataForm = watch();
 	const setIds = useSetRecoilState(selectorScanIds.get(route)!);
-
+	prettyConsole(dataForm);
 	const {data, refetch, isSuccess, isFetching} = trpc.scan.getV3.useQuery(
 		{id: dataForm.id_kanban!, route},
 		{enabled: !!dataForm.id_kanban},
@@ -118,8 +128,6 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		},
 	});
 
-	const status = route === data?.status;
-
 	const {OrmKanban, OrmScanNewItems} = data ?? {};
 	const {OrmCustomerSPPBIn, dataCreatedBy, OrmKanbanItems} = OrmKanban ?? {};
 	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
@@ -130,6 +138,9 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const [, , submitText] = scanMapperByStatus(route);
 	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
+
+	const status = route === data?.status;
+	const showReject = isQC && dataForm.reject;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -156,6 +167,15 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		setIds(prev => {
 			const index = prev.findIndex(ids => ids.key === keys.key);
 			return prev.remove(index);
+		});
+	}
+
+	function toggleReject() {
+		// @ts-ignore
+		reset(prev => {
+			prev.reject = !prev.reject;
+			const rejectItems = prev.reject ? prev.rejectItems : undefined;
+			return {...prev, rejectItems};
 		});
 	}
 
@@ -219,6 +239,11 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									icon={status ? "faTrash" : "faCircleXmark"}
 									onClick={removeUid}
 								/>
+								{isQC && (
+									<Button onClick={toggleReject}>
+										{showReject ? "Batal Reject" : "Reject"}
+									</Button>
+								)}
 								{!isFetching && !!data && (
 									<Button type="submit" className="h-10" disabled={status}>
 										{submitText}
@@ -245,7 +270,18 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 								<div>Customer :</div>
 								<div>{OrmCustomer?.name}</div>
 							</Td>
-							{isQC && <Td rowSpan={2} />}
+							{showReject && (
+								<Td className="flex-col" rowSpan={2}>
+									Silahkan sertakan alasan jika Anda ingin menolaknya.
+									<Select
+										className="flex-1"
+										fieldName="reason"
+										label="Alasan"
+										control={control}
+										data={getRejectSelection()}
+									/>
+								</Td>
+							)}
 						</Tr>
 						<Tr>
 							<Td>NO PO : {OrmCustomerPO?.nomor_po}</Td>
@@ -278,7 +314,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							<Td>Nama Item</Td>
 							<Td>{jumlahPrev}</Td>
 							<Td>{jumlahNext}</Td>
-							{isQC && <Td>Jumlah Reject</Td>}
+							{showReject && <Td>Jumlah Reject</Td>}
 						</Tr>
 						{OrmKanbanItems?.map(restItem => {
 							const {id, OrmMasterItem, OrmPOItemSppbIn, ...item} = restItem;
@@ -341,7 +377,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 												);
 											})}
 										</Td>
-										{isQC && (
+										{showReject && (
 											<Td>
 												{qtyMap(({unitKey, qtyKey, num}) => {
 													if (!poItem[unitKey]) return null;
@@ -359,6 +395,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 															label={`Qty ${num}`}
 															control={control}
 															type="decimal"
+															shouldUnregister
 															rightAcc={<Text>{poItem[unitKey]}</Text>}
 															fieldName={`rejectItems.${id}.${qtyKey}`}
 															defaultValue={rejectedItem?.[qtyKey]!.toString()}

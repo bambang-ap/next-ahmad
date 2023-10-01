@@ -219,6 +219,12 @@ export function scanRouterParser(route: Route["route"]) {
 	};
 }
 
+export function atLeastOneDefined(
+	obj: Record<string | number | symbol, unknown>,
+) {
+	return Object.values(obj).some(v => v !== undefined);
+}
+
 export function modalTypeParser(type?: ModalTypeSelect, pageName = "") {
 	const isAdd = type === "add";
 	const isEdit = type === "edit";

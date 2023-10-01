@@ -54,6 +54,7 @@ export type {
 	TParameterKategori,
 	TPOItem,
 	TPOItemSppbIn,
+	TRejectReason,
 	TRole,
 	TRoute,
 	TScan,

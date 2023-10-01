@@ -22,6 +22,12 @@ export enum PO_STATUS {
 	G = "SPPB Out",
 }
 
+export enum REJECT_REASON {
+	"Test Piece" = "TP",
+	"Re-Process" = "RP",
+	"Scrap" = "SC",
+}
+
 export enum TABLES {
 	SUPPLIER = "inv_supplier",
 	SUPPLIER_ITEM = "inv_supplier_item",

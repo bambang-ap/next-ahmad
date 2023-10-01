@@ -42,7 +42,13 @@ import {checkCredentialV2, generateId, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
-import {moment, qtyMap, qtyReduce, scanRouterParser} from "@utils";
+import {
+	atLeastOneDefined,
+	moment,
+	qtyMap,
+	qtyReduce,
+	scanRouterParser,
+} from "@utils";
 
 export type ScanList = ReturnType<typeof scanListAttributes>["Ret"];
 export type ScanGet = ReturnType<typeof getScanAttributes>["Ret"];
@@ -293,16 +299,28 @@ const scanRouters = router({
 
 	updateV3: procedure
 		.input(
-			tScanNew.partial({id: true}).extend({
-				items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
-				rejectItems: z.record(tScanItemReject.partial()).optional(),
-				tempItems: z.record(tScanNewItem.partial()),
-			}),
+			tScanNew
+				.partial({id: true})
+				.extend({
+					items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
+					tempItems: z.record(tScanNewItem.partial()),
+				})
+				.and(
+					z.union([
+						z.object({reject: z.literal(false)}),
+						z.object({
+							reject: z.literal(true),
+							reason: tScanItemReject.shape.reason,
+							rejectItems: z
+								.record(tScanItemReject.partial().required({qty1: true}))
+								.refine(atLeastOneDefined),
+						}),
+					]),
+				),
 		)
 		.mutation(({ctx, input}) => {
 			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const {items, rejectItems, tempItems, status, id_kanban, ...scanData} =
-				input;
+			const {items, tempItems, status, id_kanban, ...scanData} = input;
 
 			return checkCredentialV2(ctx, async () => {
 				// 	const {id, target, id_customer, lot_no_imi} = input;
@@ -331,17 +349,22 @@ const scanRouters = router({
 						id_kanban_item: id_item,
 					});
 
-					const hasRejectValue = qtyMap(({qtyKey}) => {
-						return !!rejectItems?.[id_item]?.[qtyKey];
-					}).includes(true);
+					if (input.reject) {
+						const {rejectItems, reason} = input;
 
-					if (hasRejectValue) {
-						// @ts-ignore
-						await OrmScanNewItemReject.create({
-							...rejectItems?.[id_item]!,
-							id: generateId("SIR_"),
-							id_item: dataValues.id,
-						});
+						const hasRejectValue = qtyMap(({qtyKey}) => {
+							return !!rejectItems?.[id_item]?.[qtyKey];
+						}).includes(true);
+
+						if (hasRejectValue) {
+							// @ts-ignore
+							await OrmScanNewItemReject.create({
+								...rejectItems?.[id_item]!,
+								id: generateId("SIR_"),
+								id_item: dataValues.id,
+								reason,
+							});
+						}
 					}
 				}
 

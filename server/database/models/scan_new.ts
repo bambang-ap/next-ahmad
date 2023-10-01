@@ -56,6 +56,7 @@ export function initOrmScanNewItemReject(sequelize: Sequelize) {
 		{
 			...unitQtyField,
 			id_item: STRING,
+			reason: STRING,
 			id: {type: STRING, primaryKey: true},
 		},
 		{
