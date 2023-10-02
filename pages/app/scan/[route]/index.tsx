@@ -142,7 +142,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
 	const {OrmCustomer} = OrmCustomerPO ?? {};
 
-	const {notes = "", id_kanban} = dataForm;
+	const {notes = "", id_kanban = ""} = dataForm;
 	const {isProduksi, isQC, width, colSpan} = scanRouterParser(route);
 
 	const [, , submitText] = scanMapperByStatus(route);
@@ -150,6 +150,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const status = route === data?.status;
 	const showReject = isQC && dataForm.reject;
+	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -210,7 +211,6 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		<>
 			{loader.component}
 			<Form
-				key={`${route}.${id_kanban}`}
 				onSubmit={submit}
 				context={{disableSubmit: status, disabled: status}}>
 				<RootTable>
@@ -240,10 +240,14 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 								/>
 								<Input
 									forceEditable
-									className="flex-1"
 									control={control}
+									label="ID Kanban"
+									className="flex-1"
 									fieldName="id_kanban"
 									defaultValue={keys.id}
+									isLoading={isFetching}
+									errorMessage="Data tidak ditemukan"
+									isError={isHidden && id_kanban.length > 0}
 								/>
 								<Button icon="faCircleXmark" onClick={removeUid} />
 								{isQC && (
@@ -260,9 +264,8 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 						</Tr>
 					</THead>
 					<TBody
-						className={classNames({
-							"!hidden": !OrmKanban?.id || !isSuccess || isFetching,
-						})}>
+						key={`${route}.${id_kanban}`}
+						className={classNames({"!hidden": isHidden})}>
 						<Tr>
 							<Td width={width} className="flex-col">
 								<div>Tanggal Kanban :</div>

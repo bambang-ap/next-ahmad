@@ -3,7 +3,7 @@ import {FC, Fragment, isValidElement, useState} from "react";
 import {TableCellProps} from "@mui/material";
 import {FieldValues} from "react-hook-form";
 
-import {Icon, Input, InputProps} from "@components";
+import {Input, InputProps, Spinner} from "@components";
 import {WrappedProps} from "@formController";
 import {classNames} from "@utils";
 
@@ -85,7 +85,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 				<Td className="justify-center" colSpan={header?.filter(Boolean).length}>
 					{loaderComponent || (
 						<div className="animate-pulse">
-							<Icon name="faSpinner" className="animate-spin" />
+							<Spinner />
 						</div>
 					)}
 				</Td>

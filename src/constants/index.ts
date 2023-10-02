@@ -130,6 +130,7 @@ export const queryClientConfig: QueryObserverOptions = {
 	refetchOnMount: true,
 	refetchOnWindowFocus: true,
 	refetchInterval: 1000 * 5 * 60,
+	retry: 1,
 };
 
 export const nonRequiredRefetch: any = {

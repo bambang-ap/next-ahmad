@@ -6,7 +6,7 @@ import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
 import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
 import {FieldValues} from "react-hook-form";
 
-import {FormContext, Icon, Modal, ModalRef, Text} from "@components";
+import {FormContext, Icon, Modal, ModalRef, Spinner, Text} from "@components";
 import {
 	decimalRegex,
 	decimalSchema,
@@ -33,6 +33,9 @@ export type InputProps = {
 	multiline?: boolean;
 	forceEditable?: boolean;
 	decimalValue?: number;
+	isLoading?: boolean;
+	isError?: boolean;
+	errorMessage?: string;
 	type?:
 		| "number"
 		| "decimal"
@@ -66,6 +69,9 @@ export function InputComponent<F extends FieldValues>(
 		appliedRules,
 		multiline,
 		forceEditable,
+		isLoading = false,
+		isError = false,
+		errorMessage: message,
 		decimalValue = decimalValuee,
 	} = props;
 
@@ -86,6 +92,12 @@ export function InputComponent<F extends FieldValues>(
 			{fieldState.error?.message}
 		</Text>
 	);
+
+	const bottomInfo = isLoading ? (
+		<Spinner />
+	) : isError ? (
+		<div className="whitespace-nowrap text-md text-red-500">{message}</div>
+	) : null;
 
 	useEffect(() => {
 		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
@@ -228,7 +240,12 @@ export function InputComponent<F extends FieldValues>(
 						value={byPassValue ?? value ?? ""}
 						onChange={onChangeEvent}
 						InputProps={{
-							endAdornment,
+							endAdornment: (
+								<>
+									{bottomInfo}
+									{endAdornment}
+								</>
+							),
 							startAdornment,
 							classes: {input: "focus:bg-yellow"},
 						}}

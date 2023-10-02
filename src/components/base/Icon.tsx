@@ -6,6 +6,7 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from "@formController";
+import {classNames} from "@utils";
 
 type IconName = Exclude<keyof typeof svgIcon, "prefix" | "fas">;
 
@@ -26,6 +27,12 @@ export function Icon({name, onClick, className}: IconProps) {
 			className={`text-app-neutral-10 ${className}`}
 			icon={svgIcon[name as IconName]}
 		/>
+	);
+}
+
+export function Spinner({className}: Pick<IconProps, "className">) {
+	return (
+		<Icon name="faSpinner" className={classNames("animate-spin", className)} />
 	);
 }
 
