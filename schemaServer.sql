@@ -546,7 +546,7 @@ CREATE TABLE public.scan_new (
     id_kanban character varying(47),
     lot_no_imi character varying(100),
     id_customer character varying(47),
-    status character varying(10),
+    status character varying(15),
     notes character varying(50),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
@@ -575,7 +575,8 @@ CREATE TABLE public.scan_new_item (
     qty3 numeric,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    id_kanban_item character varying(47)
+    id_kanban_item character varying(47),
+    item_from_kanban json DEFAULT '{}'::json
 );
 
 
@@ -592,7 +593,8 @@ CREATE TABLE public.scan_new_item_reject (
     qty2 numeric,
     qty3 numeric,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    reason character varying(10)
 );
 
 

@@ -283,17 +283,20 @@ const scanRouters = router({
 				);
 
 				if (prevData) {
-					// @ts-ignore
-					return {...prevData.dataValues, id: undefined} as ScanGetV2;
+					return {
+						...prevData.dataValues,
+						id: undefined,
+					} as unknown as ScanGetV2;
 				}
 
 				const kanban = await knb.orm.findOne({where: {id}, ...includeAble});
-				// @ts-ignore
-				return {OrmKanban: kanban?.dataValues as ScanGetV2["OrmKanban"]};
+
+				return {
+					OrmKanban: kanban?.dataValues as unknown as ScanGetV2["OrmKanban"],
+				};
 			}
 
-			// @ts-ignore
-			return data.dataValues as ScanGetV2;
+			return data.dataValues as unknown as ScanGetV2;
 		});
 	}),
 
@@ -303,7 +306,7 @@ const scanRouters = router({
 				.partial({id: true})
 				.extend({
 					items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
-					tempItems: z.record(tScanNewItem.partial()),
+					prevItems: z.record(tScanNewItem.partial()),
 				})
 				.and(
 					z.union([
@@ -319,8 +322,7 @@ const scanRouters = router({
 				),
 		)
 		.mutation(({ctx, input}) => {
-			// eslint-disable-next-line @typescript-eslint/no-unused-vars
-			const {items, tempItems, status, id_kanban, ...scanData} = input;
+			const {items, prevItems, status, id_kanban, ...scanData} = input;
 
 			return checkCredentialV2(ctx, async () => {
 				// 	const {id, target, id_customer, lot_no_imi} = input;
@@ -344,10 +346,46 @@ const scanRouters = router({
 					});
 					const [{dataValues}] = await OrmScanNewItem.upsert({
 						...qtys,
-						id: existingItem?.dataValues.id ?? generateId("SNI_"),
 						id_scan: updatedScan.id,
 						id_kanban_item: id_item,
+						item_from_kanban: item.item_from_kanban,
+						id: existingItem?.dataValues.id ?? generateId("SNI_"),
 					});
+
+					const outStandingQty = qtyReduce((ret, {qtyKey}) => {
+						const curQty = parseFloat(item?.[qtyKey]?.toString() ?? "0");
+						const prevQty = parseFloat(
+							prevItems?.[id_item]?.[qtyKey]?.toString() ?? "0",
+						);
+						return {...ret, [qtyKey]: prevQty - curQty};
+					});
+
+					const hasOT =
+						Object.values(outStandingQty).filter(Boolean).length > 0;
+
+					if (hasOT) {
+						const kanbanItem = await OrmKanbanItem.findOne({
+							where: {id: id_item},
+						});
+						if (kanbanItem) {
+							const kanbanItemQty = qtyReduce((ret, {qtyKey}) => {
+								const aa = outStandingQty?.[qtyKey];
+								const bb = kanbanItem.dataValues?.[qtyKey];
+								const curQty = parseFloat(aa?.toString() ?? "0");
+								const prevQty = parseFloat(bb?.toString() ?? "0");
+
+								return {
+									...ret,
+									[qtyKey]: !!prevQty ? prevQty - curQty : aa,
+								};
+							});
+
+							await OrmKanbanItem.update(
+								{...kanbanItem.dataValues, ...kanbanItemQty},
+								{where: {id: id_item}},
+							);
+						}
+					}
 
 					if (input.reject) {
 						const {rejectItems, reason} = input;

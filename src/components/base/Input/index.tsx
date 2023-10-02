@@ -78,7 +78,7 @@ export function InputComponent<F extends FieldValues>(
 	} = controller;
 
 	const isDisabled = formContext?.disabled || disabled;
-	const label = !noLabel && (labelProps || field.name);
+	const label = (!noLabel && (labelProps || field.name)).toString().ucwords();
 
 	const errorMessage = fieldState.error?.message && (
 		<Text className="text-red-700 flex items-center">

@@ -17,6 +17,10 @@ import {
 	tUser,
 } from "@appTypes/app.zod";
 import {
+	attrParser,
+	attrParserExclude,
+	attrParserV2,
+	NumberOrderAttribute,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -31,8 +35,6 @@ import {
 	OrmUser,
 } from "@database";
 import {PO_STATUS} from "@enum";
-
-import {attrParser, attrParserV2, NumberOrderAttribute} from "./";
 
 export function sppbInGetPage() {
 	const A = attrParser(tCustomerSPPBIn, ["tgl", "id", "id_po", "nomor_surat"]);
@@ -201,26 +203,14 @@ export function printScanAttributes(route: TScanTarget) {
 }
 
 export function getScanAttributesV2() {
-	const scn = attrParserV2(OrmScanNew, [
-		"id",
-		"status",
-		"notes",
-		"lot_no_imi",
-		"id_customer",
-	]);
+	const scn = attrParserExclude(OrmScanNew, ["is_rejected", "id_kanban"]);
 	const knb = attrParserV2(OrmKanban, [
 		"id",
 		"list_mesin",
 		"keterangan",
 		"createdAt",
 	]);
-	const scItem = attrParserV2(OrmScanNewItem, [
-		"qty1",
-		"qty2",
-		"qty3",
-		"id",
-		"id_kanban_item",
-	]);
+	const scItem = attrParserExclude(OrmScanNewItem, ["id_scan"]);
 	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
 	const user = attrParserV2(OrmUser, ["name"]);
 	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
@@ -228,12 +218,7 @@ export function getScanAttributesV2() {
 	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
 	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
 	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
-	const sciReject = attrParserV2(OrmScanNewItemReject, [
-		"qty1",
-		"qty2",
-		"qty3",
-		"id_item",
-	]);
+	const sciReject = attrParserExclude(OrmScanNewItemReject, ["reason"]);
 	const poItem = attrParserV2(OrmCustomerPOItem, ["unit1", "unit2", "unit3"]);
 
 	type Ret = Partial<typeof scn.obj> & {

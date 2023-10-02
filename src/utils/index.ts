@@ -153,7 +153,7 @@ export function scanMapperByStatus(
 			return [
 				"Jumlah Planning",
 				"Jumlah Produksi",
-				"send to QC",
+				"Send to QC",
 				"PROD",
 				"KARTU PRODUKSI",
 			];

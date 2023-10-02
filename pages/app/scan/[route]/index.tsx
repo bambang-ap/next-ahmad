@@ -12,7 +12,9 @@ import {
 	TRoute,
 	TScan,
 	TScanItem,
+	TScanNewItem,
 	TScanTarget,
+	UnitQty,
 	ZId,
 } from "@appTypes/app.type";
 import {getRejectSelection} from "@appTypes/app.zod";
@@ -94,9 +96,11 @@ export default function Scan() {
 			</div>
 
 			<Scrollbar>
-				{ids.map(uId => (
-					<RenderNewScanPage key={uId.key} keys={uId} route={route} />
-				))}
+				<div className="flex flex-col gap-4">
+					{ids.map(uId => (
+						<RenderNewScanPage key={uId.key} keys={uId} route={route} />
+					))}
+				</div>
 			</Scrollbar>
 		</div>
 	);
@@ -114,7 +118,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const dataForm = watch();
 	const setIds = useSetRecoilState(selectorScanIds.get(route)!);
-	prettyConsole(dataForm);
+
 	const {data, refetch, isSuccess, isFetching} = trpc.scan.getV3.useQuery(
 		{id: dataForm.id_kanban!, route},
 		{enabled: !!dataForm.id_kanban},
@@ -129,7 +133,12 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	});
 
 	const {OrmKanban, OrmScanNewItems} = data ?? {};
-	const {OrmCustomerSPPBIn, dataCreatedBy, OrmKanbanItems} = OrmKanban ?? {};
+	const {
+		id: foundedKanbanId,
+		OrmCustomerSPPBIn,
+		dataCreatedBy,
+		OrmKanbanItems,
+	} = OrmKanban ?? {};
 	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
 	const {OrmCustomer} = OrmCustomerPO ?? {};
 
@@ -180,14 +189,14 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	}
 
 	useEffect(() => {
-		if (data) {
+		if (!!foundedKanbanId) {
 			StorageScan.get(route!)?.set(prev => {
 				const prevSet = new Set(prev);
-				prevSet.add(id_kanban);
+				prevSet.add(foundedKanbanId);
 				return [...prevSet].filter(Boolean);
 			});
 		}
-	}, [data, id_kanban]);
+	}, [foundedKanbanId]);
 
 	useEffect(() => {
 		if (notes?.length > 0) {
@@ -201,6 +210,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		<>
 			{loader.component}
 			<Form
+				key={`${route}.${id_kanban}`}
 				onSubmit={submit}
 				context={{disableSubmit: status, disabled: status}}>
 				<RootTable>
@@ -235,10 +245,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									fieldName="id_kanban"
 									defaultValue={keys.id}
 								/>
-								<Button
-									icon={status ? "faTrash" : "faCircleXmark"}
-									onClick={removeUid}
-								/>
+								<Button icon="faCircleXmark" onClick={removeUid} />
 								{isQC && (
 									<Button onClick={toggleReject}>
 										{showReject ? "Batal Reject" : "Reject"}
@@ -252,7 +259,10 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							</Td>
 						</Tr>
 					</THead>
-					<TBody className={classNames({"!hidden": !isSuccess || isFetching})}>
+					<TBody
+						className={classNames({
+							"!hidden": !OrmKanban?.id || !isSuccess || isFetching,
+						})}>
 						<Tr>
 							<Td width={width} className="flex-col">
 								<div>Tanggal Kanban :</div>
@@ -288,9 +298,11 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							<Td>NO Surat : {OrmCustomerSPPBIn?.nomor_surat}</Td>
 							<Td>
 								<Input
+									disabled={!isProduksi}
 									className="flex-1"
 									control={control}
 									fieldName="lot_no_imi"
+									label="No Lot IMI"
 									defaultValue={data?.lot_no_imi}
 								/>
 							</Td>
@@ -326,7 +338,12 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							const rejectedItem = curItem?.OrmScanNewItemRejects.find(
 								e => e.id_item === curItem.id,
 							);
-							const prevItem = isProduksi ? item : curItem;
+							const prevItem = (isProduksi ? item : curItem) as UnitQty &
+								Pick<TScanNewItem, "item_from_kanban">;
+
+							const prevItemKanban = isProduksi
+								? curItem?.item_from_kanban ?? prevItem
+								: prevItem;
 
 							return (
 								<Fragment key={id}>
@@ -348,9 +365,9 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 														disabled
 														control={control}
 														label={`Qty ${num}`}
-														defaultValue={prevItem?.[qtyKey]!.toString()}
+														defaultValue={prevItemKanban?.[qtyKey]!.toString()}
 														rightAcc={<Text>{poItem[unitKey]}</Text>}
-														fieldName={`tempItems.${id}.${qtyKey}`}
+														fieldName={`prevItems.${id}.${qtyKey}`}
 													/>
 												);
 											})}
@@ -360,20 +377,36 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 												if (!poItem[unitKey]) return null;
 
 												const max = prevItem?.[qtyKey]!;
+												const defaultValue = curItem?.[qtyKey]?.toString();
 
 												return (
-													<Input
-														className="flex-1"
-														label={`Qty ${num}`}
-														control={control}
-														type="decimal"
-														rightAcc={<Text>{poItem[unitKey]}</Text>}
-														rules={{
-															max: {value: max, message: `Max is ${max}`},
-														}}
-														defaultValue={curItem?.[qtyKey]?.toString()}
-														fieldName={`items.${id}.${qtyKey}`}
-													/>
+													<>
+														<Input
+															hidden
+															control={control}
+															fieldName={`items.${id}.item_from_kanban.${qtyKey}`}
+															defaultValue={(
+																prevItem?.item_from_kanban?.[qtyKey] ??
+																item[qtyKey]
+															)?.toString()}
+														/>
+														<Input
+															className="flex-1"
+															label={`Qty ${num}`}
+															control={control}
+															type="decimal"
+															rightAcc={<Text>{poItem[unitKey]}</Text>}
+															rules={{
+																max: {value: max, message: `Max is ${max}`},
+															}}
+															defaultValue={
+																isProduksi
+																	? defaultValue ?? item[qtyKey]?.toString()!
+																	: defaultValue
+															}
+															fieldName={`items.${id}.${qtyKey}`}
+														/>
+													</>
 												);
 											})}
 										</Td>

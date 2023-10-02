@@ -1,4 +1,4 @@
-import {BOOLEAN, Model, Sequelize, STRING} from "sequelize";
+import {BOOLEAN, JSONB, Model, Sequelize, STRING} from "sequelize";
 
 import {TScanNew, TScanNewItem, TScanRejectItem} from "@appTypes/app.type";
 import {defaultExcludeColumn} from "@constants";
@@ -38,6 +38,7 @@ export function initOrmScanNewItem(sequelize: Sequelize) {
 			id_scan: STRING,
 			id_kanban_item: STRING,
 			id: {type: STRING, primaryKey: true},
+			item_from_kanban: JSONB,
 		},
 		{
 			sequelize,

@@ -2,6 +2,7 @@ import {Route} from "pages/app/scan/[route]";
 import {Path} from "react-hook-form";
 import {
 	DECIMAL,
+	FindAttributeOptions,
 	literal,
 	Model,
 	ModelStatic,
@@ -50,7 +51,19 @@ export function attrParserV2<T extends {}, K extends keyof T>(
 	attributes?: K[],
 ) {
 	type ObjType = Pick<T, K>;
-	return {orm, obj: {} as ObjType, keys: attributes as K[]};
+	return {orm, obj: {} as ObjType, keys: attributes};
+}
+export function attrParserExclude<T extends {}, K extends keyof T>(
+	orm: ModelStatic<Model<T>>,
+	attributes?: K[],
+) {
+	type Keys = Exclude<keyof T, K>;
+	type ObjType = Pick<T, Keys>;
+	return {
+		orm,
+		obj: {} as ObjType,
+		keys: {exclude: attributes} as FindAttributeOptions,
+	};
 }
 
 export function ormDecimalType(fieldName: string) {

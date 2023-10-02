@@ -425,8 +425,6 @@ export const tScanNew = zId.extend({
 	id_kanban: z.string(),
 	status: tScanTarget,
 	notes: z.string().optional(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional(),
 	lot_no_imi: z.string().min(1),
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
@@ -437,6 +435,7 @@ export const tScanNewItem = zId.extend({
 	...unitQty.shape,
 	id_scan: z.string(),
 	id_kanban_item: z.string(),
+	item_from_kanban: unitQty,
 });
 
 export type TScanItemReject = z.infer<typeof tScanItemReject>;
