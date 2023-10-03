@@ -127,7 +127,8 @@ export function RenderItem({
 							<Cell>
 								<div className="flex gap-2">
 									{qtyMap(({num, qtyKey: keyQty, unitKey: keyUnit}) => {
-										if (!rowItem?.[keyQty]) return null;
+										const sppbItemQty = rowItem?.[keyQty];
+										if (!sppbItemQty || sppbItemQty == 0) return null;
 
 										const maxValue = parseFloat(qtyMax?.[keyQty]?.toString()!);
 

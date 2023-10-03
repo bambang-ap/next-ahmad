@@ -428,6 +428,7 @@ export const tRejectReason = z.nativeEnum(REJECT_REASON);
 export type TScanNew = z.infer<typeof tScanNew>;
 export const tScanNew = zId.extend({
 	id_kanban: z.string(),
+	id_po: z.string(),
 	status: tScanTarget,
 	notes: z.string().nullish(),
 	lot_no_imi: z.string().min(1),
@@ -556,6 +557,6 @@ export const tDashboardView = z
 
 export function getRejectSelection() {
 	return Object.entries(tRejectReason.enum).map<SelectPropsData<REJECT_REASON>>(
-		([label, value]) => ({label: REJECT_REASON_VIEW[value], value}),
+		([, value]) => ({label: REJECT_REASON_VIEW[value], value}),
 	);
 }

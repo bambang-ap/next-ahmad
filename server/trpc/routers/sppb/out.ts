@@ -14,6 +14,7 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	attrParserV2,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -26,6 +27,7 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
+	OrmScanNew,
 	sppbOutGetAttributes,
 	sppbOutGetPoAttributes,
 	wherePagesV2,
@@ -45,7 +47,28 @@ export type GetFGRet = TScan & {
 };
 
 const sppbOutRouters = router({
-	getPO: procedure
+	getPO: procedure.input(zId).query(({ctx, input}) => {
+		const {id: id_customer} = input;
+
+		const po = attrParserV2(OrmCustomerPO);
+		const scn = attrParserV2(OrmScanNew);
+
+		type Ret = typeof po.obj & {
+			OrmScan: typeof scn.obj;
+		};
+
+		return checkCredentialV2(ctx, async () => {
+			const dataPO = await OrmCustomerPO.findAll({
+				logging: true,
+				where: {id_customer},
+				attributes: po.keys,
+				include: [{model: scn.orm, attributes: scn.keys}],
+			});
+
+			return dataPO.map(e => e.dataValues as Ret);
+		});
+	}),
+	getPOO: procedure
 		.input(tCustomerSPPBOut.pick({id_customer: true}).partial())
 		.query(({ctx, input: {id_customer}}) => {
 			type UU = typeof Ret;

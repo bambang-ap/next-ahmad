@@ -73,6 +73,8 @@ export function initRelations() {
 
 	oneToMany(OrmKanban, OrmScanNew, "id_kanban");
 	oneToMany(OrmScanNew, OrmScanNewItem, "id_scan");
+	oneToMany(OrmScanNewItem, OrmKanbanItem, "id_item");
+	oneToMany(OrmCustomerPO, OrmScanNew, "id_po");
 	oneToMany(OrmScanNewItem, OrmScanNewItemReject, "id_item");
 
 	manyToMany(

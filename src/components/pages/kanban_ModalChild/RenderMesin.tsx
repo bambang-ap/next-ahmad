@@ -1,4 +1,4 @@
-import {useEffect} from "react";
+import {createContext, useContext, useEffect} from "react";
 
 import {KanbanFormType} from "pages/app/kanban";
 import {
@@ -16,18 +16,21 @@ import {classNames} from "@utils";
 import {trpc} from "@utils/trpc";
 
 type RenderMesinProps = {
+	disabled?: boolean;
 	masterId: string;
 	idItem: string;
 	control: Control<KanbanFormType>;
 	reset: UseFormReset<KanbanFormType>;
 };
 
+const RenderMesinContext = createContext(false);
+
 export function RenderMesin(props: RenderMesinProps) {
-	const {masterId} = props;
+	const {masterId, disabled = false} = props;
 	const {data} = trpc.item.detail.useQuery(masterId);
 
 	return (
-		<>
+		<RenderMesinContext.Provider value={disabled}>
 			{data?.kategori_mesinn?.map((mesinKategori, i) => {
 				return (
 					<>
@@ -40,7 +43,7 @@ export function RenderMesin(props: RenderMesinProps) {
 					</>
 				);
 			})}
-		</>
+		</RenderMesinContext.Provider>
 	);
 }
 
@@ -55,6 +58,7 @@ export function RenderKategori({
 	itemDetail: TMasterItem;
 	parentProps: RenderMesinProps;
 }) {
+	const isDisabled = useContext(RenderMesinContext);
 	const name: FieldPath<KanbanFormType> = `list_mesin.${parentProps.idItem}.${index}`;
 	const hasSelected = useWatch({control: parentProps.control, name});
 
@@ -69,10 +73,11 @@ export function RenderKategori({
 	return (
 		<div className="flex gap-2">
 			<Select
-				className={classNames("w-1/6", {"mt-4": !!hasSelected})}
-				fieldName={name}
 				label="Mesin"
+				fieldName={name}
+				disabled={isDisabled}
 				control={parentProps.control}
+				className={classNames("w-1/6", {"mt-4": !!hasSelected})}
 				data={selectMapper(availableMesins, "id", "nomor_mesin")}
 			/>
 			{!!hasSelected && (

@@ -21,7 +21,7 @@ export function SppbOutModalChild({
 	const {id_customer, type: modalType, po: listPO} = useWatch({control});
 
 	const {data: poDataa = [], isFetched: isRefetching} =
-		trpc.sppb.out.getPO.useQuery({id_customer}, {enabled: !!id_customer});
+		trpc.sppb.out.getPO.useQuery({id: id_customer!}, {enabled: !!id_customer});
 
 	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut(id_customer);
 	const {isDelete, isEdit} = modalTypeParser(modalType);

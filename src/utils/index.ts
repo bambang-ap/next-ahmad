@@ -54,7 +54,7 @@ export const dateUtils = {
 
 export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 	return poData.map(po => {
-		const uu = po.OrmCustomerSPPBIns.map(bin => {
+		const uu = po.OrmCustomerSPPBIns?.map(bin => {
 			const dd = bin.OrmPOItemSppbIns?.map(item => {
 				const itemInScan = itemInScanParser(bin?.OrmKanbans);
 
@@ -86,7 +86,7 @@ export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 		return {
 			...po,
 			OrmCustomerSPPBIns: uu,
-			isClosed: !uu.map(e => e.isClosed).includes(false),
+			isClosed: !uu?.map(e => e.isClosed).includes(false),
 		};
 	});
 }

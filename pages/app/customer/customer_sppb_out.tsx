@@ -69,6 +69,7 @@ export default function SPPBOUT() {
 				return <SPPBOutGenerateQR detail={pdfData} width={widthSize} />;
 			},
 		},
+		topComponent: <Button onClick={() => showModal({type: "add"})}>Add</Button>,
 		useQuery: form => trpc.sppb.out.get.useQuery(form),
 		renderItem({Cell, CellSelect, item}) {
 			const {id} = item;

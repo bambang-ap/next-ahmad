@@ -258,6 +258,13 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									fieldName="status"
 								/>
 								<Input
+									hidden
+									className="flex-1"
+									control={control}
+									defaultValue={OrmCustomerPO?.id}
+									fieldName="id_po"
+								/>
+								<Input
 									forceEditable
 									control={control}
 									label="ID Kanban"
@@ -266,6 +273,11 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									defaultValue={keys.id}
 									isLoading={isFetching}
 									errorMessage="Data tidak ditemukan"
+									rightAcc={
+										<div className="whitespace-nowrap">
+											{OrmKanban?.keterangan}
+										</div>
+									}
 									isError={isHidden && id_kanban.length > 0}
 								/>
 								<Button icon="faCircleXmark" onClick={removeUid} />
@@ -474,6 +486,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									<Tr>
 										<Td colSpan={colSpan}>
 											<RenderListMesin
+												disabled
 												master_item_id={OrmMasterItem.id}
 												id_item={OrmPOItemSppbIn.id}
 												list_mesin={OrmKanban?.list_mesin!}
@@ -494,7 +507,9 @@ function RenderListMesin({
 	master_item_id,
 	id_item,
 	list_mesin,
+	disabled,
 }: {
+	disabled: boolean;
 	id_item: string;
 	master_item_id?: string;
 	list_mesin: KanbanGetRow["list_mesin"];
@@ -513,6 +528,7 @@ function RenderListMesin({
 	return (
 		<div className="bg-white flex-1">
 			<RenderMesin
+				disabled={disabled}
 				key={keyMesin}
 				reset={reset}
 				control={control}

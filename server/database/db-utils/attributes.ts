@@ -214,7 +214,7 @@ export function getScanAttributesV2() {
 	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
 	const user = attrParserV2(OrmUser, ["name"]);
 	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
-	const po = attrParserV2(OrmCustomerPO, ["nomor_po"]);
+	const po = attrParserV2(OrmCustomerPO, ["id", "nomor_po"]);
 	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
 	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
 	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
