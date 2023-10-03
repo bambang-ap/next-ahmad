@@ -1,6 +1,3 @@
-import {Includeable} from "sequelize";
-import {z} from "zod";
-
 import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
 import {
 	tableFormValue,
@@ -8,9 +5,7 @@ import {
 	tScan,
 	TScanDate,
 	tScanItem,
-	tScanItemReject,
 	tScanNew,
-	tScanNewItem,
 	TScanTarget,
 	tScanTarget,
 	UnitQty,
@@ -30,25 +25,20 @@ import {
 	OrmPOItemSppbIn,
 	OrmScan,
 	OrmScanNew,
-	OrmScanNewItem,
-	OrmScanNewItemReject,
 	OrmScanOrder as scanOrder,
 	OrmUser,
 	scanListAttributes,
 	wherePagesV2,
 } from "@database";
 import {CATEGORY_REJECT_DB} from "@enum";
-import {checkCredentialV2, generateId, pagingResult} from "@server";
+import {checkCredentialV2, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
 import {appRouter} from "@trpc/routers";
 import {TRPCError} from "@trpc/server";
-import {
-	atLeastOneDefined,
-	moment,
-	qtyMap,
-	qtyReduce,
-	scanRouterParser,
-} from "@utils";
+import {moment, qtyMap} from "@utils";
+
+import {getScan} from "./get";
+import {updateScan} from "./update";
 
 export type ScanList = ReturnType<typeof scanListAttributes>["Ret"];
 export type ScanGet = ReturnType<typeof getScanAttributes>["Ret"];
@@ -72,6 +62,8 @@ function enabled(target: TScanTarget, dataScan?: TScan) {
 }
 
 const scanRouters = router({
+	...updateScan,
+	...getScan,
 	editNotes: procedure
 		.input(tScanNew.pick({id: true, status: true, notes: true}).partial())
 		.mutation(({ctx, input: {id, notes, status}}) => {
@@ -181,232 +173,7 @@ const scanRouters = router({
 			return data?.dataValues as typeof Ret;
 		});
 	}),
-	getV3: procedure.input(zId.extend(tRoute.shape)).query(({ctx, input}) => {
-		const {id, route} = input;
 
-		const {
-			scn,
-			knb,
-			scItem,
-			knbItem,
-			user,
-			bin,
-			binItem,
-			cust,
-			sciReject,
-			mItem,
-			po,
-			poItem,
-		} = getScanAttributesV2();
-
-		const includeAble: Includeable = {
-			attributes: knb.keys,
-			include: [
-				{
-					model: user.orm,
-					as: OrmKanban._aliasCreatedBy,
-					attributes: user.keys,
-				},
-				{
-					model: bin.orm,
-					attributes: bin.keys,
-					include: [
-						{
-							model: po.orm,
-							attributes: po.keys,
-							include: [{model: cust.orm, attributes: cust.keys}],
-						},
-					],
-				},
-				{
-					separate: true,
-					attributes: knbItem.keys,
-					model: knbItem.orm,
-					include: [
-						{model: mItem.orm, attributes: mItem.keys},
-						{
-							model: binItem.orm,
-							attributes: binItem.keys,
-							include: [{model: poItem.orm, attributes: poItem.keys}],
-						},
-					],
-				},
-			],
-		};
-
-		function asdd(status: TScanTarget) {
-			return scn.orm.findOne({
-				attributes: scn.keys,
-				where: {id_kanban: id, status},
-				include: [
-					Object.assign(includeAble, {model: knb.orm}),
-					{
-						model: scItem.orm,
-						attributes: scItem.keys,
-						include: [{model: sciReject.orm, attributes: sciReject.keys}],
-					},
-				],
-			});
-		}
-
-		return checkCredentialV2(ctx, async (): Promise<ScanGetV2> => {
-			const {isFG, isProduksi, isQC} = scanRouterParser(route);
-			const status: TScanTarget = isQC ? "produksi" : isFG ? "qc" : route;
-
-			const count = await OrmScanNew.count({
-				where: {status, id_kanban: id},
-				include: [
-					{
-						model: scItem.orm,
-						attributes: scItem.keys,
-						include: [{model: sciReject.orm, attributes: sciReject.keys}],
-					},
-				],
-			});
-
-			if (!isProduksi && count <= 0) {
-				throw new TRPCError({code: "NOT_FOUND"});
-			}
-
-			const data = await asdd(route);
-
-			if (!data) {
-				const prevData = await asdd(
-					route === "qc" ? "produksi" : route === "finish_good" ? "qc" : route,
-				);
-
-				if (prevData) {
-					return {
-						...prevData.dataValues,
-						id: undefined,
-					} as unknown as ScanGetV2;
-				}
-
-				const kanban = await knb.orm.findOne({where: {id}, ...includeAble});
-
-				return {
-					OrmKanban: kanban?.dataValues as unknown as ScanGetV2["OrmKanban"],
-				};
-			}
-
-			return data.dataValues as unknown as ScanGetV2;
-		});
-	}),
-
-	updateV3: procedure
-		.input(
-			tScanNew
-				.partial({id: true})
-				.extend({
-					items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
-					prevItems: z.record(tScanNewItem.partial()),
-					tempRejectedItems: z.record(tScanNewItem.partial()).optional(),
-				})
-				.and(
-					z.union([
-						z.object({reject: z.literal(false)}),
-						z.object({
-							reject: z.literal(true),
-							reason: tScanItemReject.shape.reason,
-							rejectItems: z
-								.record(tScanItemReject.partial().required({qty1: true}))
-								.refine(atLeastOneDefined),
-						}),
-					]),
-				),
-		)
-		.mutation(({ctx, input}) => {
-			const {items, prevItems, status, id_kanban, ...scanData} = input;
-
-			return checkCredentialV2(ctx, async () => {
-				// 	const {id, target, id_customer, lot_no_imi} = input;
-				const existingScan = await OrmScanNew.findOne({
-					where: {id_kanban, status},
-				});
-				const [{dataValues: updatedScan}] = await OrmScanNew.upsert({
-					...scanData,
-					status,
-					id_kanban,
-					id: existingScan?.dataValues.id ?? generateId("SN_"),
-				});
-
-				for (const [id_item, item] of Object.entries(items)) {
-					const qtys = qtyReduce((ret, {qtyKey}) => {
-						return {...ret, [qtyKey]: item[qtyKey]};
-					});
-
-					const existingItem = await OrmScanNewItem.findOne({
-						where: {id_kanban_item: id_item, id_scan: updatedScan.id},
-					});
-					const [{dataValues}] = await OrmScanNewItem.upsert({
-						...qtys,
-						id_scan: updatedScan.id,
-						id_kanban_item: id_item,
-						item_from_kanban: item.item_from_kanban,
-						id: existingItem?.dataValues.id ?? generateId("SNI_"),
-					});
-
-					const outStandingQty = qtyReduce((ret, {qtyKey}) => {
-						const curQty = parseFloat(item?.[qtyKey]?.toString() ?? "0");
-						const prevQty = parseFloat(
-							prevItems?.[id_item]?.[qtyKey]?.toString() ?? "0",
-						);
-						return {...ret, [qtyKey]: prevQty - curQty};
-					});
-
-					const hasOT =
-						Object.values(outStandingQty).filter(Boolean).length > 0;
-
-					if (hasOT) {
-						const kanbanItem = await OrmKanbanItem.findOne({
-							where: {id: id_item},
-						});
-						if (kanbanItem) {
-							const kanbanItemQty = qtyReduce((ret, {qtyKey}) => {
-								const aa = outStandingQty?.[qtyKey];
-								const bb = kanbanItem.dataValues?.[qtyKey];
-								const curQty = parseFloat(aa?.toString() ?? "0");
-								const prevQty = parseFloat(bb?.toString() ?? "0");
-
-								return {
-									...ret,
-									[qtyKey]: !!prevQty ? prevQty - curQty : aa,
-								};
-							});
-
-							await OrmKanbanItem.update(
-								{...kanbanItem.dataValues, ...kanbanItemQty},
-								{where: {id: id_item}},
-							);
-						}
-					}
-
-					if (input.reject) {
-						const {rejectItems, reason} = input;
-
-						const hasRejectValue = qtyMap(({qtyKey}) => {
-							return !!rejectItems?.[id_item]?.[qtyKey];
-						}).includes(true);
-
-						if (hasRejectValue) {
-							// @ts-ignore
-							await OrmScanNewItemReject.create({
-								...rejectItems?.[id_item]!,
-								id: generateId("SIR_"),
-								id_item: dataValues.id,
-								reason,
-							});
-							await OrmScanNew.update(
-								{is_rejected: true},
-								{where: {id: updatedScan.id}},
-							);
-						}
-					}
-				}
-
-				return Success;
-			});
-		}),
 	get: procedure
 		.input(zId.extend({target: tScanTarget}))
 		.query(async ({input: {id, target}, ctx: {req, res}}) => {
