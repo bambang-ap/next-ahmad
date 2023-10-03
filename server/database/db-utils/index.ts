@@ -62,7 +62,9 @@ export function attrParserExclude<T extends {}, K extends keyof T>(
 	return {
 		orm,
 		obj: {} as ObjType,
-		keys: {exclude: attributes} as FindAttributeOptions,
+		keys: (!!attributes
+			? {exclude: attributes}
+			: undefined) as FindAttributeOptions,
 	};
 }
 

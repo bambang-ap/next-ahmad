@@ -1,4 +1,4 @@
-import {Includeable, Op} from "sequelize";
+import {Includeable} from "sequelize";
 import {z} from "zod";
 
 import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
@@ -236,6 +236,7 @@ const scanRouters = router({
 
 		function asdd(status: TScanTarget) {
 			return scn.orm.findOne({
+				attributes: scn.keys,
 				where: {id_kanban: id, status},
 				include: [
 					Object.assign(includeAble, {model: knb.orm}),
@@ -253,15 +254,7 @@ const scanRouters = router({
 			const status: TScanTarget = isQC ? "produksi" : isFG ? "qc" : route;
 
 			const count = await OrmScanNew.count({
-				where: {
-					status,
-					id_kanban: id,
-					...wherePagesV2<ScanGetV2>(
-						["$OrmScanNewItems.OrmScanNewItemRejects.id_item$"],
-						{[Op.is]: null},
-						false,
-					),
-				},
+				where: {status, id_kanban: id},
 				include: [
 					{
 						model: scItem.orm,
@@ -307,6 +300,7 @@ const scanRouters = router({
 				.extend({
 					items: z.record(tScanNewItem.partial({id: true, id_scan: true})),
 					prevItems: z.record(tScanNewItem.partial()),
+					tempRejectedItems: z.record(tScanNewItem.partial()).optional(),
 				})
 				.and(
 					z.union([
@@ -402,6 +396,10 @@ const scanRouters = router({
 								id_item: dataValues.id,
 								reason,
 							});
+							await OrmScanNew.update(
+								{is_rejected: true},
+								{where: {id: updatedScan.id}},
+							);
 						}
 					}
 				}

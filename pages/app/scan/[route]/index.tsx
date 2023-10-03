@@ -98,7 +98,11 @@ export default function Scan() {
 			<Scrollbar>
 				<div className="flex flex-col gap-4">
 					{ids.map(uId => (
-						<RenderNewScanPage key={uId.key} keys={uId} route={route} />
+						<RenderNewScanPage
+							key={`${route}.${uId.key}`}
+							keys={uId}
+							route={route}
+						/>
 					))}
 				</div>
 			</Scrollbar>
@@ -113,10 +117,11 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const {data: session} = useSession();
 	const {mutateOpts, ...loader} = useLoader();
-	const {control, reset, watch, handleSubmit, clearErrors} =
+	const {control, reset, watch, handleSubmit, clearErrors, setValue} =
 		useForm<ScanFormType>({defaultValues: {reject: false}});
 
 	const dataForm = watch();
+
 	const setIds = useSetRecoilState(selectorScanIds.get(route)!);
 
 	const {data, refetch, isSuccess, isFetching} = trpc.scan.getV3.useQuery(
@@ -142,14 +147,17 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
 	const {OrmCustomer} = OrmCustomerPO ?? {};
 
+	const isRejected = data?.is_rejected;
+
 	const {notes = "", id_kanban = ""} = dataForm;
-	const {isProduksi, isQC, width, colSpan} = scanRouterParser(route);
+	const {isProduksi, isQC, width, isFG, colSpan, rejectTitle} =
+		scanRouterParser(route, isRejected);
 
 	const [, , submitText] = scanMapperByStatus(route);
 	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
 
 	const status = route === data?.status;
-	const showReject = isQC && dataForm.reject;
+	const showReject = !isProduksi && dataForm.reject;
 	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
@@ -200,12 +208,23 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	}, [foundedKanbanId]);
 
 	useEffect(() => {
-		if (notes?.length > 0) {
+		if (notes!?.length > 0) {
 			typingCallback(() => {
 				editNotes({notes, id: id_kanban, status: route});
 			}, 1000);
 		}
 	}, [id_kanban, notes, route]);
+
+	useEffect(() => {
+		if (keys.id.length > 0) {
+			reset(prev => ({...prev, id_kanban: keys.id}));
+		}
+	}, [keys.id]);
+
+	useEffect(() => {
+		// @ts-ignore
+		if (isRejected) reset(prev => ({...prev, reject: true}));
+	}, [isRejected]);
 
 	return (
 		<>
@@ -250,7 +269,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									isError={isHidden && id_kanban.length > 0}
 								/>
 								<Button icon="faCircleXmark" onClick={removeUid} />
-								{isQC && (
+								{isQC && !isRejected && (
 									<Button onClick={toggleReject}>
 										{showReject ? "Batal Reject" : "Reject"}
 									</Button>
@@ -285,8 +304,9 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							</Td>
 							{showReject && (
 								<Td className="flex-col" rowSpan={2}>
-									Silahkan sertakan alasan jika Anda ingin menolaknya.
+									{rejectTitle}
 									<Select
+										disabled={isFG}
 										className="flex-1"
 										fieldName="reason"
 										label="Alasan"
@@ -338,15 +358,21 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							const curItem = OrmScanNewItems?.find(
 								e => e.id_kanban_item === id,
 							);
-							const rejectedItem = curItem?.OrmScanNewItemRejects.find(
+							const rejectItem = curItem?.OrmScanNewItemRejects.find(
 								e => e.id_item === curItem.id,
 							);
+
 							const prevItem = (isProduksi ? item : curItem) as UnitQty &
 								Pick<TScanNewItem, "item_from_kanban">;
 
 							const prevItemKanban = isProduksi
 								? curItem?.item_from_kanban ?? prevItem
 								: prevItem;
+
+							// @
+							if (!!rejectItem?.reason && dataForm.reject && !dataForm.reason) {
+								setValue("reason", rejectItem?.reason);
+							}
 
 							return (
 								<Fragment key={id}>
@@ -359,9 +385,10 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 										/>
 										<Td>{OrmMasterItem.kode_item}</Td>
 										<Td>{OrmMasterItem.name}</Td>
-										<Td>
+										<Td className="gap-2">
 											{qtyMap(({unitKey, qtyKey, num}) => {
 												if (!poItem[unitKey]) return null;
+
 												return (
 													<Input
 														className="flex-1"
@@ -434,7 +461,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 															shouldUnregister
 															rightAcc={<Text>{poItem[unitKey]}</Text>}
 															fieldName={`rejectItems.${id}.${qtyKey}`}
-															defaultValue={rejectedItem?.[qtyKey]!.toString()}
+															defaultValue={rejectItem?.[qtyKey]!.toString()}
 															rules={{
 																max: {value: max, message: `Max is ${max}`},
 															}}

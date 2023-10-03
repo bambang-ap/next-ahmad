@@ -2,7 +2,12 @@ import {z} from "zod";
 
 import {SelectPropsData} from "@components";
 import {defaultLimit} from "@constants";
-import {CATEGORY_REJECT_DB, CRUD_ENABLED, REJECT_REASON} from "@enum";
+import {
+	CATEGORY_REJECT_DB,
+	CRUD_ENABLED,
+	REJECT_REASON,
+	REJECT_REASON_VIEW,
+} from "@enum";
 
 export type TDecimal = z.infer<typeof zDecimal>;
 export const zDecimal = z
@@ -424,7 +429,7 @@ export type TScanNew = z.infer<typeof tScanNew>;
 export const tScanNew = zId.extend({
 	id_kanban: z.string(),
 	status: tScanTarget,
-	notes: z.string().optional(),
+	notes: z.string().nullish(),
 	lot_no_imi: z.string().min(1),
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
@@ -551,6 +556,6 @@ export const tDashboardView = z
 
 export function getRejectSelection() {
 	return Object.entries(tRejectReason.enum).map<SelectPropsData<REJECT_REASON>>(
-		([label, value]) => ({label, value}),
+		([label, value]) => ({label: REJECT_REASON_VIEW[value], value}),
 	);
 }

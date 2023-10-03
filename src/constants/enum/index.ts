@@ -23,9 +23,15 @@ export enum PO_STATUS {
 }
 
 export enum REJECT_REASON {
-	"Test Piece" = "TP",
-	"Re-Process" = "RP",
-	"Scrap" = "SC",
+	TP = "TP",
+	RP = "RP",
+	SC = "SC",
+}
+
+export enum REJECT_REASON_VIEW {
+	TP = "Test Piece",
+	RP = "Re-Process",
+	SC = "Scrap",
 }
 
 export enum TABLES {

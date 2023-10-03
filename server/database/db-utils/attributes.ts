@@ -203,7 +203,7 @@ export function printScanAttributes(route: TScanTarget) {
 }
 
 export function getScanAttributesV2() {
-	const scn = attrParserExclude(OrmScanNew, ["is_rejected", "id_kanban"]);
+	const scn = attrParserExclude(OrmScanNew, ["id_kanban"]);
 	const knb = attrParserV2(OrmKanban, [
 		"id",
 		"list_mesin",
@@ -218,7 +218,7 @@ export function getScanAttributesV2() {
 	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
 	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
 	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
-	const sciReject = attrParserExclude(OrmScanNewItemReject, ["reason"]);
+	const sciReject = attrParserV2(OrmScanNewItemReject);
 	const poItem = attrParserV2(OrmCustomerPOItem, ["unit1", "unit2", "unit3"]);
 
 	type Ret = Partial<typeof scn.obj> & {

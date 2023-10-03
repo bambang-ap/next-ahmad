@@ -196,7 +196,7 @@ export function copyToClipboard(str: string) {
 	alert("Token copied");
 }
 
-export function scanRouterParser(route: Route["route"]) {
+export function scanRouterParser(route: Route["route"], isRejected?: boolean) {
 	const isProduksi = route === "produksi";
 	const isQC = route === "qc";
 	const isFG = route === "finish_good";
@@ -214,8 +214,13 @@ export function scanRouterParser(route: Route["route"]) {
 		isFG,
 		title,
 		isProduksi,
-		colSpan: isQC ? 5 : 4,
-		width: isQC ? "20%" : "25%",
+		colSpan: !isProduksi ? 5 : 4,
+		width: !isProduksi ? "20%" : "25%",
+		rejectTitle: isRejected
+			? "Alasan reject"
+			: isQC
+			? "Silahkan sertakan alasan jika Anda ingin menolaknya."
+			: "",
 	};
 }
 
