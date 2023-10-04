@@ -7,12 +7,7 @@ import {
 	UnitQty,
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
-import {
-	OrmKanbanItem,
-	OrmScanNew,
-	OrmScanNewItem,
-	OrmScanNewItemReject,
-} from "@database";
+import {dRejItem, dScan, dScanItem, OrmKanbanItem} from "@database";
 import {REJECT_REASON} from "@enum";
 import {checkCredentialV2, generateId} from "@server";
 import {procedure} from "@trpc";
@@ -71,10 +66,10 @@ export const updateScan = {
 
 			return checkCredentialV2(ctx, async () => {
 				// 	const {id, target, id_customer, lot_no_imi} = input;
-				const existingScan = await OrmScanNew.findOne({
+				const existingScan = await dScan.findOne({
 					where: {id_kanban, status},
 				});
-				const [{dataValues: updatedScan}] = await OrmScanNew.upsert({
+				const [{dataValues: updatedScan}] = await dScan.upsert({
 					...scanData,
 					status,
 					id_kanban,
@@ -86,10 +81,10 @@ export const updateScan = {
 						return {...ret, [qtyKey]: item[qtyKey]};
 					});
 
-					const existingItem = await OrmScanNewItem.findOne({
+					const existingItem = await dScanItem.findOne({
 						where: {id_kanban_item: id_item, id_scan: updatedScan.id},
 					});
-					const [{dataValues}] = await OrmScanNewItem.upsert({
+					const [{dataValues}] = await dScanItem.upsert({
 						...qtys,
 						id_scan: updatedScan.id,
 						id_kanban_item: id_item,
@@ -113,12 +108,12 @@ export const updateScan = {
 						}).includes(true);
 
 						if (hasRejectValue) {
-							await OrmScanNew.update(
+							await dScan.update(
 								{is_rejected: true},
 								{where: {id: updatedScan.id}},
 							);
 
-							await OrmScanNewItemReject.create({
+							await dRejItem.create({
 								...rejectItems?.[id_item]!,
 								id: generateId("SIR_"),
 								id_item: dataValues.id,

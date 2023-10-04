@@ -128,7 +128,7 @@ export function SppbOutModalChild({
 									</Button>
 								</div>
 								{po.sppb_in?.map((sppb, ii) => {
-									const sppbInSelected = poSelected?.OrmCustomerSPPBIns.find(
+									const sppbInSelected = poSelected?.dSJIns.find(
 										e => e.id === sppb.id_sppb_in,
 									);
 
@@ -137,11 +137,11 @@ export function SppbOutModalChild({
 
 									const dd = listItems?.map(item => {
 										const itemInScan = itemInScanParser(
-											sppbInSelected?.OrmKanbans,
+											sppbInSelected?.dKanbans,
 										);
 
 										const currentQty = qtyReduce((ret, {qtyKey: num}) => {
-											item.OrmCustomerSPPBOutItems.forEach(itm => {
+											item.dOutItems.forEach(itm => {
 												ret[num] += itm[num]!;
 											});
 											return ret;
@@ -150,11 +150,10 @@ export function SppbOutModalChild({
 										return {...item, itemInScan, currentQty};
 									});
 
-									const availableSppbIn =
-										poSelected?.OrmCustomerSPPBIns?.filter(e => {
-											if (sppb.id_sppb_in === e.id) return true;
-											return !e.isClosed || !selectedSppbInIds.includes(e.id);
-										});
+									const availableSppbIn = poSelected?.dSJIns?.filter(e => {
+										if (sppb.id_sppb_in === e.id) return true;
+										return !e?.isClosed || !selectedSppbInIds.includes(e.id);
+									});
 
 									const sppbInSelection = selectMapper(
 										availableSppbIn ?? [],
@@ -198,18 +197,18 @@ export function SppbOutModalChild({
 												]}
 												renderItem={({Cell, item}) => {
 													const {
-														OrmMasterItem,
+														dItem: OrmMasterItem,
 														id: id_item,
 														lot_no,
 														currentQty,
-														OrmCustomerPOItem,
-														OrmCustomerSPPBOutItems,
+														dPoItem: OrmCustomerPOItem,
+														dOutItems: OrmCustomerSPPBOutItems,
 														itemInScan,
 													} = item ?? {};
 													const items = sppb.items?.[id_item];
-													const lot_no_imi = sppbInSelected?.OrmKanbans?.map(
-														e => e.OrmScans?.[0]?.lot_no_imi,
-													).join(" | ");
+													const lot_no_imi = sppbInSelected?.dKanbans
+														?.map(e => e.dScans?.[0]?.lot_no_imi)
+														.join(" | ");
 
 													const hj = OrmCustomerSPPBOutItems.find(
 														e => e.id === items?.id,

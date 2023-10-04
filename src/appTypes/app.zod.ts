@@ -434,6 +434,7 @@ export const tScanNew = zId.extend({
 	lot_no_imi: z.string().min(1),
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
+	id_qc: z.string().nullish(),
 });
 
 export type TScanNewItem = z.infer<typeof tScanNewItem>;

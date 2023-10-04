@@ -13,6 +13,7 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	dScan,
 	getScanAttributes,
 	getScanAttributesV2,
 	OrmCustomer,
@@ -24,7 +25,6 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
-	OrmScanNew,
 	OrmScanOrder as scanOrder,
 	OrmUser,
 	scanListAttributes,
@@ -68,7 +68,7 @@ const scanRouters = router({
 		.input(tScanNew.pick({id: true, status: true, notes: true}).partial())
 		.mutation(({ctx, input: {id, notes, status}}) => {
 			return checkCredentialV2(ctx, async () => {
-				await OrmScanNew.update({notes}, {where: {id_kanban: id, status}});
+				await dScan.update({notes}, {where: {id_kanban: id, status}});
 
 				return Success;
 			});

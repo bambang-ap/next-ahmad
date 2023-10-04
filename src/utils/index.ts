@@ -79,7 +79,7 @@ export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 			return {
 				...bin,
 				OrmPOItemSppbIns: dd,
-				isClosed: !dd.map(e => e.isClosed).includes(false),
+				isClosed: !dd?.map(e => e.isClosed).includes(false),
 			};
 		});
 

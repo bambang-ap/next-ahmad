@@ -29,3 +29,27 @@ export default function initOrmCustomerSPPBOutItem(sequelize: Sequelize) {
 
 	return OrmCustomerSPPBOutItem;
 }
+
+export class dOutItem extends Model<TCustomerSPPBOutItem> {}
+
+export function initOutItem(sequelize: Sequelize) {
+	dOutItem.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			id_item: STRING,
+			id_sppb_out: STRING,
+			...unitQtyField,
+		},
+		{
+			sequelize,
+			tableName: TABLES.CUSTOMER_SPPB_OUT_ITEM,
+			defaultScope: {
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dOutItem;
+}

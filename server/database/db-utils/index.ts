@@ -10,7 +10,14 @@ import {
 	Order,
 	WhereAttributeHashValue,
 } from "sequelize";
-import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from "zod";
+import {
+	noUnrecognized,
+	objectKeyMask,
+	Primitive,
+	z,
+	ZodObject,
+	ZodRawShape,
+} from "zod";
 
 import {
 	Context,
@@ -47,22 +54,23 @@ export function attrParser<
 }
 
 export function attrParserV2<T extends {}, K extends keyof T>(
-	orm: ModelStatic<Model<T>>,
+	model: ModelStatic<Model<T>>,
 	attributes?: K[],
 ) {
 	type ObjType = Pick<T, K>;
-	return {orm, obj: {} as ObjType, keys: attributes};
+	// TODO: orm->model keys->attributes (spread op can be done)
+	return {model, obj: {} as ObjType, attributes};
 }
 export function attrParserExclude<T extends {}, K extends keyof T>(
-	orm: ModelStatic<Model<T>>,
+	model: ModelStatic<Model<T>>,
 	attributes?: K[],
 ) {
 	type Keys = Exclude<keyof T, K>;
 	type ObjType = Pick<T, Keys>;
 	return {
-		orm,
+		model,
 		obj: {} as ObjType,
-		keys: (!!attributes
+		attributes: (!!attributes
 			? {exclude: attributes}
 			: undefined) as FindAttributeOptions,
 	};
@@ -114,6 +122,22 @@ export function wherePagesV2<T extends {}>(
 	return {
 		[Op.or]: searchKey.map(key => {
 			return {[key]: !like ? search : {[Op.iLike]: `%${search}%`}};
+		}),
+	};
+}
+
+export function wherePagesV3<T extends {}>(
+	searchKey: Partial<
+		Record<
+			Path<ObjectNonArray<T>> | `$${Path<ObjectNonArray<T>>}$`,
+			Primitive | WhereAttributeHashValue<any>
+		>
+	>,
+): any {
+	return {
+		[Op.and]: Object.entries(searchKey).map(keys => {
+			const [key, value] = keys;
+			return {[key]: value};
 		}),
 	};
 }

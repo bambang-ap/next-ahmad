@@ -4,10 +4,10 @@ import {
 	TCustomerSPPBOutItem,
 	TCustomerSPPBOutUpsert,
 	TKanbanUpsertItem,
+	TScanTarget,
 } from "@appTypes/app.type";
 import {
 	tableFormValue,
-	tCustomerSPPBOut,
 	tCustomerSPPBOutUpsert,
 	TScan,
 	zId,
@@ -15,6 +15,17 @@ import {
 import {Success} from "@constants";
 import {
 	attrParserV2,
+	dInItem,
+	dItem,
+	dKanban,
+	dKnbItem,
+	dOutItem,
+	dPo,
+	dPoItem,
+	dRejItem,
+	dScan,
+	dScanItem,
+	dSJIn,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -27,10 +38,10 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
-	OrmScanNew,
 	sppbOutGetAttributes,
 	sppbOutGetPoAttributes,
 	wherePagesV2,
+	wherePagesV3,
 } from "@database";
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
 import {procedure, router} from "@trpc";
@@ -50,73 +61,135 @@ const sppbOutRouters = router({
 	getPO: procedure.input(zId).query(({ctx, input}) => {
 		const {id: id_customer} = input;
 
-		const po = attrParserV2(OrmCustomerPO);
-		const scn = attrParserV2(OrmScanNew);
+		const knb = attrParserV2(dKanban, ["id"]);
+		const bin = attrParserV2(dSJIn);
+		const po = attrParserV2(dPo);
+		const scn = attrParserV2(dScan, ["lot_no_imi", "status"]);
+		const scnItem = attrParserV2(dScanItem, ["qty1"]);
+		const rejItem = attrParserV2(dRejItem, ["qty1"]);
+		const item = attrParserV2(dItem, ["name", "kode_item", "id"]);
+		const inItem = attrParserV2(dInItem, [
+			"id",
+			"qty1",
+			"qty2",
+			"qty3",
+			"lot_no",
+		]);
+		const outItem = attrParserV2(dOutItem, ["id", "qty1", "qty2", "qty3"]);
+		const poItem = attrParserV2(dPoItem, ["id", "unit1", "unit2", "unit3"]);
+		const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
 
 		type Ret = typeof po.obj & {
-			OrmScan: typeof scn.obj;
+			dSJIns: (typeof bin.obj & {
+				dKanbans: (typeof knb.obj & {
+					dScans: (typeof scn.obj & {
+						dScanItems: typeof scnItem.obj[];
+						[dScan._aliasReject]: typeof scn.obj & {
+							dScanItems: (typeof scnItem.obj & {
+								dRejItems: typeof rejItem.obj[];
+							})[];
+						};
+					})[];
+				})[];
+				OrmPOItemSppbIns: (typeof inItem.obj & {
+					dItem: typeof item.obj;
+					dPoItem: typeof poItem.obj;
+					dKnbItems: typeof knbItem.obj[];
+					dOutItems: typeof outItem.obj[];
+				})[];
+			})[];
 		};
 
 		return checkCredentialV2(ctx, async () => {
-			const dataPO = await OrmCustomerPO.findAll({
+			const wherer = wherePagesV3<Ret>({
+				"$dSJIns.dKanbans.dScans.status$": "finish_good" as TScanTarget,
+				// "$dSJIns.id$": {[Op.not]: null},
+				// "$dSJIns.dKanbans.id$": {[Op.not]: null},
+			});
+
+			const dataPO = await po.model.findAll({
 				logging: true,
-				where: {id_customer},
-				attributes: po.keys,
-				include: [{model: scn.orm, attributes: scn.keys}],
+				attributes: po.attributes,
+				where: {id_customer, ...wherer},
+				include: [
+					{
+						...bin,
+						include: [
+							{
+								...inItem,
+								include: [item, poItem, outItem],
+							},
+							{
+								...knb,
+								include: [
+									knbItem,
+									{
+										...scn,
+										include: [
+											scnItem,
+											{
+												...scn,
+												as: dScan._aliasReject,
+												include: [{...scnItem, include: [rejItem]}],
+											},
+										],
+									},
+								],
+							},
+						],
+					},
+				],
 			});
 
 			return dataPO.map(e => e.dataValues as Ret);
 		});
 	}),
-	getPOO: procedure
-		.input(tCustomerSPPBOut.pick({id_customer: true}).partial())
-		.query(({ctx, input: {id_customer}}) => {
-			type UU = typeof Ret;
+	getPOD: procedure.input(zId).query(({ctx, input: {id: id_customer}}) => {
+		type UU = typeof Ret;
 
-			const {A, B, C, D, E, F, G, H, I, Ret} = sppbOutGetPoAttributes();
+		const {A, B, C, D, E, F, G, H, I, Ret} = sppbOutGetPoAttributes();
 
-			return checkCredentialV2(ctx, async () => {
-				const dataPO = await OrmCustomerPO.findAll({
-					attributes: C.keys,
-					where: {
-						id_customer,
-						"$OrmCustomerSPPBIns->OrmKanbans->OrmScans.status_finish_good$":
-							true,
+		return checkCredentialV2(ctx, async () => {
+			const dataPO = await OrmCustomerPO.findAll({
+				attributes: C.keys,
+				where: {
+					id_customer,
+					"$OrmCustomerSPPBIns->OrmKanbans->OrmScans.status_finish_good$": true,
+				},
+				include: [
+					{
+						attributes: B.keys,
+						model: OrmCustomerSPPBIn,
+						include: [
+							{
+								model: OrmKanban,
+								attributes: A.keys,
+								include: [
+									{model: OrmScan, attributes: D.keys},
+									{model: OrmKanbanItem, attributes: I.keys},
+								],
+							},
+							{
+								model: OrmPOItemSppbIn,
+								attributes: E.keys,
+								include: [
+									{model: OrmMasterItem, attributes: G.keys},
+									{model: OrmCustomerPOItem, attributes: H.keys},
+									{
+										separate: true,
+										attributes: F.keys,
+										model: OrmCustomerSPPBOutItem,
+									},
+								],
+							},
+						],
 					},
-					include: [
-						{
-							attributes: B.keys,
-							model: OrmCustomerSPPBIn,
-							include: [
-								{
-									model: OrmKanban,
-									attributes: A.keys,
-									include: [
-										{model: OrmScan, attributes: D.keys},
-										{model: OrmKanbanItem, attributes: I.keys},
-									],
-								},
-								{
-									model: OrmPOItemSppbIn,
-									attributes: E.keys,
-									include: [
-										{model: OrmMasterItem, attributes: G.keys},
-										{model: OrmCustomerPOItem, attributes: H.keys},
-										{
-											separate: true,
-											attributes: F.keys,
-											model: OrmCustomerSPPBOutItem,
-										},
-									],
-								},
-							],
-						},
-					],
-				});
-
-				return dataPO.map(e => e.dataValues as UU);
+				],
 			});
-		}),
+
+			return dataPO.map(e => e.dataValues as UU);
+		});
+	}),
 	getInvoice: procedure.query(() =>
 		genInvoice(
 			OrmCustomerSPPBOut,
@@ -134,7 +207,6 @@ const sppbOutRouters = router({
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
 			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
 				limit,
-				logging: true,
 				offset: (page - 1) * limit,
 				where: wherePagesV2<RetType>(
 					[

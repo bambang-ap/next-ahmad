@@ -46,3 +46,13 @@ export function oneToMany<M extends object, B extends object>(
 	sourceOrm.hasMany(targetOrm, {foreignKey});
 	targetOrm.belongsTo(sourceOrm, {foreignKey, as: alias});
 }
+
+export function oneToOne<M extends object, B extends object>(
+	sourceOrm: ModelStatic<Model<M>>,
+	targetOrm: ModelStatic<Model<B>>,
+	foreignKey: ObjKeyof<B>,
+	alias?: string,
+) {
+	sourceOrm.hasOne(targetOrm, {foreignKey});
+	targetOrm.belongsTo(sourceOrm, {foreignKey, as: alias});
+}

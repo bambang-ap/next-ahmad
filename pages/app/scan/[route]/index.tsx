@@ -3,7 +3,7 @@ import {FormEventHandler, Fragment, useEffect, useState} from "react";
 import {useSession} from "next-auth/react";
 import {useRouter} from "next/router";
 import {KanbanFormType} from "pages/app/kanban";
-import {useForm} from "react-hook-form";
+import {FieldPath, useForm} from "react-hook-form";
 import {useRecoilState, useSetRecoilState} from "recoil";
 
 import {
@@ -137,7 +137,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		},
 	});
 
-	const {OrmKanban, OrmScanNewItems} = data ?? {};
+	const {OrmKanban, dScanItems} = data ?? {};
 	const {
 		id: foundedKanbanId,
 		OrmCustomerSPPBIn,
@@ -157,7 +157,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
 
 	const status = route === data?.status;
-	const showReject = !isProduksi && dataForm.reject;
+	const showReject = !isProduksi && (dataForm.reject || isRejected);
 	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
@@ -220,11 +220,6 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 			reset(prev => ({...prev, id_kanban: keys.id}));
 		}
 	}, [keys.id]);
-
-	useEffect(() => {
-		// @ts-ignore
-		if (isRejected) reset(prev => ({...prev, reject: true}));
-	}, [isRejected]);
 
 	return (
 		<>
@@ -367,10 +362,8 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							const {id, OrmMasterItem, OrmPOItemSppbIn, ...item} = restItem;
 							const poItem = OrmPOItemSppbIn.OrmCustomerPOItem;
 
-							const curItem = OrmScanNewItems?.find(
-								e => e.id_kanban_item === id,
-							);
-							const rejectItem = curItem?.OrmScanNewItemRejects.find(
+							const curItem = dScanItems?.find(e => e.id_kanban_item === id);
+							const rejectItem = curItem?.dRejItems.find(
 								e => e.id_item === curItem.id,
 							);
 
@@ -464,20 +457,35 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 																"0",
 														);
 
+													// @ts-ignore
+													const fieldName: FieldPath<ScanFormType> = isFG
+														? `temp.${id}.${qtyKey}`
+														: `rejectItems.${id}.${qtyKey}`;
+
 													return (
-														<Input
-															className="flex-1"
-															label={`Qty ${num}`}
-															control={control}
-															type="decimal"
-															shouldUnregister
-															rightAcc={<Text>{poItem[unitKey]}</Text>}
-															fieldName={`rejectItems.${id}.${qtyKey}`}
-															defaultValue={rejectItem?.[qtyKey]!.toString()}
-															rules={{
-																max: {value: max, message: `Max is ${max}`},
-															}}
-														/>
+														<>
+															<Input
+																className="flex-1"
+																label={`Qty ${num}`}
+																control={control}
+																type="decimal"
+																shouldUnregister
+																fieldName={fieldName}
+																disabled={isFG}
+																rightAcc={<Text>{poItem[unitKey]}</Text>}
+																defaultValue={rejectItem?.[qtyKey]!.toString()}
+																rules={
+																	isFG
+																		? {}
+																		: {
+																				max: {
+																					value: max,
+																					message: `Max is ${max}`,
+																				},
+																		  }
+																}
+															/>
+														</>
 													);
 												})}
 											</Td>

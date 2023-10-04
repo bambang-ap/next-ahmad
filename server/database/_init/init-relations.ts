@@ -1,6 +1,18 @@
 import {
+	dInItem,
+	dItem,
+	dKanban,
+	dKnbItem,
+	dOutItem,
+	dPo,
+	dPoItem,
+	dRejItem,
+	dScan,
+	dScanItem,
+	dSJIn,
 	manyToMany,
 	oneToMany,
+	oneToOne,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -22,9 +34,6 @@ import {
 	OrmParameterKategori,
 	OrmPOItemSppbIn,
 	OrmScan,
-	OrmScanNew,
-	OrmScanNewItem,
-	OrmScanNewItemReject,
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
@@ -71,11 +80,24 @@ export function initRelations() {
 	oneToMany(OrmMaterialKategori, OrmMaterial, "id_kategori");
 	oneToMany(OrmParameterKategori, OrmParameter, "id_kategori");
 
-	oneToMany(OrmKanban, OrmScanNew, "id_kanban");
-	oneToMany(OrmScanNew, OrmScanNewItem, "id_scan");
-	oneToMany(OrmScanNewItem, OrmKanbanItem, "id_item");
-	oneToMany(OrmCustomerPO, OrmScanNew, "id_po");
-	oneToMany(OrmScanNewItem, OrmScanNewItemReject, "id_item");
+	oneToMany(OrmKanban, dScan, "id_kanban");
+	oneToMany(dScan, dScanItem, "id_scan");
+	oneToMany(dScanItem, OrmKanbanItem, "id_item");
+	oneToMany(OrmCustomerPO, dScan, "id_po");
+	oneToMany(dScanItem, dRejItem, "id_item");
+
+	// New Models
+	oneToMany(dPo, dSJIn, "id_po");
+	oneToMany(dSJIn, dKanban, "id_sppb_in");
+	oneToMany(dKanban, dKnbItem, "id_kanban");
+	oneToMany(dScanItem, dKnbItem, "id_item");
+	oneToMany(dKanban, dScan, "id_kanban");
+	oneToMany(dSJIn, dInItem, "id_sppb_in");
+	oneToMany(dInItem, dOutItem, "id_item");
+	oneToMany(dItem, dInItem, "master_item_id");
+	oneToMany(dPoItem, dInItem, "id_item");
+
+	oneToOne(dScan, dScan, "id_qc", dScan._aliasReject);
 
 	manyToMany(
 		[OrmSupplier, "id"],

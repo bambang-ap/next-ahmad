@@ -20,6 +20,9 @@ import {
 	attrParser,
 	attrParserExclude,
 	attrParserV2,
+	dRejItem,
+	dScan,
+	dScanItem,
 	NumberOrderAttribute,
 	OrmCustomer,
 	OrmCustomerPO,
@@ -29,9 +32,6 @@ import {
 	OrmKanbanItem,
 	OrmMasterItem,
 	OrmPOItemSppbIn,
-	OrmScanNew,
-	OrmScanNewItem,
-	OrmScanNewItemReject,
 	OrmUser,
 } from "@database";
 import {PO_STATUS} from "@enum";
@@ -203,14 +203,14 @@ export function printScanAttributes(route: TScanTarget) {
 }
 
 export function getScanAttributesV2() {
-	const scn = attrParserExclude(OrmScanNew, ["id_kanban"]);
+	const scn = attrParserExclude(dScan, ["id_kanban"]);
 	const knb = attrParserV2(OrmKanban, [
 		"id",
 		"list_mesin",
 		"keterangan",
 		"createdAt",
 	]);
-	const scItem = attrParserExclude(OrmScanNewItem, ["id_scan"]);
+	const scItem = attrParserExclude(dScanItem, ["id_scan"]);
 	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
 	const user = attrParserV2(OrmUser, ["name"]);
 	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
@@ -218,18 +218,23 @@ export function getScanAttributesV2() {
 	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
 	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
 	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
-	const sciReject = attrParserV2(OrmScanNewItemReject);
+	const sciReject = attrParserV2(dRejItem);
 	const poItem = attrParserV2(OrmCustomerPOItem, ["unit1", "unit2", "unit3"]);
 
 	type Ret = Partial<typeof scn.obj> & {
-		OrmScanNewItems?: (typeof scItem.obj & {
-			OrmScanNewItemRejects: typeof sciReject.obj[];
+		dScanItems?: (typeof scItem.obj & {
+			dRejItems: typeof sciReject.obj[];
 		})[];
 		OrmKanban: typeof knb.obj & {
 			[OrmKanban._aliasCreatedBy]: typeof user.obj;
 			OrmCustomerSPPBIn: typeof bin.obj & {
 				OrmCustomerPO: typeof po.obj & {OrmCustomer: typeof cust.obj};
 			};
+			dScans: (typeof scn.obj & {
+				dScanItems: (typeof scItem.obj & {
+					dRejItems: typeof sciReject.obj;
+				})[];
+			})[];
 			OrmKanbanItems: (typeof knbItem.obj & {
 				OrmMasterItem: typeof mItem.obj;
 				OrmPOItemSppbIn: typeof binItem.obj & {

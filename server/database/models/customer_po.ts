@@ -33,3 +33,33 @@ export default function initOrmCustomerPO(sequelize: Sequelize) {
 
 	return OrmCustomerPO;
 }
+
+export class dPo extends Model<TCustomerPO> {}
+
+export function initDPo(sequelize: Sequelize) {
+	dPo.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			id_customer: {type: DataTypes.STRING},
+			nomor_po: {type: DataTypes.STRING},
+			tgl_po: {type: DataTypes.STRING},
+			due_date: {type: DataTypes.STRING},
+		},
+		{
+			sequelize,
+			tableName: TABLES.CUSTOMER_PO,
+			defaultScope: {
+				order: [
+					...defaultOrderBy.order,
+					["tgl_po", "asc"],
+					["nomor_po", "asc"],
+				],
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dPo;
+}

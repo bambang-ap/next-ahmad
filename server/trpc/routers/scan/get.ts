@@ -1,7 +1,7 @@
 import {Includeable} from "sequelize";
 
 import {tRoute, TScanTarget, zId} from "@appTypes/app.zod";
-import {getScanAttributesV2, OrmKanban, OrmScanNew} from "@database";
+import {dScan, getScanAttributesV2, OrmKanban} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure} from "@trpc";
 import {TRPCError} from "@trpc/server";
@@ -29,34 +29,34 @@ export const getScan = {
 		} = getScanAttributesV2();
 
 		const includeAble: Includeable = {
-			attributes: knb.keys,
+			attributes: knb.attributes,
 			include: [
 				{
-					model: user.orm,
+					model: user.model,
 					as: OrmKanban._aliasCreatedBy,
-					attributes: user.keys,
+					attributes: user.attributes,
 				},
 				{
-					model: bin.orm,
-					attributes: bin.keys,
+					model: bin.model,
+					attributes: bin.attributes,
 					include: [
 						{
-							model: po.orm,
-							attributes: po.keys,
-							include: [{model: cust.orm, attributes: cust.keys}],
+							model: po.model,
+							attributes: po.attributes,
+							include: [{model: cust.model, attributes: cust.attributes}],
 						},
 					],
 				},
 				{
 					separate: true,
-					attributes: knbItem.keys,
-					model: knbItem.orm,
+					attributes: knbItem.attributes,
+					model: knbItem.model,
 					include: [
-						{model: mItem.orm, attributes: mItem.keys},
+						{model: mItem.model, attributes: mItem.attributes},
 						{
-							model: binItem.orm,
-							attributes: binItem.keys,
-							include: [{model: poItem.orm, attributes: poItem.keys}],
+							model: binItem.model,
+							attributes: binItem.attributes,
+							include: [{model: poItem.model, attributes: poItem.attributes}],
 						},
 					],
 				},
@@ -64,15 +64,17 @@ export const getScan = {
 		};
 
 		function asdd(status: TScanTarget) {
-			return scn.orm.findOne({
-				attributes: scn.keys,
+			return scn.model.findOne({
+				attributes: scn.attributes,
 				where: {id_kanban: id, status},
 				include: [
-					Object.assign(includeAble, {model: knb.orm}),
+					Object.assign(includeAble, {model: knb.model}),
 					{
-						model: scItem.orm,
-						attributes: scItem.keys,
-						include: [{model: sciReject.orm, attributes: sciReject.keys}],
+						model: scItem.model,
+						attributes: scItem.attributes,
+						include: [
+							{model: sciReject.model, attributes: sciReject.attributes},
+						],
 					},
 				],
 			});
@@ -82,13 +84,15 @@ export const getScan = {
 			const {isFG, isProduksi, isQC} = scanRouterParser(route);
 			const status: TScanTarget = isQC ? "produksi" : isFG ? "qc" : route;
 
-			const count = await OrmScanNew.count({
+			const count = await dScan.count({
 				where: {status, id_kanban: id},
 				include: [
 					{
-						model: scItem.orm,
-						attributes: scItem.keys,
-						include: [{model: sciReject.orm, attributes: sciReject.keys}],
+						model: scItem.model,
+						attributes: scItem.attributes,
+						include: [
+							{model: sciReject.model, attributes: sciReject.attributes},
+						],
 					},
 				],
 			});
@@ -111,7 +115,7 @@ export const getScan = {
 					} as unknown as ScanGetV2;
 				}
 
-				const kanban = await knb.orm.findOne({where: {id}, ...includeAble});
+				const kanban = await knb.model.findOne({where: {id}, ...includeAble});
 
 				return {
 					OrmKanban: kanban?.dataValues as unknown as ScanGetV2["OrmKanban"],

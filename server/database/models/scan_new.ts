@@ -6,10 +6,12 @@ import {TABLES} from "@enum";
 
 import {unitQtyField} from "./customer_po_item";
 
-export class OrmScanNew extends Model<TScanNew> {}
+export class dScan extends Model<TScanNew> {
+	static _aliasReject = "rejScan" as const;
+}
 
-export function initOrmScanNew(sequelize: Sequelize) {
-	OrmScanNew.init(
+export function initdScan(sequelize: Sequelize) {
+	dScan.init(
 		{
 			id: {type: STRING, primaryKey: true},
 			id_kanban: STRING,
@@ -18,6 +20,8 @@ export function initOrmScanNew(sequelize: Sequelize) {
 			status: STRING,
 			notes: STRING,
 			is_rejected: BOOLEAN,
+			id_po: STRING,
+			id_qc: STRING,
 		},
 		{
 			sequelize,
@@ -26,13 +30,13 @@ export function initOrmScanNew(sequelize: Sequelize) {
 		},
 	);
 
-	return OrmScanNew;
+	return dScan;
 }
 
-export class OrmScanNewItem extends Model<TScanNewItem> {}
+export class dScanItem extends Model<TScanNewItem> {}
 
-export function initOrmScanNewItem(sequelize: Sequelize) {
-	OrmScanNewItem.init(
+export function initdScanItem(sequelize: Sequelize) {
+	dScanItem.init(
 		{
 			...unitQtyField,
 			id_scan: STRING,
@@ -47,13 +51,13 @@ export function initOrmScanNewItem(sequelize: Sequelize) {
 		},
 	);
 
-	return OrmScanNewItem;
+	return dScanItem;
 }
 
-export class OrmScanNewItemReject extends Model<TScanRejectItem> {}
+export class dRejItem extends Model<TScanRejectItem> {}
 
-export function initOrmScanNewItemReject(sequelize: Sequelize) {
-	OrmScanNewItemReject.init(
+export function initdRejItem(sequelize: Sequelize) {
+	dRejItem.init(
 		{
 			...unitQtyField,
 			id_item: STRING,
@@ -67,5 +71,5 @@ export function initOrmScanNewItemReject(sequelize: Sequelize) {
 		},
 	);
 
-	return OrmScanNewItemReject;
+	return dRejItem;
 }

@@ -32,3 +32,30 @@ export default function initOrmKanbanItem(sequelize: Sequelize) {
 
 	return OrmKanbanItem;
 }
+
+export class dKnbItem extends Model<TKanbanItem> {}
+
+export function initDKanbanItem(sequelize: Sequelize) {
+	dKnbItem.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			id_item: STRING,
+			master_item_id: STRING,
+			id_item_po: STRING,
+			id_kanban: STRING,
+			...unitQtyField,
+		},
+		{
+			sequelize,
+			tableName: TABLES.KANBAN_ITEM,
+			defaultScope: {
+				// ...defaultOrderBy,
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dKnbItem;
+}

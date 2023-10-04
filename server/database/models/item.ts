@@ -31,3 +31,31 @@ export default function initOrmMasterItem(sequelize: Sequelize) {
 
 	return OrmMasterItem;
 }
+
+export class dItem extends Model<TMasterItem> {}
+
+export function initDItem(sequelize: Sequelize) {
+	dItem.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			name: {type: DataTypes.STRING},
+			kode_item: {type: DataTypes.STRING},
+			instruksi: JSONB,
+			kategori_mesinn: ARRAY(STRING),
+			kategori_mesin: STRING,
+			keterangan: STRING,
+		},
+		{
+			sequelize,
+			tableName: TABLES.ITEM,
+			defaultScope: {
+				...defaultOrderBy,
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dItem;
+}

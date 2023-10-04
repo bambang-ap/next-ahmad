@@ -32,3 +32,32 @@ export default function initOrmCustomerSPPBIn(sequelize: Sequelize) {
 
 	return OrmCustomerSPPBIn;
 }
+
+export class dSJIn extends Model<TCustomerSPPBIn> {}
+
+export function initDSJIn(sequelize: Sequelize) {
+	dSJIn.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			nomor_surat: {type: DataTypes.STRING},
+			tgl: DataTypes.STRING,
+			id_po: DataTypes.STRING,
+		},
+		{
+			sequelize,
+			tableName: TABLES.CUSTOMER_SPPB_IN,
+			defaultScope: {
+				order: [
+					...defaultOrderBy.order,
+					["tgl", "asc"],
+					["nomor_surat", "asc"],
+				],
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dSJIn;
+}
