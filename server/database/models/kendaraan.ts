@@ -26,3 +26,26 @@ export default function initOrmKendaraan(sequelize: Sequelize) {
 
 	return OrmKendaraan;
 }
+
+export class dVehicle extends Model<TKendaraan> {}
+
+export function initVehicle(sequelize: Sequelize) {
+	dVehicle.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			name: {type: DataTypes.STRING},
+		},
+		{
+			sequelize,
+			tableName: TABLES.KENDARAAN,
+			defaultScope: {
+				...defaultOrderBy,
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dVehicle;
+}

@@ -31,3 +31,31 @@ export default function initOrmCustomerSPPBOut(sequelize: Sequelize) {
 
 	return OrmCustomerSPPBOut;
 }
+
+export class dSjOut extends Model<TCustomerSPPBOut> {}
+
+export function initSjOut(sequelize: Sequelize) {
+	dSjOut.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			date: DataTypes.STRING,
+			id_customer: DataTypes.STRING,
+			id_kendaraan: DataTypes.STRING,
+			invoice_no: DataTypes.STRING,
+			keterangan: DataTypes.STRING,
+			// po: DataTypes.JSONB,
+		},
+		{
+			sequelize,
+			tableName: TABLES.CUSTOMER_SPPB_OUT,
+			defaultScope: {
+				...defaultOrderBy,
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dSjOut;
+}

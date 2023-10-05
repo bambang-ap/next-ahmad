@@ -5,7 +5,6 @@ import {
 	tCustomerSPPBIn,
 	tCustomerSPPBOut,
 	tCustomerSPPBOutItem,
-	tDocument,
 	tKanban,
 	tKanbanItem,
 	tKendaraan,
@@ -20,9 +19,20 @@ import {
 	attrParser,
 	attrParserExclude,
 	attrParserV2,
+	dCust,
+	dDoc,
+	dInItem,
+	dItem,
+	dKanban,
+	dOutItem,
+	dPo,
+	dPoItem,
 	dRejItem,
 	dScan,
 	dScanItem,
+	dSJIn,
+	dSjOut,
+	dVehicle,
 	NumberOrderAttribute,
 	OrmCustomer,
 	OrmCustomerPO,
@@ -357,53 +367,64 @@ export function sppbOutGetAttributes() {
 }
 
 export function printSppbOutAttributes() {
-	const A = attrParser(tCustomerSPPBOut, [
+	const {Ret: Rett} = getScanAttributesV2();
+
+	const sjOut = attrParserV2(dSjOut, [
 		"id",
 		"id_customer",
 		"date",
 		"invoice_no",
 		"keterangan",
 	]);
-	const B = attrParser(tKendaraan, ["name"]);
-	const C = attrParser(tCustomer, ["name", "alamat"]);
-	const D = attrParser(tCustomerSPPBOutItem, ["qty1", "qty2", "qty3"]);
-	const E = attrParser(tPOItemSppbIn, ["lot_no"]);
-	const F = attrParser(tMasterItem, [
+	const vehicle = attrParserV2(dVehicle, ["name"]);
+	const customer = attrParserV2(dCust, ["name", "alamat"]);
+	const outItem = attrParserV2(dOutItem, ["qty1", "qty2", "qty3"]);
+	const inItem = attrParserV2(dInItem, ["lot_no"]);
+	const item = attrParserV2(dItem, [
 		"instruksi",
 		"kategori_mesinn",
 		"name",
 		"keterangan",
 	]);
-	const G = attrParser(tPOItem, ["unit1", "unit2", "unit3"]);
-	const H = attrParser(tCustomerPO);
-	const I = attrParser(tCustomerSPPBIn);
-	const J = attrParser(tKanban, ["id"]);
-	const K = attrParser(tScan, ["lot_no_imi"]);
-	const L = attrParser(tDocument, [
-		"doc_no",
-		"tgl_efektif",
-		"revisi",
-		"terbit",
-	]);
+	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
+	const po = attrParserV2(dPo);
+	const sjIn = attrParserV2(dSJIn);
+	const kanban = attrParserV2(dKanban, ["id"]);
+	const scan = attrParserV2(dScan, ["lot_no_imi"]);
+	const doc = attrParserV2(dDoc, ["doc_no", "tgl_efektif", "revisi", "terbit"]);
 
-	type Ret = typeof A.obj & {
-		OrmKendaraan: typeof B.obj;
-		OrmCustomer: typeof C.obj;
-		OrmCustomerSPPBOutItems: (typeof D.obj & {
-			OrmPOItemSppbIn: typeof E.obj & {
-				OrmCustomerSPPBIn: typeof I.obj & {
-					OrmKanbans: (typeof J.obj & {
-						OrmScans: typeof K.obj[];
-						OrmDocument: typeof L.obj;
+	type Ret = typeof sjOut.obj & {
+		dVehicle: typeof vehicle.obj;
+		dCust: typeof customer.obj;
+		dOutItems: (typeof outItem.obj & {
+			dInItem: typeof inItem.obj & {
+				dSJIn: typeof sjIn.obj & {
+					dKanbans: (typeof kanban.obj & {
+						dScans: typeof scan.obj[];
+						dDoc: typeof doc.obj;
 					})[];
 				};
-				OrmMasterItem: typeof F.obj;
-				OrmCustomerPOItem: typeof G.obj & {OrmCustomerPO: typeof H.obj};
+				dItem: typeof item.obj;
+				dPoItem: typeof poItem.obj & {dPo: typeof po.obj};
 			};
 		})[];
 	};
 
-	return {A, B, C, D, E, F, G, H, I, J, K, L, Ret: {} as Ret};
+	return {
+		sjOut,
+		vehicle,
+		customer,
+		outItem,
+		inItem,
+		item,
+		poItem,
+		po,
+		sjIn,
+		kanban,
+		scan,
+		doc,
+		Ret: {} as Ret,
+	};
 }
 
 export function sppbOutGetPoAttributes() {

@@ -57,6 +57,7 @@ export default function SPPBOUT() {
 			!isSelect && "Action",
 		],
 		genPdfOptions: {
+			debug: true,
 			width: `w-[${widthSize}px]`,
 			tagId: "kanban-data-print",
 			splitPagePer: 1,

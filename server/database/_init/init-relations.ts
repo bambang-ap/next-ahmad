@@ -1,4 +1,6 @@
 import {
+	dCust,
+	dDoc,
 	dInItem,
 	dItem,
 	dKanban,
@@ -10,6 +12,8 @@ import {
 	dScan,
 	dScanItem,
 	dSJIn,
+	dSjOut,
+	dVehicle,
 	manyToMany,
 	oneToMany,
 	oneToOne,
@@ -96,6 +100,12 @@ export function initRelations() {
 	oneToMany(dInItem, dOutItem, "id_item");
 	oneToMany(dItem, dInItem, "master_item_id");
 	oneToMany(dPoItem, dInItem, "id_item");
+
+	oneToMany(dCust, dSjOut, "id_customer");
+	oneToMany(dSjOut, dOutItem, "id_sppb_out");
+	oneToMany(dVehicle, dSjOut, "id_kendaraan");
+	oneToMany(dPo, dPoItem, "id_po");
+	oneToMany(dDoc, dKanban, "doc_id");
 
 	oneToOne(dScan, dScan, "id_qc", dScan._aliasReject);
 

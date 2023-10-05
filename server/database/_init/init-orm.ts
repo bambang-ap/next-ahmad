@@ -2,22 +2,22 @@ import {Sequelize} from "sequelize";
 
 import {initdRejItem, initdScan, initdScanItem} from "@database";
 
-import initOrmCustomer from "../models/customer";
+import initOrmCustomer, {initCust} from "../models/customer";
 import initOrmCustomerPO, {initDPo} from "../models/customer_po";
 import initOrmCustomerPOItem, {initPoItem} from "../models/customer_po_item";
 import initOrmCustomerSPPBIn, {initDSJIn} from "../models/customer_sppb_in";
-import initOrmCustomerSPPBOut from "../models/customer_sppb_out";
+import initOrmCustomerSPPBOut, {initSjOut} from "../models/customer_sppb_out";
 import initOrmCustomerSPPBOutItem, {
 	initOutItem,
 } from "../models/customer_sppb_out_item";
-import initOrmDocument from "../models/document";
+import initOrmDocument, {initdDoc} from "../models/document";
 import initOrmHardness from "../models/hardness";
 import initOrmHardnessKategori from "../models/hardness_kategori";
 import initOrmMasterItem, {initDItem} from "../models/item";
 import initOrmKanban, {initDKanban} from "../models/kanban";
 import initOrmKanbanInstruksi from "../models/kanban_instruksi";
 import initOrmKanbanItem, {initDKanbanItem} from "../models/kanban_item";
-import initOrmKendaraan from "../models/kendaraan";
+import initOrmKendaraan, {initVehicle} from "../models/kendaraan";
 import initOrmMaterial from "../models/material";
 import initOrmMaterialKategori from "../models/material_kategori";
 import initOrmMenu from "../models/menu";
@@ -73,14 +73,18 @@ export function initOrm(ORM: Sequelize) {
 	initdScanItem(ORM);
 	initdRejItem(ORM);
 
-	initDPo(ORM);
+	initCust(ORM);
+	initdDoc(ORM);
+	initDItem(ORM);
 	initDKanban(ORM);
 	initDKanbanItem(ORM);
+	initDPo(ORM);
 	initDSJIn(ORM);
-	initDItem(ORM);
 	initInItem(ORM);
 	initOutItem(ORM);
 	initPoItem(ORM);
+	initSjOut(ORM);
+	initVehicle(ORM);
 
 	return Promise.resolve();
 }

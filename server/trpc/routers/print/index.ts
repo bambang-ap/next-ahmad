@@ -1,20 +1,6 @@
 import {z} from "zod";
 
-import {
-	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerPOItem,
-	OrmCustomerSPPBIn,
-	OrmCustomerSPPBOut,
-	OrmCustomerSPPBOutItem,
-	OrmDocument,
-	OrmKanban,
-	OrmKendaraan,
-	OrmMasterItem,
-	OrmPOItemSppbIn,
-	OrmScan,
-	printSppbOutAttributes,
-} from "@database";
+import {printSppbOutAttributes} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 
@@ -30,44 +16,44 @@ const printRouters = router({
 		out: procedure
 			.input(z.object({id: z.string().array()}))
 			.query(({ctx, input}) => {
-				const {A, B, C, D, E, F, G, H, I, J, K, L} = printSppbOutAttributes();
+				type RetExport = typeof Ret;
+				const {
+					sjOut,
+					vehicle,
+					customer,
+					outItem,
+					inItem,
+					item,
+					poItem,
+					po,
+					sjIn,
+					kanban,
+					scan,
+					doc,
+					Ret,
+				} = printSppbOutAttributes();
 
 				return checkCredentialV2(ctx, async (): Promise<SppbOutGet[]> => {
-					const data = await OrmCustomerSPPBOut.findAll({
+					const data = await sjOut.model.findAll({
 						where: input,
-						attributes: A.keys,
+						attributes: sjOut.attributes,
 						include: [
-							{model: OrmKendaraan, attributes: B.keys},
-							{model: OrmCustomer, attributes: C.keys},
+							vehicle,
+							customer,
 							{
+								...outItem,
 								separate: true,
-								model: OrmCustomerSPPBOutItem,
-								attributes: D.keys,
 								include: [
 									{
-										model: OrmPOItemSppbIn,
-										attributes: E.keys,
+										...inItem,
 										include: [
+											item,
+											{...poItem, include: [po]},
 											{
-												model: OrmCustomerSPPBIn,
-												attributes: I.keys,
+												...sjIn,
 												include: [
-													{
-														separate: true,
-														model: OrmKanban,
-														attributes: J.keys,
-														include: [
-															{model: OrmScan, attributes: K.keys},
-															{model: OrmDocument, attributes: L.keys},
-														],
-													},
+													{...kanban, separate: true, include: [scan, doc]},
 												],
-											},
-											{model: OrmMasterItem, attributes: F.keys},
-											{
-												attributes: G.keys,
-												model: OrmCustomerPOItem,
-												include: [{model: OrmCustomerPO, attributes: H.keys}],
 											},
 										],
 									},
@@ -76,8 +62,7 @@ const printRouters = router({
 						],
 					});
 
-					// @ts-ignore
-					return data.map(e => e.dataValues);
+					return data.map(e => e.dataValues as unknown as RetExport);
 				});
 			}),
 	}),

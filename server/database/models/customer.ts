@@ -30,3 +30,30 @@ export default function initOrmCustomer(sequelize: Sequelize) {
 
 	return OrmCustomer;
 }
+
+export class dCust extends Model<TCustomer> {}
+
+export function initCust(sequelize: Sequelize) {
+	dCust.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			name: {type: DataTypes.STRING},
+			alamat: {type: DataTypes.STRING},
+			no_telp: {type: DataTypes.STRING},
+			npwp: {type: DataTypes.STRING},
+			up: {type: DataTypes.STRING},
+		},
+		{
+			sequelize,
+			tableName: CRUD_ENABLED.CUSTOMER,
+			defaultScope: {
+				...defaultOrderBy,
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dCust;
+}

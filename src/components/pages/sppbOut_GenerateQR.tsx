@@ -75,9 +75,7 @@ export function SPPBOutGenerateQR({
 	const [width, height] = paperSizeCalculator(widthSize, {minus: 45});
 
 	const tagId = `data-${detail?.id}`;
-	const doc =
-		detail?.OrmCustomerSPPBOutItems?.[0]?.OrmPOItemSppbIn?.OrmCustomerSPPBIn
-			?.OrmKanbans?.[0]?.OrmDocument;
+	const doc = detail?.dOutItems?.[0]?.dInItem?.dSJIn?.dKanbans?.[0]?.dDoc;
 
 	return (
 		<div
@@ -124,15 +122,15 @@ export function SPPBOutGenerateQR({
 							</div>
 							<Section title="Tanggal">{dateUtils.date(detail?.date)}</Section>
 							<Section title="No. D.O.">{detail?.invoice_no}</Section>
-							<Section title="Kendaraan">{detail?.OrmKendaraan?.name}</Section>
+							<Section title="Kendaraan">{detail?.dVehicle?.name}</Section>
 							<Section title="No. Pol."></Section>
 							<TxtBold>
 								Harap diterima dengan baik barang-barang dibawah ini
 							</TxtBold>
 						</div>
 						<div className="flex-1 border border-black p-4">
-							<TxtBold>Kepada : {detail?.OrmCustomer?.name}</TxtBold>
-							<TxtBold>{detail?.OrmCustomer?.alamat}</TxtBold>
+							<TxtBold>Kepada : {detail?.dCust?.name}</TxtBold>
+							<TxtBold>{detail?.dCust?.alamat}</TxtBold>
 						</div>
 					</div>
 				</div>
@@ -151,13 +149,16 @@ export function SPPBOutGenerateQR({
 							<Td>Proses</Td>
 						</Tr>
 
-						{detail?.OrmCustomerSPPBOutItems?.map((itemm, index) => {
-							const {OrmPOItemSppbIn, ...item} = itemm;
-							const {OrmMasterItem, OrmCustomerPOItem, OrmCustomerSPPBIn} =
-								OrmPOItemSppbIn;
-							const lot_no_imi = OrmCustomerSPPBIn?.OrmKanbans?.map(
-								e => e.OrmScans?.[0]?.lot_no_imi,
-							).join(" | ");
+						{detail?.dOutItems?.map((itemm, index) => {
+							const {dInItem: OrmPOItemSppbIn, ...item} = itemm;
+							const {
+								dItem: OrmMasterItem,
+								dPoItem: OrmCustomerPOItem,
+								dSJIn: OrmCustomerSPPBIn,
+							} = OrmPOItemSppbIn;
+							const lot_no_imi = OrmCustomerSPPBIn?.dKanbans
+								?.map(e => e.dScans?.[0]?.lot_no_imi)
+								.join(" | ");
 
 							return (
 								<>
@@ -175,7 +176,7 @@ export function SPPBOutGenerateQR({
 										})}
 										<Td>{OrmPOItemSppbIn.lot_no}</Td>
 										<Td>{lot_no_imi}</Td>
-										<Td>{OrmCustomerPOItem.OrmCustomerPO.nomor_po}</Td>
+										<Td>{OrmCustomerPOItem.dPo.nomor_po}</Td>
 										<Td>{OrmCustomerSPPBIn.nomor_surat}</Td>
 										<Td className="flex-col gap-2">
 											{OrmMasterItem?.kategori_mesinn?.map(m => {

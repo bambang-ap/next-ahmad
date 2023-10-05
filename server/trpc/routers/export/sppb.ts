@@ -123,16 +123,19 @@ const exportSppbRouters = router({
 				for (const {
 					date,
 					invoice_no,
-					OrmCustomer,
-					OrmCustomerSPPBOutItems,
+					dCust: OrmCustomer,
+					dOutItems: OrmCustomerSPPBOutItems,
 				} of dataSppbOut) {
 					for (const {
-						OrmPOItemSppbIn,
+						dInItem: OrmPOItemSppbIn,
 						...OrmCustomerSPPBOutItem
 					} of OrmCustomerSPPBOutItems) {
-						const {OrmCustomerPOItem, OrmCustomerSPPBIn, OrmMasterItem} =
-							OrmPOItemSppbIn;
-						const {OrmCustomerPO} = OrmCustomerPOItem;
+						const {
+							dPoItem: OrmCustomerPOItem,
+							dSJIn: OrmCustomerSPPBIn,
+							dItem: OrmMasterItem,
+						} = OrmPOItemSppbIn;
+						const {dPo: OrmCustomerPO} = OrmCustomerPOItem;
 
 						const instruksi = await processMapper(ctx, {
 							instruksi: OrmMasterItem.instruksi,
