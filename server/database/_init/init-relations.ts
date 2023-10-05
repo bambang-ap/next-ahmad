@@ -90,7 +90,7 @@ export function initRelations() {
 	oneToMany(dPo, dSJIn, "id_po");
 	oneToMany(dSJIn, dKanban, "id_sppb_in");
 	oneToMany(dKanban, dKnbItem, "id_kanban");
-	oneToMany(dScanItem, dKnbItem, "id_item");
+	oneToMany(dKnbItem, dScanItem, "id_kanban_item");
 	oneToMany(dKanban, dScan, "id_kanban");
 	oneToMany(dSJIn, dInItem, "id_sppb_in");
 	oneToMany(dInItem, dOutItem, "id_item");

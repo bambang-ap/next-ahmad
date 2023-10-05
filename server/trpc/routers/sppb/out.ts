@@ -14,6 +14,7 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	attrParserExclude,
 	attrParserV2,
 	dInItem,
 	dItem,
@@ -65,8 +66,8 @@ const sppbOutRouters = router({
 		const bin = attrParserV2(dSJIn);
 		const po = attrParserV2(dPo);
 		const scn = attrParserV2(dScan, ["lot_no_imi", "status"]);
-		const scnItem = attrParserV2(dScanItem, ["qty1"]);
-		const rejItem = attrParserV2(dRejItem, ["qty1"]);
+		const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
+		const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
 		const item = attrParserV2(dItem, ["name", "kode_item", "id"]);
 		const inItem = attrParserV2(dInItem, [
 			"id",
@@ -82,19 +83,19 @@ const sppbOutRouters = router({
 		type Ret = typeof po.obj & {
 			dSJIns: (typeof bin.obj & {
 				dKanbans: (typeof knb.obj & {
+					dKnbItems: typeof knbItem.obj[];
 					dScans: (typeof scn.obj & {
 						dScanItems: typeof scnItem.obj[];
-						[dScan._aliasReject]: typeof scn.obj & {
+						[dScan._aliasReject]?: typeof scn.obj & {
 							dScanItems: (typeof scnItem.obj & {
 								dRejItems: typeof rejItem.obj[];
 							})[];
 						};
 					})[];
 				})[];
-				OrmPOItemSppbIns: (typeof inItem.obj & {
+				dInItems: (typeof inItem.obj & {
 					dItem: typeof item.obj;
 					dPoItem: typeof poItem.obj;
-					dKnbItems: typeof knbItem.obj[];
 					dOutItems: typeof outItem.obj[];
 				})[];
 			})[];
@@ -103,8 +104,6 @@ const sppbOutRouters = router({
 		return checkCredentialV2(ctx, async () => {
 			const wherer = wherePagesV3<Ret>({
 				"$dSJIns.dKanbans.dScans.status$": "finish_good" as TScanTarget,
-				// "$dSJIns.id$": {[Op.not]: null},
-				// "$dSJIns.dKanbans.id$": {[Op.not]: null},
 			});
 
 			const dataPO = await po.model.findAll({
@@ -187,7 +186,11 @@ const sppbOutRouters = router({
 				],
 			});
 
-			return dataPO.map(e => e.dataValues as UU);
+			return dataPO.map(e => {
+				const val = e.dataValues as unknown as UU;
+
+				return {...val};
+			});
 		});
 	}),
 	getInvoice: procedure.query(() =>

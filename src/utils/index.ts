@@ -8,13 +8,7 @@ import objectPath from "object-path";
 import {FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
 
-import {
-	Route,
-	RouterOutput,
-	TDecimal,
-	UnitQty,
-	UQtyList,
-} from "@appTypes/app.type";
+import {Route, RouterOutput, UnitQty} from "@appTypes/app.type";
 import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
 import {
 	defaultErrorMutation,
@@ -25,6 +19,7 @@ import {
 	paperA4,
 	qtyList,
 } from "@constants";
+import {REJECT_REASON} from "@enum";
 import {useLoader} from "@hooks";
 import {
 	UseTRPCMutationOptions,
@@ -54,16 +49,10 @@ export const dateUtils = {
 
 export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 	return poData.map(po => {
-		const uu = po.OrmCustomerSPPBIns?.map(bin => {
-			const dd = bin.OrmPOItemSppbIns?.map(item => {
-				const itemInScan = itemInScanParser(bin?.OrmKanbans);
-
-				const currentQty = qtyReduce((ret, {qtyKey: num}) => {
-					item.OrmCustomerSPPBOutItems.forEach(itm => {
-						ret[num] += itm[num]!;
-					});
-					return ret;
-				});
+		const uu = po.dSJIns?.map(bin => {
+			const dd = bin.dInItems?.map(item => {
+				const {itemInScan, rejectedItems} = itemInScanParser(bin?.dKanbans);
+				const currentQty = itemSppbOut(item.dOutItems);
 
 				const compare = qtyMap(({qtyKey}) => {
 					return currentQty?.[qtyKey] == (itemInScan?.[qtyKey] ?? 0);
@@ -73,36 +62,66 @@ export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 					...item,
 					itemInScan,
 					currentQty,
+					rejectedItems,
 					isClosed: !compare.includes(false),
 				};
 			});
 			return {
 				...bin,
-				OrmPOItemSppbIns: dd,
+				dInItems: dd,
 				isClosed: !dd?.map(e => e.isClosed).includes(false),
 			};
 		});
 
 		return {
 			...po,
-			OrmCustomerSPPBIns: uu,
+			dSJIns: uu,
 			isClosed: !uu?.map(e => e.isClosed).includes(false),
 		};
 	});
 }
 
 export function itemInScanParser(
-	kanbans?: RouterOutput["sppb"]["out"]["getPO"][number]["OrmCustomerSPPBIns"][number]["OrmKanbans"],
+	kanbans?: RouterOutput["sppb"]["out"]["getPO"][number]["dSJIns"][number]["dKanbans"],
 ) {
-	return kanbans?.reduce((j, h) => {
-		h.OrmScans.forEach(({item_finish_good: k}) => {
-			qtyMap(({qtyKey, num}) => {
-				if (!j[qtyKey]) j[qtyKey] = 0;
-				j[qtyKey] += parseFloat(k?.[0]?.[num]?.toString() ?? "0");
+	let rejItems: RejItems = {};
+	type RejItems = Partial<Record<REJECT_REASON, UnitQty>>;
+
+	const itemInScan = qtyReduce((ret, {qtyKey}) => {
+		kanbans?.forEach(knb => {
+			knb.dScans.forEach(scan => {
+				scan.dScanItems.forEach(scnItem => {
+					ret[qtyKey] += parseFloat(scnItem?.[qtyKey]?.toString() ?? "0");
+				});
+
+				scan.rejScan?.dScanItems.forEach(sRItem => {
+					sRItem.dRejItems.forEach(({reason, ...rItem}) => {
+						if (!rejItems[reason]) rejItems[reason] = {} as UnitQty;
+						if (!rejItems[reason]![qtyKey]) rejItems[reason]![qtyKey] = 0;
+
+						rejItems[reason]![qtyKey] += parseFloat(
+							rItem[qtyKey]?.toString() ?? "0",
+						);
+					});
+				});
 			});
 		});
-		return j;
-	}, {} as Record<UQtyList, TDecimal>);
+
+		return ret;
+	});
+
+	return {itemInScan, rejectedItems: rejItems};
+}
+
+export function itemSppbOut(
+	outItems?: RouterOutput["sppb"]["out"]["getPO"][number]["dSJIns"][number]["dInItems"][number]["dOutItems"],
+) {
+	return qtyReduce((ret, {qtyKey: num}) => {
+		outItems?.forEach(itm => {
+			ret[num] += itm[num]!;
+		});
+		return ret;
+	});
 }
 
 type V = {

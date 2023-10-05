@@ -204,6 +204,7 @@ export function printScanAttributes(route: TScanTarget) {
 
 export function getScanAttributesV2() {
 	const scn = attrParserExclude(dScan, ["id_kanban"]);
+	const scnId = attrParserV2(dScan, ["id"]);
 	const knb = attrParserV2(OrmKanban, [
 		"id",
 		"list_mesin",
@@ -211,6 +212,7 @@ export function getScanAttributesV2() {
 		"createdAt",
 	]);
 	const scItem = attrParserExclude(dScanItem, ["id_scan"]);
+	const scItemId = attrParserV2(dScanItem, ["id"]);
 	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
 	const user = attrParserV2(OrmUser, ["name"]);
 	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
@@ -223,7 +225,9 @@ export function getScanAttributesV2() {
 
 	type Ret = Partial<typeof scn.obj> & {
 		dScanItems?: (typeof scItem.obj & {
-			dRejItems: typeof sciReject.obj[];
+			dRejItems: (typeof sciReject.obj & {
+				dScanItem: typeof scItemId.obj & {dScan: typeof scnId.obj};
+			})[];
 		})[];
 		OrmKanban: typeof knb.obj & {
 			[OrmKanban._aliasCreatedBy]: typeof user.obj;
@@ -246,8 +250,10 @@ export function getScanAttributesV2() {
 
 	return {
 		scn,
+		scnId,
 		knb,
 		scItem,
+		scItemId,
 		knbItem,
 		user,
 		bin,

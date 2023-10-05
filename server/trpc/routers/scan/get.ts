@@ -15,8 +15,10 @@ export const getScan = {
 
 		const {
 			scn,
+			scnId,
 			knb,
 			scItem,
+			scItemId,
 			knbItem,
 			user,
 			bin,
@@ -28,37 +30,15 @@ export const getScan = {
 			poItem,
 		} = getScanAttributesV2();
 
-		const includeAble: Includeable = {
+		const kanbanIncludeAble: Includeable = {
 			attributes: knb.attributes,
 			include: [
+				{as: OrmKanban._aliasCreatedBy, ...user},
+				{...bin, include: [{...po, include: [cust]}]},
 				{
-					model: user.model,
-					as: OrmKanban._aliasCreatedBy,
-					attributes: user.attributes,
-				},
-				{
-					model: bin.model,
-					attributes: bin.attributes,
-					include: [
-						{
-							model: po.model,
-							attributes: po.attributes,
-							include: [{model: cust.model, attributes: cust.attributes}],
-						},
-					],
-				},
-				{
+					...knbItem,
 					separate: true,
-					attributes: knbItem.attributes,
-					model: knbItem.model,
-					include: [
-						{model: mItem.model, attributes: mItem.attributes},
-						{
-							model: binItem.model,
-							attributes: binItem.attributes,
-							include: [{model: poItem.model, attributes: poItem.attributes}],
-						},
-					],
+					include: [mItem, {...binItem, include: [poItem]}],
 				},
 			],
 		};
@@ -68,12 +48,14 @@ export const getScan = {
 				attributes: scn.attributes,
 				where: {id_kanban: id, status},
 				include: [
-					Object.assign(includeAble, {model: knb.model}),
+					Object.assign(kanbanIncludeAble, {model: knb.model}),
 					{
-						model: scItem.model,
-						attributes: scItem.attributes,
+						...scItem,
 						include: [
-							{model: sciReject.model, attributes: sciReject.attributes},
+							{
+								...sciReject,
+								include: [{...scItemId, include: [scnId]}],
+							},
 						],
 					},
 				],
@@ -115,7 +97,10 @@ export const getScan = {
 					} as unknown as ScanGetV2;
 				}
 
-				const kanban = await knb.model.findOne({where: {id}, ...includeAble});
+				const kanban = await knb.model.findOne({
+					where: {id},
+					...kanbanIncludeAble,
+				});
 
 				return {
 					OrmKanban: kanban?.dataValues as unknown as ScanGetV2["OrmKanban"],

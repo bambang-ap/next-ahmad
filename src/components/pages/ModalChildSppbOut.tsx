@@ -4,14 +4,9 @@ import {useWatch} from "react-hook-form";
 import {Wrapper} from "@appComponent/Wrapper";
 import {FormProps} from "@appTypes/app.type";
 import {Button, Input, Select, selectMapper, Table, Text} from "@components";
+import {REJECT_REASON_VIEW} from "@enum";
 import {useSppbOut} from "@hooks";
-import {
-	isClosedParser,
-	itemInScanParser,
-	modalTypeParser,
-	qtyMap,
-	qtyReduce,
-} from "@utils";
+import {isClosedParser, modalTypeParser, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
 export function SppbOutModalChild({
@@ -20,8 +15,14 @@ export function SppbOutModalChild({
 }: FormProps<FormValue, "control" | "reset">) {
 	const {id_customer, type: modalType, po: listPO} = useWatch({control});
 
-	const {data: poDataa = [], isFetched: isRefetching} =
-		trpc.sppb.out.getPO.useQuery({id: id_customer!}, {enabled: !!id_customer});
+	const {
+		data: poDataa = [],
+		isFetched: isRefetching,
+		isFetching,
+	} = trpc.sppb.out.getPO.useQuery(
+		{id: id_customer!},
+		{enabled: !!id_customer},
+	);
 
 	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut(id_customer);
 	const {isDelete, isEdit} = modalTypeParser(modalType);
@@ -29,7 +30,6 @@ export function SppbOutModalChild({
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
-	const selectedPoIds = listPO?.map(e => e.id_po) ?? [];
 	const poData = isClosedParser(poDataa);
 
 	return (
@@ -84,10 +84,10 @@ export function SppbOutModalChild({
 
 					{listPO?.map((po, i) => {
 						const poSelected = poData?.find(e => e.id === po.id_po);
-						const selectedSppbInIds = po.sppb_in?.map(e => e.id_sppb_in) ?? [];
+
 						const availablePo = poData?.filter(e => {
 							if (po.id_po === e.id) return true;
-							return !e.isClosed || !selectedPoIds.includes(e.id);
+							return !e.isClosed;
 						});
 
 						const poKey = `${isRefetching}${id_customer}${po.id_po}`;
@@ -101,6 +101,7 @@ export function SppbOutModalChild({
 										label="PO"
 										control={control}
 										fieldName={`po.${i}.id_po`}
+										isLoading={isFetching}
 										data={selectMapper(availablePo, "id", "nomor_po")}
 									/>
 
@@ -132,27 +133,12 @@ export function SppbOutModalChild({
 										e => e.id === sppb.id_sppb_in,
 									);
 
-									const listItems = sppbInSelected?.OrmPOItemSppbIns;
+									const {dInItems} = sppbInSelected ?? {};
 									const sppbKey = `${poKey}${sppb.id_sppb_in}`;
-
-									const dd = listItems?.map(item => {
-										const itemInScan = itemInScanParser(
-											sppbInSelected?.dKanbans,
-										);
-
-										const currentQty = qtyReduce((ret, {qtyKey: num}) => {
-											item.dOutItems.forEach(itm => {
-												ret[num] += itm[num]!;
-											});
-											return ret;
-										});
-
-										return {...item, itemInScan, currentQty};
-									});
 
 									const availableSppbIn = poSelected?.dSJIns?.filter(e => {
 										if (sppb.id_sppb_in === e.id) return true;
-										return !e?.isClosed || !selectedSppbInIds.includes(e.id);
+										return !e?.isClosed;
 									});
 
 									const sppbInSelection = selectMapper(
@@ -187,7 +173,7 @@ export function SppbOutModalChild({
 												</Button>
 											</div>
 											<Table
-												data={dd}
+												data={dInItems}
 												header={[
 													"Kode Item",
 													"Nama Item",
@@ -197,22 +183,22 @@ export function SppbOutModalChild({
 												]}
 												renderItem={({Cell, item}) => {
 													const {
-														dItem: OrmMasterItem,
+														dItem,
 														id: id_item,
 														lot_no,
 														currentQty,
-														dPoItem: OrmCustomerPOItem,
-														dOutItems: OrmCustomerSPPBOutItems,
+														dPoItem,
 														itemInScan,
+														rejectedItems,
+														dOutItems,
 													} = item ?? {};
 													const items = sppb.items?.[id_item];
+													console.log(rejectedItems);
 													const lot_no_imi = sppbInSelected?.dKanbans
 														?.map(e => e.dScans?.[0]?.lot_no_imi)
 														.join(" | ");
 
-													const hj = OrmCustomerSPPBOutItems.find(
-														e => e.id === items?.id,
-													);
+													const hj = dOutItems.find(e => e.id === items?.id);
 
 													return (
 														<>
@@ -220,18 +206,18 @@ export function SppbOutModalChild({
 																control={control}
 																className="hidden"
 																shouldUnregister
-																defaultValue={OrmMasterItem?.id}
+																defaultValue={dItem?.id}
 																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
 															/>
 															<Input
 																control={control}
 																className="hidden"
 																shouldUnregister
-																defaultValue={OrmCustomerPOItem.id}
+																defaultValue={dPoItem.id}
 																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
 															/>
-															<Cell>{OrmMasterItem?.name}</Cell>
-															<Cell>{OrmMasterItem?.kode_item}</Cell>
+															<Cell>{dItem?.name}</Cell>
+															<Cell>{dItem?.kode_item}</Cell>
 															<Cell>{lot_no}</Cell>
 															<Cell>{lot_no_imi}</Cell>
 															<Cell className="flex gap-2">
@@ -242,31 +228,61 @@ export function SppbOutModalChild({
 																	const jumlah = cur ?? qtyLeft;
 
 																	const max = isEdit ? qtyLeft + cur! : jumlah;
+																	const unit = dPoItem?.[unitKey];
 
-																	if (!jumlah) return null;
+																	const qtyRejectRP =
+																		rejectedItems.RP?.[qtyKey];
+																	const qtyRejectTP =
+																		rejectedItems.TP?.[qtyKey];
+																	// const qtyRejectSC =
+																	// 	rejectedItems.SC?.[qtyKey];
+
+																	if (!unit) return null;
 
 																	return (
-																		<Input
-																			key={jumlah}
-																			type="decimal"
-																			shouldUnregister
-																			control={control}
-																			className="flex-1 bg-white"
-																			label={`Qty ${num}`}
-																			defaultValue={jumlah.toString()}
-																			fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
-																			rightAcc={
-																				<Text>
-																					{OrmCustomerPOItem?.[unitKey]}
-																				</Text>
-																			}
-																			rules={{
-																				max: {
-																					value: max,
-																					message: `max is ${max}`,
-																				},
-																			}}
-																		/>
+																		<div className="flex-1">
+																			<Input
+																				key={jumlah}
+																				type="decimal"
+																				shouldUnregister
+																				control={control}
+																				label={`Qty ${num}`}
+																				className="flex-1 bg-white"
+																				rightAcc={<Text>{unit}</Text>}
+																				defaultValue={jumlah.toString()}
+																				fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
+																				rules={{
+																					max: {
+																						value: max,
+																						message: `max is ${max}`,
+																					},
+																				}}
+																			/>
+																			{!!qtyRejectTP && (
+																				<Wrapper
+																					noColon
+																					sizes={["flex-1"]}
+																					title={REJECT_REASON_VIEW.TP}>
+																					{`${qtyRejectTP?.toString()} ${unit}`}
+																				</Wrapper>
+																			)}
+																			{!!qtyRejectRP && (
+																				<Wrapper
+																					noColon
+																					sizes={["flex-1"]}
+																					title={REJECT_REASON_VIEW.RP}>
+																					{`${qtyRejectRP?.toString()} ${unit}`}
+																				</Wrapper>
+																			)}
+																			{/* {!!qtyRejectSC && (
+																				<Wrapper
+																					noColon
+																					sizes={["flex-1"]}
+																					title={REJECT_REASON_VIEW.SC}>
+																					{`${qtyRejectSC?.toString()} ${unit}`}
+																				</Wrapper>
+																			)} */}
+																		</div>
 																	);
 																})}
 															</Cell>

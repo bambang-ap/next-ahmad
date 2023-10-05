@@ -214,7 +214,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 			}, 1000);
 		}
 	}, [id_kanban, notes, route]);
-
+	console.log(dataForm);
 	useEffect(() => {
 		if (keys.id.length > 0) {
 			reset(prev => ({...prev, id_kanban: keys.id}));
@@ -260,7 +260,6 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									fieldName="id_po"
 								/>
 								<Input
-									forceEditable
 									control={control}
 									label="ID Kanban"
 									className="flex-1"
@@ -276,7 +275,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									isError={isHidden && id_kanban.length > 0}
 								/>
 								<Button icon="faCircleXmark" onClick={removeUid} />
-								{isQC && !isRejected && (
+								{isQC && !isRejected && !status && foundedKanbanId && (
 									<Button onClick={toggleReject}>
 										{showReject ? "Batal Reject" : "Reject"}
 									</Button>
@@ -374,7 +373,6 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 								? curItem?.item_from_kanban ?? prevItem
 								: prevItem;
 
-							// @
 							if (!!rejectItem?.reason && dataForm.reject && !dataForm.reason) {
 								setValue("reason", rejectItem?.reason);
 							}
@@ -388,6 +386,15 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 											fieldName={`items.${id}.id_kanban_item`}
 											defaultValue={id}
 										/>
+										{!!rejectItem && (
+											<Input
+												hidden
+												control={control}
+												fieldName="id_qc"
+												defaultValue={rejectItem?.dScanItem.dScan.id}
+												shouldUnregister
+											/>
+										)}
 										<Td>{OrmMasterItem.kode_item}</Td>
 										<Td>{OrmMasterItem.name}</Td>
 										<Td className="gap-2">

@@ -1,7 +1,7 @@
 import {BOOLEAN, JSONB, Model, Sequelize, STRING} from "sequelize";
 
 import {TScanNew, TScanNewItem, TScanRejectItem} from "@appTypes/app.type";
-import {defaultExcludeColumn} from "@constants";
+import {defaultExcludeColumns} from "@constants";
 import {TABLES} from "@enum";
 
 import {unitQtyField} from "./customer_po_item";
@@ -26,7 +26,7 @@ export function initdScan(sequelize: Sequelize) {
 		{
 			sequelize,
 			tableName: TABLES.NEW_SCAN,
-			defaultScope: {attributes: {exclude: defaultExcludeColumn}},
+			defaultScope: {attributes: {exclude: defaultExcludeColumns}},
 		},
 	);
 
@@ -47,7 +47,7 @@ export function initdScanItem(sequelize: Sequelize) {
 		{
 			sequelize,
 			tableName: TABLES.NEW_SCAN_ITEM,
-			defaultScope: {attributes: {exclude: defaultExcludeColumn}},
+			defaultScope: {attributes: {exclude: defaultExcludeColumns}},
 		},
 	);
 
@@ -67,7 +67,7 @@ export function initdRejItem(sequelize: Sequelize) {
 		{
 			sequelize,
 			tableName: TABLES.NEW_SCAN_ITEM_REJECT,
-			defaultScope: {attributes: {exclude: defaultExcludeColumn}},
+			defaultScope: {attributes: {exclude: defaultExcludeColumns}},
 		},
 	);
 

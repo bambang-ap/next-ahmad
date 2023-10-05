@@ -65,7 +65,6 @@ export const updateScan = {
 			}
 
 			return checkCredentialV2(ctx, async () => {
-				// 	const {id, target, id_customer, lot_no_imi} = input;
 				const existingScan = await dScan.findOne({
 					where: {id_kanban, status},
 				});
