@@ -193,7 +193,7 @@ export function SppbOutModalChild({
 														dOutItems,
 													} = item ?? {};
 													const items = sppb.items?.[id_item];
-													console.log(rejectedItems);
+
 													const lot_no_imi = sppbInSelected?.dKanbans
 														?.map(e => e.dScans?.[0]?.lot_no_imi)
 														.join(" | ");

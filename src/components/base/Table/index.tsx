@@ -31,7 +31,7 @@ export function CellSelect<F extends FieldValues>({
 	...props
 }: CellSelectProps<F>) {
 	return (
-		<TableRoot.Td {...CellProps}>
+		<TableRoot.Td width={50} {...CellProps}>
 			<Input type="checkbox" {...props} />
 		</TableRoot.Td>
 	);
