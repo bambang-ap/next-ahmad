@@ -7,7 +7,10 @@ import {
 	TMasterItem,
 	TPOItem,
 	TPOItemSppbIn,
+	UQty,
+	UQtyList,
 } from "@appTypes/app.type";
+import {zIds} from "@appTypes/app.zod";
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -17,9 +20,10 @@ import {
 	OrmPOItemSppbIn,
 	processMapper,
 } from "@database";
+import {REJECT_REASON_VIEW} from "@enum";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
-import {qtyMap} from "@utils";
+import {itemInScanParser, qtyMap} from "@utils";
 
 import {appRouter} from "..";
 
@@ -48,7 +52,8 @@ type OutResult = Record<
 	| "PROSES"
 	| "KETERANGAN",
 	string | number
->;
+> &
+	Partial<Record<`${REJECT_REASON_VIEW} ${UQty}` | UQtyList, string>>;
 
 const exportSppbRouters = router({
 	in: procedure
@@ -111,64 +116,67 @@ const exportSppbRouters = router({
 				return result;
 			});
 		}),
-	out: procedure
-		.input(z.object({id: z.string().array()}))
-		.query(({input, ctx}) => {
-			return checkCredentialV2(ctx, async (): Promise<OutResult[]> => {
-				let i = 0;
-				const routerCaller = appRouter.createCaller(ctx);
-				const dataSppbOut = await routerCaller.print.sppb.out(input);
-				const result: OutResult[] = [];
+	out: procedure.input(zIds).query(({input, ctx}) => {
+		return checkCredentialV2(ctx, async (): Promise<OutResult[]> => {
+			let i = 0;
+			const routerCaller = appRouter.createCaller(ctx);
+			const dataSppbOut = await routerCaller.print.sppb.out(input);
+			const result: OutResult[] = [];
 
-				for (const {
-					date,
-					invoice_no,
-					dCust: OrmCustomer,
-					dOutItems: OrmCustomerSPPBOutItems,
-				} of dataSppbOut) {
-					for (const {
-						dInItem: OrmPOItemSppbIn,
-						...OrmCustomerSPPBOutItem
-					} of OrmCustomerSPPBOutItems) {
-						const {
-							dPoItem: OrmCustomerPOItem,
-							dSJIn: OrmCustomerSPPBIn,
-							dItem: OrmMasterItem,
-						} = OrmPOItemSppbIn;
-						const {dPo: OrmCustomerPO} = OrmCustomerPOItem;
+			for (const {date, invoice_no, dCust, dOutItems} of dataSppbOut) {
+				for (const {dInItem, ...outItem} of dOutItems) {
+					const {dPoItem, dSJIn, dItem} = dInItem;
+					const {dPo} = dPoItem;
 
-						const instruksi = await processMapper(ctx, {
-							instruksi: OrmMasterItem.instruksi,
-							kategori_mesinn: OrmMasterItem.kategori_mesinn,
-						});
+					const instruksi = await processMapper(ctx, {
+						instruksi: dItem.instruksi,
+						kategori_mesinn: dItem.kategori_mesinn,
+					});
 
-						const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
-							const qty = OrmCustomerSPPBOutItem[qtyKey];
-							if (!qty) return {[qtyKey.toUpperCase()]: ""};
-							return {
-								[qtyKey.toUpperCase()]: `${qty} ${OrmCustomerPOItem[unitKey]}`,
-							};
-						});
+					const {rejectedItems} = itemInScanParser(dSJIn.dKanbans);
 
-						i++;
-						result.push({
-							NO: i.toString(),
-							CUSTOMER: OrmCustomer.name,
-							"NO PO": OrmCustomerPO.nomor_po!,
-							"NO SURAT JALAN MASUK": OrmCustomerSPPBIn?.nomor_surat!,
-							"NO SURAT JALAN KELUAR": invoice_no,
-							"TANGGAL SJ KELUAR ": date,
-							"PART NAME / ITEM": OrmMasterItem.name!,
-							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
-							PROSES: instruksi,
-							KETERANGAN: OrmMasterItem.keterangan!,
-						});
-					}
+					const qtyMapping = qtyMap(({qtyKey, num, unitKey}) => {
+						const qty = outItem[qtyKey];
+						const unit = dPoItem?.[unitKey];
+						const qtyRejectRP = rejectedItems.RP?.[qtyKey];
+						const qtyRejectTP = rejectedItems.TP?.[qtyKey];
+
+						if (!qty) return {};
+
+						return {
+							[qtyKey.ucwords()]: `${qty} ${unit}`,
+							...(qtyRejectTP
+								? {
+										[`${REJECT_REASON_VIEW.TP} ${num}`]: `${qtyRejectTP} ${unit}`,
+								  }
+								: {}),
+							...(qtyRejectRP
+								? {
+										[`${REJECT_REASON_VIEW.RP} ${num}`]: `${qtyRejectRP} ${unit}`,
+								  }
+								: {}),
+						};
+					});
+
+					i++;
+					result.push({
+						NO: i.toString(),
+						CUSTOMER: dCust.name,
+						"NO PO": dPo.nomor_po!,
+						"NO SURAT JALAN MASUK": dSJIn?.nomor_surat!,
+						"NO SURAT JALAN KELUAR": invoice_no,
+						"TANGGAL SJ KELUAR ": date,
+						"PART NAME / ITEM": dItem.name!,
+						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+						PROSES: instruksi,
+						KETERANGAN: dItem.keterangan!,
+					});
 				}
+			}
 
-				return result;
-			});
-		}),
+			return result;
+		});
+	}),
 });
 
 export default exportSppbRouters;

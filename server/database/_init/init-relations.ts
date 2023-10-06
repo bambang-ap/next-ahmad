@@ -25,17 +25,25 @@ import {
 	OrmCustomerSPPBOut,
 	OrmCustomerSPPBOutItem,
 	OrmDocument,
+	OrmHardness,
+	OrmHardnessKategori,
 	OrmKanban,
 	OrmKanbanItem,
 	OrmKategoriMesin,
 	OrmKendaraan,
 	OrmMasterItem,
+	OrmMaterial,
+	OrmMaterialKategori,
 	OrmMesin,
+	OrmParameter,
+	OrmParameterKategori,
 	OrmPOItemSppbIn,
 	OrmScan,
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
+	OrmSupplierPO,
+	OrmSupplierPOItem,
 	OrmUser,
 } from "@database";
 
@@ -44,12 +52,6 @@ export function initRelations() {
 	oneToMany(OrmMasterItem, OrmKanbanItem, "master_item_id");
 	oneToMany(OrmMasterItem, OrmPOItemSppbIn, "master_item_id");
 
-	oneToMany(
-		OrmKategoriMesin,
-		OrmMesin,
-		"kategori_mesin",
-		OrmKategoriMesin._alias,
-	);
 	oneToMany(OrmCustomer, OrmCustomerPO, "id_customer");
 	oneToMany(OrmCustomer, OrmCustomerSPPBOut, "id_customer");
 	oneToMany(OrmCustomerSPPBOut, OrmCustomerSPPBOutItem, "id_sppb_out");
@@ -76,6 +78,25 @@ export function initRelations() {
 	oneToMany(OrmCustomerPO, dScan, "id_po");
 	oneToMany(dScanItem, dRejItem, "id_item");
 
+	// UnMap Models
+	oneToMany(OrmKategoriMesin, dItem, "kategori_mesin");
+	oneToMany(
+		OrmKategoriMesin,
+		OrmMesin,
+		"kategori_mesin",
+		OrmKategoriMesin._alias,
+	);
+	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id_po");
+	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id_supplier_item");
+	oneToMany(OrmHardnessKategori, OrmHardness, "id_kategori");
+	oneToMany(OrmMaterialKategori, OrmMaterial, "id_kategori");
+	oneToMany(OrmParameterKategori, OrmParameter, "id_kategori");
+	manyToMany(
+		[OrmSupplier, "id"],
+		[OrmSupplierItem, "id"],
+		[OrmSupItemRelation, ["supplier_id", "item_id"]],
+	);
+
 	// New Models
 	oneToMany(dPo, dSJIn, "id_po");
 	oneToMany(dSJIn, dKanban, "id_sppb_in");
@@ -100,10 +121,4 @@ export function initRelations() {
 	oneToMany(dCust, dPo, "id_customer");
 
 	oneToOne(dScan, dScan, "id_qc", dScan._aliasReject);
-
-	manyToMany(
-		[OrmSupplier, "id"],
-		[OrmSupplierItem, "id"],
-		[OrmSupItemRelation, ["supplier_id", "item_id"]],
-	);
 }

@@ -45,7 +45,7 @@ export default function SPPBOUT() {
 		enabledExport: true,
 		exportUseQuery: () =>
 			trpc.export.sppb.out.useQuery(
-				{id: selectedIds},
+				{ids: selectedIds},
 				{enabled: selectedIds.length > 0},
 			),
 		exportRenderItem: renderItemAsIs,
@@ -57,13 +57,12 @@ export default function SPPBOUT() {
 			!isSelect && "Action",
 		],
 		genPdfOptions: {
-			debug: true,
 			width: widthSize,
 			tagId: "sppb-out-data-print",
 			splitPagePer: 1,
 			useQuery: () =>
 				trpc.print.sppb.out.useQuery(
-					{id: selectedIds},
+					{ids: selectedIds},
 					{enabled: selectedIds.length > 0},
 				),
 			renderItem: pdfData => {
