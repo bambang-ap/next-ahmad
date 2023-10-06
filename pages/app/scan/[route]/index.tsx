@@ -137,15 +137,15 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		},
 	});
 
-	const {OrmKanban, dScanItems} = data ?? {};
+	const {dKanban: OrmKanban, dScanItems} = data ?? {};
 	const {
 		id: foundedKanbanId,
-		OrmCustomerSPPBIn,
+		dSJIn: OrmCustomerSPPBIn,
 		dataCreatedBy,
-		OrmKanbanItems,
+		dKnbItems: OrmKanbanItems,
 	} = OrmKanban ?? {};
-	const {OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
-	const {OrmCustomer} = OrmCustomerPO ?? {};
+	const {dPo: OrmCustomerPO} = OrmCustomerSPPBIn ?? {};
+	const {dCust: OrmCustomer} = OrmCustomerPO ?? {};
 
 	const isRejected = data?.is_rejected;
 
@@ -214,7 +214,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 			}, 1000);
 		}
 	}, [id_kanban, notes, route]);
-	console.log(dataForm);
+
 	useEffect(() => {
 		if (keys.id.length > 0) {
 			reset(prev => ({...prev, id_kanban: keys.id}));
@@ -294,7 +294,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 						<Tr>
 							<Td width={width} className="flex-col">
 								<div>Tanggal Kanban :</div>
-								<div>{dateUtils.full(data?.OrmKanban?.createdAt)}</div>
+								<div>{dateUtils.full(data?.dKanban?.createdAt)}</div>
 							</Td>
 							<Td width={width} className="flex-col">
 								<div>User :</div>
@@ -358,8 +358,13 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							{showReject && <Td>Jumlah Reject</Td>}
 						</Tr>
 						{OrmKanbanItems?.map(restItem => {
-							const {id, OrmMasterItem, OrmPOItemSppbIn, ...item} = restItem;
-							const poItem = OrmPOItemSppbIn.OrmCustomerPOItem;
+							const {
+								id,
+								dItem: OrmMasterItem,
+								dInItem: OrmPOItemSppbIn,
+								...item
+							} = restItem;
+							const poItem = OrmPOItemSppbIn.dPoItem;
 
 							const curItem = dScanItems?.find(e => e.id_kanban_item === id);
 							const rejectItem = curItem?.dRejItems.find(

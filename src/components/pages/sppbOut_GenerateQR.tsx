@@ -156,9 +156,9 @@ export function SPPBOutGenerateQR({
 								dPoItem: OrmCustomerPOItem,
 								dSJIn: OrmCustomerSPPBIn,
 							} = OrmPOItemSppbIn;
-							const lot_no_imi = OrmCustomerSPPBIn?.dKanbans
-								?.map(e => e.dScans?.[0]?.lot_no_imi)
-								.join(" | ");
+							const lot_no_imi = OrmCustomerSPPBIn?.dKanbans?.map(e =>
+								e.dScans.map(f => f.lot_no_imi).join(" | "),
+							);
 
 							return (
 								<>

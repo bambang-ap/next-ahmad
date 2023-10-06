@@ -33,7 +33,7 @@ import initOrmSupplierItem from "../models/supplier_item";
 import initOrmSupItemRelation from "../models/supplier_item_relation";
 import initOrmSupplierPO from "../models/supplier_po";
 import initOrmSupplierPOItem from "../models/supplier_po_item";
-import initOrmUser from "../models/user";
+import initOrmUser, {initUser} from "../models/user";
 import initOrmCustomerLogin from "../models/user_login";
 
 export function initOrm(ORM: Sequelize) {
@@ -85,6 +85,7 @@ export function initOrm(ORM: Sequelize) {
 	initPoItem(ORM);
 	initSjOut(ORM);
 	initVehicle(ORM);
+	initUser(ORM);
 
 	return Promise.resolve();
 }

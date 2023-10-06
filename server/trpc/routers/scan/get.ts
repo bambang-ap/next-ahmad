@@ -103,7 +103,7 @@ export const getScan = {
 				});
 
 				return {
-					OrmKanban: kanban?.dataValues as unknown as ScanGetV2["OrmKanban"],
+					dKanban: kanban?.dataValues as unknown as ScanGetV2["dKanban"],
 				};
 			}
 

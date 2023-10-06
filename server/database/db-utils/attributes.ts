@@ -24,6 +24,7 @@ import {
 	dInItem,
 	dItem,
 	dKanban,
+	dKnbItem,
 	dOutItem,
 	dPo,
 	dPoItem,
@@ -32,17 +33,10 @@ import {
 	dScanItem,
 	dSJIn,
 	dSjOut,
+	dUser,
 	dVehicle,
 	NumberOrderAttribute,
-	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerPOItem,
-	OrmCustomerSPPBIn,
 	OrmKanban,
-	OrmKanbanItem,
-	OrmMasterItem,
-	OrmPOItemSppbIn,
-	OrmUser,
 } from "@database";
 import {PO_STATUS} from "@enum";
 
@@ -215,7 +209,7 @@ export function printScanAttributes(route: TScanTarget) {
 export function getScanAttributesV2() {
 	const scn = attrParserExclude(dScan, ["id_kanban"]);
 	const scnId = attrParserV2(dScan, ["id"]);
-	const knb = attrParserV2(OrmKanban, [
+	const knb = attrParserV2(dKanban, [
 		"id",
 		"list_mesin",
 		"keterangan",
@@ -223,15 +217,15 @@ export function getScanAttributesV2() {
 	]);
 	const scItem = attrParserExclude(dScanItem, ["id_scan"]);
 	const scItemId = attrParserV2(dScanItem, ["id"]);
-	const knbItem = attrParserV2(OrmKanbanItem, ["id", "qty1", "qty2", "qty3"]);
-	const user = attrParserV2(OrmUser, ["name"]);
-	const bin = attrParserV2(OrmCustomerSPPBIn, ["nomor_surat"]);
-	const po = attrParserV2(OrmCustomerPO, ["id", "nomor_po"]);
-	const cust = attrParserV2(OrmCustomer, ["id", "name"]);
-	const mItem = attrParserV2(OrmMasterItem, ["kode_item", "name", "id"]);
-	const binItem = attrParserV2(OrmPOItemSppbIn, ["id"]);
+	const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
+	const user = attrParserV2(dUser, ["name"]);
+	const bin = attrParserV2(dSJIn, ["nomor_surat"]);
+	const po = attrParserV2(dPo, ["id", "nomor_po"]);
+	const cust = attrParserV2(dCust, ["id", "name"]);
+	const mItem = attrParserV2(dItem, ["kode_item", "name", "id"]);
+	const binItem = attrParserV2(dInItem, ["id"]);
 	const sciReject = attrParserV2(dRejItem);
-	const poItem = attrParserV2(OrmCustomerPOItem, ["unit1", "unit2", "unit3"]);
+	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
 
 	type Ret = Partial<typeof scn.obj> & {
 		dScanItems?: (typeof scItem.obj & {
@@ -239,20 +233,20 @@ export function getScanAttributesV2() {
 				dScanItem: typeof scItemId.obj & {dScan: typeof scnId.obj};
 			})[];
 		})[];
-		OrmKanban: typeof knb.obj & {
-			[OrmKanban._aliasCreatedBy]: typeof user.obj;
-			OrmCustomerSPPBIn: typeof bin.obj & {
-				OrmCustomerPO: typeof po.obj & {OrmCustomer: typeof cust.obj};
+		dKanban: typeof knb.obj & {
+			[dKanban._aliasCreatedBy]: typeof user.obj;
+			dSJIn: typeof bin.obj & {
+				dPo: typeof po.obj & {dCust: typeof cust.obj};
 			};
 			dScans: (typeof scn.obj & {
 				dScanItems: (typeof scItem.obj & {
 					dRejItems: typeof sciReject.obj;
 				})[];
 			})[];
-			OrmKanbanItems: (typeof knbItem.obj & {
-				OrmMasterItem: typeof mItem.obj;
-				OrmPOItemSppbIn: typeof binItem.obj & {
-					OrmCustomerPOItem: typeof poItem.obj;
+			dKnbItems: (typeof knbItem.obj & {
+				dItem: typeof mItem.obj;
+				dInItem: typeof binItem.obj & {
+					dPoItem: typeof poItem.obj;
 				};
 			})[];
 		};
@@ -367,8 +361,6 @@ export function sppbOutGetAttributes() {
 }
 
 export function printSppbOutAttributes() {
-	const {Ret: Rett} = getScanAttributesV2();
-
 	const sjOut = attrParserV2(dSjOut, [
 		"id",
 		"id_customer",
@@ -390,7 +382,7 @@ export function printSppbOutAttributes() {
 	const po = attrParserV2(dPo);
 	const sjIn = attrParserV2(dSJIn);
 	const kanban = attrParserV2(dKanban, ["id"]);
-	const scan = attrParserV2(dScan, ["lot_no_imi"]);
+	const scan = attrParserV2(dScan, ["lot_no_imi", "status"]);
 	const doc = attrParserV2(dDoc, ["doc_no", "tgl_efektif", "revisi", "terbit"]);
 
 	type Ret = typeof sjOut.obj & {

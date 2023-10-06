@@ -13,6 +13,7 @@ import {
 	dScanItem,
 	dSJIn,
 	dSjOut,
+	dUser,
 	dVehicle,
 	manyToMany,
 	oneToMany,
@@ -24,25 +25,17 @@ import {
 	OrmCustomerSPPBOut,
 	OrmCustomerSPPBOutItem,
 	OrmDocument,
-	OrmHardness,
-	OrmHardnessKategori,
 	OrmKanban,
 	OrmKanbanItem,
 	OrmKategoriMesin,
 	OrmKendaraan,
 	OrmMasterItem,
-	OrmMaterial,
-	OrmMaterialKategori,
 	OrmMesin,
-	OrmParameter,
-	OrmParameterKategori,
 	OrmPOItemSppbIn,
 	OrmScan,
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
-	OrmSupplierPO,
-	OrmSupplierPOItem,
 	OrmUser,
 } from "@database";
 
@@ -50,7 +43,7 @@ export function initRelations() {
 	oneToMany(OrmMasterItem, OrmCustomerPOItem, "master_item_id");
 	oneToMany(OrmMasterItem, OrmKanbanItem, "master_item_id");
 	oneToMany(OrmMasterItem, OrmPOItemSppbIn, "master_item_id");
-	oneToMany(OrmKategoriMesin, OrmMasterItem, "kategori_mesin");
+
 	oneToMany(
 		OrmKategoriMesin,
 		OrmMesin,
@@ -77,13 +70,6 @@ export function initRelations() {
 	oneToMany(OrmUser, OrmKanban, "createdBy", OrmKanban._aliasCreatedBy);
 	oneToMany(OrmUser, OrmKanban, "updatedBy", OrmKanban._aliasUpdatedBy);
 
-	oneToMany(OrmSupplierPO, OrmSupplierPOItem, "id_po");
-	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, "id_supplier_item");
-
-	oneToMany(OrmHardnessKategori, OrmHardness, "id_kategori");
-	oneToMany(OrmMaterialKategori, OrmMaterial, "id_kategori");
-	oneToMany(OrmParameterKategori, OrmParameter, "id_kategori");
-
 	oneToMany(OrmKanban, dScan, "id_kanban");
 	oneToMany(dScan, dScanItem, "id_scan");
 	oneToMany(dScanItem, OrmKanbanItem, "id_item");
@@ -98,7 +84,9 @@ export function initRelations() {
 	oneToMany(dKanban, dScan, "id_kanban");
 	oneToMany(dSJIn, dInItem, "id_sppb_in");
 	oneToMany(dInItem, dOutItem, "id_item");
+	oneToMany(dInItem, dKnbItem, "id_item");
 	oneToMany(dItem, dInItem, "master_item_id");
+	oneToMany(dItem, dKnbItem, "master_item_id");
 	oneToMany(dPoItem, dInItem, "id_item");
 
 	oneToMany(dCust, dSjOut, "id_customer");
@@ -106,6 +94,10 @@ export function initRelations() {
 	oneToMany(dVehicle, dSjOut, "id_kendaraan");
 	oneToMany(dPo, dPoItem, "id_po");
 	oneToMany(dDoc, dKanban, "doc_id");
+
+	oneToMany(dUser, dKanban, "createdBy", dKanban._aliasCreatedBy);
+	oneToMany(dUser, dKanban, "updatedBy", dKanban._aliasUpdatedBy);
+	oneToMany(dCust, dPo, "id_customer");
 
 	oneToOne(dScan, dScan, "id_qc", dScan._aliasReject);
 

@@ -67,7 +67,6 @@ const scanRouters = router({
 	editNotes: procedure
 		.input(tScanNew.pick({id: true, status: true, notes: true}).partial())
 		.mutation(({ctx, input: {id, notes, status}}) => {
-			console.log({id, notes, status});
 			return checkCredentialV2(ctx, async () => {
 				await dScan.update({notes}, {where: {id_kanban: id, status}});
 

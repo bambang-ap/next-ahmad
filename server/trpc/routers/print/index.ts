@@ -1,6 +1,7 @@
 import {z} from "zod";
 
-import {printSppbOutAttributes} from "@database";
+import {TScanTarget} from "@appTypes/app.type";
+import {printSppbOutAttributes, wherePagesV3} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 
@@ -35,14 +36,18 @@ const printRouters = router({
 
 				return checkCredentialV2(ctx, async (): Promise<SppbOutGet[]> => {
 					const data = await sjOut.model.findAll({
-						where: input,
+						logging: true,
+						where: wherePagesV3<typeof Ret>({
+							id: input.id,
+							"$dOutItems.dInItem.dSJIn.dKanbans.dScans.status$":
+								"finish_good" as TScanTarget,
+						}),
 						attributes: sjOut.attributes,
 						include: [
 							vehicle,
 							customer,
 							{
 								...outItem,
-								separate: true,
 								include: [
 									{
 										...inItem,
@@ -51,9 +56,7 @@ const printRouters = router({
 											{...poItem, include: [po]},
 											{
 												...sjIn,
-												include: [
-													{...kanban, separate: true, include: [scan, doc]},
-												],
+												include: [{...kanban, include: [scan, doc]}],
 											},
 										],
 									},
