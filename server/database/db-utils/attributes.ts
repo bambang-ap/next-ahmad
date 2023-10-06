@@ -1,3 +1,5 @@
+import {Includeable} from "sequelize";
+
 import {Route, TScanTarget} from "@appTypes/app.type";
 import {
 	tCustomer,
@@ -361,10 +363,10 @@ export function sppbOutGetAttributes() {
 }
 
 export function getPOSppbOutAttributes() {
-	const knb = attrParserV2(dKanban, ["id"]);
-	const bin = attrParserV2(dSJIn);
+	const kanban = attrParserV2(dKanban, ["id"]);
+	const sjIn = attrParserV2(dSJIn);
 	const po = attrParserV2(dPo);
-	const scn = attrParserV2(dScan, ["lot_no_imi", "status"]);
+	const scn = attrParserV2(dScan, ["id", "lot_no_imi", "status"]);
 	const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
 	const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
 	const item = attrParserV2(dItem, ["name", "kode_item", "id"]);
@@ -375,11 +377,48 @@ export function getPOSppbOutAttributes() {
 		"qty3",
 		"lot_no",
 	]);
+	const sjOut = attrParserExclude(dSjOut, ["id"]);
 	const outItem = attrParserV2(dOutItem, ["id", "qty1", "qty2", "qty3"]);
 	const poItem = attrParserV2(dPoItem, ["id", "unit1", "unit2", "unit3"]);
 	const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
 
-	type RetKanban = typeof knb.obj & {
+	const sjInInclude: Includeable = {
+		...sjIn,
+		include: [
+			{
+				...inItem,
+				include: [item, poItem, {...outItem, include: [sjOut]}],
+			},
+			{
+				...kanban,
+				include: [
+					knbItem,
+					{
+						...scn,
+						include: [
+							scnItem,
+							{
+								...scn,
+								as: dScan._aliasReject,
+								include: [{...scnItem, separate: true, include: [rejItem]}],
+							},
+						],
+					},
+				],
+			},
+		],
+	};
+
+	type RetSjIn = typeof sjIn.obj & {
+		dKanbans: RetKanban[];
+		dInItems: (typeof inItem.obj & {
+			dItem: typeof item.obj;
+			dPoItem: typeof poItem.obj;
+			dOutItems: (typeof outItem.obj & {dSjOut: typeof sjOut.obj})[];
+		})[];
+	};
+
+	type RetKanban = typeof kanban.obj & {
 		dKnbItems: typeof knbItem.obj[];
 		dScans: (typeof scn.obj & {
 			dScanItems: typeof scnItem.obj[];
@@ -391,21 +430,13 @@ export function getPOSppbOutAttributes() {
 		})[];
 	};
 
-	type Ret = typeof po.obj & {
-		dSJIns: (typeof bin.obj & {
-			dKanbans: RetKanban[];
-			dInItems: (typeof inItem.obj & {
-				dItem: typeof item.obj;
-				dPoItem: typeof poItem.obj;
-				dOutItems: typeof outItem.obj[];
-			})[];
-		})[];
-	};
+	type Ret = typeof po.obj & {dSJIns: RetSjIn[]};
 
 	return {
-		knb,
-		bin,
+		kanban,
+		sjIn,
 		po,
+		sjOut,
 		scn,
 		scnItem,
 		rejItem,
@@ -414,12 +445,22 @@ export function getPOSppbOutAttributes() {
 		outItem,
 		poItem,
 		knbItem,
+		sjInInclude,
 		RetKanban: {} as RetKanban,
+		RetSjIn: {} as RetSjIn,
 		Ret: {} as Ret,
 	};
 }
 
 export function printSppbOutAttributes() {
+	const {
+		scn: scan,
+		scnItem,
+		rejItem,
+		kanban,
+		sjIn,
+		po,
+	} = getPOSppbOutAttributes();
 	const sjOut = attrParserV2(dSjOut, [
 		"id",
 		"id_customer",
@@ -438,13 +479,30 @@ export function printSppbOutAttributes() {
 		"keterangan",
 	]);
 	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
-	const po = attrParserV2(dPo);
-	const sjIn = attrParserV2(dSJIn);
-	const kanban = attrParserV2(dKanban, ["id"]);
-	const scan = attrParserV2(dScan, ["lot_no_imi", "status"]);
 	const doc = attrParserV2(dDoc, ["doc_no", "tgl_efektif", "revisi", "terbit"]);
-	const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
-	const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
+
+	const sjInInclude: Includeable = {
+		...sjIn,
+		include: [
+			{
+				...kanban,
+				include: [
+					doc,
+					{
+						...scan,
+						include: [
+							scnItem,
+							{
+								...scan,
+								as: dScan._aliasReject,
+								include: [{...scnItem, include: [rejItem]}],
+							},
+						],
+					},
+				],
+			},
+		],
+	};
 
 	type Ret = typeof sjOut.obj & {
 		dVehicle: typeof vehicle.obj;
@@ -485,6 +543,7 @@ export function printSppbOutAttributes() {
 		kanban,
 		scan,
 		doc,
+		sjInInclude,
 		Ret: {} as Ret,
 	};
 }

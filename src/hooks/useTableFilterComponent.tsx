@@ -28,8 +28,8 @@ import {
 import {TableFilter} from "../components/base/Table/TableFilter";
 
 type PrintData = (id: string) => void;
-type Fields = {type: ModalTypeSelect} & FieldValues;
 type G<F extends FieldValues> = Pick<CellSelectProps<F>, "fieldName">;
+export type Fields = {type: ModalTypeSelect} & FieldValues;
 export type TableFilterProps<T, F extends Fields> = Omit<
 	TableProps<
 		T,

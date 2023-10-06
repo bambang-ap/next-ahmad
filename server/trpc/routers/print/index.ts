@@ -1,6 +1,10 @@
 import {TScanTarget} from "@appTypes/app.type";
 import {zIds} from "@appTypes/app.zod";
-import {dScan, printSppbOutAttributes, wherePagesV3} from "@database";
+import {
+	getPOSppbOutAttributes,
+	printSppbOutAttributes,
+	wherePagesV3,
+} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 
@@ -24,12 +28,7 @@ const printRouters = router({
 				item,
 				poItem,
 				po,
-				sjIn,
-				kanban,
-				scan,
-				doc,
-				rejItem,
-				scnItem,
+				sjInInclude,
 				Ret,
 			} = printSppbOutAttributes();
 
@@ -49,32 +48,7 @@ const printRouters = router({
 							include: [
 								{
 									...inItem,
-									include: [
-										item,
-										{...poItem, include: [po]},
-										{
-											...sjIn,
-											include: [
-												{
-													...kanban,
-													include: [
-														doc,
-														{
-															...scan,
-															include: [
-																scnItem,
-																{
-																	...scan,
-																	as: dScan._aliasReject,
-																	include: [{...scnItem, include: [rejItem]}],
-																},
-															],
-														},
-													],
-												},
-											],
-										},
-									],
+									include: [item, sjInInclude, {...poItem, include: [po]}],
 								},
 							],
 						},
@@ -84,6 +58,20 @@ const printRouters = router({
 				return data.map(e => e.toJSON() as unknown as RetExport);
 			});
 		}),
+	}),
+	po: procedure.input(zIds).query(({ctx, input}) => {
+		const {po, sjInInclude, RetSjIn} = getPOSppbOutAttributes();
+
+		type Ret = typeof po.obj & {dSJIns: typeof RetSjIn[]};
+
+		return checkCredentialV2(ctx, async (): Promise<Ret[]> => {
+			const dataPO = await po.model.findAll({
+				where: {id: input.ids},
+				include: [sjInInclude],
+			});
+
+			return dataPO.map(e => e.toJSON());
+		});
 	}),
 });
 

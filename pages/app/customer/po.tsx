@@ -7,30 +7,35 @@ import {Button, Form, Modal, ModalRef} from "@components";
 import {getLayout} from "@hoc";
 import {useTableFilterComponent} from "@hooks";
 import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
-import {dateUtils, modalTypeParser, nullRenderItem, nullUseQuery} from "@utils";
+import {dateUtils, getIds, modalTypeParser, renderItemAsIs} from "@utils";
 import {trpc} from "@utils/trpc";
 
 POCustomer.getLayout = getLayout;
+
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {control, reset, watch, clearErrors, handleSubmit} =
 		useForm<FormType>();
-
 	const dataForm = watch();
-	const {type: modalType} = dataForm;
 
+	const {type: modalType} = dataForm;
+	const {property, selectedIds} = getIds(dataForm, "idPo");
 	const {modalTitle, isDelete, isPreview} = modalTypeParser(
 		modalType,
 		"Customer PO",
 	);
 
 	const {component, mutateOpts, refetch} = useTableFilterComponent({
-		control,
 		reset,
-		property: "idPo",
-		exportUseQuery: nullUseQuery,
-		exportRenderItem: nullRenderItem,
+		control,
+		property,
+		exportUseQuery: () =>
+			trpc.print.po.useQuery(
+				{ids: selectedIds},
+				{enabled: selectedIds.length > 0},
+			),
+		exportRenderItem: renderItemAsIs,
 		header: ["Nomor PO", "Customer", "Tanggal", "Due Date", "Status", "Action"],
 		topComponent: <Button onClick={() => showModal("add", {})}>Add</Button>,
 		useQuery: form => trpc.customer_po.getV2.useQuery(form),
@@ -51,6 +56,7 @@ export default function POCustomer() {
 					<Cell>{customer?.name}</Cell>
 					<Cell>{dateUtils.date(tgl_po)}</Cell>
 					<Cell>{dateUtils.date(due_date)}</Cell>
+					{/* FIXME: Status mismatch with new models */}
 					<Cell>{status}</Cell>
 					<Cell className="flex gap-x-2">
 						<Button onClick={() => showModal("preview", item)}>Preview</Button>

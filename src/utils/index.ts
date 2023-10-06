@@ -5,7 +5,7 @@ import jsPDF, {jsPDFOptions} from "jspdf";
 import clone from "just-clone";
 import * as momentTz from "moment-timezone";
 import objectPath from "object-path";
-import {FieldPath, FieldValues} from "react-hook-form";
+import {DeepPartialSkipArrayKey, FieldPath, FieldValues} from "react-hook-form";
 import * as XLSX from "xlsx";
 
 import {Route, RouterOutput, UnitQty} from "@appTypes/app.type";
@@ -21,7 +21,7 @@ import {
 } from "@constants";
 import {getPOSppbOutAttributes} from "@database";
 import {REJECT_REASON} from "@enum";
-import {useLoader} from "@hooks";
+import {Fields, useLoader} from "@hooks";
 import {
 	UseTRPCMutationOptions,
 	UseTRPCQueryResult,
@@ -459,6 +459,15 @@ export function mutateCallback(
 			hide?.();
 		},
 	} as UseTRPCMutationOptions<any, any, any>;
+}
+
+export function getIds<
+	F extends Fields,
+	KK extends DeepPartialSkipArrayKey<F>,
+	P extends keyof KK,
+>(dataForm: KK, property: P) {
+	const selectedIds = transformIds(dataForm[property]);
+	return {selectedIds, property};
 }
 
 export function transformIds(dataObj?: MyObject<undefined | boolean>) {

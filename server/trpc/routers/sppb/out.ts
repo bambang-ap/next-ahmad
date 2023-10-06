@@ -14,7 +14,6 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
-	dScan,
 	getPOSppbOutAttributes,
 	OrmCustomer,
 	OrmCustomerSPPBIn,
@@ -46,20 +45,7 @@ const sppbOutRouters = router({
 		type RetOutput = typeof Ret;
 		const {id: id_customer} = input;
 
-		const {
-			knb,
-			bin,
-			po,
-			scn,
-			scnItem,
-			rejItem,
-			item,
-			inItem,
-			outItem,
-			poItem,
-			knbItem,
-			Ret,
-		} = getPOSppbOutAttributes();
+		const {po, sjInInclude, Ret} = getPOSppbOutAttributes();
 
 		return checkCredentialV2(ctx, async () => {
 			const wherer = wherePagesV3<RetOutput>({
@@ -69,37 +55,10 @@ const sppbOutRouters = router({
 			const dataPO = await po.model.findAll({
 				attributes: po.attributes,
 				where: {id_customer, ...wherer},
-				include: [
-					{
-						...bin,
-						include: [
-							{
-								...inItem,
-								include: [item, poItem, outItem],
-							},
-							{
-								...knb,
-								include: [
-									knbItem,
-									{
-										...scn,
-										include: [
-											scnItem,
-											{
-												...scn,
-												as: dScan._aliasReject,
-												include: [{...scnItem, include: [rejItem]}],
-											},
-										],
-									},
-								],
-							},
-						],
-					},
-				],
+				include: [sjInInclude],
 			});
 
-			return dataPO.map(e => e.dataValues as RetOutput);
+			return dataPO.map(e => e.toJSON() as unknown as RetOutput);
 		});
 	}),
 	getInvoice: procedure.query(() =>
