@@ -19,6 +19,7 @@ import {
 	paperA4,
 	qtyList,
 } from "@constants";
+import {getPOSppbOutAttributes} from "@database";
 import {REJECT_REASON} from "@enum";
 import {useLoader} from "@hooks";
 import {
@@ -82,7 +83,10 @@ export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 }
 
 export function itemInScanParser(
-	kanbans?: RouterOutput["sppb"]["out"]["getPO"][number]["dSJIns"][number]["dKanbans"],
+	kanbans?: Omit<
+		ReturnType<typeof getPOSppbOutAttributes>["RetKanban"],
+		"dKnbItems"
+	>[],
 ) {
 	let rejItems: RejItems = {};
 	type RejItems = Partial<Record<REJECT_REASON, UnitQty>>;
@@ -314,22 +318,29 @@ export async function generatePDF(
 
 	for (let index = 0; index < elements.length; index++) {
 		const element = elements[index];
-		if (index + 1 < elements.length) doc.addPage();
+		if (index + 1 < elements.length) doc.addPage("a4", orientation);
 		doc = await htmlPage(doc, element!, index);
 	}
 
 	return doc.save(filename, {returnPromise: true});
 
 	function htmlPage(pdf: jsPDF, element: HTMLElement, i: number) {
+		const width = element.clientWidth;
+
+		console.log({
+			orientation,
+			width,
+			scale: scaleWidth / width,
+			y: i * pageHeight,
+			scaleWidth,
+		});
+
 		return new Promise<jsPDF>(resolve => {
 			pdf.html(element, {
 				x: 0,
 				margin: 0,
 				y: i * pageHeight,
-				html2canvas: {
-					width: element.clientWidth,
-					scale: scaleWidth / element.clientWidth,
-				},
+				html2canvas: {width, scale: scaleWidth / width},
 				callback(pdfCallback) {
 					resolve(pdfCallback);
 				},

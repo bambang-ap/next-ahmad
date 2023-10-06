@@ -6,13 +6,13 @@ import {ZId} from "@appTypes/app.type";
 import {CheckBox} from "@components";
 import {useLoader} from "@hooks";
 import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {classNames, generatePDF, sleep} from "@utils";
+import {generatePDF, sleep} from "@utils";
 
 export type GenPdfRef = {generate: (timeout?: number) => Promise<void>};
 export type GenPdfProps<T, W extends UseTRPCQueryResult<T[], unknown>> = {
 	debug?: boolean;
 	tagId: string;
-	width?: string;
+	width?: number;
 	filename?: string;
 	splitPagePer?: number;
 	useQuery: () => W;
@@ -29,7 +29,7 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 		debug,
 		orientation,
 		filename = "file",
-		width = "w-[1600px]",
+		width = 1600,
 		useQuery: useQueries,
 		splitPagePer,
 		renderItem,
@@ -85,8 +85,9 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 				return (
 					<div
 						key={index}
+						style={{width}}
 						id={elementsId![index]}
-						className={classNames("flex flex-wrap", width)}>
+						className={"flex flex-wrap"}>
 						{dataList?.map(item => renderItem(item))}
 					</div>
 				);

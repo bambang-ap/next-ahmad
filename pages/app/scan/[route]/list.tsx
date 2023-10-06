@@ -77,7 +77,7 @@ function RenderScanList() {
 			? {
 					splitPagePer: 4,
 					orientation: "l",
-					width: "w-[2200px]",
+					width: 2200,
 					tagId: `${route}-generated`,
 					renderItem: data => (
 						<RenderPdfData className="w-1/2" data={data!} route={route} />

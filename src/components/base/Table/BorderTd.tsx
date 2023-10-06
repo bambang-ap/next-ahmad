@@ -2,9 +2,10 @@ import {TdHTMLAttributes} from "react";
 
 import {classNames} from "@utils";
 
-type TdProps = TdHTMLAttributes<HTMLTableCellElement> & {
+export type BorderTdProps = TdHTMLAttributes<HTMLTableCellElement> & {
 	top?: boolean;
 	center?: boolean;
+	rootClassName?: string;
 };
 
 export function BorderTd({
@@ -12,8 +13,9 @@ export function BorderTd({
 	center,
 	top,
 	className,
+	rootClassName,
 	...props
-}: TdProps) {
+}: BorderTdProps) {
 	return (
 		<td
 			{...props}
@@ -22,6 +24,7 @@ export function BorderTd({
 				"flex-1 px-2 py-1",
 				"font-semibold",
 				"pb-2",
+				rootClassName,
 			)}>
 			<div
 				className={classNames(

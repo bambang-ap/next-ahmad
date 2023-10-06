@@ -10,12 +10,7 @@ import {getLayout} from "@hoc";
 import {useTableFilterComponent} from "@hooks";
 import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
 import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
-import {
-	modalTypeParser,
-	nullRenderItem,
-	nullUseQuery,
-	transformIds,
-} from "@utils";
+import {modalTypeParser, renderItemAsIs, transformIds} from "@utils";
 import {trpc} from "@utils/trpc";
 
 SPPBOUT.getLayout = getLayout;
@@ -25,7 +20,7 @@ export type FormValue = {
 	idSppbOuts?: MyObject<boolean>;
 } & TCustomerSPPBOutUpsert;
 
-const widthSize = 1100;
+const widthSize = 1250;
 
 export default function SPPBOUT() {
 	const {control, reset, watch, clearErrors, handleSubmit} =
@@ -47,8 +42,13 @@ export default function SPPBOUT() {
 		reset,
 		control,
 		property: "idSppbOuts",
-		exportUseQuery: nullUseQuery,
-		exportRenderItem: nullRenderItem,
+		enabledExport: true,
+		exportUseQuery: () =>
+			trpc.export.sppb.out.useQuery(
+				{id: selectedIds},
+				{enabled: selectedIds.length > 0},
+			),
+		exportRenderItem: renderItemAsIs,
 		header: [
 			"Nomor Surat",
 			"Kendaraan",
@@ -58,8 +58,8 @@ export default function SPPBOUT() {
 		],
 		genPdfOptions: {
 			debug: true,
-			width: `w-[${widthSize}px]`,
-			tagId: "kanban-data-print",
+			width: widthSize,
+			tagId: "sppb-out-data-print",
 			splitPagePer: 1,
 			useQuery: () =>
 				trpc.print.sppb.out.useQuery(

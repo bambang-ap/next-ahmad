@@ -1,7 +1,7 @@
 import {z} from "zod";
 
 import {TScanTarget} from "@appTypes/app.type";
-import {printSppbOutAttributes, wherePagesV3} from "@database";
+import {dScan, printSppbOutAttributes, wherePagesV3} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure, router} from "@trpc";
 
@@ -31,6 +31,8 @@ const printRouters = router({
 					kanban,
 					scan,
 					doc,
+					rejItem,
+					scnItem,
 					Ret,
 				} = printSppbOutAttributes();
 
@@ -56,7 +58,25 @@ const printRouters = router({
 											{...poItem, include: [po]},
 											{
 												...sjIn,
-												include: [{...kanban, include: [scan, doc]}],
+												include: [
+													{
+														...kanban,
+														include: [
+															doc,
+															{
+																...scan,
+																include: [
+																	scnItem,
+																	{
+																		...scan,
+																		as: dScan._aliasReject,
+																		include: [{...scnItem, include: [rejItem]}],
+																	},
+																],
+															},
+														],
+													},
+												],
 											},
 										],
 									},

@@ -171,7 +171,7 @@ export default function Kanban() {
 			</Modal>
 
 			<GeneratePdfV2
-				width="w-[1850px]"
+				width={1850}
 				splitPagePer={4}
 				orientation="l"
 				ref={genPdfRef}

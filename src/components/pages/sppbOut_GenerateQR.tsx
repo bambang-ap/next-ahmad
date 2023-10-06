@@ -1,15 +1,23 @@
 import {PropsWithChildren} from "react";
 
+import {Wrapper, WrapperProps} from "@appComponent/Wrapper";
 import {RouterOutput, TInstruksiKanban} from "@appTypes/app.type";
 import {
+	BorderTd,
+	BorderTdProps,
 	RootTable as Table,
-	StyledCellProps,
 	Text as Txt,
 	TextProps,
 } from "@components";
 import {IMIConst} from "@constants";
-import {CRUD_ENABLED} from "@enum";
-import {classNames, dateUtils, paperSizeCalculator, qtyMap} from "@utils";
+import {CRUD_ENABLED, REJECT_REASON} from "@enum";
+import {
+	classNames,
+	dateUtils,
+	itemInScanParser,
+	paperSizeCalculator,
+	qtyMap,
+} from "@utils";
 import {trpc} from "@utils/trpc";
 
 import {qtyList} from "./ModalChild_po";
@@ -18,8 +26,26 @@ const {Tr} = Table;
 
 const font = "font-bold";
 
-function Td({className, ...props}: StyledCellProps) {
-	return <Table.Td {...props} className={classNames(font, className)} />;
+function Td({className, ...props}: BorderTdProps) {
+	return (
+		<BorderTd
+			{...props}
+			rootClassName="!border"
+			className={classNames(font, className)}
+		/>
+	);
+}
+
+function Wrp(props: Pick<WrapperProps, "children" | "title">) {
+	return (
+		<Wrapper
+			className="px-0"
+			noColon
+			transparent
+			sizes={["flex-1"]}
+			{...props}
+		/>
+	);
 }
 
 function Section({
@@ -134,66 +160,84 @@ export function SPPBOutGenerateQR({
 						</div>
 					</div>
 				</div>
-				<div className="border border-black">
-					<Table>
-						<Tr>
-							<Td>No</Td>
-							<Td>Nama Barang</Td>
-							{qtyList.map(num => (
-								<Td key={num}>Qty</Td>
-							))}
-							<Td>Lot No</Td>
-							<Td>Lot No IMI</Td>
-							<Td>No PO</Td>
-							<Td>SJ Masuk</Td>
-							<Td>Proses</Td>
-						</Tr>
+				<table>
+					<Tr>
+						<Td center>No</Td>
+						<Td center>Nama Barang</Td>
+						{qtyList.map(num => (
+							<Td center key={num}>
+								Qty {num}
+							</Td>
+						))}
+						<Td center>Lot No</Td>
+						<Td center>Lot No IMI</Td>
+						<Td center>No PO</Td>
+						<Td center>SJ Masuk</Td>
+						<Td center>Proses</Td>
+					</Tr>
 
-						{detail?.dOutItems?.map((itemm, index) => {
-							const {dInItem: OrmPOItemSppbIn, ...item} = itemm;
-							const {
-								dItem: OrmMasterItem,
-								dPoItem: OrmCustomerPOItem,
-								dSJIn: OrmCustomerSPPBIn,
-							} = OrmPOItemSppbIn;
-							const lot_no_imi = OrmCustomerSPPBIn?.dKanbans?.map(e =>
-								e.dScans.map(f => f.lot_no_imi).join(" | "),
-							);
+					{detail?.dOutItems?.map((itemm, index) => {
+						const {dInItem: OrmPOItemSppbIn, ...item} = itemm;
+						const {
+							dItem: OrmMasterItem,
+							dPoItem: OrmCustomerPOItem,
+							dSJIn: OrmCustomerSPPBIn,
+						} = OrmPOItemSppbIn;
+						const lot_no_imi = OrmCustomerSPPBIn?.dKanbans?.map(e =>
+							e.dScans.map(f => f.lot_no_imi).join(" | "),
+						);
 
-							return (
-								<>
-									<Tr>
-										<Td>{index + 1}</Td>
-										<Td>{OrmMasterItem?.name}</Td>
-										{qtyMap(({num, qtyKey, unitKey}) => {
-											if (!item[qtyKey]) return <Td />;
-											return (
-												<Td key={num}>
-													{item[qtyKey]}
-													{OrmCustomerPOItem?.[unitKey]}
-												</Td>
-											);
+						const {rejectedItems} = itemInScanParser(
+							OrmCustomerSPPBIn?.dKanbans,
+						);
+
+						return (
+							<>
+								<Tr>
+									<Td>{index + 1}</Td>
+									<Td>{OrmMasterItem?.name}</Td>
+									{qtyMap(({num, qtyKey, unitKey}) => {
+										if (!item[qtyKey]) return <Td width={115} />;
+
+										const unit = OrmCustomerPOItem?.[unitKey];
+										const qtyRejectRP = rejectedItems.RP?.[qtyKey];
+										const qtyRejectTP = rejectedItems.TP?.[qtyKey];
+
+										return (
+											<Td width={115} className="flex-col" key={num}>
+												<Wrp title={item[qtyKey]?.toString()}>{unit}</Wrp>
+												{!!qtyRejectTP && (
+													<Wrp title={REJECT_REASON.TP}>
+														{`${qtyRejectTP?.toString()} ${unit}`}
+													</Wrp>
+												)}
+												{!!qtyRejectRP && (
+													<Wrp title={REJECT_REASON.RP}>
+														{`${qtyRejectRP?.toString()} ${unit}`}
+													</Wrp>
+												)}
+											</Td>
+										);
+									})}
+									<Td>{OrmPOItemSppbIn.lot_no}</Td>
+									<Td>{lot_no_imi}</Td>
+									<Td>{OrmCustomerPOItem.dPo.nomor_po}</Td>
+									<Td>{OrmCustomerSPPBIn.nomor_surat}</Td>
+									<Td className="flex-col gap-2">
+										{OrmMasterItem?.kategori_mesinn?.map(m => {
+											return OrmMasterItem.instruksi[m]!.map(ins => (
+												<DetailProcess
+													key={ins.id_instruksi}
+													id={ins.id_instruksi}
+												/>
+											));
 										})}
-										<Td>{OrmPOItemSppbIn.lot_no}</Td>
-										<Td>{lot_no_imi}</Td>
-										<Td>{OrmCustomerPOItem.dPo.nomor_po}</Td>
-										<Td>{OrmCustomerSPPBIn.nomor_surat}</Td>
-										<Td className="flex-col gap-2">
-											{OrmMasterItem?.kategori_mesinn?.map(m => {
-												return OrmMasterItem.instruksi[m]!.map(ins => (
-													<DetailProcess
-														key={ins.id_instruksi}
-														id={ins.id_instruksi}
-													/>
-												));
-											})}
-										</Td>
-									</Tr>
-								</>
-							);
-						})}
-					</Table>
-				</div>
+									</Td>
+								</Tr>
+							</>
+						);
+					})}
+				</table>
 			</div>
 			<div className="flex justify-between gap-2 p-4 border border-black">
 				<Sign>Penerima,</Sign>

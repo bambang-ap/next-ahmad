@@ -14,33 +14,16 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
-	attrParserExclude,
-	attrParserV2,
-	dInItem,
-	dItem,
-	dKanban,
-	dKnbItem,
-	dOutItem,
-	dPo,
-	dPoItem,
-	dRejItem,
 	dScan,
-	dScanItem,
-	dSJIn,
+	getPOSppbOutAttributes,
 	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
 	OrmCustomerSPPBOutItem,
-	OrmKanban,
-	OrmKanbanItem,
 	OrmKendaraan,
-	OrmMasterItem,
 	OrmPOItemSppbIn,
 	OrmScan,
 	sppbOutGetAttributes,
-	sppbOutGetPoAttributes,
 	wherePagesV2,
 	wherePagesV3,
 } from "@database";
@@ -60,49 +43,26 @@ export type GetFGRet = TScan & {
 
 const sppbOutRouters = router({
 	getPO: procedure.input(zId).query(({ctx, input}) => {
+		type RetOutput = typeof Ret;
 		const {id: id_customer} = input;
 
-		const knb = attrParserV2(dKanban, ["id"]);
-		const bin = attrParserV2(dSJIn);
-		const po = attrParserV2(dPo);
-		const scn = attrParserV2(dScan, ["lot_no_imi", "status"]);
-		const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
-		const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
-		const item = attrParserV2(dItem, ["name", "kode_item", "id"]);
-		const inItem = attrParserV2(dInItem, [
-			"id",
-			"qty1",
-			"qty2",
-			"qty3",
-			"lot_no",
-		]);
-		const outItem = attrParserV2(dOutItem, ["id", "qty1", "qty2", "qty3"]);
-		const poItem = attrParserV2(dPoItem, ["id", "unit1", "unit2", "unit3"]);
-		const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
-
-		type Ret = typeof po.obj & {
-			dSJIns: (typeof bin.obj & {
-				dKanbans: (typeof knb.obj & {
-					dKnbItems: typeof knbItem.obj[];
-					dScans: (typeof scn.obj & {
-						dScanItems: typeof scnItem.obj[];
-						[dScan._aliasReject]?: typeof scn.obj & {
-							dScanItems: (typeof scnItem.obj & {
-								dRejItems: typeof rejItem.obj[];
-							})[];
-						};
-					})[];
-				})[];
-				dInItems: (typeof inItem.obj & {
-					dItem: typeof item.obj;
-					dPoItem: typeof poItem.obj;
-					dOutItems: typeof outItem.obj[];
-				})[];
-			})[];
-		};
+		const {
+			knb,
+			bin,
+			po,
+			scn,
+			scnItem,
+			rejItem,
+			item,
+			inItem,
+			outItem,
+			poItem,
+			knbItem,
+			Ret,
+		} = getPOSppbOutAttributes();
 
 		return checkCredentialV2(ctx, async () => {
-			const wherer = wherePagesV3<Ret>({
+			const wherer = wherePagesV3<RetOutput>({
 				"$dSJIns.dKanbans.dScans.status$": "finish_good" as TScanTarget,
 			});
 
@@ -140,57 +100,7 @@ const sppbOutRouters = router({
 				],
 			});
 
-			return dataPO.map(e => e.dataValues as Ret);
-		});
-	}),
-	getPOD: procedure.input(zId).query(({ctx, input: {id: id_customer}}) => {
-		type UU = typeof Ret;
-
-		const {A, B, C, D, E, F, G, H, I, Ret} = sppbOutGetPoAttributes();
-
-		return checkCredentialV2(ctx, async () => {
-			const dataPO = await OrmCustomerPO.findAll({
-				attributes: C.keys,
-				where: {
-					id_customer,
-					"$OrmCustomerSPPBIns->OrmKanbans->OrmScans.status_finish_good$": true,
-				},
-				include: [
-					{
-						attributes: B.keys,
-						model: OrmCustomerSPPBIn,
-						include: [
-							{
-								model: OrmKanban,
-								attributes: A.keys,
-								include: [
-									{model: OrmScan, attributes: D.keys},
-									{model: OrmKanbanItem, attributes: I.keys},
-								],
-							},
-							{
-								model: OrmPOItemSppbIn,
-								attributes: E.keys,
-								include: [
-									{model: OrmMasterItem, attributes: G.keys},
-									{model: OrmCustomerPOItem, attributes: H.keys},
-									{
-										separate: true,
-										attributes: F.keys,
-										model: OrmCustomerSPPBOutItem,
-									},
-								],
-							},
-						],
-					},
-				],
-			});
-
-			return dataPO.map(e => {
-				const val = e.dataValues as unknown as UU;
-
-				return {...val};
-			});
+			return dataPO.map(e => e.dataValues as RetOutput);
 		});
 	}),
 	getInvoice: procedure.query(() =>

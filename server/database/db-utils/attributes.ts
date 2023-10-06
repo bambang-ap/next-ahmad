@@ -360,6 +360,65 @@ export function sppbOutGetAttributes() {
 	return {A, B, C, D, E, F, Ret: {} as Ret};
 }
 
+export function getPOSppbOutAttributes() {
+	const knb = attrParserV2(dKanban, ["id"]);
+	const bin = attrParserV2(dSJIn);
+	const po = attrParserV2(dPo);
+	const scn = attrParserV2(dScan, ["lot_no_imi", "status"]);
+	const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
+	const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
+	const item = attrParserV2(dItem, ["name", "kode_item", "id"]);
+	const inItem = attrParserV2(dInItem, [
+		"id",
+		"qty1",
+		"qty2",
+		"qty3",
+		"lot_no",
+	]);
+	const outItem = attrParserV2(dOutItem, ["id", "qty1", "qty2", "qty3"]);
+	const poItem = attrParserV2(dPoItem, ["id", "unit1", "unit2", "unit3"]);
+	const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
+
+	type RetKanban = typeof knb.obj & {
+		dKnbItems: typeof knbItem.obj[];
+		dScans: (typeof scn.obj & {
+			dScanItems: typeof scnItem.obj[];
+			[dScan._aliasReject]?: typeof scn.obj & {
+				dScanItems: (typeof scnItem.obj & {
+					dRejItems: typeof rejItem.obj[];
+				})[];
+			};
+		})[];
+	};
+
+	type Ret = typeof po.obj & {
+		dSJIns: (typeof bin.obj & {
+			dKanbans: RetKanban[];
+			dInItems: (typeof inItem.obj & {
+				dItem: typeof item.obj;
+				dPoItem: typeof poItem.obj;
+				dOutItems: typeof outItem.obj[];
+			})[];
+		})[];
+	};
+
+	return {
+		knb,
+		bin,
+		po,
+		scn,
+		scnItem,
+		rejItem,
+		item,
+		inItem,
+		outItem,
+		poItem,
+		knbItem,
+		RetKanban: {} as RetKanban,
+		Ret: {} as Ret,
+	};
+}
+
 export function printSppbOutAttributes() {
 	const sjOut = attrParserV2(dSjOut, [
 		"id",
@@ -384,6 +443,8 @@ export function printSppbOutAttributes() {
 	const kanban = attrParserV2(dKanban, ["id"]);
 	const scan = attrParserV2(dScan, ["lot_no_imi", "status"]);
 	const doc = attrParserV2(dDoc, ["doc_no", "tgl_efektif", "revisi", "terbit"]);
+	const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
+	const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
 
 	type Ret = typeof sjOut.obj & {
 		dVehicle: typeof vehicle.obj;
@@ -392,7 +453,14 @@ export function printSppbOutAttributes() {
 			dInItem: typeof inItem.obj & {
 				dSJIn: typeof sjIn.obj & {
 					dKanbans: (typeof kanban.obj & {
-						dScans: typeof scan.obj[];
+						dScans: (typeof scan.obj & {
+							dScanItems: typeof scnItem.obj[];
+							[dScan._aliasReject]?: typeof scan.obj & {
+								dScanItems: (typeof scnItem.obj & {
+									dRejItems: typeof rejItem.obj[];
+								})[];
+							};
+						})[];
 						dDoc: typeof doc.obj;
 					})[];
 				};
@@ -404,6 +472,8 @@ export function printSppbOutAttributes() {
 
 	return {
 		sjOut,
+		scnItem,
+		rejItem,
 		vehicle,
 		customer,
 		outItem,
