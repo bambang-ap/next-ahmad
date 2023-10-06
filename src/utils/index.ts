@@ -327,14 +327,6 @@ export async function generatePDF(
 	function htmlPage(pdf: jsPDF, element: HTMLElement, i: number) {
 		const width = element.clientWidth;
 
-		console.log({
-			orientation,
-			width,
-			scale: scaleWidth / width,
-			y: i * pageHeight,
-			scaleWidth,
-		});
-
 		return new Promise<jsPDF>(resolve => {
 			pdf.html(element, {
 				x: 0,
