@@ -176,25 +176,11 @@ export async function getCurrentPOStatus(id_po: string): Promise<PO_STATUS> {
 	return PO_STATUS.A;
 }
 
-export async function newProcessMapper(
-	item?: Pick<TMasterItem, "instruksi" | "kategori_mesinn">,
-) {
-	console.log(item);
-
-	const processes = [];
-
-	return processes
-		.map(e => e.dataProcess.map(r => r.process.name).join(" | "))
-		.join(" - ");
-}
-
 export async function processMapper(
 	ctx: Context,
-	{
-		instruksi: process,
-		kategori_mesinn,
-	}: Partial<Pick<TMasterItem, "instruksi" | "kategori_mesinn">>,
+	item?: Partial<Pick<TMasterItem, "instruksi" | "kategori_mesinn">>,
 ) {
+	const {instruksi: process, kategori_mesinn} = item ?? {};
 	const routerCaller = appRouter.createCaller(ctx);
 	const processes = await routerCaller.kanban.mesinProcess({
 		process,

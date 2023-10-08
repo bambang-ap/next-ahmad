@@ -1,6 +1,6 @@
 import {tRoute, zIds} from "@appTypes/app.zod";
 import {formatDateStringView, formatHour} from "@constants";
-import {newProcessMapper} from "@database";
+import {OrmKategoriMesin, OrmMesin, processMapper} from "@database";
 import {checkCredentialV2} from "@server";
 import {procedure} from "@trpc";
 import {qtyReduce} from "@utils";
@@ -48,12 +48,12 @@ const exportScanRouters = {
 						return {...retQty, [qtyKey]: scnItem[qtyKey]};
 					});
 
-					const instruksi = await newProcessMapper(dItem);
+					const instruksi = await processMapper(ctx, dItem);
 
-					// const mesinnnn = await dMesin.findAll({
-					// 	where: dInItem?.id ? {id: dKanban?.list_mesin[dInItem?.id]} : {},
-					// 	include: [{model: dKatMesin, as: dKatMesin._alias}],
-					// });
+					const mesinnnn = await OrmMesin.findAll({
+						where: dInItem?.id ? {id: dKanban?.list_mesin[dInItem?.id]} : {},
+						include: [{model: OrmKategoriMesin, as: OrmKategoriMesin._alias}],
+					});
 
 					ret.push({
 						NO: (i + 1).toString(),
@@ -69,10 +69,10 @@ const exportScanRouters = {
 						"NO LOT IMI": val.lot_no_imi,
 						PROSES: instruksi,
 						"NOMOR KANBAN": dKanban?.nomor_kanban!,
-						// "NAMA MESIN": mesinnnn.map(e => e.toJSON().name).join(" | "),
-						// "NOMOR MESIN": mesinnnn
-						// 	.map(e => e.toJSON().nomor_mesin)
-						// 	.join(" | "),
+						"NAMA MESIN": mesinnnn.map(e => e.toJSON().name).join(" | "),
+						"NOMOR MESIN": mesinnnn
+							.map(e => e.toJSON().nomor_mesin)
+							.join(" | "),
 						KETERANGAN: dKanban?.keterangan ?? "",
 					});
 				}
