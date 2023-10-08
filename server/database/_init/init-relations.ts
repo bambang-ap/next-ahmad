@@ -99,6 +99,8 @@ export function initRelations() {
 
 	// New Models
 	oneToMany(dPo, dSJIn, "id_po");
+	oneToMany(dPo, dKanban, "id_po");
+	oneToMany(dPo, dPoItem, "id_po");
 	oneToMany(dSJIn, dKanban, "id_sppb_in");
 	oneToMany(dKanban, dKnbItem, "id_kanban");
 	oneToMany(dKnbItem, dScanItem, "id_kanban_item");
@@ -113,7 +115,6 @@ export function initRelations() {
 	oneToMany(dCust, dSjOut, "id_customer");
 	oneToMany(dSjOut, dOutItem, "id_sppb_out");
 	oneToMany(dVehicle, dSjOut, "id_kendaraan");
-	oneToMany(dPo, dPoItem, "id_po");
 	oneToMany(dDoc, dKanban, "doc_id");
 
 	oneToMany(dUser, dKanban, "createdBy", dKanban._aliasCreatedBy);

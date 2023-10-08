@@ -157,23 +157,27 @@ export function exportScanAttributes(route: Route["route"]) {
 }
 
 export function scanListAttributes() {
-	const A = attrParser(tScan, ["id", "id_kanban", "date"]);
-	const B = attrParser(tKanban, ["nomor_kanban", "createdAt", "keterangan"]);
-	const C = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
-	const D = attrParser(tCustomerPO, ["nomor_po"]);
-	const E = attrParser(tCustomer, ["name"]);
+	const scan = attrParserV2(dScan, ["id", "id_kanban", "status", "updatedAt"]);
+	const kanban = attrParserV2(dKanban, [
+		"nomor_kanban",
+		"createdAt",
+		"keterangan",
+	]);
+	const sjIn = attrParserV2(dSJIn, ["nomor_surat"]);
+	const po = attrParserV2(dPo, ["nomor_po"]);
+	const cust = attrParserV2(dCust, ["name"]);
 
-	const num = NumberOrderAttribute<TScan>('"OrmScan"."id"');
+	const num = NumberOrderAttribute<TScan>('"dScan"."id"');
 
-	type Ret = typeof A.obj & {
+	type Ret = typeof scan.obj & {
 		number?: number;
-		OrmKanban: typeof B.obj & {
-			OrmCustomerPO: typeof D.obj & {OrmCustomer: typeof E.obj};
-			OrmCustomerSPPBIn: typeof C.obj;
+		dKanban: typeof kanban.obj & {
+			dPo: typeof po.obj & {dCust: typeof cust.obj};
+			dSJIn: typeof sjIn.obj;
 		};
 	};
 
-	return {A, B, C, D, E, num, Ret: {} as Ret};
+	return {scan, kanban, sjIn, po, cust, num, Ret: {} as Ret};
 }
 
 export function printScanAttributes(route: TScanTarget) {

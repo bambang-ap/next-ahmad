@@ -78,45 +78,31 @@ const scanRouters = router({
 		.query(({ctx, input}) => {
 			const {limit, page, search, target} = input;
 
-			const {A, B, C, D, E, num, Ret} = scanListAttributes();
+			const {scan, kanban, sjIn, po, cust, num, Ret} = scanListAttributes();
 
 			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
-				const {count, rows: data} = await OrmScan.findAndCountAll({
+				const {count, rows: data} = await scan.model.findAndCountAll({
 					limit,
-					attributes: [num, ...A.keys],
-					order: scanOrder(target),
+					attributes: [num, ...(scan.attributes ?? [])],
+					order: scanOrder(),
 					offset: (page - 1) * limit,
 					where: {
-						[`status_${target}`]: true,
+						status: target,
 						...wherePagesV2<ScanList>(
 							[
-								"$OrmKanban.keterangan$",
-								"$OrmKanban.nomor_kanban$",
-								"$OrmKanban.OrmCustomerPO.nomor_po$",
-								"$OrmKanban.OrmCustomerSPPBIn.nomor_surat$",
-								"$OrmKanban.OrmCustomerPO.OrmCustomer.name$",
+								"$dKanban.keterangan$",
+								"$dKanban.nomor_kanban$",
+								"$dKanban.dPo.nomor_po$",
+								"$dKanban.dSJIn.nomor_surat$",
+								"$dKanban.dPo.dCust.name$",
 							],
 							search,
 						),
 					},
-					include: [
-						{
-							model: OrmKanban,
-							attributes: B.keys,
-							include: [
-								{model: OrmCustomerSPPBIn, attributes: C.keys},
-								{
-									attributes: D.keys,
-									model: OrmCustomerPO,
-									include: [{model: OrmCustomer, attributes: E.keys}],
-								},
-							],
-						},
-					],
+					include: [{...kanban, include: [sjIn, {...po, include: [cust]}]}],
 				});
 
-				// @ts-ignore
-				const allDataScan = data.map(e => e.dataValues as typeof Ret);
+				const allDataScan = data.map(e => e.toJSON() as unknown as typeof Ret);
 
 				return pagingResult(count, page, limit, allDataScan);
 			});

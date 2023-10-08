@@ -23,7 +23,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 
 	const {isSelect} = modalTypeParser(modalType);
 
-	const data = item.OrmKanban;
+	const data = item.dKanban;
 	const date = item.date?.[`${route}_updatedAt`];
 	const theDate = !date ? "" : dateUtils.full(date);
 
@@ -31,9 +31,9 @@ export function RenderData(props: PropsWithChildren<Props>) {
 		<>
 			{isSelect && <CellSelect fieldName={`idScans.${item.id}`} />}
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
-			<Cell>{data.OrmCustomerPO.OrmCustomer.name}</Cell>
-			<Cell>{data.OrmCustomerPO.nomor_po}</Cell>
-			<Cell>{data.OrmCustomerSPPBIn.nomor_surat}</Cell>
+			<Cell>{data.dPo.dCust.name}</Cell>
+			<Cell>{data.dPo.nomor_po}</Cell>
+			<Cell>{data.dSJIn.nomor_surat}</Cell>
 			<Cell>{data?.nomor_kanban}</Cell>
 			<Cell>{data?.keterangan}</Cell>
 			<Cell>{theDate}</Cell>

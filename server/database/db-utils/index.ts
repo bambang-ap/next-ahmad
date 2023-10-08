@@ -1,4 +1,3 @@
-import {Route} from "pages/app/scan/[route]";
 import {Path} from "react-hook-form";
 import {
 	DECIMAL,
@@ -197,8 +196,8 @@ export async function processMapper(
 	return instruksi;
 }
 
-export function OrmScanOrder(target: Route["route"]): Order {
-	return [[`date.${target}_updatedAt`, "DESC NULLS LAST"]];
+export function OrmScanOrder(): Order {
+	return [[`updatedAt`, "DESC NULLS LAST"]];
 }
 
 export function NumberOrderAttribute<T extends {}>(
