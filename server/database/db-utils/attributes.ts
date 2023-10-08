@@ -43,7 +43,7 @@ import {
 import {PO_STATUS} from "@enum";
 
 export function getPrintPoAttributes() {
-	const Po = attrParserV2(dPo);
+	const Po = attrParserExclude(dPo, ["id", "id_customer"]);
 	const PoItem = attrParserExclude(dPoItem, [
 		"harga",
 		"id",
@@ -52,13 +52,13 @@ export function getPrintPoAttributes() {
 	]);
 	const InItem = attrParserV2(dInItem, ["qty1", "qty2", "qty3"]);
 	const OutItem = attrParserV2(dOutItem, ["qty1", "qty2", "qty3"]);
-	const KnbItem = attrParserV2(dKnbItem, ["qty1", "qty2", "qty3"]);
+	const KnbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
 	const ScanItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
-	const Kanban = attrParserV2(dKanban);
-	const Scan = attrParserV2(dScan);
-	const SJIn = attrParserV2(dSJIn);
+	const Kanban = attrParserV2(dKanban, ["nomor_kanban"]);
+	const Scan = attrParserV2(dScan, ["status"]);
+	const SJIn = attrParserV2(dSJIn, ["nomor_surat"]);
 	const Item = attrParserV2(dItem, ["name", "kode_item"]);
-	const Cust = attrParserV2(dCust);
+	const Cust = attrParserV2(dCust, ["name"]);
 
 	const poIncludeAble: Includeable[] = [
 		Cust,
@@ -70,26 +70,31 @@ export function getPrintPoAttributes() {
 					...InItem,
 					include: [
 						SJIn,
-						// OutItem,
-						{...KnbItem, include: [{...ScanItem, include: [Scan]}]},
+						OutItem,
+						{
+							...KnbItem,
+							include: [Kanban],
+						},
 					],
 				},
 			],
 		},
 	];
 
+	type RetScnItem = typeof ScanItem.obj & {
+		dScan: typeof Scan.obj;
+	};
+
 	type Ret = typeof Po.obj & {
 		dCust: typeof Cust.obj;
 		dPoItems: typeof PoItem.obj & {
 			dItem: typeof Item.obj;
-			dInItems: typeof InItem.obj & {
+			dInItems?: typeof InItem.obj & {
 				dSJIn?: typeof SJIn.obj;
 				dOutItems: typeof OutItem.obj & {};
-				dKnbItems: typeof KnbItem.obj & {
+				dKnbItems?: typeof KnbItem.obj & {
 					dKanban: typeof Kanban.obj;
-					dScanItem: typeof ScanItem.obj & {
-						dScan: typeof Scan.obj;
-					};
+					dScanItems?: RetScnItem[];
 				};
 			};
 		};
@@ -105,6 +110,7 @@ export function getPrintPoAttributes() {
 		Kanban,
 		Scan,
 		poIncludeAble,
+		RetScnItem: {} as RetScnItem,
 		Ret: {} as Ret,
 	};
 }

@@ -62,7 +62,8 @@ const printRouters = router({
 	po: procedure.input(zIds).query(({ctx, input}) => {
 		type RetOutput = typeof Ret;
 
-		const {Ret, Po, poIncludeAble} = getPrintPoAttributes();
+		const {Ret, Po, Scan, ScanItem, RetScnItem, poIncludeAble} =
+			getPrintPoAttributes();
 
 		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
 			const dataPO = await Po.model.findAll({
@@ -74,7 +75,41 @@ const printRouters = router({
 				include: poIncludeAble,
 			});
 
-			return dataPO as unknown as RetOutput[];
+			const promisedData = dataPO.map(async data => {
+				const val = data as unknown as RetOutput;
+				const {dPoItems} = val;
+				const {dInItems} = dPoItems;
+				const {dKnbItems} = dInItems ?? {};
+
+				const id_kanban_item = dKnbItems?.id;
+
+				if (!id_kanban_item) return val;
+
+				const dataScanItem = await ScanItem.model.findAll({
+					include: [Scan],
+					where: {id_kanban_item},
+				});
+
+				const ret: RetOutput = {
+					...val,
+					dPoItems: {
+						...dPoItems,
+						dInItems: {
+							...dInItems!,
+							dKnbItems: {
+								...dKnbItems,
+								dScanItems: dataScanItem.map(
+									e => e.toJSON() as unknown as typeof RetScnItem,
+								),
+							},
+						},
+					},
+				};
+
+				return ret;
+			});
+
+			return Promise.all(promisedData);
 		});
 	}),
 });

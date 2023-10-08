@@ -32,46 +32,48 @@ export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
 	const tagId = "table-instance";
 
 	const component = (
-		<table id={tagId} className={className}>
-			<thead>
-				{headers.map((header, i) => {
-					return (
-						<tr key={i}>
-							{header.map((head, ii) => {
-								const key = `${i} ${ii}`;
-								if (Array.isArray(head)) {
-									if (typeof head[0] === "number") {
-										const [rowSpan, title] = head;
-										return (
-											<td className="font-bold" key={key} rowSpan={rowSpan}>
-												{title}
-											</td>
-										);
-									} else {
-										const [title, colSpan] = head;
-										return (
-											<td
-												key={key}
-												className="font-bold"
-												colSpan={colSpan as number}>
-												{title}
-											</td>
-										);
+		<div className={className}>
+			<table id={tagId}>
+				<thead>
+					{headers.map((header, i) => {
+						return (
+							<tr key={i}>
+								{header.map((head, ii) => {
+									const key = `${i} ${ii}`;
+									if (Array.isArray(head)) {
+										if (typeof head[0] === "number") {
+											const [rowSpan, title] = head;
+											return (
+												<td className="font-bold" key={key} rowSpan={rowSpan}>
+													{title}
+												</td>
+											);
+										} else {
+											const [title, colSpan] = head;
+											return (
+												<td
+													key={key}
+													className="font-bold"
+													colSpan={colSpan as number}>
+													{title}
+												</td>
+											);
+										}
 									}
-								}
 
-								return (
-									<td className="font-bold" key={key}>
-										{head}
-									</td>
-								);
-							})}
-						</tr>
-					);
-				})}
-			</thead>
-			<tbody>{data?.map(renderItem)}</tbody>
-		</table>
+									return (
+										<td className="font-bold" key={key}>
+											{head}
+										</td>
+									);
+								})}
+							</tr>
+						);
+					})}
+				</thead>
+				<tbody>{data?.map(renderItem)}</tbody>
+			</table>
+		</div>
 	);
 
 	async function exportResult() {

@@ -18,19 +18,12 @@ import {
 	ZodRawShape,
 } from "zod";
 
-import {
-	Context,
-	TCustomerSPPBIn,
-	TCustomerSPPBOut,
-	TKanban,
-	TMasterItem,
-	TScan,
-} from "@appTypes/app.type";
-import {ORM, OrmCustomerSPPBIn, OrmKanban, OrmScan} from "@database";
-import {PO_STATUS} from "@enum";
+import {Context, TMasterItem} from "@appTypes/app.type";
+import {defaultExcludeColumns} from "@constants";
 import {appRouter} from "@trpc/routers";
 
 export * from "./attributes";
+export * from "./getPoStatus";
 export * from "./relation";
 
 export function attrParser<
@@ -63,6 +56,7 @@ export function attrParserV2<T extends {}, K extends keyof T>(
 export function attrParserExclude<T extends {}, K extends keyof T>(
 	model: ModelStatic<Model<T>>,
 	attributes?: K[],
+	excludeDefault = true,
 ) {
 	type Keys = Exclude<keyof T, K>;
 	type ObjType = Pick<T, Keys>;
@@ -70,7 +64,13 @@ export function attrParserExclude<T extends {}, K extends keyof T>(
 		model,
 		obj: {} as ObjType,
 		attributes: (!!attributes
-			? {exclude: attributes}
+			? {
+					exclude: excludeDefault
+						? [...defaultExcludeColumns, ...attributes]
+						: attributes,
+			  }
+			: excludeDefault
+			? {exclude: defaultExcludeColumns}
 			: undefined) as FindAttributeOptions,
 	};
 }
@@ -139,41 +139,6 @@ export function wherePagesV3<T extends {}>(
 			return {[key]: value};
 		}),
 	};
-}
-
-export async function getCurrentPOStatus(id_po: string): Promise<PO_STATUS> {
-	const [sppbIn, kanban, [sppbOut]] = await Promise.all([
-		OrmCustomerSPPBIn.findOne({
-			where: {id_po},
-			attributes: ["id"] as (keyof TCustomerSPPBIn)[],
-		}),
-
-		OrmKanban.findOne({
-			where: {id_po},
-			attributes: ["id", "id_sppb_in"] as (keyof TKanban)[],
-		}),
-
-		ORM.query(
-			`select * from customer_sppb_out where (po::jsonb @> '[{"id_po":"${id_po}"}]')`,
-		) as Promise<[TCustomerSPPBOut[], unknown]>,
-	] as const);
-
-	const scan = await OrmScan.findOne({
-		where: {id_kanban: {[Op.eq]: kanban?.dataValues.id}},
-		attributes: [
-			"status_produksi",
-			"status_qc",
-			"status_finish_good",
-		] as (keyof TScan)[],
-	});
-
-	if (sppbOut.length > 0) return PO_STATUS.G;
-	if (scan?.dataValues.status_finish_good) return PO_STATUS.F;
-	if (scan?.dataValues.status_qc) return PO_STATUS.E;
-	if (scan?.dataValues.status_produksi) return PO_STATUS.D;
-	if (kanban?.dataValues.id) return PO_STATUS.C;
-	if (sppbIn?.dataValues.id) return PO_STATUS.B;
-	return PO_STATUS.A;
 }
 
 export async function processMapper(

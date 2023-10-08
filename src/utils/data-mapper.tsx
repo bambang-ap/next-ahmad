@@ -13,7 +13,7 @@ export function exportPoMapper(): MapperReturn<
 > {
 	let i = 0;
 
-	const qtyHeader = Array.from({length: 8}).reduce<`Qty ${UQty}`[]>(ret => {
+	const qtyHeader = Array.from({length: 11}).reduce<`Qty ${UQty}`[]>(ret => {
 		return [...ret, ...qtyMap(({num}) => `Qty ${num}` as const)];
 	}, []);
 
@@ -26,14 +26,16 @@ export function exportPoMapper(): MapperReturn<
 			[2, "Due Date PO"],
 			[2, "Nama Item"],
 			[2, "Kode Item"],
-			["QTY PO", 3],
+			["PO", 3],
 			[2, "Nomor SJ Masuk"],
-			["QTY SJ Masuk", 3],
+			["SJ Masuk", 3],
 			[2, "Nomor Kanban"],
-			["QTY SJ Kanban", 3],
-			["QTY QC", 3],
-			["QTY Reject", 3],
-			["QTY SJ Keluar", 3],
+			["Kanban", 3],
+			["Produksi", 3],
+			["QC", 3],
+			["Finish Good", 3],
+			["Reject", 3],
+			["SJ Keluar", 3],
 			["OT GLOBAL ( DARI SJ MASUK - SJ KELUAR )", 3],
 			["OT PO ( PO MASUK - SJ MASUK )", 3],
 			["OT KANBAN ( KANBAN - FG )", 3],
@@ -41,12 +43,38 @@ export function exportPoMapper(): MapperReturn<
 		qtyHeader,
 	];
 
-	function renderQty(qtys: UnitQty, units: UnitUnit) {
-		return qtyMap(({qtyKey, unitKey}) => (
-			<td>
-				{qtys[qtyKey]} {units[unitKey]}
-			</td>
-		));
+	function renderQty(units: UnitUnit, qtys?: UnitQty) {
+		return qtyMap(({qtyKey, unitKey}) => {
+			const qty = qtys?.[qtyKey];
+
+			if (!qtys || !qty || qty == 0) return <td />;
+
+			return (
+				<td>
+					{qty} {units[unitKey]}
+				</td>
+			);
+		});
+	}
+
+	function renderOTQty(units: UnitUnit, qtys1?: UnitQty, qtys2?: UnitQty) {
+		return qtyMap(({qtyKey, unitKey}) => {
+			const qty1 = qtys1?.[qtyKey];
+			const qty2 = qtys2?.[qtyKey];
+
+			const qty1N = parseFloat(qty1?.toString() ?? "0");
+			const qty2N = parseFloat(qty2?.toString() ?? "0");
+
+			const calculated = qty1N - qty2N;
+
+			if ((!qtys1 && !qtys2) || calculated <= 0) return <td />;
+
+			return (
+				<td>
+					{calculated} {units[unitKey]}
+				</td>
+			);
+		});
 	}
 
 	return {
@@ -54,8 +82,14 @@ export function exportPoMapper(): MapperReturn<
 		renderItem: data => {
 			const {dCust, dPoItems} = data;
 			const {dItem, dInItems} = dPoItems;
-			const {dKnbItems, dSJIn, dOutItems} = dInItems;
-			const {dKanban} = dKnbItems;
+			const {dKnbItems, dSJIn, dOutItems} = dInItems ?? {};
+			const {dKanban, dScanItems} = dKnbItems ?? {};
+
+			const scanProd = dScanItems?.find(e => e.dScan.status === "produksi");
+			const scanQc = dScanItems?.find(e => e.dScan.status === "qc");
+			const scanFG = dScanItems?.find(e => e.dScan.status === "finish_good");
+			const hasFg = !!scanFG;
+			const outItem = hasFg ? dOutItems : undefined;
 
 			i++;
 
@@ -70,9 +104,17 @@ export function exportPoMapper(): MapperReturn<
 					<td>{dItem.kode_item}</td>
 					{renderQty(dPoItems, dPoItems)}
 					<td>{dSJIn?.nomor_surat}</td>
-					{renderQty(dInItems, dPoItems)}
+					{renderQty(dPoItems, dInItems)}
 					<td>{dKanban?.nomor_kanban}</td>
-					{renderQty(dKnbItems, dPoItems)}
+					{renderQty(dPoItems, dKnbItems)}
+					{renderQty(dPoItems, scanProd)}
+					{renderQty(dPoItems, scanQc)}
+					{renderQty(dPoItems, scanFG)}
+					{renderQty(dPoItems, scanFG)} {/* Reject Qty */}
+					{renderQty(dPoItems, outItem)}
+					{renderOTQty(dPoItems, dInItems, outItem)}
+					{renderOTQty(dPoItems, dPoItems, dInItems)}
+					{renderOTQty(dPoItems, dKnbItems, scanFG)}
 				</tr>
 			);
 		},

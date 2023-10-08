@@ -20,6 +20,7 @@ export enum PO_STATUS {
 	E = "QC",
 	F = "Finish Good",
 	G = "SPPB Out",
+	H = "Unknown",
 }
 
 export enum REJECT_REASON {

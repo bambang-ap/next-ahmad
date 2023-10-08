@@ -35,9 +35,7 @@ export default function POCustomer() {
 		property,
 		header: ["Nomor PO", "Customer", "Tanggal", "Due Date", "Status", "Action"],
 		topComponent: <Button onClick={() => showModal("add", {})}>Add</Button>,
-		// @ts-ignore
-		exportOptionsd: {
-			debug: true,
+		exportOptions: {
 			headers,
 			renderItem,
 			useQuery: () =>
