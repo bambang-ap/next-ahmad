@@ -42,6 +42,27 @@ import {
 } from "@database";
 import {PO_STATUS} from "@enum";
 
+export function getPrintPoAttributes() {
+	const po = attrParserV2(dPo);
+	const sjIn = attrParserV2(dSJIn);
+	const kanban = attrParserV2(dKanban);
+	const sjOut = attrParserV2(dSjOut);
+	const scan = attrParserV2(dScan);
+	const poItem = attrParserV2(dPoItem);
+	const inItem = attrParserV2(dInItem);
+	const knbItem = attrParserV2(dKnbItem);
+	const scnItem = attrParserV2(dScanItem);
+	const rejItem = attrParserV2(dRejItem);
+
+	type Ret = typeof po.obj & {
+		dSJIns: (typeof sjIn.obj & {
+			dKanbans: (typeof kanban.obj & {})[];
+		})[];
+	};
+
+	return {po, Ret: {} as Ret};
+}
+
 export function sppbInGetPage() {
 	const A = attrParser(tCustomerSPPBIn, ["tgl", "id", "id_po", "nomor_surat"]);
 	const B = attrParser(tCustomerPO, ["nomor_po"]);

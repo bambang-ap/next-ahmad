@@ -2,6 +2,7 @@ import {useRef} from "react";
 
 import {DeepPartialSkipArrayKey, FieldValues, useWatch} from "react-hook-form";
 
+import {GenExportProps, useGenExport} from "@appComponent/GenerateExport";
 import {
 	GeneratePdfV2,
 	GenPdfProps,
@@ -17,7 +18,13 @@ import {
 import {Button} from "@baseComps/Touchable/Button";
 import {useExport, useLoader, useTableFilter} from "@hooks";
 import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {modalTypeParser, sleep, transformIds} from "@utils";
+import {
+	modalTypeParser,
+	nullRenderItem,
+	nullUseQuery,
+	sleep,
+	transformIds,
+} from "@utils";
 
 import {
 	Cells,
@@ -46,15 +53,16 @@ type Props<
 	T extends {},
 	F extends Fields,
 	P extends keyof DeepPartialSkipArrayKey<F>,
-	ET,
+	JHJHHJJHHJ,
 	ER extends {},
-	EQ extends UseTRPCQueryResult<ET[], unknown>,
+	EQ extends UseTRPCQueryResult<JHJHHJJHHJ[], unknown>,
 	PT,
 	PQ extends UseTRPCQueryResult<PT[], unknown>,
 > = {
 	property: P;
 	selector?: ObjKeyof<T>;
 	enabledExport?: boolean;
+	onExport?: () => Promise<void>;
 	useQuery: (
 		form: TableFormValue,
 	) => UseTRPCQueryResult<PagingResult<T>, unknown>;
@@ -89,6 +97,7 @@ export function useTableFilterComponent<
 		renderItem,
 		renderItemEach,
 		genPdfOptions,
+		onExport,
 		...tableProps
 	} = props;
 
@@ -110,7 +119,9 @@ export function useTableFilterComponent<
 
 	const topComponent = isSelect ? (
 		<>
-			{enabledExport && <Button onClick={exportData}>Export</Button>}
+			{enabledExport && (
+				<Button onClick={onExport || exportData}>Export</Button>
+			)}
 			{enabledPdf && <Button onClick={() => printData(true)}>Print</Button>}
 			<Button onClick={onCancel}>Batal</Button>
 		</>
@@ -189,4 +200,58 @@ export function useTableFilterComponent<
 	);
 
 	return {component, mutateOpts, loader, refetch};
+}
+
+export function useTableFilterComponentV2<
+	T extends {},
+	F extends Fields,
+	P extends keyof DeepPartialSkipArrayKey<F>,
+	PT,
+	PQ extends UseTRPCQueryResult<PT[], unknown>,
+	TT,
+	WT extends UseTRPCQueryResult<TT[], unknown>,
+>(
+	props: Omit<
+		Props<T, F, P, any, any, any, PT, PQ>,
+		"exportRenderItem" | "exportUseQuery" | "enabledExport"
+	> & {
+		exportOptions?: GenExportProps<TT, WT>;
+	},
+) {
+	const {exportOptions, ...restProps} = props;
+
+	const enabledExport = !!exportOptions;
+
+	const {loader, ...table} = useTableFilterComponent({
+		exportRenderItem: nullRenderItem,
+		exportUseQuery: nullUseQuery,
+		enabledExport,
+		onExport,
+		...restProps,
+	});
+
+	const {component, exportResult} = useGenExport(
+		enabledExport
+			? {...exportOptions, loader}
+			: ({
+					headers: [],
+					renderItem: nullRenderItem,
+					useQuery: nullUseQuery,
+			  } as unknown as GenExportProps<TT, WT>),
+	);
+
+	function onExport(): Promise<void> {
+		return exportResult();
+	}
+
+	return {
+		...table,
+		loader,
+		component: (
+			<>
+				{component}
+				{table.component}
+			</>
+		),
+	};
 }

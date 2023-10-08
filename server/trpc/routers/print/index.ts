@@ -1,7 +1,7 @@
 import {TScanTarget} from "@appTypes/app.type";
 import {zIds} from "@appTypes/app.zod";
 import {
-	getPOSppbOutAttributes,
+	getPrintPoAttributes,
 	printSppbOutAttributes,
 	wherePagesV3,
 } from "@database";
@@ -60,11 +60,11 @@ const printRouters = router({
 		}),
 	}),
 	po: procedure.input(zIds).query(({ctx, input}) => {
-		const {po, sjInInclude, RetSjIn} = getPOSppbOutAttributes();
+		const {po, sjInInclude, Ret} = getPrintPoAttributes();
 
-		type Ret = typeof po.obj & {dSJIns: typeof RetSjIn[]};
+		type RetOutput = typeof Ret;
 
-		return checkCredentialV2(ctx, async (): Promise<Ret[]> => {
+		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
 			const dataPO = await po.model.findAll({
 				where: {id: input.ids},
 				include: [sjInInclude],

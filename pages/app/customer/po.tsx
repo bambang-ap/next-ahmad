@@ -5,9 +5,10 @@ import {useForm} from "react-hook-form";
 import {ModalTypePreview} from "@appTypes/app.type";
 import {Button, Form, Modal, ModalRef} from "@components";
 import {getLayout} from "@hoc";
-import {useTableFilterComponent} from "@hooks";
+import {useTableFilterComponentV2} from "@hooks";
 import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
-import {dateUtils, getIds, modalTypeParser, renderItemAsIs} from "@utils";
+import {dateUtils, getIds, modalTypeParser} from "@utils";
+import {exportPoMapper} from "@utils/data-mapper";
 import {trpc} from "@utils/trpc";
 
 POCustomer.getLayout = getLayout;
@@ -26,18 +27,25 @@ export default function POCustomer() {
 		"Customer PO",
 	);
 
-	const {component, mutateOpts, refetch} = useTableFilterComponent({
+	const {headers, renderItem} = exportPoMapper();
+
+	const {component, mutateOpts, refetch} = useTableFilterComponentV2({
 		reset,
 		control,
 		property,
-		exportUseQuery: () =>
-			trpc.print.po.useQuery(
-				{ids: selectedIds},
-				{enabled: selectedIds.length > 0},
-			),
-		exportRenderItem: renderItemAsIs,
 		header: ["Nomor PO", "Customer", "Tanggal", "Due Date", "Status", "Action"],
 		topComponent: <Button onClick={() => showModal("add", {})}>Add</Button>,
+		// @ts-ignore
+		dexportOptions: {
+			debug: true,
+			headers,
+			renderItem,
+			useQuery: () =>
+				trpc.export.po.useQuery(
+					{ids: selectedIds},
+					{enabled: selectedIds.length > 0},
+				),
+		},
 		useQuery: form => trpc.customer_po.getV2.useQuery(form),
 		renderItem({item, Cell, CellSelect}) {
 			const {
