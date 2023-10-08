@@ -114,6 +114,7 @@ export function initRelations() {
 	oneToMany(dInItem, dKnbItem, "id_item");
 	oneToMany(dItem, dInItem, "master_item_id");
 	oneToMany(dItem, dKnbItem, "master_item_id");
+	oneToMany(dItem, dPoItem, "master_item_id");
 	oneToMany(dPoItem, dInItem, "id_item");
 
 	oneToMany(dCust, dSjOut, "id_customer");

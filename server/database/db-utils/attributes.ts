@@ -43,24 +43,70 @@ import {
 import {PO_STATUS} from "@enum";
 
 export function getPrintPoAttributes() {
-	const po = attrParserV2(dPo);
-	const sjIn = attrParserV2(dSJIn);
-	const kanban = attrParserV2(dKanban);
-	const sjOut = attrParserV2(dSjOut);
-	const scan = attrParserV2(dScan);
-	const poItem = attrParserV2(dPoItem);
-	const inItem = attrParserV2(dInItem);
-	const knbItem = attrParserV2(dKnbItem);
-	const scnItem = attrParserV2(dScanItem);
-	const rejItem = attrParserV2(dRejItem);
+	const Po = attrParserV2(dPo);
+	const PoItem = attrParserExclude(dPoItem, [
+		"harga",
+		"id",
+		"id_po",
+		"master_item_id",
+	]);
+	const InItem = attrParserV2(dInItem, ["qty1", "qty2", "qty3"]);
+	const OutItem = attrParserV2(dOutItem, ["qty1", "qty2", "qty3"]);
+	const KnbItem = attrParserV2(dKnbItem, ["qty1", "qty2", "qty3"]);
+	const ScanItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
+	const Kanban = attrParserV2(dKanban);
+	const Scan = attrParserV2(dScan);
+	const SJIn = attrParserV2(dSJIn);
+	const Item = attrParserV2(dItem, ["name", "kode_item"]);
+	const Cust = attrParserV2(dCust);
 
-	type Ret = typeof po.obj & {
-		dSJIns: (typeof sjIn.obj & {
-			dKanbans: (typeof kanban.obj & {})[];
-		})[];
+	const poIncludeAble: Includeable[] = [
+		Cust,
+		{
+			...PoItem,
+			include: [
+				Item,
+				{
+					...InItem,
+					include: [
+						SJIn,
+						// OutItem,
+						{...KnbItem, include: [{...ScanItem, include: [Scan]}]},
+					],
+				},
+			],
+		},
+	];
+
+	type Ret = typeof Po.obj & {
+		dCust: typeof Cust.obj;
+		dPoItems: typeof PoItem.obj & {
+			dItem: typeof Item.obj;
+			dInItems: typeof InItem.obj & {
+				dSJIn?: typeof SJIn.obj;
+				dOutItems: typeof OutItem.obj & {};
+				dKnbItems: typeof KnbItem.obj & {
+					dKanban: typeof Kanban.obj;
+					dScanItem: typeof ScanItem.obj & {
+						dScan: typeof Scan.obj;
+					};
+				};
+			};
+		};
 	};
 
-	return {po, Ret: {} as Ret};
+	return {
+		Po,
+		PoItem,
+		InItem,
+		OutItem,
+		KnbItem,
+		ScanItem,
+		Kanban,
+		Scan,
+		poIncludeAble,
+		Ret: {} as Ret,
+	};
 }
 
 export function sppbInGetPage() {

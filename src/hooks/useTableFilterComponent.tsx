@@ -127,9 +127,11 @@ export function useTableFilterComponent<
 		</>
 	) : (
 		<>
-			<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
-				Select
-			</Button>
+			{(enabledExport || enabledPdf) && (
+				<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
+					Select
+				</Button>
+			)}
 			{tC}
 		</>
 	);

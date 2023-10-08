@@ -1,5 +1,5 @@
 import {Headers} from "@appComponent/GenerateExport";
-import {UQty} from "@appTypes/app.type";
+import {UnitQty, UnitUnit, UQty} from "@appTypes/app.type";
 import {getPrintPoAttributes} from "@database";
 import {qtyMap} from "@utils";
 
@@ -11,6 +11,8 @@ type MapperReturn<T> = {
 export function exportPoMapper(): MapperReturn<
 	ReturnType<typeof getPrintPoAttributes>["Ret"]
 > {
+	let i = 0;
+
 	const qtyHeader = Array.from({length: 8}).reduce<`Qty ${UQty}`[]>(ret => {
 		return [...ret, ...qtyMap(({num}) => `Qty ${num}` as const)];
 	}, []);
@@ -39,10 +41,40 @@ export function exportPoMapper(): MapperReturn<
 		qtyHeader,
 	];
 
+	function renderQty(qtys: UnitQty, units: UnitUnit) {
+		return qtyMap(({qtyKey, unitKey}) => (
+			<td>
+				{qtys[qtyKey]} {units[unitKey]}
+			</td>
+		));
+	}
+
 	return {
 		headers,
 		renderItem: data => {
-			return <></>;
+			const {dCust, dPoItems} = data;
+			const {dItem, dInItems} = dPoItems;
+			const {dKnbItems, dSJIn, dOutItems} = dInItems;
+			const {dKanban} = dKnbItems;
+
+			i++;
+
+			return (
+				<tr>
+					<td>{i}</td>
+					<td>{dCust.name}</td>
+					<td>{data.nomor_po}</td>
+					<td>{data.tgl_po}</td>
+					<td>{data.due_date}</td>
+					<td>{dItem.name}</td>
+					<td>{dItem.kode_item}</td>
+					{renderQty(dPoItems, dPoItems)}
+					<td>{dSJIn?.nomor_surat}</td>
+					{renderQty(dInItems, dPoItems)}
+					<td>{dKanban?.nomor_kanban}</td>
+					{renderQty(dKnbItems, dPoItems)}
+				</tr>
+			);
 		},
 	};
 }

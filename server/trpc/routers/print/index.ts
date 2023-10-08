@@ -60,17 +60,21 @@ const printRouters = router({
 		}),
 	}),
 	po: procedure.input(zIds).query(({ctx, input}) => {
-		const {po, sjInInclude, Ret} = getPrintPoAttributes();
-
 		type RetOutput = typeof Ret;
 
+		const {Ret, Po, poIncludeAble} = getPrintPoAttributes();
+
 		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
-			const dataPO = await po.model.findAll({
+			const dataPO = await Po.model.findAll({
+				logging: true,
+				raw: true,
+				nest: true,
 				where: {id: input.ids},
-				include: [sjInInclude],
+				attributes: Po.attributes,
+				include: poIncludeAble,
 			});
 
-			return dataPO.map(e => e.toJSON());
+			return dataPO as unknown as RetOutput[];
 		});
 	}),
 });
