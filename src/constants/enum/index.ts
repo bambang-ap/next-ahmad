@@ -45,6 +45,7 @@ export enum TABLES {
 	CUSTOMER_PO_ITEM = "po_itemm",
 	CUSTOMER_SPPB_IN = "customer_sppb_in",
 	CUSTOMER_SPPB_OUT = "customer_sppb_out",
+	CUSTOMER_SPPB_RELATION = "customer_sppb_relation",
 	CUSTOMER_SPPB_OUT_ITEM = "customer_sppb_out_item",
 	DOCUMENT = "document_number",
 	HARDNESS = "hardness",

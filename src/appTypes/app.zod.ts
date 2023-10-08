@@ -298,14 +298,14 @@ export const tCustomerSPPBOut = zId.extend({
 	date: z.string(),
 	id_kendaraan: z.string(),
 	id_customer: z.string(),
-	keterangan: z.string().optional(),
+	keterangan: z.string().nullish(),
 });
 
 export type TCustomerSPPBOutUpsert = z.infer<typeof tCustomerSPPBOutUpsert>;
 export const tCustomerSPPBOutUpsert = tCustomerSPPBOut.extend({
 	po: tCustomerSPPBOutPo.array(),
-	OrmCustomer: tCustomer.optional(),
-	OrmKendaraan: tKendaraan.optional(),
+	OrmCustomer: tCustomer.partial().optional(),
+	OrmKendaraan: tKendaraan.partial().optional(),
 });
 
 export type TMaterial = z.infer<typeof tMaterial>;
@@ -556,6 +556,12 @@ export const tDashboardView = z
 	.or(z.literal("bar"))
 	.or(z.literal("line"))
 	.or(z.literal("donut"));
+
+export type TSPPBRelation = z.infer<typeof tSPPBRelation>;
+export const tSPPBRelation = zId.extend({
+	in_id: z.string(),
+	out_id: z.string(),
+});
 
 export function getRejectSelection() {
 	return Object.entries(tRejectReason.enum).map<SelectPropsData<REJECT_REASON>>(

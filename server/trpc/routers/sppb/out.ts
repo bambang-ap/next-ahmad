@@ -14,6 +14,9 @@ import {
 } from "@appTypes/app.zod";
 import {Success} from "@constants";
 import {
+	dOutItem,
+	dSjOut,
+	dSppbBridge,
 	getPOSppbOutAttributes,
 	OrmCustomer,
 	OrmCustomerSPPBIn,
@@ -232,10 +235,25 @@ const sppbOutRouters = router({
 					id: input.id ?? generateId("SPPBO_"),
 				});
 
-				const items = po.reduce<TCustomerSPPBOutItem[]>((ret, cur) => {
-					cur.sppb_in.forEach(bin => {
-						Object.entries(bin.items).forEach(([id_item, item]) => {
-							ret.push({
+				const items: TCustomerSPPBOutItem[] = [];
+
+				for (const cur of po) {
+					for (const bin of cur.sppb_in) {
+						const bridgeWherer = {
+							in_id: bin.id_sppb_in,
+							out_id: dataSppbOut.dataValues.id,
+						};
+						const isExist = await dSppbBridge.findOne({
+							where: bridgeWherer,
+						});
+
+						await dSppbBridge.upsert({
+							...bridgeWherer,
+							id: isExist?.dataValues.id ?? generateId("SJB-"),
+						});
+
+						for (const [id_item, item] of Object.entries(bin.items)) {
+							items.push({
 								id_item,
 								qty1: item.qty1,
 								qty2: item.qty2,
@@ -243,10 +261,9 @@ const sppbOutRouters = router({
 								id: item.id ?? generateId("SJOI-"),
 								id_sppb_out: dataSppbOut.dataValues.id,
 							});
-						});
-					});
-					return ret;
-				}, []);
+						}
+					}
+				}
 
 				await OrmCustomerSPPBOutItem.bulkCreate(items, {
 					updateOnDuplicate: ["id"],
@@ -257,8 +274,9 @@ const sppbOutRouters = router({
 		}),
 	delete: procedure.input(zId).mutation(({ctx: {req, res}, input}) => {
 		return checkCredentialV2({req, res}, async () => {
-			await OrmCustomerSPPBOut.destroy({where: input});
-			await OrmCustomerSPPBOutItem.destroy({where: {id_sppb_out: input.id}});
+			await dSppbBridge.destroy({where: {out_id: input.id}});
+			await dSjOut.destroy({where: input});
+			await dOutItem.destroy({where: {id_sppb_out: input.id}});
 
 			return Success;
 		});

@@ -10,6 +10,7 @@ import initOrmCustomerSPPBOut, {initSjOut} from "../models/customer_sppb_out";
 import initOrmCustomerSPPBOutItem, {
 	initOutItem,
 } from "../models/customer_sppb_out_item";
+import initSppbBridge from "../models/customer_sppb_relation";
 import initOrmDocument, {initdDoc} from "../models/document";
 import initOrmHardness from "../models/hardness";
 import initOrmHardnessKategori from "../models/hardness_kategori";
@@ -88,6 +89,7 @@ export function initOrm(ORM: Sequelize) {
 	initUser(ORM);
 	initMesin(ORM);
 	initKatMesin(ORM);
+	initSppbBridge(ORM);
 
 	return Promise.resolve();
 }

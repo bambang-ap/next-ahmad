@@ -8,7 +8,6 @@ import {getLayout} from "@hoc";
 import {useTableFilterComponentV2} from "@hooks";
 import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
 import {dateUtils, getIds, modalTypeParser} from "@utils";
-import {exportPoMapper} from "@utils/data-mapper";
 import {trpc} from "@utils/trpc";
 
 POCustomer.getLayout = getLayout;
@@ -27,7 +26,7 @@ export default function POCustomer() {
 		"Customer PO",
 	);
 
-	const {headers, renderItem} = exportPoMapper();
+	// const {headers, renderItem} = exportPoMapper();
 
 	const {component, mutateOpts, refetch} = useTableFilterComponentV2({
 		reset,
@@ -35,17 +34,16 @@ export default function POCustomer() {
 		property,
 		header: ["Nomor PO", "Customer", "Tanggal", "Due Date", "Status", "Action"],
 		topComponent: <Button onClick={() => showModal("add", {})}>Add</Button>,
-		// @ts-ignore
-		dexportOptions: {
-			debug: true,
-			headers,
-			renderItem,
-			useQuery: () =>
-				trpc.export.po.useQuery(
-					{ids: selectedIds},
-					{enabled: selectedIds.length > 0},
-				),
-		},
+		// exportOptions: {
+		// 	debug: true,
+		// 	headers,
+		// 	renderItem,
+		// 	useQuery: () =>
+		// 		trpc.export.po.useQuery(
+		// 			{ids: selectedIds},
+		// 			{enabled: selectedIds.length > 0},
+		// 		),
+		// },
 		useQuery: form => trpc.customer_po.getV2.useQuery(form),
 		renderItem({item, Cell, CellSelect}) {
 			const {

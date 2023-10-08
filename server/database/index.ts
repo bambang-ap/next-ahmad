@@ -5,6 +5,7 @@ export * from "./models/customer_po_item";
 export * from "./models/customer_sppb_in";
 export * from "./models/customer_sppb_out";
 export * from "./models/customer_sppb_out_item";
+export * from "./models/customer_sppb_relation";
 export * from "./models/document";
 export * from "./models/hardness";
 export * from "./models/hardness_kategori";

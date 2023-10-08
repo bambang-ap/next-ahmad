@@ -49,6 +49,8 @@ import {
 	OrmUser,
 } from "@database";
 
+import {dSppbBridge} from "../models/customer_sppb_relation";
+
 export function initRelations() {
 	oneToMany(OrmMasterItem, OrmCustomerPOItem, "master_item_id");
 	oneToMany(OrmMasterItem, OrmKanbanItem, "master_item_id");
@@ -127,4 +129,6 @@ export function initRelations() {
 	oneToMany(dKatMesin, dMesin, "kategori_mesin", dKatMesin._alias);
 
 	oneToOne(dScan, dScan, "id_qc", dScan._aliasReject);
+
+	manyToMany([dSJIn, "id"], [dSjOut, "id"], [dSppbBridge, ["in_id", "out_id"]]);
 }
