@@ -37,9 +37,7 @@ export function RenderPdfData({
 						</div>
 					</div>
 				</div>
-				<Wrapper title="Customer">
-					{data?.OrmKanban?.OrmCustomerPO?.OrmCustomer.name}
-				</Wrapper>
+				<Wrapper title="Customer">{data?.dKanban?.dPo?.dCust.name}</Wrapper>
 				<Wrapper title="Tgl / Bln / Thn">
 					{moment(data?.createdAt).format("D MMMM YYYY")}
 				</Wrapper>

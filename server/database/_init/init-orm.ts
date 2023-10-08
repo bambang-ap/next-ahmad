@@ -21,8 +21,8 @@ import initOrmKendaraan, {initVehicle} from "../models/kendaraan";
 import initOrmMaterial from "../models/material";
 import initOrmMaterialKategori from "../models/material_kategori";
 import initOrmMenu from "../models/menu";
-import initOrmMesin from "../models/mesin";
-import initOrmKategoriMesin from "../models/mesin_kategori";
+import initOrmMesin, {initMesin} from "../models/mesin";
+import initOrmKategoriMesin, {initKatMesin} from "../models/mesin_kategori";
 import initOrmParameter from "../models/parameter";
 import initOrmParameterKategori from "../models/parameter_kategori";
 import initOrmPOItemSppbIn, {initInItem} from "../models/po_item_sppb_in";
@@ -86,6 +86,8 @@ export function initOrm(ORM: Sequelize) {
 	initSjOut(ORM);
 	initVehicle(ORM);
 	initUser(ORM);
+	initMesin(ORM);
+	initKatMesin(ORM);
 
 	return Promise.resolve();
 }

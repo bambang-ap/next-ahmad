@@ -29,3 +29,29 @@ export default function initOrmMesin(sequelize: Sequelize) {
 
 	return OrmMesin;
 }
+
+export class dMesin extends Model<TMesin> {}
+
+export function initMesin(sequelize: Sequelize) {
+	dMesin.init(
+		{
+			id: {type: DataTypes.STRING, primaryKey: true},
+			name: {type: DataTypes.STRING},
+			kategori_mesin: {type: DataTypes.STRING},
+			nomor_mesin: {type: DataTypes.STRING},
+		},
+		{
+			sequelize,
+			tableName: TABLES.MESIN,
+			defaultScope: {
+				...defaultOrderBy,
+				order: [["nomor_mesin", "asc"]],
+				attributes: {
+					exclude: defaultExcludeColumn,
+				},
+			},
+		},
+	);
+
+	return dMesin;
+}

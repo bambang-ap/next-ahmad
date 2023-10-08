@@ -180,36 +180,56 @@ export function scanListAttributes() {
 	return {scan, kanban, sjIn, po, cust, num, Ret: {} as Ret};
 }
 
-export function printScanAttributes(route: TScanTarget) {
-	const A = attrParser(tScan, [
-		"id_kanban",
-		"createdAt",
-		"lot_no_imi",
-		`item_${route}`,
+export function printScanAttributes() {
+	const scan = attrParserV2(dScan, ["id_kanban", "updatedAt", "lot_no_imi"]);
+	const scnItem = attrParserV2(dScanItem);
+	const kanban = attrParserV2(dKanban, [
+		"id",
+		"keterangan",
+		"nomor_kanban",
+		"list_mesin",
 	]);
-	const B = attrParser(tKanban, ["id", "nomor_kanban"]);
-	const C = attrParser(tCustomerPO, ["id"]);
-	const D = attrParser(tCustomer, ["name"]);
-	const E = attrParser(tKanbanItem, ["id"]);
-	const F = attrParser(tMasterItem, ["instruksi", "name", "kode_item"]);
-	const G = attrParser(tPOItemSppbIn, ["lot_no"]);
-	const H = attrParser(tPOItem, ["unit1", "unit2", "unit3"]);
-	const I = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
+	const po = attrParserV2(dPo, ["id"]);
+	const cust = attrParserV2(dCust, ["name"]);
+	const knbItem = attrParserV2(dKnbItem, ["id"]);
+	const item = attrParserV2(dItem, [
+		"instruksi",
+		"kategori_mesinn",
+		"name",
+		"kode_item",
+	]);
+	const inItem = attrParserV2(dInItem, ["id", "lot_no"]);
+	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
+	const sjIn = attrParserV2(dSJIn, ["nomor_surat"]);
 
-	type Ret = typeof A.obj & {
-		OrmKanban: typeof B.obj & {
-			OrmCustomerPO: typeof C.obj & {OrmCustomer: typeof D.obj};
-			OrmKanbanItems: (typeof E.obj & {
-				OrmMasterItem: typeof F.obj;
-				OrmPOItemSppbIn: typeof G.obj & {
-					OrmCustomerPOItem: typeof H.obj;
-					OrmCustomerSPPBIn: typeof I.obj;
+	type Ret = typeof scan.obj & {
+		dScanItems: (typeof scnItem.obj & {
+			knbItem?: typeof knbItem.obj & {
+				dKanban: typeof kanban.obj & {
+					dPo: typeof po.obj & {dCust: typeof cust.obj};
 				};
-			})[];
-		};
+				dItem: typeof item.obj;
+				dInItem?: typeof inItem.obj & {
+					dPoItem: typeof poItem.obj;
+					dSJIn: typeof sjIn.obj;
+				};
+			};
+		})[];
 	};
 
-	return {A, B, C, D, E, F, G, H, I, Ret: {} as Ret};
+	return {
+		scnItem,
+		scan,
+		kanban,
+		po,
+		cust,
+		knbItem,
+		item,
+		inItem,
+		poItem,
+		sjIn,
+		Ret: {} as Ret,
+	};
 }
 
 export function getScanAttributesV2() {

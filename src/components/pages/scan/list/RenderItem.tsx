@@ -17,11 +17,14 @@ type Props = Route & {
 };
 
 export function RenderItem({data, route}: Props) {
+	return null;
+}
+export function RenderItemd({data, route}: Props) {
 	const [id_item, ...item] = data[`item_${route}`]![0] ?? [];
 
-	const knbItem = data.OrmKanban.OrmKanbanItems.find(e => e.id === id_item);
+	const knbItem = data.dKanban.dKnbItems.find(e => e.id === id_item);
 
-	const masterItem = knbItem?.OrmMasterItem;
+	const masterItem = knbItem?.dItem;
 
 	const process = Object.values(masterItem?.instruksi ?? {})?.[0];
 	const detailProcess = process?.[0];
@@ -59,14 +62,14 @@ export function RenderItem({data, route}: Props) {
 		{enabled: !!detailProcess},
 	);
 
-	const selectedSppbInItem = knbItem?.OrmPOItemSppbIn;
-	const selectedSppbIn = selectedSppbInItem?.OrmCustomerSPPBIn;
+	const selectedSppbInItem = knbItem?.dInItem;
+	const selectedSppbIn = selectedSppbInItem?.dSJIn;
 
 	return (
 		<>
 			<Wrapper title="Nomor Lot">{selectedSppbInItem?.lot_no}</Wrapper>
 			<Wrapper title="SPPB In">{selectedSppbIn?.nomor_surat}</Wrapper>
-			<Wrapper title="Nomor Kanban">{data.OrmKanban?.nomor_kanban}</Wrapper>
+			<Wrapper title="Nomor Kanban">{data.dKanban?.nomor_kanban}</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
 			<Wrapper title="Material">
@@ -79,7 +82,7 @@ export function RenderItem({data, route}: Props) {
 			<Wrapper title="Jumlah">
 				{qtyMap(({num, unitKey}) => {
 					const qty = item[num];
-					const unit = knbItem?.OrmPOItemSppbIn.OrmCustomerPOItem[unitKey];
+					const unit = knbItem?.dInItem.dPoItem[unitKey];
 
 					if (!qty) return null;
 

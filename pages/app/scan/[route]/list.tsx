@@ -15,7 +15,13 @@ import {RenderData} from "@pageComponent/scan/list/RenderData";
 import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
-import {modalTypeParser, scanRouterParser, transformIds} from "@utils";
+import {
+	getIds,
+	modalTypeParser,
+	nullRenderItem,
+	nullUseQuery,
+	scanRouterParser,
+} from "@utils";
 import {trpc} from "@utils/trpc";
 
 ScanListData.getLayout = getLayout;
@@ -56,13 +62,14 @@ function RenderScanList() {
 	const {title, isQC} = scanRouterParser(route);
 
 	const dateHeader = `Tanggal ${title}`;
-	const selectedIds = transformIds(formData.idScans);
+
+	const {property, selectedIds} = getIds(formData, "idScans");
 
 	const {component} = useTableFilterComponent({
 		control,
 		reset,
-		enabledExport: true,
-		property: "idScans",
+
+		property,
 		header: [
 			"Tanggal",
 			"Customer",
@@ -73,7 +80,8 @@ function RenderScanList() {
 			dateHeader,
 			!isSelect && "Action",
 		],
-		genPdfOptions: isQC
+		// genPdfOptions: isQC
+		genPdfOptions: false
 			? {
 					splitPagePer: 4,
 					orientation: "l",
@@ -89,12 +97,15 @@ function RenderScanList() {
 						),
 			  }
 			: undefined,
-		exportUseQuery: () =>
-			trpc.export.scan.useQuery(
-				{route, idScans: selectedIds},
-				{enabled: selectedIds.length > 0},
-			),
-		exportRenderItem: item => item,
+		// enabledExport: true,
+		// exportUseQuery: () =>
+		// 	trpc.export.scan.useQuery(
+		// 		{route, ids: selectedIds},
+		// 		{enabled: selectedIds.length > 0},
+		// 	),
+		// exportRenderItem: item => item,
+		exportRenderItem: nullRenderItem,
+		exportUseQuery: nullUseQuery,
 		useQuery: form => trpc.scan.list.useQuery({...form, target: route}),
 		renderItem(item) {
 			return (

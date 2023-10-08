@@ -4,7 +4,9 @@ import {
 	dInItem,
 	dItem,
 	dKanban,
+	dKatMesin,
 	dKnbItem,
+	dMesin,
 	dOutItem,
 	dPo,
 	dPoItem,
@@ -120,6 +122,9 @@ export function initRelations() {
 	oneToMany(dUser, dKanban, "createdBy", dKanban._aliasCreatedBy);
 	oneToMany(dUser, dKanban, "updatedBy", dKanban._aliasUpdatedBy);
 	oneToMany(dCust, dPo, "id_customer");
+
+	oneToMany(dKatMesin, dItem, "kategori_mesin");
+	oneToMany(dKatMesin, dMesin, "kategori_mesin", dKatMesin._alias);
 
 	oneToOne(dScan, dScan, "id_qc", dScan._aliasReject);
 }
