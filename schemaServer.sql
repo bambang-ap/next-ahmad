@@ -96,6 +96,21 @@ CREATE TABLE public.customer_sppb_out_item (
 ALTER TABLE public.customer_sppb_out_item OWNER TO postgres;
 
 --
+-- Name: customer_sppb_relation; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.customer_sppb_relation (
+    id character varying(47) NOT NULL,
+    in_id character varying(47) NOT NULL,
+    out_id character varying(47) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.customer_sppb_relation OWNER TO postgres;
+
+--
 -- Name: document_number; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -550,7 +565,9 @@ CREATE TABLE public.scan_new (
     notes character varying(50),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    is_rejected boolean DEFAULT false
+    is_rejected boolean DEFAULT false,
+    id_po character varying(47),
+    id_qc character varying(47)
 );
 
 
@@ -662,6 +679,14 @@ ALTER TABLE ONLY public.customer_sppb_in
 
 ALTER TABLE ONLY public.customer_sppb_out_item
     ADD CONSTRAINT customer_sppb_out_item_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: customer_sppb_relation customer_sppb_relation_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.customer_sppb_relation
+    ADD CONSTRAINT customer_sppb_relation_pkey PRIMARY KEY (id);
 
 
 --
@@ -1223,6 +1248,14 @@ ALTER TABLE ONLY public.scan
 
 
 --
+-- Name: customer_sppb_relation in_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.customer_sppb_relation
+    ADD CONSTRAINT in_id FOREIGN KEY (in_id) REFERENCES public.customer_sppb_in(id);
+
+
+--
 -- Name: inv_supplier_po_item inv_supplier_po_item_id_po_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1295,6 +1328,14 @@ ALTER TABLE ONLY public.mesin
 
 
 --
+-- Name: customer_sppb_relation out_id; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.customer_sppb_relation
+    ADD CONSTRAINT out_id FOREIGN KEY (out_id) REFERENCES public.customer_sppb_out(id);
+
+
+--
 -- Name: parameter parameter_id_kategori_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1335,6 +1376,22 @@ ALTER TABLE ONLY public.scan_new
 
 
 --
+-- Name: scan_new scan_new_id_po_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scan_new
+    ADD CONSTRAINT scan_new_id_po_fkey FOREIGN KEY (id_po) REFERENCES public.po(id);
+
+
+--
+-- Name: scan_new scan_new_id_qc_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scan_new
+    ADD CONSTRAINT scan_new_id_qc_fkey FOREIGN KEY (id_qc) REFERENCES public.scan_new(id);
+
+
+--
 -- Name: scan_new_item scan_new_item_id_kanban_item_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1348,6 +1405,14 @@ ALTER TABLE ONLY public.scan_new_item
 
 ALTER TABLE ONLY public.scan_new_item
     ADD CONSTRAINT scan_new_item_id_scan_fkey FOREIGN KEY (id_scan) REFERENCES public.scan_new(id);
+
+
+--
+-- Name: scan_new_item_reject scan_new_item_reject_id_item_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.scan_new_item_reject
+    ADD CONSTRAINT scan_new_item_reject_id_item_fkey FOREIGN KEY (id_item) REFERENCES public.scan_new_item(id);
 
 
 --

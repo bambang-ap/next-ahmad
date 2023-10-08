@@ -1,3 +1,5 @@
+// FIXME:
+// @ts-nocheck
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 
 import {

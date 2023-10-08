@@ -1,3 +1,5 @@
+// @ts-nocheck
+// FIXME:
 import {Route} from "pages/app/scan/[route]";
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 

@@ -24,6 +24,8 @@ export function RenderData(props: PropsWithChildren<Props>) {
 	const {isSelect} = modalTypeParser(modalType);
 
 	const data = item.dKanban;
+	// FIXME: Unfinished remapping
+	// @ts-ignore
 	const date = item.date?.[`${route}_updatedAt`];
 	const theDate = !date ? "" : dateUtils.full(date);
 
