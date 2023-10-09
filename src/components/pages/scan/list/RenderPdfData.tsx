@@ -1,19 +1,19 @@
-// @ts-nocheck
-// FIXME:
 import {Route} from "pages/app/scan/[route]";
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 
-import {RouterOutput} from "@appTypes/app.type";
 import {cuttingLineClassName, gap, padding} from "@constants";
+import {printScanAttributes} from "@database";
 import {classNames, moment, scanMapperByStatus} from "@utils";
 
-import {RenderItem} from "./RenderItem";
+import {RenderItems} from "./RenderItem";
+
+export type D = ReturnType<typeof printScanAttributes>["Ret"];
 
 export function RenderPdfData({
 	data,
 	route,
 	className,
-}: Route & {data: RouterOutput["print"]["scan"][number]; className?: string}) {
+}: Route & {data: D; className?: string}) {
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
@@ -39,12 +39,16 @@ export function RenderPdfData({
 						</div>
 					</div>
 				</div>
-				<Wrapper title="Customer">{data?.dKanban?.dPo?.dCust.name}</Wrapper>
+				<Wrapper title="Customer">
+					{data.dScanItems
+						.map(item => item.dKnbItem?.dKanban.dPo.dCust.name)
+						.join("")}
+				</Wrapper>
 				<Wrapper title="Tgl / Bln / Thn">
-					{moment(data?.createdAt).format("D MMMM YYYY")}
+					{moment(data?.updatedAt).format("D MMMM YYYY")}
 				</Wrapper>
 				<Wrapper title="Nomor Lot IMI">{data?.lot_no_imi}</Wrapper>
-				<RenderItem data={data} route={route} />
+				<RenderItems data={data} />
 			</div>
 		</div>
 	);

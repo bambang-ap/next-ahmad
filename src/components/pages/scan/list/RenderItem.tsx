@@ -1,30 +1,28 @@
-// FIXME:
-// @ts-nocheck
 import {Text, Wrapper} from "pages/app/scan/[route]/list";
 
-import {
-	Route,
-	RouterOutput,
-	THardness,
-	TInstruksiKanban,
-	TParameter,
-} from "@appTypes/app.type";
+import {THardness, TInstruksiKanban, TParameter} from "@appTypes/app.type";
 import {gap} from "@constants";
 import {CRUD_ENABLED} from "@enum";
 import {classNames, qtyMap} from "@utils";
 import {trpc} from "@utils/trpc";
 
-type Props = Route & {
-	data: RouterOutput["print"]["scan"][number];
-};
+import {D} from "./RenderPdfData";
 
-export function RenderItem({data, route}: Props) {
-	return null;
+type Props = {data: D};
+type Prop = {rootData: D; data: D["dScanItems"][number]};
+
+export function RenderItems({data}: Props) {
+	return (
+		<>
+			{data.dScanItems.map((item, i) => {
+				return <RenderItem key={i} data={item} rootData={data} />;
+			})}
+		</>
+	);
 }
-export function RenderItemd({data, route}: Props) {
-	const [id_item, ...item] = data[`item_${route}`]![0] ?? [];
 
-	const knbItem = data.dKanban.dKnbItems.find(e => e.id === id_item);
+export function RenderItem({data: dataItem, rootData: data}: Prop) {
+	const knbItem = dataItem?.dKnbItem;
 
 	const masterItem = knbItem?.dItem;
 
@@ -71,7 +69,9 @@ export function RenderItemd({data, route}: Props) {
 		<>
 			<Wrapper title="Nomor Lot">{selectedSppbInItem?.lot_no}</Wrapper>
 			<Wrapper title="SPPB In">{selectedSppbIn?.nomor_surat}</Wrapper>
-			<Wrapper title="Nomor Kanban">{data.dKanban?.nomor_kanban}</Wrapper>
+			<Wrapper title="Nomor Kanban">
+				{dataItem?.dKnbItem?.dKanban.nomor_kanban}
+			</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
 			<Wrapper title="Material">
@@ -82,9 +82,9 @@ export function RenderItemd({data, route}: Props) {
 			</Wrapper>
 			<Wrapper title="Hardness Aktual" />
 			<Wrapper title="Jumlah">
-				{qtyMap(({num, unitKey}) => {
-					const qty = item[num];
-					const unit = knbItem?.dInItem.dPoItem[unitKey];
+				{qtyMap(({qtyKey, unitKey}) => {
+					const qty = dataItem?.[qtyKey];
+					const unit = knbItem?.dInItem?.dPoItem[unitKey];
 
 					if (!qty) return null;
 

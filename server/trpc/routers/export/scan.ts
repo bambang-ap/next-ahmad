@@ -24,7 +24,8 @@ const exportScanRouters = {
 			| "NOMOR KANBAN"
 			| "NOMOR MESIN"
 			| "NAMA MESIN"
-			| "KETERANGAN",
+			| "KETERANGAN"
+			| "NOTES",
 			string
 		>;
 
@@ -39,7 +40,7 @@ const exportScanRouters = {
 				const date = val.updatedAt;
 
 				for (const scnItem of val.dScanItems) {
-					const {knbItem} = scnItem;
+					const {dKnbItem: knbItem} = scnItem;
 					const {dInItem, dItem, dKanban} = knbItem ?? {};
 					const {dPo} = dKanban ?? {};
 					const {dCust} = dPo ?? {};
@@ -73,6 +74,7 @@ const exportScanRouters = {
 						"NOMOR MESIN": mesinnnn
 							.map(e => e.toJSON().nomor_mesin)
 							.join(" | "),
+						NOTES: val?.notes!,
 						KETERANGAN: dKanban?.keterangan ?? "",
 					});
 				}

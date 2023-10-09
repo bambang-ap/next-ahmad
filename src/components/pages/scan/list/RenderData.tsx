@@ -17,16 +17,14 @@ type Props = {
 	Route;
 
 export function RenderData(props: PropsWithChildren<Props>) {
-	const {Cell, item, children, route, control, CellSelect} = props;
+	const {Cell, item, children, control, CellSelect} = props;
 
 	const {type: modalType} = useWatch({control});
 
 	const {isSelect} = modalTypeParser(modalType);
 
 	const data = item.dKanban;
-	// FIXME: Unfinished remapping
-	// @ts-ignore
-	const date = item.date?.[`${route}_updatedAt`];
+	const date = item.updatedAt;
 	const theDate = !date ? "" : dateUtils.full(date);
 
 	return (

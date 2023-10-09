@@ -15,13 +15,7 @@ import {RenderData} from "@pageComponent/scan/list/RenderData";
 import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
 import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
 import {atomHeaderTitle} from "@recoil/atoms";
-import {
-	getIds,
-	modalTypeParser,
-	nullRenderItem,
-	nullUseQuery,
-	scanRouterParser,
-} from "@utils";
+import {getIds, modalTypeParser, scanRouterParser} from "@utils";
 import {trpc} from "@utils/trpc";
 
 ScanListData.getLayout = getLayout;
@@ -80,8 +74,7 @@ function RenderScanList() {
 			dateHeader,
 			!isSelect && "Action",
 		],
-		// genPdfOptions: isQC
-		genPdfOptions: false
+		genPdfOptions: isQC
 			? {
 					splitPagePer: 4,
 					orientation: "l",
@@ -97,15 +90,13 @@ function RenderScanList() {
 						),
 			  }
 			: undefined,
-		// enabledExport: true,
-		// exportUseQuery: () =>
-		// 	trpc.export.scan.useQuery(
-		// 		{route, ids: selectedIds},
-		// 		{enabled: selectedIds.length > 0},
-		// 	),
-		// exportRenderItem: item => item,
-		exportRenderItem: nullRenderItem,
-		exportUseQuery: nullUseQuery,
+		enabledExport: true,
+		exportRenderItem: item => item,
+		exportUseQuery: () =>
+			trpc.export.scan.useQuery(
+				{route, ids: selectedIds},
+				{enabled: selectedIds.length > 0},
+			),
 		useQuery: form => trpc.scan.list.useQuery({...form, target: route}),
 		renderItem(item) {
 			return (

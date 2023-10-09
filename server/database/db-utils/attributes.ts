@@ -254,7 +254,12 @@ export function scanListAttributes() {
 }
 
 export function printScanAttributes() {
-	const scan = attrParserV2(dScan, ["id_kanban", "updatedAt", "lot_no_imi"]);
+	const scan = attrParserV2(dScan, [
+		"id_kanban",
+		"notes",
+		"updatedAt",
+		"lot_no_imi",
+	]);
 	const scnItem = attrParserV2(dScanItem);
 	const kanban = attrParserV2(dKanban, [
 		"id",
@@ -277,7 +282,7 @@ export function printScanAttributes() {
 
 	type Ret = typeof scan.obj & {
 		dScanItems: (typeof scnItem.obj & {
-			knbItem?: typeof knbItem.obj & {
+			dKnbItem?: typeof knbItem.obj & {
 				dKanban: typeof kanban.obj & {
 					dPo: typeof po.obj & {dCust: typeof cust.obj};
 				};
