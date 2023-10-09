@@ -681,3 +681,17 @@ export function sppbOutGetPoAttributes() {
 
 	return {A, B, C, D, E, F, G, H, I, Ret: {} as Ret};
 }
+
+export function getRejectAttributes() {
+	const rejScan = attrParserV2(dRejItem);
+	const scanItem = attrParserV2(dScanItem);
+	const scan = attrParserV2(dScan);
+
+	type Ret = typeof rejScan.obj & {
+		dScanItem: typeof scanItem.obj & {
+			dScan: typeof scan.obj;
+		};
+	};
+
+	return {rejScan, scanItem, scan, Ret: {} as Ret};
+}

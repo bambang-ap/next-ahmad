@@ -10,6 +10,7 @@ import kanbanRouters from "./kanban";
 import menuRouters from "./menu";
 import miscRouter from "./misc";
 import printRouters from "./print";
+import rejectRouters from "./reject";
 import scanRouters from "./scan";
 import sppbRouters from "./sppb";
 import supplierRouters from "./supplier";
@@ -29,6 +30,7 @@ export const appRouter = router({
 	dashboard: dashboardRouters,
 	export: exportRouters,
 	print: printRouters,
+	reject: rejectRouters,
 });
 
 export type AppRouter = typeof appRouter;

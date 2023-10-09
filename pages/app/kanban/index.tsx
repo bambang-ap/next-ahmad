@@ -1,6 +1,7 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
 import {FormEventHandler, useRef} from "react";
 
+import {useRouter} from "next/router";
 import {useForm} from "react-hook-form";
 
 import {
@@ -37,6 +38,7 @@ export type KanbanFormType = TKanbanUpsert & {
 export default function Kanban() {
 	const modalRef = useRef<ModalRef>(null);
 
+	const {push} = useRouter();
 	const {control, watch, reset, clearErrors, handleSubmit} =
 		useForm<KanbanFormType>();
 
@@ -65,7 +67,12 @@ export default function Kanban() {
 			"Di cetak",
 			!isSelect && "Action",
 		],
-		topComponent: <Button onClick={() => showModal("add", {})}>Add</Button>,
+		topComponent: (
+			<>
+				<Button onClick={() => showModal("add", {})}>Add</Button>
+				<Button onClick={navigateReject}>Reject List</Button>
+			</>
+		),
 		enabledExport: true,
 		exportRenderItem: renderItemAsIs,
 		afterPrint: updatePrint,
@@ -168,6 +175,10 @@ export default function Kanban() {
 
 	function updatePrint(): void {
 		mutatePrint(selectedIds);
+	}
+
+	function navigateReject() {
+		push("/app/kanban/reject");
 	}
 
 	return (
