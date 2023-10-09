@@ -70,6 +70,8 @@ type Props<
 	exportRenderItem: (item: NonNullable<EQ["data"]>[number]) => ER;
 	exportUseQuery: () => EQ;
 
+	afterPrint?: NoopVoid;
+
 	genPdfOptions?: GenPdfProps<PT, PQ>;
 } & PropsA<T, F>;
 
@@ -98,6 +100,7 @@ export function useTableFilterComponent<
 		renderItemEach,
 		genPdfOptions,
 		onExport,
+		afterPrint,
 		...tableProps
 	} = props;
 
@@ -155,6 +158,7 @@ export function useTableFilterComponent<
 			}
 		}
 		await genPdfRef.current?.generate();
+		afterPrint?.();
 		loader?.hide?.();
 		reset(prev => ({...prev, type: undefined}));
 	}
