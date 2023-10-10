@@ -15,7 +15,7 @@ module.exports = {
 	env: {
 		es6: true,
 	},
-	extends: ["next/core-web-vitals", "prettier"],
+	extends: ["next/core-web-vitals"],
 	parser: "@typescript-eslint/parser",
 	plugins: [
 		"eslint-plugin-import-helpers",
@@ -33,6 +33,8 @@ module.exports = {
 		{
 			files: ["*.ts", "*.tsx"],
 			rules: {
+				quotes: 0,
+				"@typescript-eslint/quotes": [1, "single", {avoidEscape: true}],
 				"prettier/prettier": 0,
 				"max-len": [1, {code: 150}],
 				"no-return-await": 1,
@@ -63,6 +65,7 @@ module.exports = {
 				"react/require-default-props": 0,
 				"react/jsx-curly-newline": 0,
 				"object-curly-spacing": 0,
+				"no-trailing-spaces": 1,
 				"@typescript-eslint/no-use-before-define": 0,
 				"react/jsx-props-no-spreading": [
 					0,

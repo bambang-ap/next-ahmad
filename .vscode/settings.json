@@ -4,6 +4,7 @@
 		"Alasan",
 		"barang",
 		"cust",
+		"Grafik",
 		"Hapus",
 		"harga",
 		"Includeable",
@@ -53,18 +54,20 @@
 	},
 	"typescript.tsdk": "node_modules/typescript/lib",
 	"typescript.enablePromptUseWorkspaceTsdk": true,
-	// "codemetrics.nodeconfiguration.AnyKeyword": 100,
 	"editor.formatOnSave": true,
 	"eslint.enable": true,
-	"javascript.preferences.quoteStyle": "single",
 	"prettier.configPath": ".prettierrc.js",
 	"eslint.nodePath": ".eslintrc.js",
 	"eslint.onIgnoredFiles": "off",
-	"prettier.packageManager": "yarn",
-	"prettier.singleQuote": true,
 	"prettier.trailingComma": "es5",
-	"typescript.preferences.quoteStyle": "single",
 	"files.eol": "\n",
+	"tailwindCSS.experimental.classRegex": [
+		[
+			"classNames\\(([^)]*)\\)",
+			"'([^']*)'",
+			"\"([^\"]*)\""
+		]
+	],
 	"tailwindCSS.classAttributes": [
 		"className",
 		"className\\w+",

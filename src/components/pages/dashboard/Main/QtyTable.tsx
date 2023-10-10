@@ -1,23 +1,33 @@
-import {useWatch} from "react-hook-form";
+import {useWatch} from 'react-hook-form';
 
-import {FormProps} from "@appTypes/app.type";
-import {Icon} from "@baseComps/Icon";
-import {BorderTd, RootTable as Table} from "@baseComps/Table";
-import {unitData} from "@constants";
-import {useQtyData} from "@hooks";
-import {classNames} from "@utils";
+import {FormProps} from '@appTypes/app.type';
+import {Icon} from '@baseComps/Icon';
+import {BorderTd, BorderTdProps, RootTable as Table} from '@baseComps/Table';
+import {unitData} from '@constants';
+import {useQtyData} from '@hooks';
+import {classNames} from '@utils';
 
-import {FormValue} from "./";
+import {FormValue} from './';
 
 const {TBody, THead, Tr} = Table;
+
+function Td({className, rootClassName, ...props}: BorderTdProps) {
+	return (
+		<BorderTd
+			{...props}
+			className={classNames(className)}
+			rootClassName={rootClassName}
+		/>
+	);
+}
 
 export default function QtyTable({
 	control,
 	setValue,
-}: FormProps<FormValue, "control" | "setValue">) {
+}: FormProps<FormValue, 'control' | 'setValue'>) {
 	const {dataList, qtyParser} = useQtyData();
 
-	const titleClassName = "text-lg bg-zinc-500 text-white";
+	const titleClassName = 'text-lg text-white';
 
 	const header = dataList.map(([a, , b]) => [a, b]);
 
@@ -28,42 +38,51 @@ export default function QtyTable({
 			<Table className="overflow-x-scroll">
 				<THead>
 					<Tr>
-						<BorderTd className={titleClassName} width={200} center>
+						<Td
+							rootClassName={classNames(titleClassName, 'bg-zinc-500')}
+							width={200}
+							center>
 							Unit
-						</BorderTd>
+						</Td>
 						{header.map(([category, className]) => (
-							<BorderTd
+							<Td
 								center
 								key={category}
-								className={classNames("text-lg", className)}>
+								rootClassName={className}
+								className="text-lg">
 								{category}
-							</BorderTd>
+							</Td>
 						))}
 					</Tr>
 				</THead>
 				<TBody>
 					{unitData.map(unit => {
 						const qtys = qtyParser(unit);
+						const isSelected = unit === type;
 
 						return (
 							<Tr key={unit}>
-								<BorderTd
-									onClick={() => setValue("type", unit)}
-									className={classNames(
-										"cursor-pointer hover:opacity-80",
+								<Td
+									className="items-center"
+									onClick={() => setValue('type', unit)}
+									rootClassName={classNames(
+										'cursor-pointer hover:opacity-80',
 										titleClassName,
+										{
+											'bg-green-600': isSelected,
+											'bg-zinc-500': !isSelected,
+										},
 									)}>
-									<div className="gap-2 flex items-center">
-										<div className="flex-1">{unit.ucwords()}</div>
-										{unit === type && <Icon name="faCheck" />}
-									</div>
-								</BorderTd>
+									<div className="flex-1">{unit.ucwords()}</div>
+									{isSelected && <Icon name="faCheck" />}
+								</Td>
 								{qtys.map(([, qty, className], index) => (
-									<BorderTd
+									<Td
 										key={`${unit}${index}`}
-										className={classNames("text-end", className)}>
-										{!!qty ? new Intl.NumberFormat("id-ID").format(qty) : "-"}
-									</BorderTd>
+										rootClassName={className}
+										className={'text-end'}>
+										{!!qty ? new Intl.NumberFormat('id-ID').format(qty) : '-'}
+									</Td>
 								))}
 							</Tr>
 						);

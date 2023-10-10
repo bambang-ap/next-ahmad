@@ -1,22 +1,39 @@
-import {col, FindOptions, fn} from "sequelize";
-import {z} from "zod";
+import {col, FindOptions, fn} from 'sequelize';
 
-import {TDecimal, TItemUnit, UQty} from "@appTypes/app.type";
-import {tScanTarget} from "@appTypes/app.zod";
+import {TDecimal, TItemUnit, UQty} from '@appTypes/app.type';
+import {tScanItemReject, tScanNew} from '@appTypes/app.zod';
 import {
-	ORM,
+	attrParserV2,
+	dInItem,
+	dKnbItem,
+	dPoItem,
+	dRejItem,
+	dScan,
+	dScanItem,
+	orderPages,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBOutItem,
 	OrmKanbanItem,
 	OrmPOItemSppbIn,
-	OrmScan,
-} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure, router} from "@trpc";
-import {qtyMap} from "@utils";
+	wherePagesV3,
+} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure, router} from '@trpc';
+import {qtyMap} from '@utils';
 
-type U = {unit: TItemUnit; qty: TDecimal};
+export type U = {unit: TItemUnit; qty: TDecimal};
 export type J = Record<UQty, U[]>;
+
+function getAttributes() {
+	const rejItem = attrParserV2(dRejItem);
+	const scnItem = attrParserV2(dScanItem);
+	const scn = attrParserV2(dScan);
+	const knbItem = attrParserV2(dKnbItem);
+	const inItem = attrParserV2(dInItem);
+	const poItem = attrParserV2(dPoItem);
+
+	return {rejItem, scnItem, scn, knbItem, inItem, poItem};
+}
 
 async function parseQueries(queries: Promise<any>[]) {
 	const result = await Promise.all(queries);
@@ -34,8 +51,8 @@ const mainDashboardRouter = router({
 			return {
 				group: [`unit${num}`],
 				attributes: [
-					[`unit${num}`, "unit"],
-					[fn("sum", col(`qty${num}`)), "qty"],
+					[`unit${num}`, 'unit'],
+					[fn('sum', col(`qty${num}`)), 'qty'],
 				],
 			};
 		}
@@ -57,8 +74,8 @@ const mainDashboardRouter = router({
 				raw: true,
 				include: [{model: OrmCustomerPOItem, attributes: []}],
 				attributes: [
-					[col(group), "unit"],
-					[fn("sum", col(`OrmPOItemSppbIn.qty${num}`)), "qty"],
+					[col(group), 'unit'],
+					[fn('sum', col(`OrmPOItemSppbIn.qty${num}`)), 'qty'],
 				],
 			};
 		}
@@ -86,8 +103,8 @@ const mainDashboardRouter = router({
 					},
 				],
 				attributes: [
-					[col(group), "unit"],
-					[fn("sum", col(`OrmKanbanItem.qty${num}`)), "qty"],
+					[col(group), 'unit'],
+					[fn('sum', col(`OrmKanbanItem.qty${num}`)), 'qty'],
 				],
 			};
 		}
@@ -102,29 +119,106 @@ const mainDashboardRouter = router({
 			return parseQueries(queries);
 		});
 	}),
-	scan: procedure
-		.input(z.object({target: tScanTarget}))
+	scan: procedure.input(tScanNew.pick({status: true})).query(({ctx, input}) => {
+		const {status: target} = input;
+
+		async function selector(num: UQty) {
+			type Ret = typeof scnItem.obj & {
+				dScan: typeof scn.obj;
+				dKnbItem: typeof knbItem.obj & {
+					dInItem: typeof inItem.obj & {
+						dPoItem: typeof poItem.obj;
+					};
+				};
+			};
+
+			const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
+
+			const group = orderPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
+			const data = scnItem.model.findAll({
+				group,
+				where: wherePagesV3<Ret>({'$dScan.status$': target}),
+				attributes: [
+					[col(group), 'unit'],
+					[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
+				],
+				include: [
+					{model: scn.model, attributes: []},
+					{
+						model: knbItem.model,
+						attributes: [],
+						include: [
+							{
+								model: inItem.model,
+								attributes: [],
+								include: [{model: poItem.model, attributes: []}],
+							},
+						],
+					},
+				],
+			});
+
+			return data;
+		}
+
+		return checkCredentialV2(ctx, async (): Promise<J> => {
+			const queries = [selector(1), selector(2), selector(3)];
+
+			return parseQueries(queries);
+		});
+	}),
+	reject: procedure
+		.input(tScanItemReject.pick({reason: true}))
 		.query(({ctx, input}) => {
-			const {target} = input;
+			const {reason: target} = input;
+
 			async function selector(num: UQty) {
-				const [query] = await ORM.query(
-					`SELECT
-							OrmCustomerPOItem.unit${num} AS unit,
-							SUM( (OrmScan.item_${target} -> 0 ->> ${num}) :: NUMERIC ) AS qty
-					FROM ${OrmScan.tableName} AS ${OrmScan.name}
-							LEFT OUTER JOIN ${OrmKanbanItem.tableName} AS ${OrmKanbanItem.name}
-								ON OrmScan.item_${target} -> 0 ->> 0 = OrmKanbanItem.id
-							LEFT OUTER JOIN ${OrmPOItemSppbIn.tableName} AS ${OrmPOItemSppbIn.name}
-								ON OrmKanbanItem.id_item = OrmPOItemSppbIn.id
-							LEFT OUTER JOIN ${OrmCustomerPOItem.tableName} AS ${OrmCustomerPOItem.name}
-								ON OrmPOItemSppbIn.id_item = OrmCustomerPOItem.id
-					WHERE
-							status_${target} = TRUE
-							AND item_${target} -> 0 IS NOT NULL
-					GROUP BY OrmCustomerPOItem.unit${num}`,
+				type Ret = typeof rejItem.obj & {
+					dScanItem: typeof scnItem.obj & {
+						dKnbItem: typeof knbItem.obj & {
+							dInItem: typeof inItem.obj & {
+								dPoItem: typeof poItem.obj;
+							};
+						};
+					};
+				};
+
+				const {rejItem, inItem, knbItem, poItem, scnItem} = getAttributes();
+
+				const group = orderPages<Ret>(
+					`dScanItem.dKnbItem.dInItem.dPoItem.unit${num}`,
 				);
-				return query;
+				const data = rejItem.model.findAll({
+					group,
+					where: wherePagesV3<Ret>({reason: target}),
+					attributes: [
+						[col(group), 'unit'],
+						[fn('sum', col(`dRejItem.qty${num}`)), 'qty'],
+					],
+					include: [
+						{
+							model: scnItem.model,
+							attributes: [],
+							include: [
+								{
+									model: knbItem.model,
+									attributes: [],
+									include: [
+										{
+											model: inItem.model,
+											attributes: [],
+											include: [{model: poItem.model, attributes: []}],
+										},
+									],
+								},
+							],
+						},
+					],
+				});
+
+				return data;
 			}
+
 			return checkCredentialV2(ctx, async (): Promise<J> => {
 				const queries = [selector(1), selector(2), selector(3)];
 
@@ -146,8 +240,8 @@ const mainDashboardRouter = router({
 					},
 				],
 				attributes: [
-					[col(group), "unit"],
-					[fn("sum", col(`OrmCustomerSPPBOutItem.qty${num}`)), "qty"],
+					[col(group), 'unit'],
+					[fn('sum', col(`OrmCustomerSPPBOutItem.qty${num}`)), 'qty'],
 				],
 			};
 		}

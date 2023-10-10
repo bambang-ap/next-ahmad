@@ -1,4 +1,4 @@
-import {Path} from "react-hook-form";
+import {Path} from 'react-hook-form';
 import {
 	DECIMAL,
 	FindAttributeOptions,
@@ -8,7 +8,7 @@ import {
 	Op,
 	Order,
 	WhereAttributeHashValue,
-} from "sequelize";
+} from 'sequelize';
 import {
 	noUnrecognized,
 	objectKeyMask,
@@ -16,15 +16,15 @@ import {
 	z,
 	ZodObject,
 	ZodRawShape,
-} from "zod";
+} from 'zod';
 
-import {Context, TMasterItem} from "@appTypes/app.type";
-import {defaultExcludeColumns} from "@constants";
-import {appRouter} from "@trpc/routers";
+import {Context, TMasterItem} from '@appTypes/app.type';
+import {defaultExcludeColumns} from '@constants';
+import {appRouter} from '@trpc/routers';
 
-export * from "./attributes";
-export * from "./getPoStatus";
-export * from "./relation";
+export * from './attributes';
+export * from './getPoStatus';
+export * from './relation';
 
 export function attrParser<
 	T extends ZodRawShape,
@@ -141,9 +141,15 @@ export function wherePagesV3<T extends {}>(
 	};
 }
 
+export function orderPages<T extends {}>(
+	searchKey: Path<ObjectNonArray<T>>,
+): any {
+	return searchKey;
+}
+
 export async function processMapper(
 	ctx: Context,
-	item?: Partial<Pick<TMasterItem, "instruksi" | "kategori_mesinn">>,
+	item?: Partial<Pick<TMasterItem, 'instruksi' | 'kategori_mesinn'>>,
 ) {
 	const {instruksi: process, kategori_mesinn} = item ?? {};
 	const routerCaller = appRouter.createCaller(ctx);
@@ -153,18 +159,18 @@ export async function processMapper(
 	});
 
 	const instruksi = processes
-		.map(e => e.dataProcess.map(r => r.process.name).join(" | "))
-		.join(" - ");
+		.map(e => e.dataProcess.map(r => r.process.name).join(' | '))
+		.join(' - ');
 
 	return instruksi;
 }
 
 export function OrmScanOrder(): Order {
-	return [[`updatedAt`, "DESC NULLS LAST"]];
+	return [['updatedAt', 'DESC NULLS LAST']];
 }
 
 export function NumberOrderAttribute<T extends {}>(
 	order: LiteralUnion<ObjKeyof<T>>,
 ) {
-	return [literal(`ROW_NUMBER() OVER (ORDER BY ${order})`), "number"] as const;
+	return [literal(`ROW_NUMBER() OVER (ORDER BY ${order})`), 'number'] as const;
 }
