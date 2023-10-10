@@ -39,17 +39,17 @@ export default function QtyTable({
 				<THead>
 					<Tr>
 						<Td
-							rootClassName={classNames(titleClassName, 'bg-zinc-500')}
-							width={200}
-							center>
+							center
+							className="w-32"
+							rootClassName={classNames(titleClassName, 'bg-zinc-500')}>
 							Unit
 						</Td>
 						{header.map(([category, className]) => (
 							<Td
 								center
 								key={category}
-								rootClassName={className}
-								className="text-lg">
+								className="text-lg"
+								rootClassName={className}>
 								{category}
 							</Td>
 						))}
@@ -80,7 +80,7 @@ export default function QtyTable({
 									<Td
 										key={`${unit}${index}`}
 										rootClassName={className}
-										className={'text-end'}>
+										className="text-end w-32">
 										{!!qty ? new Intl.NumberFormat('id-ID').format(qty) : '-'}
 									</Td>
 								))}

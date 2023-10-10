@@ -39,17 +39,13 @@ export function useQtyData() {
 		['Finish Good', dataFg, classNames('bg-lime-500 text-white')],
 		['SJ Keluar', dataSppbOut, classNames('bg-rose-500 text-white')],
 		[
-			`Reject ${REJECT_REASON_VIEW.TP}`,
+			REJECT_REASON_VIEW.TP,
 			dataRejectTP,
 			classNames('bg-indigo-500 text-white'),
 		],
+		[REJECT_REASON_VIEW.RP, dataRejectRP, classNames('bg-teal-500 text-white')],
 		[
-			`Reject ${REJECT_REASON_VIEW.RP}`,
-			dataRejectRP,
-			classNames('bg-teal-500 text-white'),
-		],
-		[
-			`Reject ${REJECT_REASON_VIEW.SC}`,
+			REJECT_REASON_VIEW.SC,
 			dataRejectSC,
 			classNames('bg-yellow-500 text-white'),
 		],
