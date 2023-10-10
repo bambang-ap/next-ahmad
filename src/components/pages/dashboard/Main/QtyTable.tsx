@@ -80,8 +80,13 @@ export default function QtyTable({
 									<Td
 										key={`${unit}${index}`}
 										rootClassName={className}
-										className="text-end w-32">
-										{!!qty ? new Intl.NumberFormat('id-ID').format(qty) : '-'}
+										className="justify-end w-32">
+										{!!qty
+											? new Intl.NumberFormat('id-ID', {
+													minimumFractionDigits: 3,
+													maximumFractionDigits: 3,
+											  }).format(qty)
+											: '-'}
 									</Td>
 								))}
 							</Tr>
