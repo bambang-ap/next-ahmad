@@ -1,19 +1,19 @@
 // @ts-nocheck
 // FIXME:
 
-import {Control, UseFormReset, useWatch} from "react-hook-form";
+import {Control, UseFormReset, useWatch} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
 	TKategoriMesin,
 	TMasterItem,
-} from "@appTypes/app.type";
-import {Button, Input, Select, selectMapper, Text} from "@components";
-import {CRUD_ENABLED} from "@enum";
-import {classNames, formData} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@appTypes/app.type';
+import {Button, Input, Select, selectMapper, Text} from '@components';
+import {CRUD_ENABLED} from '@enum';
+import {classNames, formData} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {RenderProcess} from "./RenderProcess";
+import {RenderProcess} from './RenderProcess';
 
 export type FormType = TMasterItem & {
 	type: ModalTypePreview;
@@ -31,10 +31,10 @@ export function ModalChildMasterItem({
 	});
 	const [modalType, kategoriMesin = []] = useWatch({
 		control,
-		name: ["type", "kategori_mesinn"],
+		name: ['type', 'kategori_mesinn'],
 	});
 
-	if (modalType === "delete") {
+	if (modalType === 'delete') {
 		return (
 			<div>
 				<Text>Hapus ?</Text>
@@ -52,9 +52,9 @@ export function ModalChildMasterItem({
 			<Button
 				onClick={() =>
 					reset(prev =>
-						formData(prev).set("kategori_mesinn", [
+						formData(prev).set('kategori_mesinn', [
 							...(prev.kategori_mesinn ?? []),
-							"",
+							'',
 						]),
 					)
 				}>
@@ -65,16 +65,16 @@ export function ModalChildMasterItem({
 				return (
 					<div key={kategori} className="flex gap-2">
 						<div
-							className={classNames("flex items-start gap-2", {
-								"w-1/6": !!kategori,
-								"flex-1": !kategori,
+							className={classNames('flex items-start gap-2', {
+								'w-1/6': !!kategori,
+								'flex-1': !kategori,
 							})}>
 							<Select
 								key={kategori}
 								control={control}
 								className="flex-1"
 								fieldName={`kategori_mesinn.${i}`}
-								data={selectMapper(data ?? [], "id", "name").filter(
+								data={selectMapper(data ?? [], 'id', 'name').filter(
 									e => e.value === kategori || !kategoriMesin.includes(e.value),
 								)}
 							/>
@@ -86,7 +86,7 @@ export function ModalChildMasterItem({
 										};
 										delete prev.instruksi[prev.kategori_mesinn[i]!];
 										return formData(prev).set(
-											"kategori_mesinn",
+											'kategori_mesinn',
 											prev.kategori_mesinn.remove(i),
 										);
 									})

@@ -1,18 +1,18 @@
-import {PropsWithChildren} from "react";
+import {PropsWithChildren} from 'react';
 
-import {Route} from "pages/app/scan/[route]";
-import {ScanListFormType} from "pages/app/scan/[route]/list";
-import {Control, useWatch} from "react-hook-form";
+import {Route} from 'pages/app/scan/[route]';
+import {ScanListFormType} from 'pages/app/scan/[route]/list';
+import {Control, useWatch} from 'react-hook-form';
 
-import {TableFilterProps} from "@hooks";
-import type {ScanList} from "@trpc/routers/scan";
-import {dateUtils, modalTypeParser} from "@utils";
+import {TableFilterProps} from '@hooks';
+import type {ScanList} from '@trpc/routers/scan';
+import {dateUtils, modalTypeParser} from '@utils';
 
 type Props = {
 	control: Control<ScanListFormType>;
 	printOne?: (idKanban: string) => void;
 } & GetProps<
-	NonNullable<TableFilterProps<ScanList, ScanListFormType>["renderItem"]>
+	NonNullable<TableFilterProps<ScanList, ScanListFormType>['renderItem']>
 > &
 	Route;
 
@@ -25,7 +25,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 
 	const data = item.dKanban;
 	const date = item.updatedAt;
-	const theDate = !date ? "" : dateUtils.full(date);
+	const theDate = !date ? '' : dateUtils.full(date);
 
 	return (
 		<>

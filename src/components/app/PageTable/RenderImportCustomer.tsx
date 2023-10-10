@@ -1,11 +1,11 @@
-import {useEffect, useRef, useState} from "react";
+import {useEffect, useRef, useState} from 'react';
 
-import {TCustomer} from "@appTypes/app.type";
-import {Button, Modal, ModalRef, Table} from "@components";
-import {CRUD_ENABLED} from "@enum";
-import {useLoader} from "@hooks";
-import {exportData, importData} from "@utils";
-import {trpc} from "@utils/trpc";
+import {TCustomer} from '@appTypes/app.type';
+import {Button, Modal, ModalRef, Table} from '@components';
+import {CRUD_ENABLED} from '@enum';
+import {useLoader} from '@hooks';
+import {exportData, importData} from '@utils';
+import {trpc} from '@utils/trpc';
 
 export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const modalRef = useRef<ModalRef>(null);
@@ -13,11 +13,11 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 	const [file, setFile] = useState<File>();
 
 	const {mutateOpts, ...loader} = useLoader();
-	const {data: exampleData} = trpc.exampleData.get.useQuery("customer");
+	const {data: exampleData} = trpc.exampleData.get.useQuery('customer');
 	const {mutate} = trpc.basic.mutate.useMutation(mutateOpts);
 
 	function downloadExampleData() {
-		exportData(exampleData, ["example-customer"]);
+		exportData(exampleData, ['example-customer']);
 	}
 
 	async function mutateInsert(force?: boolean): Promise<any> {
@@ -25,7 +25,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 
 		if (!force) {
 			const confirmation = confirm(
-				"Data dibawah akan di import, apakah anda yakin?",
+				'Data dibawah akan di import, apakah anda yakin?',
 			);
 			if (!confirmation) return;
 
@@ -39,7 +39,7 @@ export function RenderImportCustomer({refetch}: {refetch: () => unknown}) {
 		function createPromise(body: TCustomer) {
 			return new Promise(() => {
 				mutate(
-					{target: CRUD_ENABLED.CUSTOMER, type: "add", body},
+					{target: CRUD_ENABLED.CUSTOMER, type: 'add', body},
 					{onSuccess: refetch},
 				);
 			});

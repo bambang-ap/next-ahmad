@@ -1,18 +1,18 @@
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useRef} from 'react';
 
-import {useForm} from "react-hook-form";
+import {useForm} from 'react-hook-form';
 
-import {ModalTypePreview} from "@appTypes/app.type";
-import {TMasterItem} from "@appTypes/app.zod";
-import {Button, Form, Modal, ModalRef, TableFilter} from "@components";
-import {getLayout} from "@hoc";
-import {useLoader, useTableFilter} from "@hooks";
+import {ModalTypePreview} from '@appTypes/app.type';
+import {TMasterItem} from '@appTypes/app.zod';
+import {Button, Form, Modal, ModalRef, TableFilter} from '@components';
+import {getLayout} from '@hoc';
+import {useLoader, useTableFilter} from '@hooks';
 import {
 	FormType,
 	ModalChildMasterItem,
-} from "@pageComponent/item/ModalChildMasterItem";
-import {modalTypeParser} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@pageComponent/item/ModalChildMasterItem';
+import {modalTypeParser} from '@utils';
+import {trpc} from '@utils/trpc';
 
 MasterItem.getLayout = getLayout;
 
@@ -31,7 +31,7 @@ export default function MasterItem() {
 	const {control, handleSubmit, watch, clearErrors, reset} =
 		useForm<FormType>();
 
-	const [modalType] = watch(["type"]);
+	const [modalType] = watch(['type']);
 	const {modalTitle, isPreview} = modalTypeParser(modalType);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
@@ -39,10 +39,10 @@ export default function MasterItem() {
 		clearErrors();
 		handleSubmit(async ({type, id, ...body}) => {
 			switch (type) {
-				case "add":
-				case "edit":
+				case 'add':
+				case 'edit':
 					return mutateUpsert({...body, id}, {onSuccess});
-				case "delete":
+				case 'delete':
 					return mutateDelete({id}, {onSuccess});
 				default:
 					return null;
@@ -77,15 +77,15 @@ export default function MasterItem() {
 					form={hookForm}
 					keyExtractor={item => item.id}
 					header={[
-						"Nomor",
-						"Nama Mesin",
-						"Nama Item",
-						"Kode Item",
-						"Keterangan",
-						"Action",
+						'Nomor',
+						'Nama Mesin',
+						'Nama Item',
+						'Kode Item',
+						'Keterangan',
+						'Action',
 					]}
 					topComponent={
-						<Button onClick={() => showModal("add", {})}>Add</Button>
+						<Button onClick={() => showModal('add', {})}>Add</Button>
 					}
 					renderItem={({item, Cell}, index) => {
 						const {id, name, kode_item, keterangan} = item;
@@ -93,16 +93,16 @@ export default function MasterItem() {
 						return (
 							<>
 								<Cell>{index + 1}</Cell>
-								<Cell>{item.nameMesins.join(", ")}</Cell>
+								<Cell>{item.nameMesins.join(', ')}</Cell>
 								<Cell>{name}</Cell>
 								<Cell>{kode_item}</Cell>
 								<Cell>{keterangan}</Cell>
 								<Cell className="flex gap-x-2">
-									<Button onClick={() => showModal("preview", item)}>
+									<Button onClick={() => showModal('preview', item)}>
 										Preview
 									</Button>
-									<Button onClick={() => showModal("edit", item)}>Edit</Button>
-									<Button onClick={() => showModal("delete", {id})}>
+									<Button onClick={() => showModal('edit', item)}>Edit</Button>
+									<Button onClick={() => showModal('delete', {id})}>
 										Delete
 									</Button>
 								</Cell>

@@ -1,19 +1,19 @@
-import {createContext, useContext, useEffect} from "react";
+import {createContext, useContext, useEffect} from 'react';
 
-import {KanbanFormType} from "pages/app/kanban";
+import {KanbanFormType} from 'pages/app/kanban';
 import {
 	Control,
 	FieldPath,
 	useForm,
 	UseFormReset,
 	useWatch,
-} from "react-hook-form";
+} from 'react-hook-form';
 
-import {TMasterItem} from "@appTypes/app.type";
-import {Form, Select, selectMapper} from "@components";
-import {ProcessForm, RenderProcess} from "@pageComponent/item/RenderProcess";
-import {classNames} from "@utils";
-import {trpc} from "@utils/trpc";
+import {TMasterItem} from '@appTypes/app.type';
+import {Form, Select, selectMapper} from '@components';
+import {ProcessForm, RenderProcess} from '@pageComponent/item/RenderProcess';
+import {classNames} from '@utils';
+import {trpc} from '@utils/trpc';
 
 type RenderMesinProps = {
 	disabled?: boolean;
@@ -77,8 +77,8 @@ export function RenderKategori({
 				fieldName={name}
 				disabled={isDisabled}
 				control={parentProps.control}
-				className={classNames("w-1/6", {"mt-4": !!hasSelected})}
-				data={selectMapper(availableMesins, "id", "nomor_mesin")}
+				className={classNames('w-1/6', {'mt-4': !!hasSelected})}
+				data={selectMapper(availableMesins, 'id', 'nomor_mesin')}
 			/>
 			{!!hasSelected && (
 				<Form className="flex-1" context={{hideButton: true, disabled: true}}>

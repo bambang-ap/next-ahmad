@@ -11,7 +11,7 @@ import {
 	styled,
 	Typography,
 	useTheme,
-} from "@mui/material";
+} from '@mui/material';
 
 const ListWrapper = styled(List)(
 	() => `
@@ -26,14 +26,14 @@ function PopularTags() {
 	const theme = useTheme();
 
 	return (
-		<Card sx={{height: "100%"}}>
+		<Card sx={{height: '100%'}}>
 			<CardHeader title="Popular Tags" />
 			<Divider />
 			<ListWrapper disablePadding>
 				<ListItem
 					sx={{
 						color: `${theme.colors.primary.main}`,
-						"&:hover": {color: `${theme.colors.primary.dark}`},
+						'&:hover': {color: `${theme.colors.primary.dark}`},
 					}}
 					button>
 					<ListItemText primary="#HTML" />
@@ -42,7 +42,7 @@ function PopularTags() {
 				<ListItem
 					sx={{
 						color: `${theme.colors.primary.main}`,
-						"&:hover": {color: `${theme.colors.primary.dark}`},
+						'&:hover': {color: `${theme.colors.primary.dark}`},
 					}}
 					button>
 					<ListItemText primary="#software_development" />
@@ -51,7 +51,7 @@ function PopularTags() {
 				<ListItem
 					sx={{
 						color: `${theme.colors.primary.main}`,
-						"&:hover": {color: `${theme.colors.primary.dark}`},
+						'&:hover': {color: `${theme.colors.primary.dark}`},
 					}}
 					button>
 					<ListItemText primary="#TrendingInfuencers" />
@@ -60,7 +60,7 @@ function PopularTags() {
 				<ListItem
 					sx={{
 						color: `${theme.colors.primary.main}`,
-						"&:hover": {color: `${theme.colors.primary.dark}`},
+						'&:hover': {color: `${theme.colors.primary.dark}`},
 					}}
 					button>
 					<ListItemText primary="#investorsWatch2022" />
@@ -86,7 +86,7 @@ function PopularTags() {
 					</ListItemAvatar>
 					<ListItemText
 						primaryTypographyProps={{
-							variant: "h5",
+							variant: 'h5',
 							color: `${theme.colors.alpha.black[100]}`,
 						}}
 						primary="Web Designers Lounge"
@@ -107,7 +107,7 @@ function PopularTags() {
 					</ListItemAvatar>
 					<ListItemText
 						primaryTypographyProps={{
-							variant: "h5",
+							variant: 'h5',
 							color: `${theme.colors.alpha.black[100]}`,
 						}}
 						primary="Writer’s Digest Daily"
@@ -123,7 +123,7 @@ function PopularTags() {
 					</ListItemAvatar>
 					<ListItemText
 						primaryTypographyProps={{
-							variant: "h5",
+							variant: 'h5',
 							color: `${theme.colors.alpha.black[100]}`,
 						}}
 						primary="Google Developers"

@@ -1,6 +1,6 @@
-import {TCustomer, TKendaraan} from "@appTypes/app.type";
-import {CRUD_ENABLED} from "@enum";
-import {trpc} from "@utils/trpc";
+import {TCustomer, TKendaraan} from '@appTypes/app.type';
+import {CRUD_ENABLED} from '@enum';
+import {trpc} from '@utils/trpc';
 
 export function useSppbOut(idCustomer?: string) {
 	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();

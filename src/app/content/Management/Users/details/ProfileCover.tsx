@@ -1,7 +1,7 @@
-import ArrowBackTwoToneIcon from "@mui/icons-material/ArrowBackTwoTone";
-import ArrowForwardTwoToneIcon from "@mui/icons-material/ArrowForwardTwoTone";
-import MoreHorizTwoToneIcon from "@mui/icons-material/MoreHorizTwoTone";
-import UploadTwoToneIcon from "@mui/icons-material/UploadTwoTone";
+import ArrowBackTwoToneIcon from '@mui/icons-material/ArrowBackTwoTone';
+import ArrowForwardTwoToneIcon from '@mui/icons-material/ArrowForwardTwoTone';
+import MoreHorizTwoToneIcon from '@mui/icons-material/MoreHorizTwoTone';
+import UploadTwoToneIcon from '@mui/icons-material/UploadTwoTone';
 import {
 	Avatar,
 	Box,
@@ -11,12 +11,12 @@ import {
 	IconButton,
 	Tooltip,
 	Typography,
-} from "@mui/material";
-import {styled} from "@mui/material/styles";
-import PropTypes from "prop-types";
+} from '@mui/material';
+import {styled} from '@mui/material/styles';
+import PropTypes from 'prop-types';
 
-const Input = styled("input")({
-	display: "none",
+const Input = styled('input')({
+	display: 'none',
 });
 
 const AvatarWrapper = styled(Card)(
@@ -135,7 +135,7 @@ const ProfileCover = ({user}) => {
 					{user.jobtitle} | {user.location} | {user.followers} followers
 				</Typography>
 				<Box
-					display={{xs: "block", md: "flex"}}
+					display={{xs: 'block', md: 'flex'}}
 					alignItems="center"
 					justifyContent="space-between">
 					<Box>

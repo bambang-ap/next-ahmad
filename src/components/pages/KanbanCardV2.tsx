@@ -1,17 +1,17 @@
-import {RouterOutput} from "@appTypes/app.type";
-import {BorderTd, Text as Txt, TextProps} from "@components";
-import {nonRequiredRefetch} from "@constants";
-import {DataProcess} from "@trpc/routers/kanban/get";
-import {classNames, dateUtils, moment} from "@utils";
-import {trpc} from "@utils/trpc";
+import {RouterOutput} from '@appTypes/app.type';
+import {BorderTd, Text as Txt, TextProps} from '@components';
+import {nonRequiredRefetch} from '@constants';
+import {DataProcess} from '@trpc/routers/kanban/get';
+import {classNames, dateUtils, moment} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {TxtBold} from "./sppbOut_GenerateQR";
+import {TxtBold} from './sppbOut_GenerateQR';
 
 function Text(props: TextProps) {
 	return <Txt {...props} color="black" />;
 }
 
-type AProps = RouterOutput["print"]["kanban"][number];
+type AProps = RouterOutput['print']['kanban'][number];
 
 export function RenderKanbanCardV2(props: AProps) {
 	const {
@@ -48,31 +48,31 @@ export function RenderKanbanCardV2(props: AProps) {
 		nonRequiredRefetch,
 	);
 
-	const borderClassName = "border-black border-b-2 -mx-2 px-2 pb-2";
+	const borderClassName = 'border-black border-b-2 -mx-2 px-2 pb-2';
 	const itemSppbIn = OrmPOItemSppbIn;
 	const dateKanban = `Tgl Kanban ${moment(createdAt).format(
-		"D MMMM YYYY - HH.mm.ss",
+		'D MMMM YYYY - HH.mm.ss',
 	)}`;
 
 	const {lot_no} = itemSppbIn ?? {};
 	const [class1, class2, class3] = [
 		classNames({
-			["text-white"]: !qty1 || !unit1,
+			['text-white']: !qty1 || !unit1,
 		}),
 		classNames({
-			["text-white"]: !qty2 || !unit2,
+			['text-white']: !qty2 || !unit2,
 		}),
 		classNames({
-			["text-white"]: !qty3 || !unit3,
+			['text-white']: !qty3 || !unit3,
 		}),
 	] as const;
 
-	type KK = Record<"nomorMesin" | "process" | "material", string[]> &
-		Pick<DataProcess, "hardness" | "parameter">;
+	type KK = Record<'nomorMesin' | 'process' | 'material', string[]> &
+		Pick<DataProcess, 'hardness' | 'parameter'>;
 
 	const rest = dataMesinProcess?.reduce<KK>(
 		(ret, mesin) => {
-			type I = Omit<DataProcess, "material" | "process"> & {
+			type I = Omit<DataProcess, 'material' | 'process'> & {
 				material: string[];
 				process: string[];
 			};
@@ -141,7 +141,7 @@ export function RenderKanbanCardV2(props: AProps) {
 							{rest?.hardness.mmap(({item: e, isLast}) => (
 								<Text
 									color="black"
-									className={classNames("", {[borderClassName]: !isLast})}
+									className={classNames('', {[borderClassName]: !isLast})}
 									key={e.id}>
 									{e.name}
 								</Text>
@@ -152,7 +152,7 @@ export function RenderKanbanCardV2(props: AProps) {
 						<div className="flex h-full flex-col justify-between">
 							{rest?.parameter.mmap(({item: e, isLast}) => (
 								<div
-									className={classNames("flex gap-1", {
+									className={classNames('flex gap-1', {
 										[borderClassName]: !isLast,
 									})}
 									key={e.id}>
@@ -174,7 +174,7 @@ export function RenderKanbanCardV2(props: AProps) {
 				<tr>
 					<BorderTd className="text-base">Incoming Date</BorderTd>
 					<BorderTd colSpan={2}>
-						{moment(dataSppbIn?.tgl).format("D MMMM YYYY")}
+						{moment(dataSppbIn?.tgl).format('D MMMM YYYY')}
 					</BorderTd>
 				</tr>
 				<tr>
@@ -195,9 +195,9 @@ export function RenderKanbanCardV2(props: AProps) {
 					<BorderTd className="text-base">Part Name</BorderTd>
 					<BorderTd colSpan={2}>{OrmMasterItem?.name}</BorderTd>
 					<BorderTd rowSpan={2} colSpan={2}>
-						{rest?.process.join(" & ")}
+						{rest?.process.join(' & ')}
 					</BorderTd>
-					<BorderTd rowSpan={2}>{rest?.material.join(" & ")}</BorderTd>
+					<BorderTd rowSpan={2}>{rest?.material.join(' & ')}</BorderTd>
 				</tr>
 				<tr>
 					<BorderTd className="text-base">Lot Customer</BorderTd>
@@ -205,7 +205,7 @@ export function RenderKanbanCardV2(props: AProps) {
 				</tr>
 				<tr>
 					<BorderTd className="text-base">Mesin</BorderTd>
-					<BorderTd colSpan={2}>{rest?.nomorMesin?.join(", ")}</BorderTd>
+					<BorderTd colSpan={2}>{rest?.nomorMesin?.join(', ')}</BorderTd>
 					<BorderTd rowSpan={3} top>
 						<Text>Keterangan :</Text>
 						<Text>{keterangan}</Text>

@@ -1,10 +1,10 @@
-import {createContext, ReactNode, useLayoutEffect, useState} from "react";
+import {createContext, ReactNode, useLayoutEffect, useState} from 'react';
 
-import {useTheme} from "@mui/material";
-import {useSetRecoilState} from "recoil";
+import {useTheme} from '@mui/material';
+import {useSetRecoilState} from 'recoil';
 
-import {SidebarCollapseOn} from "@constants";
-import {atomIsMobile} from "@recoil/atoms";
+import {SidebarCollapseOn} from '@constants';
+import {atomIsMobile} from '@recoil/atoms';
 type SidebarContext = {
 	sidebarToggle: boolean;
 	toggleSidebar: () => void;
@@ -47,8 +47,8 @@ export function SidebarProvider({children}: Props) {
 
 	useLayoutEffect(() => {
 		handleResize();
-		window.addEventListener("resize", handleResize);
-		return () => window.removeEventListener("resize", handleResize);
+		window.addEventListener('resize', handleResize);
+		return () => window.removeEventListener('resize', handleResize);
 	}, []);
 
 	return (

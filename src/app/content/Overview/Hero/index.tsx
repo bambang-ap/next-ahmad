@@ -1,6 +1,6 @@
-import {Box, Button, Container, Grid, styled, Typography} from "@mui/material";
+import {Box, Button, Container, Grid, styled, Typography} from '@mui/material';
 
-import Link from "@prevComp/Link";
+import Link from '@prevComp/Link';
 
 const TypographyH1 = styled(Typography)(
 	({theme}) => `
@@ -90,7 +90,7 @@ const NextJsAvatar = styled(Box)(
 
 function Hero() {
 	return (
-		<Container maxWidth="lg" sx={{textAlign: "center"}}>
+		<Container maxWidth="lg" sx={{textAlign: 'center'}}>
 			<Grid
 				spacing={{xs: 6, md: 10}}
 				justifyContent="center"

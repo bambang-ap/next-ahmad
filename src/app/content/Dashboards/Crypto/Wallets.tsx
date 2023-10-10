@@ -1,4 +1,4 @@
-import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
 import {
 	alpha,
 	Avatar,
@@ -11,7 +11,7 @@ import {
 	styled,
 	Tooltip,
 	Typography,
-} from "@mui/material";
+} from '@mui/material';
 
 const AvatarWrapper = styled(Avatar)(
 	({theme}) => `
@@ -25,7 +25,7 @@ const AvatarWrapper = styled(Avatar)(
     height: ${theme.spacing(5.5)};
     width: ${theme.spacing(5.5)};
     background: ${
-			theme.palette.mode === "dark"
+			theme.palette.mode === 'dark'
 				? theme.colors.alpha.trueWhite[30]
 				: alpha(theme.colors.alpha.black[100], 0.07)
 		};
@@ -55,7 +55,7 @@ const CardAddAction = styled(Card)(
         border: ${theme.colors.primary.main} dashed 1px;
         height: 100%;
         color: ${theme.colors.primary.main};
-        transition: ${theme.transitions.create(["all"])};
+        transition: ${theme.transitions.create(['all'])};
         
         .MuiCardActionArea-root {
           height: 100%;

@@ -1,4 +1,4 @@
-import {createContext, HtmlHTMLAttributes} from "react";
+import {createContext, HtmlHTMLAttributes} from 'react';
 
 export type TFormContext = {
 	disabled?: boolean;

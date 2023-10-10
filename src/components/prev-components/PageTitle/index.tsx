@@ -1,8 +1,8 @@
-import {FC} from "react";
+import {FC} from 'react';
 
-import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
-import {Button, Grid, Typography} from "@mui/material";
-import PropTypes from "prop-types";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import {Button, Grid, Typography} from '@mui/material';
+import PropTypes from 'prop-types';
 
 interface PageTitleProps {
 	heading?: string;
@@ -11,9 +11,9 @@ interface PageTitleProps {
 }
 
 const PageTitle: FC<PageTitleProps> = ({
-	heading = "",
-	subHeading = "",
-	docs = "",
+	heading = '',
+	subHeading = '',
+	docs = '',
 	...rest
 }) => {
 	return (

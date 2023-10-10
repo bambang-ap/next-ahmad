@@ -1,7 +1,7 @@
-import {Box} from "@mui/material";
+import {Box} from '@mui/material';
 
-import HeaderNotifications from "./Notifications";
-import HeaderSearch from "./Search";
+import HeaderNotifications from './Notifications';
+import HeaderSearch from './Search';
 
 function HeaderButtons() {
 	return (

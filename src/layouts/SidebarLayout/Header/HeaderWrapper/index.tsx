@@ -1,7 +1,7 @@
-import {useContext, useEffect} from "react";
+import {useContext, useEffect} from 'react';
 
-import CloseTwoToneIcon from "@mui/icons-material/CloseTwoTone";
-import MenuTwoToneIcon from "@mui/icons-material/MenuTwoTone";
+import CloseTwoToneIcon from '@mui/icons-material/CloseTwoTone';
+import MenuTwoToneIcon from '@mui/icons-material/MenuTwoTone';
 import {
 	alpha,
 	Box,
@@ -10,17 +10,17 @@ import {
 	styled,
 	Tooltip,
 	useTheme,
-} from "@mui/material";
-import Head from "next/head";
-import {useRouter} from "next/router";
-import {useRecoilState} from "recoil";
+} from '@mui/material';
+import Head from 'next/head';
+import {useRouter} from 'next/router';
+import {useRecoilState} from 'recoil';
 
-import {SidebarContext} from "@app/contexts/SidebarContext";
-import {Text} from "@components";
-import {SidebarCollapseOn} from "@constants";
-import {useAuth, useMenu} from "@hooks";
-import {atomHeaderTitle} from "@recoil/atoms";
-import {classNames} from "@utils";
+import {SidebarContext} from '@app/contexts/SidebarContext';
+import {Text} from '@components';
+import {SidebarCollapseOn} from '@constants';
+import {useAuth, useMenu} from '@hooks';
+import {atomHeaderTitle} from '@recoil/atoms';
+import {classNames} from '@utils';
 
 const HeaderWrapper = styled(Box)(({theme}) => {
 	const {sidebarToggle} = useContext(SidebarContext);
@@ -31,7 +31,7 @@ const HeaderWrapper = styled(Box)(({theme}) => {
 		padding: ${theme.spacing(0, 2)};
 		right: 0;
 		z-index: 6;
-		background-color: ${alpha(theme?.header?.background ?? "", 0.95)};
+		background-color: ${alpha(theme?.header?.background ?? '', 0.95)};
 		backdrop-filter: blur(3px);
 		position: fixed;
 		justify-content: space-between;
@@ -57,20 +57,20 @@ function Header() {
 	const title = selectedMenu?.title ?? titleAtom;
 
 	useEffect(() => {
-		if (!!selectedMenu?.title) setTitle("");
+		if (!!selectedMenu?.title) setTitle('');
 	}, [selectedMenu?.title]);
 
 	return (
 		<>
 			<Head>
-				<title>{classNames("IMI Inventory", {[`- ${title}`]: title})}</title>
+				<title>{classNames('IMI Inventory', {[`- ${title}`]: title})}</title>
 			</Head>
 			<HeaderWrapper
 				display="flex"
 				alignItems="center"
 				sx={{
 					boxShadow:
-						theme.palette.mode === "dark"
+						theme.palette.mode === 'dark'
 							? `0 1px 0 ${alpha(
 									lighten(theme.colors.primary.main, 0.7),
 									0.15,
@@ -98,8 +98,8 @@ function Header() {
 						sx={{
 							ml: 2,
 							display: {
-								xs: "inline-block",
-								[SidebarCollapseOn]: "inline-block",
+								xs: 'inline-block',
+								[SidebarCollapseOn]: 'inline-block',
 							},
 						}}>
 						<Tooltip arrow title="Toggle Menu">

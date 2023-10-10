@@ -1,29 +1,29 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useRef} from 'react';
 
-import {useRouter} from "next/router";
-import {useForm} from "react-hook-form";
+import {useRouter} from 'next/router';
+import {useForm} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
 	TKanban,
 	TKanbanUpsert,
-} from "@appTypes/app.zod";
-import {Button, Form, Modal, ModalRef} from "@components";
-import {cuttingLineClassName, nonRequiredRefetch} from "@constants";
-import {getLayout} from "@hoc";
-import {useTableFilterComponent} from "@hooks";
-import {RenderKanbanCardV2} from "@pageComponent/KanbanCardV2";
-import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
+} from '@appTypes/app.zod';
+import {Button, Form, Modal, ModalRef} from '@components';
+import {cuttingLineClassName, nonRequiredRefetch} from '@constants';
+import {getLayout} from '@hoc';
+import {useTableFilterComponent} from '@hooks';
+import {RenderKanbanCardV2} from '@pageComponent/KanbanCardV2';
+import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
 import {
 	classNames,
 	dateUtils,
 	getIds,
 	modalTypeParser,
 	renderItemAsIs,
-} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@utils';
+import {trpc} from '@utils/trpc';
 
 Kanban.getLayout = getLayout;
 
@@ -47,29 +47,29 @@ export default function Kanban() {
 	const {type: modalType} = dataForm;
 	const {isPreview, isSelect, modalTitle} = modalTypeParser(
 		modalType,
-		"Kanban",
+		'Kanban',
 	);
 
-	const {property, selectedIds} = getIds(dataForm, "idKanbans");
+	const {property, selectedIds} = getIds(dataForm, 'idKanbans');
 
 	const {mutateOpts, component, refetch} = useTableFilterComponent({
 		control,
 		reset,
 		property,
 		header: [
-			"Tanggal",
-			"Nomor PO",
-			"Nomor Kanban",
-			"Nomor Surat",
-			"Customer",
-			"Mesin",
-			"Keterangan",
-			"Di cetak",
-			!isSelect && "Action",
+			'Tanggal',
+			'Nomor PO',
+			'Nomor Kanban',
+			'Nomor Surat',
+			'Customer',
+			'Mesin',
+			'Keterangan',
+			'Di cetak',
+			!isSelect && 'Action',
 		],
 		topComponent: (
 			<>
-				<Button onClick={() => showModal("add", {})}>Add</Button>
+				<Button onClick={() => showModal('add', {})}>Add</Button>
 				<Button onClick={navigateReject}>Reject List</Button>
 			</>
 		),
@@ -84,8 +84,8 @@ export default function Kanban() {
 		genPdfOptions: {
 			width: 1850,
 			splitPagePer: 4,
-			orientation: "l",
-			tagId: "kanban-data-print",
+			orientation: 'l',
+			tagId: 'kanban-data-print',
 			useQuery: () =>
 				trpc.print.kanban.useQuery(
 					{id: selectedIds},
@@ -95,7 +95,7 @@ export default function Kanban() {
 				return (
 					<div
 						key={data.id}
-						className={classNames("w-1/2 p-6", cuttingLineClassName)}>
+						className={classNames('w-1/2 p-6', cuttingLineClassName)}>
 						<RenderKanbanCardV2 {...data} />
 					</div>
 				);
@@ -121,11 +121,11 @@ export default function Kanban() {
 							{/* <Button icon="faPrint" onClick={() => printData(item.id)} /> */}
 							<Button
 								icon="faMagnifyingGlass"
-								onClick={() => showModal("preview", item)}
+								onClick={() => showModal('preview', item)}
 							/>
-							<Button onClick={() => showModal("edit", item)} icon="faEdit" />
+							<Button onClick={() => showModal('edit', item)} icon="faEdit" />
 							<Button
-								onClick={() => showModal("delete", {id: item.id})}
+								onClick={() => showModal('delete', {id: item.id})}
 								icon="faTrash"
 							/>
 						</Cell>
@@ -148,10 +148,10 @@ export default function Kanban() {
 				if (callbacks) callbacks.forEach(callback => callback());
 
 				switch (type) {
-					case "add":
-					case "edit":
+					case 'add':
+					case 'edit':
 						return mutateUpsert({...rest, list_mesin}, {onSuccess});
-					case "delete":
+					case 'delete':
 						return mutateDelete({id: rest.id}, {onSuccess});
 					default:
 						return null;
@@ -167,7 +167,7 @@ export default function Kanban() {
 
 	function showModal(
 		type: ModalTypePreview,
-		initValue?: Partial<Omit<KanbanFormType, "type">>,
+		initValue?: Partial<Omit<KanbanFormType, 'type'>>,
 	) {
 		reset({...initValue, type});
 		modalRef.current?.show();
@@ -178,7 +178,7 @@ export default function Kanban() {
 	}
 
 	function navigateReject() {
-		push("/app/kanban/reject");
+		push('/app/kanban/reject');
 	}
 
 	return (
@@ -195,11 +195,11 @@ export default function Kanban() {
 	);
 }
 
-function RenderNameMesin({list_mesin}: Pick<TKanban, "list_mesin">) {
+function RenderNameMesin({list_mesin}: Pick<TKanban, 'list_mesin'>) {
 	const {data} = trpc.kanban.nameMesin.useQuery(
 		{list_mesin},
 		nonRequiredRefetch,
 	);
 
-	return <>{data?.map(e => e.dataKMesin.name).join(" | ")}</>;
+	return <>{data?.map(e => e.dataKMesin.name).join(' | ')}</>;
 }

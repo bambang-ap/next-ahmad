@@ -1,15 +1,15 @@
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useRef} from 'react';
 
-import {useForm} from "react-hook-form";
+import {useForm} from 'react-hook-form';
 
-import {ModalTypePreview} from "@appTypes/app.type";
-import {Button, Form, Modal, ModalRef} from "@components";
-import {getLayout} from "@hoc";
-import {useTableFilterComponentV2} from "@hooks";
-import PoModalChild, {FormType} from "@pageComponent/ModalChild_po";
-import {dateUtils, getIds, modalTypeParser} from "@utils";
-import {exportPoMapper} from "@utils/data-mapper";
-import {trpc} from "@utils/trpc";
+import {ModalTypePreview} from '@appTypes/app.type';
+import {Button, Form, Modal, ModalRef} from '@components';
+import {getLayout} from '@hoc';
+import {useTableFilterComponentV2} from '@hooks';
+import PoModalChild, {FormType} from '@pageComponent/ModalChild_po';
+import {dateUtils, getIds, modalTypeParser} from '@utils';
+import {exportPoMapper} from '@utils/data-mapper';
+import {trpc} from '@utils/trpc';
 
 POCustomer.getLayout = getLayout;
 
@@ -21,10 +21,10 @@ export default function POCustomer() {
 	const dataForm = watch();
 
 	const {type: modalType} = dataForm;
-	const {property, selectedIds} = getIds(dataForm, "idPo");
+	const {property, selectedIds} = getIds(dataForm, 'idPo');
 	const {modalTitle, isDelete, isPreview} = modalTypeParser(
 		modalType,
-		"Customer PO",
+		'Customer PO',
 	);
 
 	const {headers, renderItem} = exportPoMapper();
@@ -33,8 +33,8 @@ export default function POCustomer() {
 		reset,
 		control,
 		property,
-		header: ["Nomor PO", "Customer", "Tanggal", "Due Date", "Status", "Action"],
-		topComponent: <Button onClick={() => showModal("add", {})}>Add</Button>,
+		header: ['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Status', 'Action'],
+		topComponent: <Button onClick={() => showModal('add', {})}>Add</Button>,
 		exportOptions: {
 			headers,
 			renderItem,
@@ -65,9 +65,9 @@ export default function POCustomer() {
 					{/* FIXME: Status mismatch with new models */}
 					<Cell>{status}</Cell>
 					<Cell className="flex gap-x-2">
-						<Button onClick={() => showModal("preview", item)}>Preview</Button>
-						<Button onClick={() => showModal("edit", item)}>Edit</Button>
-						<Button onClick={() => showModal("delete", {id})}>Delete</Button>
+						<Button onClick={() => showModal('preview', item)}>Preview</Button>
+						<Button onClick={() => showModal('edit', item)}>Edit</Button>
+						<Button onClick={() => showModal('delete', {id})}>Delete</Button>
 					</Cell>
 				</>
 			);
@@ -88,11 +88,11 @@ export default function POCustomer() {
 			};
 
 			switch (type) {
-				case "add":
+				case 'add':
 					return insertPO.mutate({...rest, po_item}, {onSuccess});
-				case "edit":
+				case 'edit':
 					return updatePO.mutate({id, po_item, ...rest}, {onSuccess});
-				case "delete":
+				case 'delete':
 					return deletePO.mutate({id}, {onSuccess});
 				default:
 					return null;
@@ -110,7 +110,7 @@ export default function POCustomer() {
 			<Modal
 				ref={modalRef}
 				title={modalTitle}
-				size={isDelete ? undefined : "xl"}>
+				size={isDelete ? undefined : 'xl'}>
 				<Form
 					onSubmit={submit}
 					context={{hideButton: isPreview, disabled: isPreview}}>

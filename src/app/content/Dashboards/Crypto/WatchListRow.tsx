@@ -1,6 +1,6 @@
-import TrendingDownTwoToneIcon from "@mui/icons-material/TrendingDownTwoTone";
-import TrendingFlatTwoToneIcon from "@mui/icons-material/TrendingFlatTwoTone";
-import TrendingUpTwoToneIcon from "@mui/icons-material/TrendingUpTwoTone";
+import TrendingDownTwoToneIcon from '@mui/icons-material/TrendingDownTwoTone';
+import TrendingFlatTwoToneIcon from '@mui/icons-material/TrendingFlatTwoTone';
+import TrendingUpTwoToneIcon from '@mui/icons-material/TrendingUpTwoTone';
 import {
 	alpha,
 	Avatar,
@@ -13,12 +13,12 @@ import {
 	styled,
 	Typography,
 	useTheme,
-} from "@mui/material";
-import type {ApexOptions} from "apexcharts";
+} from '@mui/material';
+import type {ApexOptions} from 'apexcharts';
 
-import {Text} from "@components";
-import {Chart} from "@prevComp/Chart";
-import Label from "@prevComp/Label";
+import {Text} from '@components';
+import {Chart} from '@prevComp/Chart';
+import Label from '@prevComp/Label';
 
 const AvatarWrapper = styled(Avatar)(
 	({theme}) => `
@@ -32,7 +32,7 @@ const AvatarWrapper = styled(Avatar)(
     height: ${theme.spacing(5.5)};
     width: ${theme.spacing(5.5)};
     background: ${
-			theme.palette.mode === "dark"
+			theme.palette.mode === 'dark'
 				? theme.colors.alpha.trueWhite[30]
 				: alpha(theme.colors.alpha.black[100], 0.07)
 		};
@@ -56,7 +56,7 @@ function WatchListRow() {
 			animations: {
 				enabled: false,
 			},
-			background: "transparent",
+			background: 'transparent',
 			toolbar: {
 				show: false,
 			},
@@ -68,16 +68,16 @@ function WatchListRow() {
 			},
 		},
 		labels: [
-			"Monday",
-			"Tueday",
-			"Wednesday",
-			"Thursday",
-			"Friday",
-			"Saturday",
-			"Sunday",
+			'Monday',
+			'Tueday',
+			'Wednesday',
+			'Thursday',
+			'Friday',
+			'Saturday',
+			'Sunday',
 		],
 		stroke: {
-			curve: "smooth",
+			curve: 'smooth',
 			colors: [theme.colors.primary.main],
 			width: 2,
 		},
@@ -106,7 +106,7 @@ function WatchListRow() {
 			y: {
 				title: {
 					formatter() {
-						return "Price: $";
+						return 'Price: $';
 					},
 				},
 			},
@@ -118,21 +118,21 @@ function WatchListRow() {
 
 	const Box1Data = [
 		{
-			name: "Bitcoin",
+			name: 'Bitcoin',
 			data: [55.701, 57.598, 48.607, 46.439, 58.755, 46.978, 58.16],
 		},
 	];
 
 	const Box2Data = [
 		{
-			name: "Ethereum",
+			name: 'Ethereum',
 			data: [1.854, 1.873, 1.992, 2.009, 1.909, 1.942, 1.884],
 		},
 	];
 
 	const Box3Data = [
 		{
-			name: "Cardano",
+			name: 'Cardano',
 			data: [13, 16, 14, 18, 8, 11, 20],
 		},
 	];
@@ -147,7 +147,7 @@ function WatchListRow() {
 				spacing={0}>
 				<Box
 					sx={{
-						width: "100%",
+						width: '100%',
 						p: 3,
 					}}>
 					<Box
@@ -179,9 +179,9 @@ function WatchListRow() {
 						justifyContent="space-between">
 						<Box
 							sx={{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "flex-start",
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'flex-start',
 							}}>
 							<Typography
 								variant="h2"
@@ -211,7 +211,7 @@ function WatchListRow() {
 				</Box>
 				<Box
 					sx={{
-						width: "100%",
+						width: '100%',
 						p: 3,
 					}}>
 					<Box
@@ -243,9 +243,9 @@ function WatchListRow() {
 						justifyContent="space-between">
 						<Box
 							sx={{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "flex-start",
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'flex-start',
 							}}>
 							<Typography
 								variant="h2"
@@ -275,7 +275,7 @@ function WatchListRow() {
 				</Box>
 				<Box
 					sx={{
-						width: "100%",
+						width: '100%',
 						p: 3,
 					}}>
 					<Box
@@ -307,9 +307,9 @@ function WatchListRow() {
 						justifyContent="space-between">
 						<Box
 							sx={{
-								display: "flex",
-								alignItems: "center",
-								justifyContent: "flex-start",
+								display: 'flex',
+								alignItems: 'center',
+								justifyContent: 'flex-start',
 							}}>
 							<Typography
 								variant="h2"
@@ -343,8 +343,8 @@ function WatchListRow() {
 				disableSpacing
 				sx={{
 					p: 3,
-					display: "flex",
-					justifyContent: "center",
+					display: 'flex',
+					justifyContent: 'center',
 				}}>
 				<Button variant="outlined">View more assets</Button>
 			</CardActions>

@@ -1,20 +1,20 @@
-import {ForwardedRef, forwardRef, useImperativeHandle, useRef} from "react";
+import {ForwardedRef, forwardRef, useImperativeHandle, useRef} from 'react';
 
-import {DeepPartialSkipArrayKey, FieldValues, useWatch} from "react-hook-form";
+import {DeepPartialSkipArrayKey, FieldValues, useWatch} from 'react-hook-form';
 
 import {
 	GeneratePdf,
 	GenPdfProps,
 	GenPdfRef,
 	SelectAllButton,
-} from "@appComponent/GeneratePdf";
-import {FormProps, ModalTypeSelect} from "@appTypes/app.type";
-import {Button, TableFilterV2Props} from "@components";
-import {useLoader, useNewExportData, useTableFilter} from "@hooks";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {modalTypeParser, sleep, transformIds} from "@utils";
+} from '@appComponent/GeneratePdf';
+import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
+import {Button, TableFilterV2Props} from '@components';
+import {useLoader, useNewExportData, useTableFilter} from '@hooks';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import {modalTypeParser, sleep, transformIds} from '@utils';
 
-import {TableFilter} from "./TableFilter";
+import {TableFilter} from './TableFilter';
 
 type Fields = {type: ModalTypeSelect} & FieldValues;
 type TableFilterV3Props<
@@ -23,7 +23,7 @@ type TableFilterV3Props<
 	P extends keyof DeepPartialSkipArrayKey<F>,
 	TT,
 	WW extends UseTRPCQueryResult<TT, unknown>,
-> = FormProps<F, "reset" | "control"> &
+> = FormProps<F, 'reset' | 'control'> &
 	TableFilterV2Props<T> &
 	Partial<ReturnType<typeof useNewExportData>> & {
 		property: P;
@@ -74,7 +74,7 @@ function TableFilterV3Component<
 	const genPdfRef = useRef<GenPdfRef>(null);
 
 	const {type: modalType} = dataForm;
-	const {isSelect} = modalTypeParser(modalType, "SPPB In");
+	const {isSelect} = modalTypeParser(modalType, 'SPPB In');
 
 	const selectedIds = transformIds(dataForm[property]);
 	const topComponent = isSelect ? (
@@ -85,7 +85,7 @@ function TableFilterV3Component<
 		</>
 	) : (
 		<>
-			<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
+			<Button onClick={() => reset(prev => ({...prev, type: 'select'}))}>
 				Select
 			</Button>
 			{tC}
@@ -96,7 +96,7 @@ function TableFilterV3Component<
 		if (!enabledExport) return;
 		if (!exportResult) return;
 		if (selectedIds?.length <= 0) {
-			return alert("Silahkan pilih data terlebih dahulu");
+			return alert('Silahkan pilih data terlebih dahulu');
 		}
 
 		loader?.show?.();
@@ -111,14 +111,14 @@ function TableFilterV3Component<
 		if (!enabledPdf) return;
 
 		loader?.show?.();
-		if (typeof idOrAll === "string") {
+		if (typeof idOrAll === 'string') {
 			reset(prev => ({...prev, [property]: {[idOrAll]: true}}));
 			await sleep(250);
 			return printData(true);
 		} else {
 			if (selectedIds.length <= 0) {
 				loader?.hide?.();
-				return alert("Silahkan pilih data terlebih dahulu");
+				return alert('Silahkan pilih data terlebih dahulu');
 			}
 		}
 		await genPdfRef.current?.generate();

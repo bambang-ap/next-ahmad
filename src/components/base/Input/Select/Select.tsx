@@ -1,21 +1,21 @@
-import {useContext} from "react";
+import {useContext} from 'react';
 
-import {Autocomplete, Box, TextField} from "@mui/material";
+import {Autocomplete, Box, TextField} from '@mui/material';
 
-import {FormContext} from "@baseComps/Form";
-import {Icon} from "@baseComps/Icon";
+import {FormContext} from '@baseComps/Form';
+import {Icon} from '@baseComps/Icon';
 
-import {FieldPath, FieldValues} from "react-hook-form";
+import {FieldPath, FieldValues} from 'react-hook-form';
 
-import {defaultTextFieldProps} from "@constants";
+import {defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from "@formController";
-import {useTicker} from "@hooks";
-import {classNames} from "@utils";
+} from '@formController';
+import {useTicker} from '@hooks';
+import {classNames} from '@utils';
 
-import {InputComponent} from "..";
+import {InputComponent} from '..';
 
 export type SelectPropsData<T extends number | string = string> = {
 	label?: string;
@@ -46,7 +46,7 @@ export function selectMapper<T extends FieldValues, P extends FieldPath<T>>(
 		function finder(path?: string) {
 			if (!path) return undefined;
 
-			return eval(`item?.${path.replace(/\./g, "?.")}`);
+			return eval(`item?.${path.replace(/\./g, '?.')}`);
 		}
 
 		function finderY(pathValue: P | P[] | [string, P][]) {
@@ -98,10 +98,10 @@ function SelectComponent<F extends FieldValues>({
 			: data;
 
 	const isLoadingText = !isLoading
-		? ""
+		? ''
 		: `Harap Tunggu${Array.from({length: tick})
-				.map(() => `.`)
-				.join("")}`;
+				.map(() => '.')
+				.join('')}`;
 
 	if (isDisabled) {
 		return (
@@ -117,7 +117,7 @@ function SelectComponent<F extends FieldValues>({
 	}
 
 	return (
-		<div className={classNames("pt-2", className)}>
+		<div className={classNames('pt-2', className)}>
 			<Autocomplete
 				loading={isLoading}
 				loadingText={isLoadingText}
@@ -137,10 +137,10 @@ function SelectComponent<F extends FieldValues>({
 						<Box component="li" {...props} key={option.value} className="m-0">
 							<div
 								className={classNames(
-									"w-full p-4 cursor-pointer",
-									"flex items-center justify-between",
-									"hover:bg-gray-300 hover:text-white",
-									{["bg-green-700 text-white"]: isSelected},
+									'w-full p-4 cursor-pointer',
+									'flex items-center justify-between',
+									'hover:bg-gray-300 hover:text-white',
+									{['bg-green-700 text-white']: isSelected},
 								)}>
 								{option.label || option.value}
 								{isSelected && <Icon name="faCheck" className="text-white" />}
@@ -155,8 +155,8 @@ function SelectComponent<F extends FieldValues>({
 						label={label}
 						placeholder={firstOption}
 						sx={{
-							"& .MuiInputBase-input.Mui-disabled": {
-								WebkitTextFillColor: "#000000",
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
 							},
 						}}
 					/>

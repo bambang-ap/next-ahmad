@@ -1,9 +1,9 @@
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useRef} from 'react';
 
-import {Control, useForm, useWatch} from "react-hook-form";
+import {Control, useForm, useWatch} from 'react-hook-form';
 
-import {RouterOutput} from "@appTypes/app.type";
-import {ModalTypeSelect, TSupplierItemUpsert} from "@appTypes/app.zod";
+import {RouterOutput} from '@appTypes/app.type';
+import {ModalTypeSelect, TSupplierItemUpsert} from '@appTypes/app.zod';
 import {
 	Button,
 	Form,
@@ -14,11 +14,11 @@ import {
 	selectMapper,
 	TableFilterV2,
 	TableFilterV2Ref,
-} from "@components";
-import {getLayout} from "@hoc";
-import {useLoader} from "@hooks";
-import {modalTypeParser} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@components';
+import {getLayout} from '@hoc';
+import {useLoader} from '@hooks';
+import {modalTypeParser} from '@utils';
+import {trpc} from '@utils/trpc';
 
 type SupplierItemForm = TSupplierItemUpsert & {type: ModalTypeSelect};
 
@@ -40,7 +40,7 @@ export default function ItemSupplier() {
 
 	const {isPreview, isSelect, modalTitle} = modalTypeParser(
 		modalForm.type,
-		"Item Supplier",
+		'Item Supplier',
 	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
@@ -48,10 +48,10 @@ export default function ItemSupplier() {
 		clearErrors();
 		handleSubmit(({type, supplier = [], ...rest}) => {
 			switch (type) {
-				case "add":
-				case "edit":
+				case 'add':
+				case 'edit':
 					return mutateUpsert({...rest, supplier}, {onSuccess});
-				case "delete":
+				case 'delete':
 					return mutateDelete({id: rest.id}, {onSuccess});
 				default:
 					return null;
@@ -66,7 +66,7 @@ export default function ItemSupplier() {
 
 	function showModal(
 		type: ModalTypeSelect,
-		initValue?: Partial<Omit<SupplierItemForm, "type">>,
+		initValue?: Partial<Omit<SupplierItemForm, 'type'>>,
 	) {
 		reset({...initValue, type});
 		modalRef.current?.show();
@@ -75,9 +75,9 @@ export default function ItemSupplier() {
 	return (
 		<>
 			{loader.component}
-			<TableFilterV2<RouterOutput["supplier"]["item"]["get"]["rows"][number]>
+			<TableFilterV2<RouterOutput['supplier']['item']['get']['rows'][number]>
 				ref={tableRef}
-				header={["Supplier", "Kode Item", "Nama Item", "Action"]}
+				header={['Supplier', 'Kode Item', 'Nama Item', 'Action']}
 				useQuery={form => trpc.supplier.item.get.useQuery(form)}
 				topComponent={
 					isSelect ? (
@@ -97,7 +97,7 @@ export default function ItemSupplier() {
 								onClick={() => reset(prev => ({...prev, type: "select"}))}>
 								Select
 							</Button> */}
-							<Button onClick={() => showModal("add", {})}>Add</Button>
+							<Button onClick={() => showModal('add', {})}>Add</Button>
 						</>
 					)
 				}
@@ -110,17 +110,17 @@ export default function ItemSupplier() {
 
 					return (
 						<>
-							<Cell>{Supplier.map(sup => sup.name).join(" | ")}</Cell>
+							<Cell>{Supplier.map(sup => sup.name).join(' | ')}</Cell>
 							<Cell>{restItem.code_item}</Cell>
 							<Cell>{restItem.name_item}</Cell>
 							<Cell className="gap-2">
 								<Button
 									icon="faMagnifyingGlass"
-									onClick={() => showModal("preview", rest)}
+									onClick={() => showModal('preview', rest)}
 								/>
-								<Button onClick={() => showModal("edit", rest)} icon="faEdit" />
+								<Button onClick={() => showModal('edit', rest)} icon="faEdit" />
 								<Button
-									onClick={() => showModal("delete", {id: item.id})}
+									onClick={() => showModal('delete', {id: item.id})}
 									icon="faTrash"
 								/>
 							</Cell>
@@ -154,7 +154,7 @@ function ModalChildSupItem({control}: {control: Control<SupplierItemForm>}) {
 				label="Supplier"
 				control={control}
 				fieldName="supplier"
-				data={selectMapper(data?.rows ?? [], "id", "name")}
+				data={selectMapper(data?.rows ?? [], 'id', 'name')}
 			/>
 			<Input label="Kode Item" control={control} fieldName="code_item" />
 			<Input label="Nama Item" control={control} fieldName="name_item" />

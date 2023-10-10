@@ -1,4 +1,4 @@
-import {useRecoilValue} from "recoil";
+import {useRecoilValue} from 'recoil';
 
 import {
 	TCustomer,
@@ -9,11 +9,11 @@ import {
 	TMesin,
 	TParameter,
 	TParameterKategori,
-} from "@appTypes/app.zod";
-import {nonRequiredRefetch} from "@constants";
-import {CRUD_ENABLED} from "@enum";
-import {atomDataKanban} from "@recoil/atoms";
-import {trpc} from "@utils/trpc";
+} from '@appTypes/app.zod';
+import {nonRequiredRefetch} from '@constants';
+import {CRUD_ENABLED} from '@enum';
+import {atomDataKanban} from '@recoil/atoms';
+import {trpc} from '@utils/trpc';
 
 export function useAdditionalData() {
 	const {data: dataInstruksi} = trpc.basic.get.useQuery<
@@ -99,10 +99,10 @@ export function useKanban() {
 		target: CRUD_ENABLED.MESIN,
 	});
 	const {data: dataPo} = trpc.customer_po.get.useQuery({
-		type: "customer_po",
+		type: 'customer_po',
 	});
 	const {data: dataSppbIn} = trpc.sppb.in.get.useQuery({
-		type: "sppb_in",
+		type: 'sppb_in',
 	});
 
 	return {

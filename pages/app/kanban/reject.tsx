@@ -1,16 +1,16 @@
-import {useEffect} from "react";
+import {useEffect} from 'react';
 
-import {useForm} from "react-hook-form";
-import {useSetRecoilState} from "recoil";
+import {useForm} from 'react-hook-form';
+import {useSetRecoilState} from 'recoil';
 
-import {ModalTypeSelect} from "@appTypes/app.type";
-import {REJECT_REASON_VIEW} from "@enum";
-import {getLayout} from "@hoc";
-import {useTableFilterComponent} from "@hooks";
-import {atomHeaderTitle} from "@recoil/atoms";
-import {RejectRetType} from "@trpc/routers/reject";
-import {getIds, nullRenderItem, nullUseQuery} from "@utils";
-import {trpc} from "@utils/trpc";
+import {ModalTypeSelect} from '@appTypes/app.type';
+import {REJECT_REASON_VIEW} from '@enum';
+import {getLayout} from '@hoc';
+import {useTableFilterComponent} from '@hooks';
+import {atomHeaderTitle} from '@recoil/atoms';
+import {RejectRetType} from '@trpc/routers/reject';
+import {getIds, nullRenderItem, nullUseQuery} from '@utils';
+import {trpc} from '@utils/trpc';
 
 RejectList.getLayout = getLayout;
 
@@ -26,7 +26,7 @@ export default function RejectList() {
 
 	const formData = watch();
 
-	const {property} = getIds(formData, "selectedIds");
+	const {property} = getIds(formData, 'selectedIds');
 
 	const {component} = useTableFilterComponent({
 		control,
@@ -34,7 +34,7 @@ export default function RejectList() {
 		property,
 		exportUseQuery: nullUseQuery,
 		exportRenderItem: nullRenderItem,
-		header: ["Reason", "Status", "Lot No IMI"],
+		header: ['Reason', 'Status', 'Lot No IMI'],
 		useQuery: form => trpc.reject.get.useQuery(form),
 		renderItem: ({Cell, CellSelect, item}) => {
 			return (
@@ -49,7 +49,7 @@ export default function RejectList() {
 	});
 
 	useEffect(() => {
-		setTitle("Reject Item List");
+		setTitle('Reject Item List');
 	}, []);
 
 	return <>{component}</>;

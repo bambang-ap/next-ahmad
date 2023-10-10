@@ -1,14 +1,14 @@
-import {FieldValues} from "react-hook-form";
+import {FieldValues} from 'react-hook-form';
 
-import {Button, ImageWithPreview} from "@components";
+import {Button, ImageWithPreview} from '@components';
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from "@formController";
-import {toBase64} from "@utils";
+} from '@formController';
+import {toBase64} from '@utils';
 
 export type InputFileProps = {
-	accept?: HTMLInputElement["accept"];
+	accept?: HTMLInputElement['accept'];
 	label?: string;
 };
 
@@ -17,10 +17,10 @@ export const InputFile = withReactFormController(InputFileComponent);
 function InputFileComponent<F extends FieldValues>(
 	props: Omit<
 		ControlledComponentProps<F, InputFileProps>,
-		"leftAcc" | "rightAcc"
+		'leftAcc' | 'rightAcc'
 	>,
 ) {
-	const {controller, className, label = "Upload File", accept} = props;
+	const {controller, className, label = 'Upload File', accept} = props;
 
 	const {
 		field: {onChange, value: imgSource},

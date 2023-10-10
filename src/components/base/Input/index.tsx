@@ -1,12 +1,12 @@
-import {ChangeEventHandler, useContext, useEffect, useRef} from "react";
+import {ChangeEventHandler, useContext, useEffect, useRef} from 'react';
 
-import {TextField, useTheme} from "@mui/material";
-import {CalendarPicker} from "@mui/x-date-pickers";
-import {AdapterMoment} from "@mui/x-date-pickers/AdapterMoment";
-import {LocalizationProvider} from "@mui/x-date-pickers/LocalizationProvider";
-import {FieldValues} from "react-hook-form";
+import {TextField, useTheme} from '@mui/material';
+import {CalendarPicker} from '@mui/x-date-pickers';
+import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
+import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
+import {FieldValues} from 'react-hook-form';
 
-import {FormContext, Icon, Modal, ModalRef, Spinner, Text} from "@components";
+import {FormContext, Icon, Modal, ModalRef, Spinner, Text} from '@components';
 import {
 	decimalRegex,
 	decimalSchema,
@@ -14,14 +14,14 @@ import {
 	defaultTextFieldProps,
 	formatDate,
 	formatDateView,
-} from "@constants";
+} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from "@formController";
-import {classNames, moment} from "@utils";
+} from '@formController';
+import {classNames, moment} from '@utils';
 
-import {CheckBox} from "./CheckBox";
+import {CheckBox} from './CheckBox';
 
 export type InputProps = {
 	byPassValue?: string;
@@ -37,13 +37,13 @@ export type InputProps = {
 	isError?: boolean;
 	errorMessage?: string;
 	type?:
-		| "number"
-		| "decimal"
-		| "text"
-		| "search"
-		| "checkbox"
-		| "password"
-		| "date";
+		| 'number'
+		| 'decimal'
+		| 'text'
+		| 'search'
+		| 'checkbox'
+		| 'password'
+		| 'date';
 };
 
 export const Input = withReactFormController(InputComponent);
@@ -56,7 +56,7 @@ export function InputComponent<F extends FieldValues>(
 	const {
 		byPassValue,
 		hidden,
-		type = "text",
+		type = 'text',
 		label: labelProps,
 		disabled,
 		className,
@@ -120,9 +120,9 @@ export function InputComponent<F extends FieldValues>(
 	// }
 
 	switch (type) {
-		case "date": {
+		case 'date': {
 			return (
-				<div className={classNames("pt-2 cursor-pointer", className)}>
+				<div className={classNames('pt-2 cursor-pointer', className)}>
 					<TextField
 						{...defaultTextFieldProps}
 						onClick={isDisabled ? undefined : () => modalRef.current?.show()}
@@ -136,13 +136,13 @@ export function InputComponent<F extends FieldValues>(
 						label={label}
 						disabled
 						sx={{
-							"& .MuiInputBase-input.Mui-disabled": {
-								WebkitTextFillColor: "#000000",
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
 							},
-							"& .MuiFormLabel-root.Mui-disabled": {
+							'& .MuiFormLabel-root.Mui-disabled': {
 								WebkitTextFillColor: theme.colors.alpha.black[50],
 							},
-							"& .MuiInputBase-root.Mui-disabled": {
+							'& .MuiInputBase-root.Mui-disabled': {
 								backgroundColor: theme.colors.alpha.black[10],
 							},
 						}}
@@ -151,7 +151,7 @@ export function InputComponent<F extends FieldValues>(
 						InputProps={{
 							startAdornment,
 							endAdornment: <Icon name="faCalendar" />,
-							classes: {input: "focus:bg-yellow"},
+							classes: {input: 'focus:bg-yellow'},
 						}}
 						{...restProps}
 						{...field}
@@ -171,7 +171,7 @@ export function InputComponent<F extends FieldValues>(
 				</div>
 			);
 		}
-		case "checkbox": {
+		case 'checkbox': {
 			function onCheck() {
 				onChange(!value);
 			}
@@ -193,13 +193,13 @@ export function InputComponent<F extends FieldValues>(
 				event,
 			) {
 				switch (type) {
-					case "number":
+					case 'number':
 						return onChange(parseInt(event.target.value));
-					case "decimal":
+					case 'decimal':
 						const strValue = event.target.value
 							.toString()
-							.replace(/[^0-9.]/g, "")
-							.replace(/(?<=\..*)\./g, "");
+							.replace(/[^0-9.]/g, '')
+							.replace(/(?<=\..*)\./g, '');
 
 						const parsed = decimalSchema.safeParse(strValue);
 
@@ -218,7 +218,7 @@ export function InputComponent<F extends FieldValues>(
 			};
 
 			return (
-				<div className={classNames({hidden}, "pt-2", className)}>
+				<div className={classNames({hidden}, 'pt-2', className)}>
 					<TextField
 						{...defaultTextFieldProps}
 						multiline={multiline}
@@ -232,12 +232,12 @@ export function InputComponent<F extends FieldValues>(
 						type={type}
 						disabled={forceEditable ? false : isDisabled}
 						sx={{
-							"& .MuiInputBase-input.Mui-disabled": {
-								WebkitTextFillColor: "#000000",
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
 							},
 						}}
 						placeholder={placeholder}
-						value={byPassValue ?? value ?? ""}
+						value={byPassValue ?? value ?? ''}
 						onChange={onChangeEvent}
 						InputProps={{
 							endAdornment: (
@@ -247,7 +247,7 @@ export function InputComponent<F extends FieldValues>(
 								</>
 							),
 							startAdornment,
-							classes: {input: "focus:bg-yellow"},
+							classes: {input: 'focus:bg-yellow'},
 						}}
 						{...restProps}
 						{...field}

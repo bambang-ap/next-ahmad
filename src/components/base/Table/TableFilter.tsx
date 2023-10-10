@@ -1,16 +1,16 @@
-import {useEffect} from "react";
+import {useEffect} from 'react';
 
-import {Pagination} from "@mui/material";
-import {useForm, UseFormReturn} from "react-hook-form";
+import {Pagination} from '@mui/material';
+import {useForm, UseFormReturn} from 'react-hook-form';
 
-import {PagingResult, TableFormValue} from "@appTypes/app.type";
-import {Button, Cells, Input, Select, Table, TableProps} from "@components";
-import {dataPerPageSelection} from "@constants";
-import {classNames} from "@utils";
+import {PagingResult, TableFormValue} from '@appTypes/app.type';
+import {Button, Cells, Input, Select, Table, TableProps} from '@components';
+import {dataPerPageSelection} from '@constants';
+import {classNames} from '@utils';
 
 export type TableFilterProps<T> = Omit<
 	TableProps<T, Cells>,
-	"bottomComponent" | "data"
+	'bottomComponent' | 'data'
 > & {
 	data?: PagingResult<T>;
 	form: UseFormReturn<TableFormValue>;
@@ -32,7 +32,7 @@ export function TableFilter<T>({
 		reset,
 		handleSubmit,
 		control: searchControl,
-	} = useForm({defaultValues: {search: ""}});
+	} = useForm({defaultValues: {search: ''}});
 
 	const formValue = watch();
 
@@ -43,7 +43,7 @@ export function TableFilter<T>({
 	});
 
 	function clearSearch() {
-		reset({search: ""});
+		reset({search: ''});
 		doSearch();
 	}
 
@@ -55,20 +55,20 @@ export function TableFilter<T>({
 	useEffect(() => {
 		reset({search: formValue.search});
 
-		return () => reset({search: ""});
+		return () => reset({search: ''});
 	}, [formValue.search]);
 
 	return (
 		<Table
 			{...props}
 			data={rows}
-			className={classNames("flex flex-col gap-2", className)}
+			className={classNames('flex flex-col gap-2', className)}
 			topComponent={
 				<div className="px-2 flex justify-between">
 					<div className="flex items-center gap-2">{topComponent}</div>
 					<div className="flex gap-2 w-1/2">
 						<Select
-							className={classNames({["flex-1"]: disableSearch})}
+							className={classNames({['flex-1']: disableSearch})}
 							disableClear
 							topSelected={false}
 							label="Data per halaman"

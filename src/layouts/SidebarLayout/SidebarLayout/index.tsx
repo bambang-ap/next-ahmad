@@ -1,14 +1,14 @@
-import {FC, ReactNode, useContext} from "react";
+import {FC, ReactNode, useContext} from 'react';
 
-import {alpha, Box, lighten, useTheme} from "@mui/material";
-import PropTypes from "prop-types";
+import {alpha, Box, lighten, useTheme} from '@mui/material';
+import PropTypes from 'prop-types';
 
-import {SidebarContext} from "@app/contexts/SidebarContext";
-import {SidebarCollapseOn} from "@constants";
-import Scrollbar from "@prevComp/Scrollbar";
+import {SidebarContext} from '@app/contexts/SidebarContext';
+import {SidebarCollapseOn} from '@constants';
+import Scrollbar from '@prevComp/Scrollbar';
 
-import Header from "../Header/HeaderWrapper";
-import Sidebar from "../Sidebar/SidebarWrapper";
+import Header from '../Header/HeaderWrapper';
+import Sidebar from '../Sidebar/SidebarWrapper';
 
 interface SidebarLayoutProps {
 	children?: ReactNode;
@@ -22,14 +22,14 @@ export const SidebarLayout: FC<SidebarLayoutProps> = ({children}) => {
 		<Box
 			className="h-full"
 			sx={{
-				".MuiPageTitle-wrapper": {
+				'.MuiPageTitle-wrapper': {
 					background:
-						theme.palette.mode === "dark"
+						theme.palette.mode === 'dark'
 							? theme.colors.alpha.trueWhite[5]
 							: theme.colors.alpha.white[50],
 					marginBottom: `${theme.spacing(4)}`,
 					boxShadow:
-						theme.palette.mode === "dark"
+						theme.palette.mode === 'dark'
 							? `0 1px 0 ${alpha(
 									lighten(theme.colors.primary.main, 0.7),
 									0.15,
@@ -48,9 +48,9 @@ export const SidebarLayout: FC<SidebarLayoutProps> = ({children}) => {
 			<Box
 				className="h-full"
 				sx={{
-					position: "relative",
+					position: 'relative',
 					zIndex: 5,
-					display: "block",
+					display: 'block',
 					flex: 1,
 					pt: `${theme.header.height}`,
 					[theme.breakpoints.up(SidebarCollapseOn)]: {

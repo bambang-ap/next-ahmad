@@ -1,12 +1,12 @@
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useRef} from 'react';
 
-import {useForm} from "react-hook-form";
+import {useForm} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
 	TUpsertSppbIn,
-} from "@appTypes/app.type";
+} from '@appTypes/app.type';
 import {
 	Button,
 	CellSelect,
@@ -16,20 +16,20 @@ import {
 	TableFilterV3,
 	TableFilterV3Ref,
 	VRenderItem,
-} from "@components";
-import {getLayout} from "@hoc";
-import {useLoader, useNewExportData} from "@hooks";
-import {SppbInModalChild} from "@pageComponent/ModalChild_customer_sppb_in";
-import {SppbInRows} from "@trpc/routers/sppb/in";
-import {dateUtils, modalTypeParser, transformIds} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@components';
+import {getLayout} from '@hoc';
+import {useLoader, useNewExportData} from '@hooks';
+import {SppbInModalChild} from '@pageComponent/ModalChild_customer_sppb_in';
+import {SppbInRows} from '@trpc/routers/sppb/in';
+import {dateUtils, modalTypeParser, transformIds} from '@utils';
+import {trpc} from '@utils/trpc';
 
 export type FormType = {
 	type: ModalTypeSelect;
 	id_customer?: string;
 	idSppbIns?: MyObject<boolean>;
 } & TUpsertSppbIn &
-	Partial<Pick<SppbInRows, "OrmPOItemSppbIns" | "OrmCustomerPO">>;
+	Partial<Pick<SppbInRows, 'OrmPOItemSppbIns' | 'OrmCustomerPO'>>;
 
 SPPBIN.getLayout = getLayout;
 
@@ -39,7 +39,7 @@ export default function SPPBIN() {
 	const {mutateOpts, ...loader} = useLoader();
 
 	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
-		defaultValues: {type: "add"},
+		defaultValues: {type: 'add'},
 	});
 
 	const {mutate: mutateUpsert} = trpc.sppb.in.upsert.useMutation(mutateOpts);
@@ -50,14 +50,14 @@ export default function SPPBIN() {
 
 	const {isPreview, modalTitle, isSelect} = modalTypeParser(
 		modalType,
-		"SPPB In",
+		'SPPB In',
 	);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(({type, po_item = [], ...rest}) => {
-			if (type === "delete") return mutateDelete({id: rest.id}, {onSuccess});
+			if (type === 'delete') return mutateDelete({id: rest.id}, {onSuccess});
 
 			mutateUpsert({...rest, po_item: po_item.filter(Boolean)}, {onSuccess});
 		})();
@@ -100,13 +100,13 @@ export default function SPPBIN() {
 				useQuery={form => trpc.sppb.in.getPage.useQuery(form)}
 				exportResult={exportResult}
 				keyExtractor={item => item?.id}
-				topComponent={<Button onClick={() => showModal("add", {})}>Add</Button>}
+				topComponent={<Button onClick={() => showModal('add', {})}>Add</Button>}
 				header={[
-					"Tanggal Surat Jalan",
-					"Nomor PO",
-					"Customer",
-					"Nomor Surat Jalan",
-					!isSelect && "Action",
+					'Tanggal Surat Jalan',
+					'Nomor PO',
+					'Customer',
+					'Nomor Surat Jalan',
+					!isSelect && 'Action',
 				]}
 				renderItem={({Cell, item}: VRenderItem<SppbInRows>) => {
 					const {id} = item;
@@ -125,11 +125,11 @@ export default function SPPBIN() {
 							<Cell>{item.nomor_surat}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-2">
-									<Button onClick={() => showModal("preview", item)}>
+									<Button onClick={() => showModal('preview', item)}>
 										Preview
 									</Button>
-									<Button onClick={() => showModal("edit", item)}>Edit</Button>
-									<Button onClick={() => showModal("delete", {id})}>
+									<Button onClick={() => showModal('edit', item)}>Edit</Button>
+									<Button onClick={() => showModal('delete', {id})}>
 										Delete
 									</Button>
 								</Cell>

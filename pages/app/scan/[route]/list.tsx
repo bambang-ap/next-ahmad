@@ -1,26 +1,26 @@
-import {useEffect, useRef} from "react";
+import {useEffect, useRef} from 'react';
 
-import {useRouter} from "next/router";
-import {KanbanFormType as KanbanFormTypee} from "pages/app/kanban";
-import {useForm} from "react-hook-form";
-import {useSetRecoilState} from "recoil";
+import {useRouter} from 'next/router';
+import {KanbanFormType as KanbanFormTypee} from 'pages/app/kanban';
+import {useForm} from 'react-hook-form';
+import {useSetRecoilState} from 'recoil';
 
-import {Wrapper as Wrp, WrapperProps} from "@appComponent/Wrapper";
-import {Route} from "@appTypes/app.type";
-import {Button, Form, Modal, ModalRef} from "@components";
-import {getLayout} from "@hoc";
-import {useTableFilterComponent} from "@hooks";
-import {NewKanbanModalChild} from "@pageComponent/kanban_ModalChild/index-new";
-import {RenderData} from "@pageComponent/scan/list/RenderData";
-import {RenderPdfData} from "@pageComponent/scan/list/RenderPdfData";
-import {TxtBold} from "@pageComponent/sppbOut_GenerateQR";
-import {atomHeaderTitle} from "@recoil/atoms";
-import {getIds, modalTypeParser, scanRouterParser} from "@utils";
-import {trpc} from "@utils/trpc";
+import {Wrapper as Wrp, WrapperProps} from '@appComponent/Wrapper';
+import {Route} from '@appTypes/app.type';
+import {Button, Form, Modal, ModalRef} from '@components';
+import {getLayout} from '@hoc';
+import {useTableFilterComponent} from '@hooks';
+import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
+import {RenderData} from '@pageComponent/scan/list/RenderData';
+import {RenderPdfData} from '@pageComponent/scan/list/RenderPdfData';
+import {TxtBold} from '@pageComponent/sppbOut_GenerateQR';
+import {atomHeaderTitle} from '@recoil/atoms';
+import {getIds, modalTypeParser, scanRouterParser} from '@utils';
+import {trpc} from '@utils/trpc';
 
 ScanListData.getLayout = getLayout;
 export const Text = TxtBold;
-export type ScanListFormType = Omit<KanbanFormTypee, "idKanbans"> & {
+export type ScanListFormType = Omit<KanbanFormTypee, 'idKanbans'> & {
 	idScans?: MyObject<boolean>;
 };
 
@@ -32,7 +32,7 @@ export default function ScanListData() {
 
 	useEffect(() => {
 		if (isReady && route) {
-			const routeTitle = route.split("_").join(" ").ucwords();
+			const routeTitle = route.split('_').join(' ').ucwords();
 			setTitle(`List ${routeTitle}`);
 		}
 	}, [isReady, route]);
@@ -57,7 +57,7 @@ function RenderScanList() {
 
 	const dateHeader = `Tanggal ${title}`;
 
-	const {property, selectedIds} = getIds(formData, "idScans");
+	const {property, selectedIds} = getIds(formData, 'idScans');
 
 	const {component} = useTableFilterComponent({
 		control,
@@ -65,19 +65,19 @@ function RenderScanList() {
 
 		property,
 		header: [
-			"Tanggal",
-			"Customer",
-			"Nomor PO",
-			"Nomor Surat",
-			"Nomor Kanban",
-			"Keterangan",
+			'Tanggal',
+			'Customer',
+			'Nomor PO',
+			'Nomor Surat',
+			'Nomor Kanban',
+			'Keterangan',
 			dateHeader,
-			!isSelect && "Action",
+			!isSelect && 'Action',
 		],
 		genPdfOptions: isQC
 			? {
 					splitPagePer: 4,
-					orientation: "l",
+					orientation: 'l',
 					width: 2200,
 					tagId: `${route}-generated`,
 					renderItem: data => (
@@ -131,7 +131,7 @@ export function Wrapper(props: WrapperProps) {
 		<Wrp
 			{...props}
 			noColon
-			sizes={["w-1/4 font-semibold", "flex-1 font-semibold"]}
+			sizes={['w-1/4 font-semibold', 'flex-1 font-semibold']}
 		/>
 	);
 }

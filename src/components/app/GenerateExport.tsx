@@ -1,9 +1,9 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState} from 'react';
 
-import * as XLSX from "xlsx";
+import * as XLSX from 'xlsx';
 
-import {useLoader} from "@hooks";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
+import {useLoader} from '@hooks';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 
 export type Headers = (
 	| string
@@ -16,8 +16,8 @@ export type GenExportProps<T, W extends UseTRPCQueryResult<T[], unknown>> = {
 	headers: Headers;
 	names?: [filename?: string, sheetName?: string];
 	useQuery: () => W;
-	renderItem: (item: NonNullable<W["data"]>[number]) => JSX.Element;
-	loader?: Pick<ReturnType<typeof useLoader>, "show" | "hide">;
+	renderItem: (item: NonNullable<W['data']>[number]) => JSX.Element;
+	loader?: Pick<ReturnType<typeof useLoader>, 'show' | 'hide'>;
 };
 
 export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
@@ -28,8 +28,8 @@ export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
 	const {data, isFetching, isInitialLoading} = useQuery();
 	const [isExporting, setIsExporting] = useState(false);
 
-	const className = debug ? "" : "h-0 overflow-hidden -z-10 fixed";
-	const tagId = "table-instance";
+	const className = debug ? '' : 'h-0 overflow-hidden -z-10 fixed';
+	const tagId = 'table-instance';
 
 	const component = (
 		<div className={className}>
@@ -41,7 +41,7 @@ export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
 								{header.map((head, ii) => {
 									const key = `${i} ${ii}`;
 									if (Array.isArray(head)) {
-										if (typeof head[0] === "number") {
+										if (typeof head[0] === 'number') {
 											const [rowSpan, title] = head;
 											return (
 												<td className="font-bold" key={key} rowSpan={rowSpan}>
@@ -80,7 +80,7 @@ export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
 		loader?.show?.();
 		if (isFetching && !isExporting) setIsExporting(true);
 
-		const [filename = "data", sheetName = "Sheet 1"] = names ?? [];
+		const [filename = 'data', sheetName = 'Sheet 1'] = names ?? [];
 
 		const element = document.getElementById(tagId);
 
@@ -100,7 +100,7 @@ export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
 
 	useEffect(() => {
 		if (!isInitialLoading && !isFetching && isExporting) {
-			alert("Failed to load data!");
+			alert('Failed to load data!');
 			setIsExporting(false);
 			loader?.hide?.();
 		}

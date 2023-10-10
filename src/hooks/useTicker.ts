@@ -1,4 +1,4 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState} from 'react';
 
 export function useTicker(enabled: boolean, max?: number) {
 	const [tick, setTick] = useState(0);

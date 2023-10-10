@@ -1,18 +1,18 @@
-import {Suspense, useRef} from "react";
+import {Suspense, useRef} from 'react';
 
-import {useRouter} from "next/router";
-import {useForm} from "react-hook-form";
+import {useRouter} from 'next/router';
+import {useForm} from 'react-hook-form';
 
-import {ModalType, TUser, ZId} from "@appTypes/app.type";
-import {Button, Modal, ModalRef, TableFilter, Text} from "@components";
-import {allowedPages} from "@constants";
-import {CRUD_ENABLED} from "@enum";
-import {useLoader, useTableFilter} from "@hooks";
-import {trpc} from "@utils/trpc";
+import {ModalType, TUser, ZId} from '@appTypes/app.type';
+import {Button, Modal, ModalRef, TableFilter, Text} from '@components';
+import {allowedPages} from '@constants';
+import {CRUD_ENABLED} from '@enum';
+import {useLoader, useTableFilter} from '@hooks';
+import {trpc} from '@utils/trpc';
 
-import {ModalChild} from "./ModalChild";
-import {RenderImportCustomer} from "./RenderImportCustomer";
-import {QRUserLogin, RenderTableCell, UserTokenCopy} from "./component";
+import {ModalChild} from './ModalChild';
+import {RenderImportCustomer} from './RenderImportCustomer';
+import {QRUserLogin, RenderTableCell, UserTokenCopy} from './component';
 
 export const PageTable = () => {
 	const {isReady, asPath} = useRouter();
@@ -53,11 +53,11 @@ function RenderPage({path}: {path: string}) {
 	const isOnCustomer = target === CRUD_ENABLED.CUSTOMER;
 	const isOnUser = target === CRUD_ENABLED.USER;
 
-	const modalType = watch("type");
+	const modalType = watch('type');
 	const modalTitle =
-		modalType === "add"
+		modalType === 'add'
 			? text?.modal?.add
-			: modalType === "edit"
+			: modalType === 'edit'
 			? text?.modal?.edit
 			: text?.modal?.delete;
 
@@ -68,9 +68,9 @@ function RenderPage({path}: {path: string}) {
 		};
 
 		switch (type) {
-			case "edit":
+			case 'edit':
 				return mutate({target, type, body: {...rest, id}}, {onSuccess});
-			case "delete":
+			case 'delete':
 				return mutate({target, type, body: {id}}, {onSuccess});
 			default:
 				return mutate({target, type, body: rest}, {onSuccess});
@@ -98,7 +98,7 @@ function RenderPage({path}: {path: string}) {
 					keyExtractor={(item: ZId) => item?.id}
 					topComponent={
 						<>
-							<Button onClick={() => showModal("add", {})}>Add</Button>
+							<Button onClick={() => showModal('add', {})}>Add</Button>
 							{/* NOTE: Import CSV with popup generated - untuk sementara page customer saja */}
 							{/* NOTE: Optimize Menu change accepter_role to array of string json, use new Set to make sure its unique */}
 							{isOnCustomer && (
@@ -116,7 +116,7 @@ function RenderPage({path}: {path: string}) {
 							<>
 								{table?.body?.map?.(key => {
 									const isArray = Array.isArray(key);
-									const isFunction = typeof key === "function";
+									const isFunction = typeof key === 'function';
 
 									return (
 										<Cell key={key?.toString() as string}>
@@ -138,10 +138,10 @@ function RenderPage({path}: {path: string}) {
 											<QRUserLogin {...(item as TUser)} />
 										</>
 									)}
-									<Button onClick={() => showModal("edit", {id, ...rest})}>
+									<Button onClick={() => showModal('edit', {id, ...rest})}>
 										Edit
 									</Button>
-									<Button onClick={() => showModal("delete", {id})}>
+									<Button onClick={() => showModal('delete', {id})}>
 										Delete
 									</Button>
 								</Cell>

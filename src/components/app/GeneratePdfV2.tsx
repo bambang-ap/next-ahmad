@@ -1,12 +1,12 @@
-import {forwardRef, useEffect, useImperativeHandle, useState} from "react";
+import {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 
-import {jsPDFOptions} from "jspdf";
+import {jsPDFOptions} from 'jspdf';
 
-import {ZId} from "@appTypes/app.type";
-import {CheckBox} from "@components";
-import {useLoader} from "@hooks";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {generatePDF, sleep} from "@utils";
+import {ZId} from '@appTypes/app.type';
+import {CheckBox} from '@components';
+import {useLoader} from '@hooks';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import {generatePDF, sleep} from '@utils';
 
 export type GenPdfRef = {generate: (timeout?: number) => Promise<void>};
 export type GenPdfProps<T, W extends UseTRPCQueryResult<T[], unknown>> = {
@@ -16,8 +16,8 @@ export type GenPdfProps<T, W extends UseTRPCQueryResult<T[], unknown>> = {
 	filename?: string;
 	splitPagePer?: number;
 	useQuery: () => W;
-	renderItem: (item: NonNullable<W["data"]>[number]) => JSX.Element;
-	orientation?: jsPDFOptions["orientation"];
+	renderItem: (item: NonNullable<W['data']>[number]) => JSX.Element;
+	orientation?: jsPDFOptions['orientation'];
 };
 
 export const GeneratePdfV2 = forwardRef(function GGenPdf<
@@ -28,7 +28,7 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 		tagId,
 		debug,
 		orientation,
-		filename = "file",
+		filename = 'file',
 		width = 1600,
 		useQuery: useQueries,
 		splitPagePer,
@@ -40,7 +40,7 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 	const [isPrinting, setIsPrinting] = useState(false);
 	const [timeoutCount, setTimeoutCount] = useState(2500);
 
-	const className = debug ? "" : "h-0 overflow-hidden -z-10 fixed";
+	const className = debug ? '' : 'h-0 overflow-hidden -z-10 fixed';
 
 	const pageDatas = splitPagePer
 		? datas?.reduce<{page: number; datas: T[][]}>(
@@ -87,7 +87,7 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 						key={index}
 						style={{width}}
 						id={elementsId![index]}
-						className={"flex flex-wrap"}>
+						className={'flex flex-wrap'}>
 						{dataList?.map(item => renderItem(item))}
 					</div>
 				);
@@ -121,7 +121,7 @@ export function SelectAllButton<
 	data,
 	selected,
 	total = 0,
-	selector = "id",
+	selector = 'id',
 }: SelectAllButtonProps<T, G, D>) {
 	const isSelectedAll = selected === total;
 	const isSomeSelected = selected < total && selected !== 0;
@@ -142,7 +142,7 @@ export function SelectAllButton<
 	return (
 		<CheckBox
 			onCheck={selectAll}
-			value={isSomeSelected ? "@" : isSelectedAll}
+			value={isSomeSelected ? '@' : isSelectedAll}
 		/>
 	);
 }

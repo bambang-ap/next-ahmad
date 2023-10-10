@@ -1,12 +1,12 @@
-import {FormEventHandler, useEffect, useRef} from "react";
+import {FormEventHandler, useEffect, useRef} from 'react';
 
-import {Control, useForm, UseFormReset, useWatch} from "react-hook-form";
+import {Control, useForm, UseFormReset, useWatch} from 'react-hook-form';
 
 import {
 	ModalTypePreview,
 	TSupplierItem,
 	TSupplierPOUpsert,
-} from "@appTypes/app.type";
+} from '@appTypes/app.type';
 import {
 	Button,
 	Form,
@@ -17,12 +17,12 @@ import {
 	selectMapper,
 	Table,
 	TableFilter,
-} from "@components";
-import {selectUnitData} from "@constants";
-import {getLayout} from "@hoc";
-import {useLoader, useTableFilter} from "@hooks";
-import {classNames, modalTypeParser} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@components';
+import {selectUnitData} from '@constants';
+import {getLayout} from '@hoc';
+import {useLoader, useTableFilter} from '@hooks';
+import {classNames, modalTypeParser} from '@utils';
+import {trpc} from '@utils/trpc';
 
 POSupplier.getLayout = getLayout;
 
@@ -50,17 +50,17 @@ export default function POSupplier() {
 		useForm<FormType>();
 	const {type: modalType} = watch();
 
-	const {modalTitle, isPreview} = modalTypeParser(modalType, "PO Supplier");
+	const {modalTitle, isPreview} = modalTypeParser(modalType, 'PO Supplier');
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		clearErrors();
 		e.preventDefault();
 		handleSubmit(({type, ...body}) => {
 			switch (type) {
-				case "delete":
+				case 'delete':
 					return mutateDelete({id: body.id}, {onSuccess});
-				case "add":
-				case "edit":
+				case 'add':
+				case 'edit':
 					return mutateUpsert(body, {onSuccess});
 				default:
 					return;
@@ -101,15 +101,15 @@ export default function POSupplier() {
 				form={hookForm}
 				keyExtractor={item => item?.id}
 				header={[
-					"Nama Supplier",
-					"Tgl PO",
-					"Tgl Request Kirim",
-					"PPN",
-					"Keterangan",
-					"Action",
+					'Nama Supplier',
+					'Tgl PO',
+					'Tgl Request Kirim',
+					'PPN',
+					'Keterangan',
+					'Action',
 				]}
 				topComponent={
-					<Button onClick={() => showModal({type: "add"})}>Add</Button>
+					<Button onClick={() => showModal({type: 'add'})}>Add</Button>
 				}
 				renderItem={({Cell, item}) => {
 					const {supplier, id, tgl_po, tgl_req_send, keterangan, ppn} =
@@ -119,20 +119,20 @@ export default function POSupplier() {
 							<Cell>{supplier?.name}</Cell>
 							<Cell>{tgl_po}</Cell>
 							<Cell>{tgl_req_send}</Cell>
-							<Cell>{ppn ? "Ya" : "Tidak"}</Cell>
+							<Cell>{ppn ? 'Ya' : 'Tidak'}</Cell>
 							<Cell>{keterangan}</Cell>
 							<Cell className="flex gap-2">
 								<Button
 									icon="faMagnifyingGlass"
-									onClick={() => showModal({type: "preview", ...item})}
+									onClick={() => showModal({type: 'preview', ...item})}
 								/>
 								<Button
 									icon="faEdit"
-									onClick={() => showModal({type: "edit", ...item})}
+									onClick={() => showModal({type: 'edit', ...item})}
 								/>
 								<Button
 									icon="faTrash"
-									onClick={() => showModal({type: "delete", id})}
+									onClick={() => showModal({type: 'delete', id})}
 								/>
 							</Cell>
 						</>
@@ -174,10 +174,10 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 
 			return {
 				...prev,
-				tempIdItem: "",
+				tempIdItem: '',
 				items: {
 					...prev.items,
-					[formData.tempIdItem]: {harga: 0, qty: 0, unit: "pcs"},
+					[formData.tempIdItem]: {harga: 0, qty: 0, unit: 'pcs'},
 				},
 			};
 		});
@@ -187,8 +187,8 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 
 	const dataTempIdItem = selectMapper(
 		selectedSupplier?.OrmSupplierItems ?? [],
-		"id",
-		"code_item",
+		'id',
+		'code_item',
 	)?.filter(data => !Object.keys(formData.items ?? {}).includes(data.value));
 
 	return (
@@ -198,14 +198,14 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 					className="flex-1"
 					control={control}
 					fieldName="id_supplier"
-					data={selectMapper(dataSupplier?.rows ?? [], "id", "name")}
+					data={selectMapper(dataSupplier?.rows ?? [], 'id', 'name')}
 				/>
 				<Select
 					control={control}
 					fieldName="tempIdItem"
 					key={formData.tempIdItem}
 					data={dataTempIdItem}
-					className={classNames("flex-1", {
+					className={classNames('flex-1', {
 						hidden:
 							!formData.id_supplier || isPreview || dataTempIdItem.length <= 0,
 					})}
@@ -231,7 +231,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 
 			<Table
 				data={Object.entries(formData.items ?? {})}
-				header={["Nama", "Harga", "Jumlah", "Total", "∂"]}
+				header={['Nama', 'Harga', 'Jumlah', 'Total', '∂']}
 				className={classNames({
 					hidden: Object.keys(formData.items ?? {}).length <= 0,
 				})}

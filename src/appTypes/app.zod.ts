@@ -1,13 +1,13 @@
-import {z} from "zod";
+import {z} from 'zod';
 
-import {SelectPropsData} from "@components";
-import {defaultLimit} from "@constants";
+import {SelectPropsData} from '@components';
+import {defaultLimit} from '@constants';
 import {
 	CATEGORY_REJECT_DB,
 	CRUD_ENABLED,
 	REJECT_REASON,
 	REJECT_REASON_VIEW,
-} from "@enum";
+} from '@enum';
 
 export type TDecimal = z.infer<typeof zDecimal>;
 export const zDecimal = z
@@ -18,17 +18,17 @@ export const zDecimal = z
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
 	z.undefined(),
-	z.literal("add"),
-	z.literal("edit"),
-	z.literal("delete"),
+	z.literal('add'),
+	z.literal('edit'),
+	z.literal('delete'),
 ]);
 export type ModalTypePreview = z.infer<typeof uModalTypePreview>;
-export const uModalTypePreview = z.union([uModalType, z.literal("preview")]);
+export const uModalTypePreview = z.union([uModalType, z.literal('preview')]);
 
 export type ModalTypeSelect = z.infer<typeof uModalTypeSelect>;
 export const uModalTypeSelect = z.union([
 	uModalTypePreview,
-	z.literal("select"),
+	z.literal('select'),
 ]);
 
 export type TableFormValue = z.infer<typeof tableFormValue>;
@@ -81,13 +81,13 @@ export const tCustomer = zId.extend({
 
 export type TItemUnit = z.infer<typeof tItemUnit>;
 export const tItemUnit = z.union([
-	z.literal("pcs"),
-	z.literal("drum"),
-	z.literal("kg"),
-	z.literal("box"),
-	z.literal("set"),
-	z.literal("carton"),
-	z.literal("pallet"),
+	z.literal('pcs'),
+	z.literal('drum'),
+	z.literal('kg'),
+	z.literal('box'),
+	z.literal('set'),
+	z.literal('carton'),
+	z.literal('pallet'),
 ]);
 
 export type UnitQty = z.infer<typeof unitQty>;
@@ -352,7 +352,7 @@ export const tDocument = zId.extend({
 	keterangan: z.string().optional(),
 	createdAt: z.string().optional(),
 	updatedAt: z.string().optional(),
-	target: z.literal("kanban").or(z.literal("qc")).nullish(),
+	target: z.literal('kanban').or(z.literal('qc')).nullish(),
 });
 
 export type BaseMenu = z.infer<typeof baseTMenu>;
@@ -416,9 +416,9 @@ export const tScan = zId.extend({
 
 export type TScanTarget = z.infer<typeof tScanTarget>;
 export const tScanTarget = z.union([
-	z.literal("produksi"),
-	z.literal("qc"),
-	z.literal("finish_good"),
+	z.literal('produksi'),
+	z.literal('qc'),
+	z.literal('finish_good'),
 	// z.literal("out_barang"),
 ]);
 
@@ -458,20 +458,20 @@ export const tRoute = z.object({route: tScanTarget});
 
 export type TDashboardTitle = z.infer<typeof tDashboardTitle>;
 export const tDashboardTitle = z
-	.literal("Mesin")
-	.or(z.literal("Customer"))
-	.or(z.literal("PO"))
-	.or(z.literal("Kendaraan"))
-	.or(z.literal("SPPB In"))
-	.or(z.literal("SPPB Out"))
-	.or(z.literal("Kanban"))
-	.or(z.literal("Proses Kanban"))
-	.or(z.literal("Parameter"))
-	.or(z.literal("Material"))
-	.or(z.literal("Hardness"))
-	.or(z.literal("Scan Produksi"))
-	.or(z.literal("Scan QC"))
-	.or(z.literal("Scan Finish Good"));
+	.literal('Mesin')
+	.or(z.literal('Customer'))
+	.or(z.literal('PO'))
+	.or(z.literal('Kendaraan'))
+	.or(z.literal('SPPB In'))
+	.or(z.literal('SPPB Out'))
+	.or(z.literal('Kanban'))
+	.or(z.literal('Proses Kanban'))
+	.or(z.literal('Parameter'))
+	.or(z.literal('Material'))
+	.or(z.literal('Hardness'))
+	.or(z.literal('Scan Produksi'))
+	.or(z.literal('Scan QC'))
+	.or(z.literal('Scan Finish Good'));
 
 export type TDashboardInput = z.infer<typeof tDashboardInput>;
 export const tDashboardInput = z.object({
@@ -551,11 +551,11 @@ export const tSupplierPOUpsert = zId.extend({
 
 export type TDashboardView = z.infer<typeof tDashboardView>;
 export const tDashboardView = z
-	.literal("total")
-	.or(z.literal("main"))
-	.or(z.literal("bar"))
-	.or(z.literal("line"))
-	.or(z.literal("donut"));
+	.literal('total')
+	.or(z.literal('main'))
+	.or(z.literal('bar'))
+	.or(z.literal('line'))
+	.or(z.literal('donut'));
 
 export type TSPPBRelation = z.infer<typeof tSPPBRelation>;
 export const tSPPBRelation = zId.extend({

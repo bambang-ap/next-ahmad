@@ -1,17 +1,17 @@
 /* eslint-disable @typescript-eslint/no-unused-vars */
-import {FormEventHandler, useRef} from "react";
+import {FormEventHandler, useRef} from 'react';
 
-import {MutateOptions} from "@tanstack/react-query";
-import {useForm} from "react-hook-form";
+import {MutateOptions} from '@tanstack/react-query';
+import {useForm} from 'react-hook-form';
 
-import {ModalTypeSelect, TCustomerSPPBOutUpsert} from "@appTypes/app.type";
-import {Button, Form, Modal, ModalRef} from "@components";
-import {getLayout} from "@hoc";
-import {useTableFilterComponent} from "@hooks";
-import {SppbOutModalChild} from "@pageComponent/ModalChildSppbOut";
-import {SPPBOutGenerateQR} from "@pageComponent/sppbOut_GenerateQR";
-import {modalTypeParser, renderItemAsIs, transformIds} from "@utils";
-import {trpc} from "@utils/trpc";
+import {ModalTypeSelect, TCustomerSPPBOutUpsert} from '@appTypes/app.type';
+import {Button, Form, Modal, ModalRef} from '@components';
+import {getLayout} from '@hoc';
+import {useTableFilterComponent} from '@hooks';
+import {SppbOutModalChild} from '@pageComponent/ModalChildSppbOut';
+import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
+import {modalTypeParser, renderItemAsIs, transformIds} from '@utils';
+import {trpc} from '@utils/trpc';
 
 SPPBOUT.getLayout = getLayout;
 
@@ -33,7 +33,7 @@ export default function SPPBOUT() {
 
 	const {isSelect, isAdd, isEdit, isPreview, modalTitle} = modalTypeParser(
 		modalType,
-		"Surat Jalan Keluar",
+		'Surat Jalan Keluar',
 	);
 
 	const selectedIds = transformIds(dataForm.idSppbOuts);
@@ -41,7 +41,7 @@ export default function SPPBOUT() {
 	const {component, mutateOpts, refetch} = useTableFilterComponent({
 		reset,
 		control,
-		property: "idSppbOuts",
+		property: 'idSppbOuts',
 		enabledExport: true,
 		exportUseQuery: () =>
 			trpc.export.sppb.out.useQuery(
@@ -50,15 +50,15 @@ export default function SPPBOUT() {
 			),
 		exportRenderItem: renderItemAsIs,
 		header: [
-			"Nomor Surat",
-			"Kendaraan",
-			"Customer",
-			"Keterangan",
-			!isSelect && "Action",
+			'Nomor Surat',
+			'Kendaraan',
+			'Customer',
+			'Keterangan',
+			!isSelect && 'Action',
 		],
 		genPdfOptions: {
 			width: widthSize,
-			tagId: "sppb-out-data-print",
+			tagId: 'sppb-out-data-print',
 			splitPagePer: 1,
 			useQuery: () =>
 				trpc.print.sppb.out.useQuery(
@@ -69,7 +69,7 @@ export default function SPPBOUT() {
 				return <SPPBOutGenerateQR detail={pdfData} width={widthSize} />;
 			},
 		},
-		topComponent: <Button onClick={() => showModal({type: "add"})}>Add</Button>,
+		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		useQuery: form => trpc.sppb.out.get.useQuery(form),
 		renderItem({Cell, CellSelect, item}) {
 			const {id} = item;
@@ -87,14 +87,14 @@ export default function SPPBOUT() {
 							{/* <Button icon="faPrint" onClick={() => printData(id)} /> */}
 							<Button
 								icon="faMagnifyingGlass"
-								onClick={() => showModal({...item, type: "preview"})}
+								onClick={() => showModal({...item, type: 'preview'})}
 							/>
 							<Button
-								onClick={() => showModal({...item, type: "edit"})}
+								onClick={() => showModal({...item, type: 'edit'})}
 								icon="faEdit"
 							/>
 							<Button
-								onClick={() => showModal({id, type: "delete"})}
+								onClick={() => showModal({id, type: 'delete'})}
 								icon="faTrash"
 							/>
 						</Cell>
@@ -118,7 +118,7 @@ export default function SPPBOUT() {
 				},
 			};
 
-			if (type === "delete") mutateDelete({id: values.id}, callbackOpt);
+			if (type === 'delete') mutateDelete({id: values.id}, callbackOpt);
 			else mutateUpsert(values, callbackOpt);
 		})();
 	};

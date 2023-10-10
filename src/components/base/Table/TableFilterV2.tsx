@@ -1,10 +1,10 @@
-import {ForwardedRef, forwardRef, useImperativeHandle} from "react";
+import {ForwardedRef, forwardRef, useImperativeHandle} from 'react';
 
-import {PagingResult, TableFormValue} from "@appTypes/app.type";
-import {useTableFilter} from "@hooks";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
+import {PagingResult, TableFormValue} from '@appTypes/app.type';
+import {useTableFilter} from '@hooks';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 
-import {TableFilter, TableFilterProps} from "./TableFilter";
+import {TableFilter, TableFilterProps} from './TableFilter';
 
 type AdditionalTableFilterV2Props<T> = {
 	useQuery: (
@@ -13,7 +13,7 @@ type AdditionalTableFilterV2Props<T> = {
 };
 
 export type TableFilterV2Props<T> = AdditionalTableFilterV2Props<T> &
-	Omit<TableFilterProps<T>, "form" | "data">;
+	Omit<TableFilterProps<T>, 'form' | 'data'>;
 
 export type TableFilterV2Ref = {refetch: NoopVoid};
 export const TableFilterV2 = forwardRef(TableFilterV2Component);

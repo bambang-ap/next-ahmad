@@ -1,8 +1,8 @@
-import {Fragment, useEffect} from "react";
+import {Fragment, useEffect} from 'react';
 
-import {Control, useController, UseFormReset, useWatch} from "react-hook-form";
+import {Control, useController, UseFormReset, useWatch} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomer} from "@appTypes/app.type";
+import {ModalTypePreview, TCustomer} from '@appTypes/app.type';
 import {
 	Button,
 	Input,
@@ -11,12 +11,12 @@ import {
 	SelectPropsData,
 	Table,
 	TableProps,
-} from "@components";
-import {formatDate, selectUnitData} from "@constants";
-import {CRUD_ENABLED} from "@enum";
-import type {PoGetV2} from "@trpc/routers/customer_po";
-import {moment, qtyMap} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@components';
+import {formatDate, selectUnitData} from '@constants';
+import {CRUD_ENABLED} from '@enum';
+import type {PoGetV2} from '@trpc/routers/customer_po';
+import {moment, qtyMap} from '@utils';
+import {trpc} from '@utils/trpc';
 
 export type UQtyList = `qty${typeof qtyList[number]}`;
 export const qtyList = [1, 2, 3] as const;
@@ -46,27 +46,27 @@ export default function PoModalChild({
 
 	const listItems = dataMasterItem?.rows ?? [];
 
-	const itemSelections = selectMapper(listItems, "id", "name");
+	const itemSelections = selectMapper(listItems, 'id', 'name');
 
 	const {
 		field: {onChange: onChangePoItem},
-	} = useController({control, name: "OrmCustomerPOItems"});
+	} = useController({control, name: 'OrmCustomerPOItems'});
 
 	const {headerTable, isPreview} = {
 		get isPreview() {
-			return modalType === "preview";
+			return modalType === 'preview';
 		},
 		get headerTable() {
-			const tableHeader: TableProps<any>["header"] = [
-				"No",
-				"Nama Item",
-				"Kode Item",
-				"Harga",
+			const tableHeader: TableProps<any>['header'] = [
+				'No',
+				'Nama Item',
+				'Kode Item',
+				'Harga',
 				...qtyList.map(num => `Jumlah ${num}`),
 			];
 
 			if (this.isPreview) return tableHeader;
-			return [...tableHeader, "Action"];
+			return [...tableHeader, 'Action'];
 		},
 	};
 
@@ -98,13 +98,13 @@ export default function PoModalChild({
 			resetForm(prev => {
 				return {
 					...prev,
-					due_date: moment(tgl_po).add(3, "d").format(formatDate),
+					due_date: moment(tgl_po).add(3, 'd').format(formatDate),
 				};
 			});
 		}
 	}, [tgl_po]);
 
-	if (modalType === "delete") {
+	if (modalType === 'delete') {
 		return (
 			<div>
 				<label>Hapus ?</label>

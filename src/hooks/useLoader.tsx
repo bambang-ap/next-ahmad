@@ -1,7 +1,7 @@
-import {useRef} from "react";
+import {useRef} from 'react';
 
-import {Icon, Modal, ModalRef, Text} from "@components";
-import {mutateCallback} from "@utils";
+import {Icon, Modal, ModalRef, Text} from '@components';
+import {mutateCallback} from '@utils';
 
 export function useLoader() {
 	const modalRef = useRef<ModalRef>(null);

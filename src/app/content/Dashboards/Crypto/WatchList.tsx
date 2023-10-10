@@ -1,7 +1,7 @@
-import {MouseEvent, useState} from "react";
+import {MouseEvent, useState} from 'react';
 
-import TableRowsTwoToneIcon from "@mui/icons-material/TableRowsTwoTone";
-import ViewWeekTwoToneIcon from "@mui/icons-material/ViewWeekTwoTone";
+import TableRowsTwoToneIcon from '@mui/icons-material/TableRowsTwoTone';
+import ViewWeekTwoToneIcon from '@mui/icons-material/ViewWeekTwoTone';
 import {
 	Box,
 	Button,
@@ -10,12 +10,12 @@ import {
 	ToggleButton,
 	ToggleButtonGroup,
 	Typography,
-} from "@mui/material";
+} from '@mui/material';
 
-import WatchListColumn from "./WatchListColumn";
-import WatchListRow from "./WatchListRow";
+import WatchListColumn from './WatchListColumn';
+import WatchListRow from './WatchListRow';
 
-const EmptyResultsWrapper = styled("img")(
+const EmptyResultsWrapper = styled('img')(
 	({theme}) => `
       max-width: 100%;
       width: ${theme.spacing(66)};
@@ -24,7 +24,7 @@ const EmptyResultsWrapper = styled("img")(
 );
 
 function WatchList() {
-	const [tabs, setTab] = useState<string | null>("watch_list_columns");
+	const [tabs, setTab] = useState<string | null>('watch_list_columns');
 
 	const handleViewOrientation = (
 		_event: MouseEvent<HTMLElement>,
@@ -56,14 +56,14 @@ function WatchList() {
 				</ToggleButtonGroup>
 			</Box>
 
-			{tabs === "watch_list_columns" && <WatchListColumn />}
+			{tabs === 'watch_list_columns' && <WatchListColumn />}
 
-			{tabs === "watch_list_rows" && <WatchListRow />}
+			{tabs === 'watch_list_rows' && <WatchListRow />}
 
 			{!tabs && (
 				<Card
 					sx={{
-						textAlign: "center",
+						textAlign: 'center',
 						p: 3,
 					}}>
 					<EmptyResultsWrapper src="/static/images/placeholders/illustrations/1.svg" />

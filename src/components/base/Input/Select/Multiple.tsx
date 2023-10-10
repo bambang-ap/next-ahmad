@@ -1,20 +1,20 @@
-import {useContext} from "react";
+import {useContext} from 'react';
 
-import CheckBoxIcon from "@mui/icons-material/CheckBox";
-import CheckBoxOutlineBlankIcon from "@mui/icons-material/CheckBoxOutlineBlank";
-import {Autocomplete, Checkbox, Chip, TextField} from "@mui/material";
-import {FieldValues} from "react-hook-form";
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+import {Autocomplete, Checkbox, Chip, TextField} from '@mui/material';
+import {FieldValues} from 'react-hook-form';
 
-import {FormContext} from "@baseComps/Form";
-import {InputComponent} from "@components";
-import {defaultTextFieldProps} from "@constants";
+import {FormContext} from '@baseComps/Form';
+import {InputComponent} from '@components';
+import {defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from "@formController";
-import {classNames} from "@utils";
+} from '@formController';
+import {classNames} from '@utils';
 
-import {SelectProps, SelectPropsData} from "./Select";
+import {SelectProps, SelectPropsData} from './Select';
 
 export const MultipleSelect = withReactFormController(MultipleSelectComponent);
 function MultipleSelectComponent<F extends FieldValues>({
@@ -55,7 +55,7 @@ function MultipleSelectComponent<F extends FieldValues>({
 		return (
 			<InputComponent
 				disabled
-				byPassValue={selectedValue.map(e => e.label || e.value).join(" | ")}
+				byPassValue={selectedValue.map(e => e.label || e.value).join(' | ')}
 				noLabel={noLabel}
 				label={label as string}
 				controller={controller}
@@ -65,7 +65,7 @@ function MultipleSelectComponent<F extends FieldValues>({
 	}
 
 	return (
-		<div className={classNames("pt-2", className)}>
+		<div className={classNames('pt-2', className)}>
 			<Autocomplete
 				multiple
 				disableClearable={disableClear}
@@ -95,8 +95,8 @@ function MultipleSelectComponent<F extends FieldValues>({
 						label={label}
 						placeholder={firstOption}
 						sx={{
-							"& .MuiInputBase-input.Mui-disabled": {
-								WebkitTextFillColor: "#000000",
+							'& .MuiInputBase-input.Mui-disabled': {
+								WebkitTextFillColor: '#000000',
 							},
 						}}
 					/>

@@ -1,7 +1,7 @@
-import {useRef, useState} from "react";
+import {useRef, useState} from 'react';
 
-import DeleteTwoToneIcon from "@mui/icons-material/DeleteTwoTone";
-import MoreVertTwoToneIcon from "@mui/icons-material/MoreVertTwoTone";
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
+import MoreVertTwoToneIcon from '@mui/icons-material/MoreVertTwoTone';
 import {
 	Box,
 	Button,
@@ -11,8 +11,8 @@ import {
 	ListItemText,
 	Menu,
 	Typography,
-} from "@mui/material";
-import {styled} from "@mui/material/styles";
+} from '@mui/material';
+import {styled} from '@mui/material/styles';
 
 const ButtonError = styled(Button)(
 	({theme}) => `
@@ -66,12 +66,12 @@ function BulkActions() {
 				open={onMenuOpen}
 				onClose={closeMenu}
 				anchorOrigin={{
-					vertical: "center",
-					horizontal: "center",
+					vertical: 'center',
+					horizontal: 'center',
 				}}
 				transformOrigin={{
-					vertical: "center",
-					horizontal: "center",
+					vertical: 'center',
+					horizontal: 'center',
 				}}>
 				<List sx={{p: 1}} component="nav">
 					<ListItem button>

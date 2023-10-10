@@ -2,13 +2,13 @@
 // @ts-nocheck
 /* eslint-disable @typescript-eslint/no-unused-vars */
 
-import {PropsWithChildren, useEffect} from "react";
+import {PropsWithChildren, useEffect} from 'react';
 
-import {FormType} from "pages/app/customer/customer_sppb_in";
-import {useWatch} from "react-hook-form";
-import {useRecoilState} from "recoil";
+import {FormType} from 'pages/app/customer/customer_sppb_in';
+import {useWatch} from 'react-hook-form';
+import {useRecoilState} from 'recoil';
 
-import {FormProps, TCustomer} from "@appTypes/app.type";
+import {FormProps, TCustomer} from '@appTypes/app.type';
 import {
 	Button,
 	Cells,
@@ -17,25 +17,25 @@ import {
 	selectMapper,
 	Table,
 	Text,
-} from "@components";
-import {CRUD_ENABLED} from "@enum";
-import {atomExcludedItem, atomIncludedItem} from "@recoil/atoms";
-import {modalTypeParser, qtyMap} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@components';
+import {CRUD_ENABLED} from '@enum';
+import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
+import {modalTypeParser, qtyMap} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {qtyList} from "./ModalChild_po";
+import {qtyList} from './ModalChild_po';
 
 export function SppbInModalChild({
 	control,
 	reset,
-}: FormProps<FormType, "control" | "reset">) {
+}: FormProps<FormType, 'control' | 'reset'>) {
 	const dataForm = useWatch({control});
 
 	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
 	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
 
 	const {
-		id_customer = "",
+		id_customer = '',
 		OrmCustomerPO,
 		OrmPOItemSppbIns,
 		id_po,
@@ -93,7 +93,7 @@ export function SppbInModalChild({
 					fieldName="id_customer"
 					label="Customer"
 					isLoading={isFetchingCustomer}
-					data={selectMapper(dataCustomer, "id", "name")}
+					data={selectMapper(dataCustomer, 'id', 'name')}
 				/>
 				<Select
 					className="flex-1"
@@ -105,8 +105,8 @@ export function SppbInModalChild({
 					firstOption="- Pilih PO -"
 					data={selectMapper(
 						isPreviewEdit ? listPo : listPo.filter(e => !e.isClosed),
-						"id",
-						"nomor_po",
+						'id',
+						'nomor_po',
 					)}
 				/>
 				<Input
@@ -129,11 +129,11 @@ export function SppbInModalChild({
 			</div>
 			<Table
 				header={[
-					"Kode Item",
-					"Nama Item",
-					"Nomor Lot",
+					'Kode Item',
+					'Nama Item',
+					'Nomor Lot',
 					// @ts-ignore
-					["Jumlah", qtyList.length],
+					['Jumlah', qtyList.length],
 					// !isPreview && "Action",
 				]}
 				data={selectedPo?.OrmCustomerPOItems}

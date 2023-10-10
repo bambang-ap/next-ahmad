@@ -1,4 +1,4 @@
-import {useState} from "react";
+import {useState} from 'react';
 
 import {
 	Control,
@@ -8,7 +8,7 @@ import {
 	FieldValues,
 	UseControllerProps,
 	UseControllerReturn,
-} from "react-hook-form";
+} from 'react-hook-form';
 
 type DefaultProps = {
 	leftAcc?: JSX.Element;
@@ -22,12 +22,12 @@ export type ControlledComponentProps<
 > = T & {
 	controller: UseControllerReturn<F>;
 	defaultValue?: unknown;
-	appliedRules?: (rules: UseControllerProps<F>["rules"]) => void;
+	appliedRules?: (rules: UseControllerProps<F>['rules']) => void;
 } & Partial<DefaultProps>;
 
 export type WrappedProps<F extends FieldValues, T extends {}> = Omit<
 	ControllerProps<F>,
-	"name" | "render"
+	'name' | 'render'
 > & {
 	control: Control<F>;
 	fieldName: FieldPath<F>;
@@ -48,7 +48,7 @@ export const withReactFormController = <T extends {}, F extends FieldValues>(
 		...props
 	}: WrappedProps<F, T>) {
 		const [rulesApply, setRulesApply] =
-			useState<UseControllerProps<F>["rules"]>();
+			useState<UseControllerProps<F>['rules']>();
 
 		return (
 			<Controller

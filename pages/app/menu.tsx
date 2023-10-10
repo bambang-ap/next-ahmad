@@ -1,14 +1,14 @@
-import {Fragment, MutableRefObject, useEffect, useRef} from "react";
+import {Fragment, MutableRefObject, useEffect, useRef} from 'react';
 
-import {Control, UseFormSetValue} from "react-hook-form";
-import {useRecoilState, useRecoilValue, useSetRecoilState} from "recoil";
+import {Control, UseFormSetValue} from 'react-hook-form';
+import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 
-import {AllIcon} from "@appComponent/AllIcon";
-import {TMenu, TRole} from "@appTypes/app.type";
-import {Button, IconForm, Input, Modal, ModalRef, Table} from "@components";
-import {getLayout} from "@hoc";
-import {FormMenu, useLoader, useMenu} from "@hooks";
-import {atomMenuChangeOrder, atomMenuIconKey} from "@recoil/atoms";
+import {AllIcon} from '@appComponent/AllIcon';
+import {TMenu, TRole} from '@appTypes/app.type';
+import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
+import {getLayout} from '@hoc';
+import {FormMenu, useLoader, useMenu} from '@hooks';
+import {atomMenuChangeOrder, atomMenuIconKey} from '@recoil/atoms';
 
 Menu.getLayout = getLayout;
 
@@ -43,7 +43,7 @@ export default function Menu() {
 						if (value) roles.push(key);
 						return roles;
 					}, [])
-					.join(",");
+					.join(',');
 
 				acc.push({...restMenu, index, icon, title, id, accepted_role});
 
@@ -56,7 +56,7 @@ export default function Menu() {
 					refetchMapped();
 					reftechUnMapped();
 					changeOrder(false);
-					if (alertShown) alert("Success");
+					if (alertShown) alert('Success');
 				},
 				onSettled() {
 					loader.hide?.();
@@ -73,7 +73,7 @@ export default function Menu() {
 	useEffect(() => {
 		const formDefaultValue = unMappedMenu?.reduce<FormMenu>(
 			(ret, {id, title, icon, accepted_role, index}) => {
-				const roles = accepted_role.split(",");
+				const roles = accepted_role.split(',');
 				const role =
 					dataRole?.reduce((acc, roleObject) => {
 						return {...acc, [roleObject.id]: roles.includes(roleObject.id)};
@@ -115,7 +115,7 @@ export default function Menu() {
 				}}>
 				<div className="flex gap-2">
 					<Button onClick={toggleChangeOrder}>
-						{changeOrderEnabled ? `Finish Change Order` : `Change Order`}
+						{changeOrderEnabled ? 'Finish Change Order' : 'Change Order'}
 					</Button>
 					<Button type="submit">Submit</Button>
 				</div>
@@ -150,7 +150,7 @@ const RenderMenu = (props: {
 	return (
 		<Table
 			data={data ?? []}
-			header={noHeader ? undefined : ["Icon", "Title", "Role"]}
+			header={noHeader ? undefined : ['Icon', 'Title', 'Role']}
 			renderItemEach={({item: {subMenu}, Cell}) => {
 				if (changeOrderEnabled || !subMenu || (subMenu && subMenu?.length <= 0))
 					return false;
@@ -206,7 +206,7 @@ const RenderMenu = (props: {
 						</Cell>
 						<Cell className="flex flex-1 flex-wrap">
 							{dataRole?.map(role => {
-								if (role.name === "admin") return null;
+								if (role.name === 'admin') return null;
 
 								return (
 									<div className="w-1/4 p-1" key={role.id}>

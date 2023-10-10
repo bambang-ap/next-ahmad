@@ -1,9 +1,9 @@
-import {useEffect} from "react";
+import {useEffect} from 'react';
 
-import type {ScanListFormType} from "pages/app/scan/[route]/list";
-import {useWatch} from "react-hook-form";
+import type {ScanListFormType} from 'pages/app/scan/[route]/list';
+import {useWatch} from 'react-hook-form';
 
-import {FormProps} from "@appTypes/app.type";
+import {FormProps} from '@appTypes/app.type';
 import {
 	Button,
 	ImageFormWithPreview,
@@ -11,16 +11,16 @@ import {
 	InputFile,
 	Select,
 	selectMapper,
-} from "@components";
-import {modalTypeParser} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@components';
+import {modalTypeParser} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {RenderItem} from "./RenderItem";
+import {RenderItem} from './RenderItem';
 
 export function NewKanbanModalChild({
 	control,
 	reset,
-}: FormProps<ScanListFormType, "control" | "reset">) {
+}: FormProps<ScanListFormType, 'control' | 'reset'>) {
 	const {
 		id: idKanban,
 		id_customer: idCustomer,
@@ -59,7 +59,7 @@ export function NewKanbanModalChild({
 			reset(({items, id_sppb_in, list_mesin, ...prevValue}) => {
 				return {
 					...prevValue,
-					temp_id_item: "",
+					temp_id_item: '',
 					id_sppb_in,
 					items: {...items, [tempIdItem]: {id_sppb_in}} as typeof items,
 					list_mesin: {
@@ -116,7 +116,7 @@ export function NewKanbanModalChild({
 					firstOption="- Pilih Customer -"
 					control={control}
 					isLoading={isLoadingCustomer}
-					data={selectMapper(dataCustomer ?? [], "id", "name")}
+					data={selectMapper(dataCustomer ?? [], 'id', 'name')}
 					fieldName="id_customer"
 					label="Customer"
 				/>
@@ -130,8 +130,8 @@ export function NewKanbanModalChild({
 						isLoading={isLoadingPo}
 						data={selectMapper(
 							dataPo?.filter(e => !e.isClosed),
-							"id",
-							"nomor_po",
+							'id',
+							'nomor_po',
 						)}
 					/>
 				)}
@@ -145,8 +145,8 @@ export function NewKanbanModalChild({
 						firstOption="- Pilih Surat Jalan -"
 						data={selectMapper(
 							selectedPo?.OrmCustomerSPPBIns.filter(e => !e.isClosed) ?? [],
-							"id",
-							"nomor_surat",
+							'id',
+							'nomor_surat',
 						)}
 					/>
 				)}
@@ -161,8 +161,8 @@ export function NewKanbanModalChild({
 						firstOption="- Tambah Item -"
 						data={selectMapper(
 							itemsInSppbIn?.filter(e => !e.isClosed) ?? [],
-							"id",
-							["OrmMasterItem.name"],
+							'id',
+							['OrmMasterItem.name'],
 						)}
 					/>
 				)}

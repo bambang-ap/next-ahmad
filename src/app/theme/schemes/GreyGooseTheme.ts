@@ -1,67 +1,67 @@
-import "@mui/lab/themeAugmentation";
-import {alpha, createTheme, darken, lighten} from "@mui/material";
+import '@mui/lab/themeAugmentation';
+import {alpha, createTheme, darken, lighten} from '@mui/material';
 
 // import i18n from 'src/i18n/i18n';
 
 const themeColors = {
-	primary: "#2442AF",
-	secondary: "#6E759F",
-	success: "#57CA22",
-	warning: "#FFA319",
-	error: "#FF1943",
-	info: "#33C2FF",
-	black: "#223354",
-	white: "#ffffff",
-	primaryAlt: "#000C57",
+	primary: '#2442AF',
+	secondary: '#6E759F',
+	success: '#57CA22',
+	warning: '#FFA319',
+	error: '#FF1943',
+	info: '#33C2FF',
+	black: '#223354',
+	white: '#ffffff',
+	primaryAlt: '#000C57',
 };
 
 const colors = {
 	gradients: {
-		blue1: "linear-gradient(135deg, #6B73FF 0%, #000DFF 100%)",
-		blue2: "linear-gradient(135deg, #ABDCFF 0%, #0396FF 100%)",
-		blue3: "linear-gradient(127.55deg, #141E30 3.73%, #243B55 92.26%)",
-		blue4: "linear-gradient(-20deg, #2b5876 0%, #4e4376 100%)",
-		blue5: "linear-gradient(135deg, #97ABFF 10%, #123597 100%)",
-		orange1: "linear-gradient(135deg, #FCCF31 0%, #F55555 100%)",
-		orange2: "linear-gradient(135deg, #FFD3A5 0%, #FD6585 100%)",
-		orange3: "linear-gradient(120deg, #f6d365 0%, #fda085 100%)",
-		purple1: "linear-gradient(135deg, #43CBFF 0%, #9708CC 100%)",
-		purple3: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
-		pink1: "linear-gradient(135deg, #F6CEEC 0%, #D939CD 100%)",
-		pink2: "linear-gradient(135deg, #F761A1 0%, #8C1BAB 100%)",
-		green1: "linear-gradient(135deg, #FFF720 0%, #3CD500 100%)",
-		green2: "linear-gradient(to bottom, #00b09b, #96c93d)",
-		black1: "linear-gradient(100.66deg, #434343 6.56%, #000000 93.57%)",
-		black2: "linear-gradient(60deg, #29323c 0%, #485563 100%)",
+		blue1: 'linear-gradient(135deg, #6B73FF 0%, #000DFF 100%)',
+		blue2: 'linear-gradient(135deg, #ABDCFF 0%, #0396FF 100%)',
+		blue3: 'linear-gradient(127.55deg, #141E30 3.73%, #243B55 92.26%)',
+		blue4: 'linear-gradient(-20deg, #2b5876 0%, #4e4376 100%)',
+		blue5: 'linear-gradient(135deg, #97ABFF 10%, #123597 100%)',
+		orange1: 'linear-gradient(135deg, #FCCF31 0%, #F55555 100%)',
+		orange2: 'linear-gradient(135deg, #FFD3A5 0%, #FD6585 100%)',
+		orange3: 'linear-gradient(120deg, #f6d365 0%, #fda085 100%)',
+		purple1: 'linear-gradient(135deg, #43CBFF 0%, #9708CC 100%)',
+		purple3: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+		pink1: 'linear-gradient(135deg, #F6CEEC 0%, #D939CD 100%)',
+		pink2: 'linear-gradient(135deg, #F761A1 0%, #8C1BAB 100%)',
+		green1: 'linear-gradient(135deg, #FFF720 0%, #3CD500 100%)',
+		green2: 'linear-gradient(to bottom, #00b09b, #96c93d)',
+		black1: 'linear-gradient(100.66deg, #434343 6.56%, #000000 93.57%)',
+		black2: 'linear-gradient(60deg, #29323c 0%, #485563 100%)',
 	},
 	shadows: {
 		success:
-			"0px 1px 4px rgba(68, 214, 0, 0.25), 0px 3px 12px 2px rgba(68, 214, 0, 0.35)",
+			'0px 1px 4px rgba(68, 214, 0, 0.25), 0px 3px 12px 2px rgba(68, 214, 0, 0.35)',
 		error:
-			"0px 1px 4px rgba(255, 25, 67, 0.25), 0px 3px 12px 2px rgba(255, 25, 67, 0.35)",
-		info: "0px 1px 4px rgba(51, 194, 255, 0.25), 0px 3px 12px 2px rgba(51, 194, 255, 0.35)",
+			'0px 1px 4px rgba(255, 25, 67, 0.25), 0px 3px 12px 2px rgba(255, 25, 67, 0.35)',
+		info: '0px 1px 4px rgba(51, 194, 255, 0.25), 0px 3px 12px 2px rgba(51, 194, 255, 0.35)',
 		primary:
-			"0px 1px 4px rgba(28, 52, 140, 0.25), 0px 3px 12px 2px rgba(28, 52, 140, 0.35)",
+			'0px 1px 4px rgba(28, 52, 140, 0.25), 0px 3px 12px 2px rgba(28, 52, 140, 0.35)',
 		warning:
-			"0px 1px 4px rgba(255, 163, 25, 0.25), 0px 3px 12px 2px rgba(255, 163, 25, 0.35)",
-		card: "0px 9px 16px rgba(159, 162, 191, .18), 0px 2px 2px rgba(159, 162, 191, 0.32)",
+			'0px 1px 4px rgba(255, 163, 25, 0.25), 0px 3px 12px 2px rgba(255, 163, 25, 0.35)',
+		card: '0px 9px 16px rgba(159, 162, 191, .18), 0px 2px 2px rgba(159, 162, 191, 0.32)',
 		cardSm:
-			"0px 2px 3px rgba(159, 162, 191, .18), 0px 1px 1px rgba(159, 162, 191, 0.32)",
+			'0px 2px 3px rgba(159, 162, 191, .18), 0px 1px 1px rgba(159, 162, 191, 0.32)',
 		cardLg:
-			"0 5rem 14rem 0 rgb(255 255 255 / 30%), 0 0.8rem 2.3rem rgb(0 0 0 / 60%), 0 0.2rem 0.3rem rgb(0 0 0 / 45%)",
+			'0 5rem 14rem 0 rgb(255 255 255 / 30%), 0 0.8rem 2.3rem rgb(0 0 0 / 60%), 0 0.2rem 0.3rem rgb(0 0 0 / 45%)',
 	},
 	layout: {
 		general: {
-			bodyBg: "#F8F8F8",
+			bodyBg: '#F8F8F8',
 		},
 		sidebar: {
 			background: themeColors.white,
 			textColor: themeColors.secondary,
-			dividerBg: "#f2f5f9",
-			menuItemColor: "#242E6F",
+			dividerBg: '#f2f5f9',
+			menuItemColor: '#242E6F',
 			menuItemColorActive: themeColors.primary,
 			menuItemBg: themeColors.white,
-			menuItemBgActive: "#f2f5f9",
+			menuItemBgActive: '#f2f5f9',
 			menuItemIconColor: lighten(themeColors.secondary, 0.3),
 			menuItemIconColorActive: themeColors.primary,
 			menuItemHeadingColor: darken(themeColors.secondary, 0.3),
@@ -223,11 +223,11 @@ export const GreyGooseTheme = createTheme({
 		},
 	},
 	general: {
-		reactFrameworkColor: "#00D8FF",
-		borderRadiusSm: "6px",
-		borderRadius: "10px",
-		borderRadiusLg: "12px",
-		borderRadiusXl: "16px",
+		reactFrameworkColor: '#00D8FF',
+		borderRadiusSm: '6px',
+		borderRadius: '10px',
+		borderRadiusLg: '12px',
+		borderRadiusXl: '16px',
 	},
 	sidebar: {
 		background: colors.layout.sidebar.background,
@@ -241,11 +241,11 @@ export const GreyGooseTheme = createTheme({
 		menuItemIconColorActive: colors.layout.sidebar.menuItemIconColorActive,
 		menuItemHeadingColor: colors.layout.sidebar.menuItemHeadingColor,
 		boxShadow:
-			"2px 0 3px rgba(159, 162, 191, .18), 1px 0 1px rgba(159, 162, 191, 0.32)",
-		width: "290px",
+			'2px 0 3px rgba(159, 162, 191, .18), 1px 0 1px rgba(159, 162, 191, 0.32)',
+		width: '290px',
 	},
 	header: {
-		height: "80px",
+		height: '80px',
 		background: colors.alpha.white[100],
 		boxShadow: colors.shadows.cardSm,
 		textColor: colors.secondary.main,
@@ -256,7 +256,7 @@ export const GreyGooseTheme = createTheme({
 			black: colors.alpha.black[100],
 			white: colors.alpha.white[100],
 		},
-		mode: "light",
+		mode: 'light',
 		primary: {
 			light: colors.primary.light,
 			main: colors.primary.main,
@@ -329,11 +329,11 @@ export const GreyGooseTheme = createTheme({
 			styleOverrides: {
 				root: {
 					backgroundColor: alpha(darken(themeColors.primaryAlt, 0.4), 0.2),
-					backdropFilter: "blur(2px)",
+					backdropFilter: 'blur(2px)',
 
-					"&.MuiBackdrop-invisible": {
-						backgroundColor: "transparent",
-						backdropFilter: "blur(2px)",
+					'&.MuiBackdrop-invisible': {
+						backgroundColor: 'transparent',
+						backdropFilter: 'blur(2px)',
 					},
 				},
 			},
@@ -341,62 +341,62 @@ export const GreyGooseTheme = createTheme({
 		MuiFormHelperText: {
 			styleOverrides: {
 				root: {
-					textTransform: "none",
+					textTransform: 'none',
 					marginLeft: 8,
 					marginRight: 8,
-					fontWeight: "bold",
+					fontWeight: 'bold',
 				},
 			},
 		},
 		MuiCssBaseline: {
 			styleOverrides: {
-				"html, body": {
-					width: "100%",
-					height: "100%",
+				'html, body': {
+					width: '100%',
+					height: '100%',
 				},
 				body: {
-					display: "flex",
-					flexDirection: "column",
-					minHeight: "100%",
-					width: "100%",
+					display: 'flex',
+					flexDirection: 'column',
+					minHeight: '100%',
+					width: '100%',
 					flex: 1,
 				},
-				"#__next": {
-					width: "100%",
-					display: "flex",
+				'#__next': {
+					width: '100%',
+					display: 'flex',
 					flex: 1,
-					flexDirection: "column",
+					flexDirection: 'column',
 				},
 				html: {
-					display: "flex",
-					flexDirection: "column",
-					minHeight: "100%",
-					width: "100%",
-					MozOsxFontSmoothing: "grayscale",
-					WebkitFontSmoothing: "antialiased",
+					display: 'flex',
+					flexDirection: 'column',
+					minHeight: '100%',
+					width: '100%',
+					MozOsxFontSmoothing: 'grayscale',
+					WebkitFontSmoothing: 'antialiased',
 				},
-				".child-popover .MuiPaper-root .MuiList-root": {
-					flexDirection: "column",
+				'.child-popover .MuiPaper-root .MuiList-root': {
+					flexDirection: 'column',
 				},
-				"#nprogress": {
-					pointerEvents: "none",
+				'#nprogress': {
+					pointerEvents: 'none',
 				},
-				"#nprogress .bar": {
+				'#nprogress .bar': {
 					background: colors.primary.lighter,
 				},
-				"#nprogress .spinner-icon": {
+				'#nprogress .spinner-icon': {
 					borderTopColor: colors.primary.lighter,
 					borderLeftColor: colors.primary.lighter,
 				},
-				"#nprogress .peg": {
+				'#nprogress .peg': {
 					boxShadow:
-						"0 0 15px " +
+						'0 0 15px ' +
 						colors.primary.lighter +
-						", 0 0 8px" +
+						', 0 0 8px' +
 						colors.primary.light,
 				},
-				":root": {
-					"--swiper-theme-color": colors.primary.main,
+				':root': {
+					'--swiper-theme-color': colors.primary.main,
 				},
 				code: {
 					background: colors.info.lighter,
@@ -404,42 +404,42 @@ export const GreyGooseTheme = createTheme({
 					borderRadius: 4,
 					padding: 4,
 				},
-				"@keyframes pulse": {
-					"0%": {
-						transform: "scale(.75)",
+				'@keyframes pulse': {
+					'0%': {
+						transform: 'scale(.75)',
 					},
-					"20%": {
-						transform: "scale(1.1)",
+					'20%': {
+						transform: 'scale(1.1)',
 					},
-					"40%": {
-						transform: "scale(.75)",
+					'40%': {
+						transform: 'scale(.75)',
 					},
-					"60%": {
-						transform: "scale(1.05)",
+					'60%': {
+						transform: 'scale(1.05)',
 					},
-					"80%": {
-						transform: "scale(.75)",
+					'80%': {
+						transform: 'scale(.75)',
 					},
-					"100%": {
-						transform: "scale(.75)",
+					'100%': {
+						transform: 'scale(.75)',
 					},
 				},
-				"@keyframes ripple": {
-					"0%": {
-						transform: "scale(.8)",
+				'@keyframes ripple': {
+					'0%': {
+						transform: 'scale(.8)',
 						opacity: 1,
 					},
-					"100%": {
-						transform: "scale(2.8)",
+					'100%': {
+						transform: 'scale(2.8)',
 						opacity: 0,
 					},
 				},
-				"@keyframes float": {
-					"0%": {
-						transform: "translate(0%, 0%)",
+				'@keyframes float': {
+					'0%': {
+						transform: 'translate(0%, 0%)',
 					},
-					"100%": {
-						transform: "translate(3%, 3%)",
+					'100%': {
+						transform: 'translate(3%, 3%)',
 					},
 				},
 			},
@@ -450,20 +450,20 @@ export const GreyGooseTheme = createTheme({
 					color: colors.alpha.black[50],
 				},
 				icon: {
-					top: "calc(50% - 14px)",
+					top: 'calc(50% - 14px)',
 				},
 			},
 		},
 		MuiOutlinedInput: {
 			styleOverrides: {
 				root: {
-					"& .MuiInputAdornment-positionEnd.MuiInputAdornment-outlined": {
+					'& .MuiInputAdornment-positionEnd.MuiInputAdornment-outlined': {
 						paddingRight: 6,
 					},
-					"&:hover .MuiOutlinedInput-notchedOutline": {
+					'&:hover .MuiOutlinedInput-notchedOutline': {
 						borderColor: colors.alpha.black[50],
 					},
-					"&.Mui-focused:hover .MuiOutlinedInput-notchedOutline": {
+					'&.Mui-focused:hover .MuiOutlinedInput-notchedOutline': {
 						borderColor: colors.primary.main,
 					},
 				},
@@ -472,8 +472,8 @@ export const GreyGooseTheme = createTheme({
 		MuiListSubheader: {
 			styleOverrides: {
 				colorPrimary: {
-					fontWeight: "bold",
-					lineHeight: "40px",
+					fontWeight: 'bold',
+					lineHeight: '40px',
 					fontSize: 13,
 					background: colors.alpha.black[5],
 					color: colors.alpha.black[70],
@@ -494,7 +494,7 @@ export const GreyGooseTheme = createTheme({
 		MuiRadio: {
 			styleOverrides: {
 				root: {
-					borderRadius: "50px",
+					borderRadius: '50px',
 				},
 			},
 		},
@@ -504,14 +504,14 @@ export const GreyGooseTheme = createTheme({
 					background: colors.alpha.black[5],
 					color: colors.alpha.black[100],
 
-					"&:hover": {
+					'&:hover': {
 						background: colors.alpha.black[10],
 					},
 				},
 				deleteIcon: {
 					color: colors.error.light,
 
-					"&:hover": {
+					'&:hover': {
 						color: colors.error.main,
 					},
 				},
@@ -520,13 +520,13 @@ export const GreyGooseTheme = createTheme({
 		MuiAccordion: {
 			styleOverrides: {
 				root: {
-					boxShadow: "none",
+					boxShadow: 'none',
 
-					"&.Mui-expanded": {
+					'&.Mui-expanded': {
 						margin: 0,
 					},
-					"&::before": {
-						display: "none",
+					'&::before': {
+						display: 'none',
 					},
 				},
 			},
@@ -535,7 +535,7 @@ export const GreyGooseTheme = createTheme({
 			styleOverrides: {
 				root: {
 					fontSize: 14,
-					fontWeight: "bold",
+					fontWeight: 'bold',
 				},
 				colorDefault: {
 					background: colors.alpha.black[30],
@@ -546,17 +546,17 @@ export const GreyGooseTheme = createTheme({
 		MuiAvatarGroup: {
 			styleOverrides: {
 				root: {
-					alignItems: "center",
+					alignItems: 'center',
 				},
 				avatar: {
 					background: colors.alpha.black[10],
 					fontSize: 13,
 					color: colors.alpha.black[70],
-					fontWeight: "bold",
+					fontWeight: 'bold',
 
-					"&:first-of-type": {
+					'&:first-of-type': {
 						border: 0,
-						background: "transparent",
+						background: 'transparent',
 					},
 				},
 			},
@@ -572,17 +572,17 @@ export const GreyGooseTheme = createTheme({
 			styleOverrides: {
 				page: {
 					fontSize: 13,
-					fontWeight: "bold",
-					transition: "all .2s",
+					fontWeight: 'bold',
+					transition: 'all .2s',
 				},
 				textPrimary: {
-					"&.Mui-selected": {
+					'&.Mui-selected': {
 						boxShadow: colors.shadows.primary,
 					},
-					"&.MuiButtonBase-root:hover": {
+					'&.MuiButtonBase-root:hover': {
 						background: colors.alpha.black[5],
 					},
-					"&.Mui-selected.MuiButtonBase-root:hover": {
+					'&.Mui-selected.MuiButtonBase-root:hover': {
 						background: colors.primary.main,
 					},
 				},
@@ -594,13 +594,13 @@ export const GreyGooseTheme = createTheme({
 			},
 			styleOverrides: {
 				root: {
-					fontWeight: "bold",
-					textTransform: "none",
+					fontWeight: 'bold',
+					textTransform: 'none',
 					paddingLeft: 16,
 					paddingRight: 16,
 
-					".MuiSvgIcon-root": {
-						transition: "all .2s",
+					'.MuiSvgIcon-root': {
+						transition: 'all .2s',
 					},
 				},
 				endIcon: {
@@ -609,34 +609,34 @@ export const GreyGooseTheme = createTheme({
 				containedSecondary: {
 					backgroundColor: colors.secondary.main,
 					color: colors.alpha.white[100],
-					border: "1px solid " + colors.alpha.black[30],
+					border: '1px solid ' + colors.alpha.black[30],
 				},
 				outlinedSecondary: {
 					backgroundColor: colors.alpha.white[100],
 
-					"&:hover, &.MuiSelected": {
+					'&:hover, &.MuiSelected': {
 						backgroundColor: colors.alpha.black[5],
 						color: colors.alpha.black[100],
 					},
 				},
 				sizeSmall: {
-					padding: "6px 16px",
+					padding: '6px 16px',
 					lineHeight: 1.5,
 				},
 				sizeMedium: {
-					padding: "8px 20px",
+					padding: '8px 20px',
 				},
 				sizeLarge: {
-					padding: "11px 24px",
+					padding: '11px 24px',
 				},
 				textSizeSmall: {
-					padding: "7px 12px",
+					padding: '7px 12px',
 				},
 				textSizeMedium: {
-					padding: "9px 16px",
+					padding: '9px 16px',
 				},
 				textSizeLarge: {
-					padding: "12px 16px",
+					padding: '12px 16px',
 				},
 			},
 		},
@@ -658,9 +658,9 @@ export const GreyGooseTheme = createTheme({
 				root: {
 					color: colors.primary.main,
 					background: colors.alpha.white[100],
-					transition: "all .2s",
+					transition: 'all .2s',
 
-					"&:hover, &.Mui-selected, &.Mui-selected:hover": {
+					'&:hover, &.Mui-selected, &.Mui-selected:hover': {
 						color: colors.alpha.white[100],
 						background: colors.primary.main,
 					},
@@ -673,7 +673,7 @@ export const GreyGooseTheme = createTheme({
 					borderRadius: 8,
 					padding: 8,
 
-					"& .MuiTouchRipple-root": {
+					'& .MuiTouchRipple-root': {
 						borderRadius: 8,
 					},
 				},
@@ -692,7 +692,7 @@ export const GreyGooseTheme = createTheme({
 		MuiListItemButton: {
 			styleOverrides: {
 				root: {
-					"& .MuiTouchRipple-root": {
+					'& .MuiTouchRipple-root': {
 						opacity: 0.3,
 					},
 				},
@@ -706,29 +706,29 @@ export const GreyGooseTheme = createTheme({
 					height: 1,
 				},
 				vertical: {
-					height: "auto",
+					height: 'auto',
 					width: 1,
 
-					"&.MuiDivider-flexItem.MuiDivider-fullWidth": {
-						height: "auto",
+					'&.MuiDivider-flexItem.MuiDivider-fullWidth': {
+						height: 'auto',
 					},
-					"&.MuiDivider-absolute.MuiDivider-fullWidth": {
-						height: "100%",
+					'&.MuiDivider-absolute.MuiDivider-fullWidth': {
+						height: '100%',
 					},
 				},
 				withChildren: {
-					"&:before, &:after": {
+					'&:before, &:after': {
 						border: 0,
 					},
 				},
 				wrapper: {
 					background: colors.alpha.white[100],
-					fontWeight: "bold",
+					fontWeight: 'bold',
 					height: 24,
-					lineHeight: "24px",
+					lineHeight: '24px',
 					marginTop: -12,
-					color: "inherit",
-					textTransform: "uppercase",
+					color: 'inherit',
+					textTransform: 'uppercase',
 				},
 			},
 		},
@@ -738,7 +738,7 @@ export const GreyGooseTheme = createTheme({
 					padding: 0,
 				},
 				elevation0: {
-					boxShadow: "none",
+					boxShadow: 'none',
 				},
 				elevation: {
 					boxShadow: colors.shadows.card,
@@ -756,7 +756,7 @@ export const GreyGooseTheme = createTheme({
 		},
 		MuiLink: {
 			defaultProps: {
-				underline: "hover",
+				underline: 'hover',
 			},
 		},
 		MuiLinearProgress: {
@@ -770,10 +770,10 @@ export const GreyGooseTheme = createTheme({
 		MuiSlider: {
 			styleOverrides: {
 				root: {
-					"& .MuiSlider-valueLabelCircle, .MuiSlider-valueLabelLabel": {
-						transform: "none",
+					'& .MuiSlider-valueLabelCircle, .MuiSlider-valueLabelLabel': {
+						transform: 'none',
 					},
-					"& .MuiSlider-valueLabel": {
+					'& .MuiSlider-valueLabel': {
 						borderRadius: 6,
 						background: colors.alpha.black[100],
 						color: colors.alpha.white[100],
@@ -786,33 +786,33 @@ export const GreyGooseTheme = createTheme({
 				root: {
 					padding: 0,
 
-					"& .MuiListItem-button": {
-						transition: "all .2s",
+					'& .MuiListItem-button': {
+						transition: 'all .2s',
 
-						"& > .MuiSvgIcon-root": {
+						'& > .MuiSvgIcon-root': {
 							minWidth: 34,
 						},
 
-						"& .MuiTouchRipple-root": {
+						'& .MuiTouchRipple-root': {
 							opacity: 0.2,
 						},
 					},
-					"& .MuiListItem-root.MuiButtonBase-root.Mui-selected": {
+					'& .MuiListItem-root.MuiButtonBase-root.Mui-selected': {
 						backgroundColor: alpha(colors.primary.lighter, 0.4),
 					},
-					"& .MuiMenuItem-root.MuiButtonBase-root:active": {
+					'& .MuiMenuItem-root.MuiButtonBase-root:active': {
 						backgroundColor: alpha(colors.primary.lighter, 0.4),
 					},
-					"& .MuiMenuItem-root.MuiButtonBase-root .MuiTouchRipple-root": {
+					'& .MuiMenuItem-root.MuiButtonBase-root .MuiTouchRipple-root': {
 						opacity: 0.2,
 					},
 				},
 				padding: {
-					padding: "12px",
+					padding: '12px',
 
-					"& .MuiListItem-button": {
+					'& .MuiListItem-button': {
 						borderRadius: 6,
-						margin: "1px 0",
+						margin: '1px 0',
 					},
 				},
 			},
@@ -822,17 +822,17 @@ export const GreyGooseTheme = createTheme({
 				root: {
 					height: 38,
 					minHeight: 38,
-					overflow: "visible",
+					overflow: 'visible',
 				},
 				indicator: {
 					height: 38,
 					minHeight: 38,
 					borderRadius: 6,
-					border: "1px solid " + colors.primary.dark,
-					boxShadow: "0px 2px 10px " + colors.primary.light,
+					border: '1px solid ' + colors.primary.dark,
+					boxShadow: '0px 2px 10px ' + colors.primary.light,
 				},
 				scrollableX: {
-					overflow: "visible !important",
+					overflow: 'visible !important',
 				},
 			},
 		},
@@ -843,20 +843,20 @@ export const GreyGooseTheme = createTheme({
 					height: 38,
 					minHeight: 38,
 					borderRadius: 6,
-					transition: "color .2s",
-					textTransform: "capitalize",
+					transition: 'color .2s',
+					textTransform: 'capitalize',
 
-					"&.MuiButtonBase-root": {
-						minWidth: "auto",
+					'&.MuiButtonBase-root': {
+						minWidth: 'auto',
 						paddingLeft: 20,
 						paddingRight: 20,
 						marginRight: 4,
 					},
-					"&.Mui-selected, &.Mui-selected:hover": {
+					'&.Mui-selected, &.Mui-selected:hover': {
 						color: colors.alpha.white[100],
 						zIndex: 5,
 					},
-					"&:hover": {
+					'&:hover': {
 						color: colors.alpha.black[100],
 					},
 				},
@@ -870,18 +870,18 @@ export const GreyGooseTheme = createTheme({
 				list: {
 					padding: 12,
 
-					"& .MuiMenuItem-root.MuiButtonBase-root": {
+					'& .MuiMenuItem-root.MuiButtonBase-root': {
 						fontSize: 14,
 						marginTop: 1,
 						marginBottom: 1,
-						transition: "all .2s",
+						transition: 'all .2s',
 						color: colors.alpha.black[70],
 
-						"& .MuiTouchRipple-root": {
+						'& .MuiTouchRipple-root': {
 							opacity: 0.2,
 						},
 
-						"&:hover, &:active, &.active, &.Mui-selected": {
+						'&:hover, &:active, &.active, &.Mui-selected': {
 							color: colors.alpha.black[100],
 							background: alpha(colors.primary.lighter, 0.4),
 						},
@@ -892,14 +892,14 @@ export const GreyGooseTheme = createTheme({
 		MuiMenuItem: {
 			styleOverrides: {
 				root: {
-					background: "transparent",
-					transition: "all .2s",
+					background: 'transparent',
+					transition: 'all .2s',
 
-					"&:hover, &:active, &.active, &.Mui-selected": {
+					'&:hover, &:active, &.active, &.Mui-selected': {
 						color: colors.alpha.black[100],
 						background: alpha(colors.primary.lighter, 0.4),
 					},
-					"&.Mui-selected:hover": {
+					'&.Mui-selected:hover': {
 						background: alpha(colors.primary.lighter, 0.4),
 					},
 				},
@@ -908,10 +908,10 @@ export const GreyGooseTheme = createTheme({
 		MuiListItem: {
 			styleOverrides: {
 				root: {
-					"&.MuiButtonBase-root": {
+					'&.MuiButtonBase-root': {
 						color: colors.secondary.main,
 
-						"&:hover, &:active, &.active, &.Mui-selected": {
+						'&:hover, &:active, &.active, &.Mui-selected': {
 							color: colors.alpha.black[100],
 							background: lighten(colors.primary.lighter, 0.5),
 						},
@@ -925,7 +925,7 @@ export const GreyGooseTheme = createTheme({
 					margin: 1,
 				},
 				root: {
-					".MuiAutocomplete-inputRoot.MuiOutlinedInput-root .MuiAutocomplete-endAdornment":
+					'.MuiAutocomplete-inputRoot.MuiOutlinedInput-root .MuiAutocomplete-endAdornment':
 						{
 							right: 14,
 						},
@@ -935,7 +935,7 @@ export const GreyGooseTheme = createTheme({
 					color: colors.error.main,
 					marginRight: 8,
 
-					"&:hover": {
+					'&:hover': {
 						background: colors.error.lighter,
 						color: colors.error.dark,
 					},
@@ -943,7 +943,7 @@ export const GreyGooseTheme = createTheme({
 				popupIndicator: {
 					color: colors.alpha.black[50],
 
-					"&:hover": {
+					'&:hover': {
 						background: colors.primary.lighter,
 						color: colors.primary.main,
 					},
@@ -953,13 +953,13 @@ export const GreyGooseTheme = createTheme({
 		MuiTablePagination: {
 			styleOverrides: {
 				toolbar: {
-					"& .MuiIconButton-root": {
+					'& .MuiIconButton-root': {
 						padding: 8,
 					},
 				},
 				select: {
-					"&:focus": {
-						backgroundColor: "transparent",
+					'&:focus': {
+						backgroundColor: 'transparent',
 					},
 				},
 			},
@@ -967,8 +967,8 @@ export const GreyGooseTheme = createTheme({
 		MuiToolbar: {
 			styleOverrides: {
 				root: {
-					minHeight: "0 !important",
-					padding: "0 !important",
+					minHeight: '0 !important',
+					padding: '0 !important',
 				},
 			},
 		},
@@ -978,9 +978,9 @@ export const GreyGooseTheme = createTheme({
 					background: colors.alpha.black[5],
 				},
 				root: {
-					transition: "background-color .2s",
+					transition: 'background-color .2s',
 
-					"&.MuiTableRow-hover:hover": {
+					'&.MuiTableRow-hover:hover': {
 						backgroundColor: colors.alpha.black[5],
 					},
 				},
@@ -993,9 +993,9 @@ export const GreyGooseTheme = createTheme({
 					fontSize: 14,
 				},
 				head: {
-					textTransform: "uppercase",
+					textTransform: 'uppercase',
 					fontSize: 13,
-					fontWeight: "bold",
+					fontWeight: 'bold',
 					color: colors.alpha.black[70],
 				},
 			},
@@ -1019,26 +1019,26 @@ export const GreyGooseTheme = createTheme({
 				root: {
 					margin: 0,
 					zIndex: 5,
-					position: "absolute",
-					top: "50%",
+					position: 'absolute',
+					top: '50%',
 					marginTop: -6,
 					left: -6,
 				},
 				outlined: {
 					backgroundColor: colors.alpha.white[100],
-					boxShadow: "0 0 0 6px " + colors.alpha.white[100],
+					boxShadow: '0 0 0 6px ' + colors.alpha.white[100],
 				},
 				outlinedPrimary: {
 					backgroundColor: colors.alpha.white[100],
-					boxShadow: "0 0 0 6px " + colors.alpha.white[100],
+					boxShadow: '0 0 0 6px ' + colors.alpha.white[100],
 				},
 			},
 		},
 		MuiTimelineConnector: {
 			styleOverrides: {
 				root: {
-					position: "absolute",
-					height: "100%",
+					position: 'absolute',
+					height: '100%',
 					top: 0,
 					borderRadius: 50,
 					backgroundColor: colors.alpha.black[10],
@@ -1049,15 +1049,15 @@ export const GreyGooseTheme = createTheme({
 			styleOverrides: {
 				root: {
 					minHeight: 0,
-					padding: "8px 0",
+					padding: '8px 0',
 
-					"&:before": {
-						display: "none",
+					'&:before': {
+						display: 'none',
 					},
 				},
 				missingOppositeContent: {
-					"&:before": {
-						display: "none",
+					'&:before': {
+						display: 'none',
 					},
 				},
 			},
@@ -1065,12 +1065,12 @@ export const GreyGooseTheme = createTheme({
 		MuiTooltip: {
 			styleOverrides: {
 				tooltip: {
-					backgroundColor: alpha(colors.alpha.black["100"], 0.95),
-					padding: "8px 16px",
+					backgroundColor: alpha(colors.alpha.black['100'], 0.95),
+					padding: '8px 16px',
 					fontSize: 13,
 				},
 				arrow: {
-					color: alpha(colors.alpha.black["100"], 0.95),
+					color: alpha(colors.alpha.black['100'], 0.95),
 				},
 			},
 		},
@@ -1078,41 +1078,41 @@ export const GreyGooseTheme = createTheme({
 			styleOverrides: {
 				root: {
 					height: 33,
-					overflow: "visible",
+					overflow: 'visible',
 
-					"& .MuiButtonBase-root": {
-						position: "absolute",
+					'& .MuiButtonBase-root': {
+						position: 'absolute',
 						padding: 6,
 						transition:
-							"left 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms",
+							'left 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms,transform 150ms cubic-bezier(0.4, 0, 0.2, 1) 0ms',
 					},
-					"& .MuiIconButton-root": {
+					'& .MuiIconButton-root': {
 						borderRadius: 100,
 					},
-					"& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track": {
+					'& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
 						opacity: 0.3,
 					},
 				},
 				thumb: {
-					border: "1px solid " + colors.alpha.black[30],
+					border: '1px solid ' + colors.alpha.black[30],
 					boxShadow:
-						"0px 9px 14px " +
+						'0px 9px 14px ' +
 						colors.alpha.black[10] +
-						", 0px 2px 2px " +
+						', 0px 2px 2px ' +
 						colors.alpha.black[10],
 				},
 				track: {
 					backgroundColor: colors.alpha.black[5],
-					border: "1px solid " + colors.alpha.black[10],
-					boxShadow: "inset 0px 1px 1px " + colors.alpha.black[10],
+					border: '1px solid ' + colors.alpha.black[10],
+					boxShadow: 'inset 0px 1px 1px ' + colors.alpha.black[10],
 					opacity: 1,
 				},
 				colorPrimary: {
-					"& .MuiSwitch-thumb": {
+					'& .MuiSwitch-thumb': {
 						backgroundColor: colors.alpha.white[100],
 					},
 
-					"&.Mui-checked .MuiSwitch-thumb": {
+					'&.Mui-checked .MuiSwitch-thumb': {
 						backgroundColor: colors.primary.main,
 					},
 				},
@@ -1130,7 +1130,7 @@ export const GreyGooseTheme = createTheme({
 		MuiStepIcon: {
 			styleOverrides: {
 				root: {
-					"&.MuiStepIcon-completed": {
+					'&.MuiStepIcon-completed': {
 						color: colors.success.main,
 					},
 				},
@@ -1139,16 +1139,16 @@ export const GreyGooseTheme = createTheme({
 		MuiTypography: {
 			defaultProps: {
 				variantMapping: {
-					h1: "h1",
-					h2: "h2",
-					h3: "div",
-					h4: "div",
-					h5: "div",
-					h6: "div",
-					subtitle1: "div",
-					subtitle2: "div",
-					body1: "div",
-					body2: "div",
+					h1: 'h1',
+					h2: 'h2',
+					h3: 'div',
+					h4: 'div',
+					h5: 'div',
+					h6: 'div',
+					subtitle1: 'div',
+					subtitle2: 'div',
+					body1: 'div',
+					body2: 'div',
 				},
 			},
 			styleOverrides: {
@@ -1204,7 +1204,7 @@ export const GreyGooseTheme = createTheme({
 		},
 		caption: {
 			fontSize: 13,
-			textTransform: "uppercase",
+			textTransform: 'uppercase',
 			color: colors.alpha.black[50],
 		},
 		subtitle1: {
@@ -1219,34 +1219,34 @@ export const GreyGooseTheme = createTheme({
 		overline: {
 			fontSize: 13,
 			fontWeight: 700,
-			textTransform: "uppercase",
+			textTransform: 'uppercase',
 		},
 	},
 	shadows: [
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
-		"none",
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
+		'none',
 	],
 });

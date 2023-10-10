@@ -1,9 +1,9 @@
-import {DefaultValue, RecoilState, selector} from "recoil";
+import {DefaultValue, RecoilState, selector} from 'recoil';
 
-import {TScanTarget} from "@appTypes/app.type";
-import {ScanIds} from "@appTypes/props.type";
-import {ScanTarget} from "@constants";
-import {atomUidScan} from "@recoil/atoms";
+import {TScanTarget} from '@appTypes/app.type';
+import {ScanIds} from '@appTypes/props.type';
+import {ScanTarget} from '@constants';
+import {atomUidScan} from '@recoil/atoms';
 
 // @ts-ignore
 export const selectorScanIds = new Map<

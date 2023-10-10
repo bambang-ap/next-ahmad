@@ -1,5 +1,5 @@
-import {getLayout} from "@hoc";
-import Dashboard from "@pageComponent/dashboard";
+import {getLayout} from '@hoc';
+import Dashboard from '@pageComponent/dashboard';
 
 Index.getLayout = getLayout;
 

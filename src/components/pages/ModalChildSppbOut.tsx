@@ -1,18 +1,18 @@
-import {FormValue} from "pages/app/customer/customer_sppb_out";
-import {useWatch} from "react-hook-form";
+import {FormValue} from 'pages/app/customer/customer_sppb_out';
+import {useWatch} from 'react-hook-form';
 
-import {Wrapper} from "@appComponent/Wrapper";
-import {FormProps} from "@appTypes/app.type";
-import {Button, Input, Select, selectMapper, Table, Text} from "@components";
-import {REJECT_REASON_VIEW} from "@enum";
-import {useSppbOut} from "@hooks";
-import {isClosedParser, modalTypeParser, qtyMap} from "@utils";
-import {trpc} from "@utils/trpc";
+import {Wrapper} from '@appComponent/Wrapper';
+import {FormProps} from '@appTypes/app.type';
+import {Button, Input, Select, selectMapper, Table, Text} from '@components';
+import {REJECT_REASON_VIEW} from '@enum';
+import {useSppbOut} from '@hooks';
+import {isClosedParser, modalTypeParser, qtyMap} from '@utils';
+import {trpc} from '@utils/trpc';
 
 export function SppbOutModalChild({
 	control,
 	reset,
-}: FormProps<FormValue, "control" | "reset">) {
+}: FormProps<FormValue, 'control' | 'reset'>) {
 	const {id_customer, type: modalType, po: listPO} = useWatch({control});
 
 	const {
@@ -47,14 +47,14 @@ export function SppbOutModalChild({
 				control={control}
 				fieldName="id_kendaraan"
 				label="Kendaraan"
-				data={selectMapper(dataKendaraan, "id", "name")}
+				data={selectMapper(dataKendaraan, 'id', 'name')}
 			/>
 			<Input control={control} fieldName="keterangan" label="Keterangan" />
 			<Select
 				label="Customer"
 				control={control}
 				fieldName="id_customer"
-				data={selectMapper(dataCustomer, "id", "name")}
+				data={selectMapper(dataCustomer, 'id', 'name')}
 			/>
 			{selectedCustomer && (
 				<>
@@ -74,7 +74,7 @@ export function SppbOutModalChild({
 									...prev,
 									po: [
 										...po,
-										{id_po: "", sppb_in: [{id_sppb_in: "", items: {}}]},
+										{id_po: '', sppb_in: [{id_sppb_in: '', items: {}}]},
 									],
 								};
 							})
@@ -102,14 +102,14 @@ export function SppbOutModalChild({
 										control={control}
 										fieldName={`po.${i}.id_po`}
 										isLoading={isFetching}
-										data={selectMapper(availablePo, "id", "nomor_po")}
+										data={selectMapper(availablePo, 'id', 'nomor_po')}
 									/>
 
 									<Button
 										onClick={() =>
 											reset(prev => {
 												const u = prev.po[i];
-												u?.sppb_in.push({id_sppb_in: "", items: {}});
+												u?.sppb_in.push({id_sppb_in: '', items: {}});
 												return {
 													...prev,
 													po: prev.po.replace(i, u!),
@@ -143,8 +143,8 @@ export function SppbOutModalChild({
 
 									const sppbInSelection = selectMapper(
 										availableSppbIn ?? [],
-										"id",
-										"nomor_surat",
+										'id',
+										'nomor_surat',
 									);
 
 									return (
@@ -175,11 +175,11 @@ export function SppbOutModalChild({
 											<Table
 												data={dInItems}
 												header={[
-													"Kode Item",
-													"Nama Item",
-													"Nomor Lot",
-													"Nomor Lot IMI",
-													"Jumlah",
+													'Kode Item',
+													'Nama Item',
+													'Nomor Lot',
+													'Nomor Lot IMI',
+													'Jumlah',
 												]}
 												renderItem={({Cell, item}) => {
 													const {
@@ -196,7 +196,7 @@ export function SppbOutModalChild({
 
 													const lot_no_imi = sppbInSelected?.dKanbans
 														?.map(e => e.dScans?.[0]?.lot_no_imi)
-														.join(" | ");
+														.join(' | ');
 
 													const hj = dOutItems.find(e => e.id === items?.id);
 
@@ -261,7 +261,7 @@ export function SppbOutModalChild({
 																			{!!qtyRejectTP && (
 																				<Wrapper
 																					noColon
-																					sizes={["flex-1"]}
+																					sizes={['flex-1']}
 																					title={REJECT_REASON_VIEW.TP}>
 																					{`${qtyRejectTP?.toString()} ${unit}`}
 																				</Wrapper>
@@ -269,7 +269,7 @@ export function SppbOutModalChild({
 																			{!!qtyRejectRP && (
 																				<Wrapper
 																					noColon
-																					sizes={["flex-1"]}
+																					sizes={['flex-1']}
 																					title={REJECT_REASON_VIEW.RP}>
 																					{`${qtyRejectRP?.toString()} ${unit}`}
 																				</Wrapper>

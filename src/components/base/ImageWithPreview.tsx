@@ -1,14 +1,14 @@
-import {useRef} from "react";
+import {useRef} from 'react';
 
-import {FieldValues} from "react-hook-form";
+import {FieldValues} from 'react-hook-form';
 
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from "@formController";
-import {classNames} from "@utils";
+} from '@formController';
+import {classNames} from '@utils';
 
-import {Modal, ModalRef} from "./Modal";
+import {Modal, ModalRef} from './Modal';
 
 export type ImageWithPreviewProps = {
 	className?: string;
@@ -41,11 +41,11 @@ export function ImageWithPreview({
 		<>
 			<div
 				onClick={() => modalRef.current?.show()}
-				className={classNames("cursor-zoom-in", className)}>
+				className={classNames('cursor-zoom-in', className)}>
 				{imageElement}
 			</div>
 			<Modal title="Preview" ref={modalRef}>
-				<div className={classNames("flex justify-center", modalClassName)}>
+				<div className={classNames('flex justify-center', modalClassName)}>
 					{imageElement}
 				</div>
 			</Modal>

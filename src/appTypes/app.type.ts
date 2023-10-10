@@ -1,15 +1,15 @@
-import {FieldValues, UseFormReturn} from "react-hook-form";
+import {FieldValues, UseFormReturn} from 'react-hook-form';
 
-import {qtyList} from "@constants";
-import type {RouterOutput} from "@trpc/routers";
+import {qtyList} from '@constants';
+import type {RouterOutput} from '@trpc/routers';
 export type {
 	AppRouter,
 	AppRouterCaller,
 	RouterInput,
 	RouterOutput,
-} from "@trpc/routers";
-export type {Route} from "pages/app/scan/[route]";
-export type {Context} from "server/trpc/context";
+} from '@trpc/routers';
+export type {Route} from 'pages/app/scan/[route]';
+export type {Context} from 'server/trpc/context';
 export type {
 	BaseMenu,
 	ItemsSppb,
@@ -82,7 +82,7 @@ export type {
 	USPPB,
 	ZId,
 	ZIds,
-} from "./app.zod";
+} from './app.zod';
 
 import type {
 	TCustomer,
@@ -92,14 +92,14 @@ import type {
 	TKanbanUpsert,
 	TScan,
 	TUser,
-} from "./app.zod";
+} from './app.zod';
 
 export type FormProps<
 	T extends FieldValues,
-	K extends keyof UseFormReturn<T> = "control",
+	K extends keyof UseFormReturn<T> = 'control',
 > = Pick<UseFormReturn<T>, K>;
 
-export type TDataScan = {dataKanban: RouterOutput["kanban"]["get"]} & TScan;
+export type TDataScan = {dataKanban: RouterOutput['kanban']['get']} & TScan;
 export type UQty = typeof qtyList[number];
 export type UQtyList = `qty${UQty}`;
 
@@ -114,10 +114,10 @@ export type PagingResult<T> = {
 export type KanbanGetRow = TKanban & {
 	dataScan?: TScan;
 	id_customer?: string;
-	items: TKanbanUpsert["items"];
+	items: TKanbanUpsert['items'];
 	OrmCustomerPO?: TCustomerPO & {OrmCustomer: TCustomer};
 	OrmDocument?: TDocument;
-	dataSppbIn?: RouterOutput["sppb"]["in"]["get"][number];
+	dataSppbIn?: RouterOutput['sppb']['in']['get'][number];
 	// dataPo?: RouterOutput["customer_po"]["get"][number];
 	// docDetail?: TDocument;
 	dataCreatedBy?: TUser;

@@ -1,16 +1,16 @@
-import {ReactNode, useContext} from "react";
+import {ReactNode, useContext} from 'react';
 
 import {
 	Button as MUIButton,
 	ButtonProps as MUIButtonProps,
-} from "@mui/material";
+} from '@mui/material';
 
-import {FormContext, Icon, IconProps, TouchableProps} from "@components";
-import {classNames} from "@utils";
+import {FormContext, Icon, IconProps, TouchableProps} from '@components';
+import {classNames} from '@utils';
 export type ButtonProps = TouchableProps &
-	Pick<MUIButtonProps, "color" | "variant"> & {
+	Pick<MUIButtonProps, 'color' | 'variant'> & {
 		component?: string;
-		icon?: IconProps["name"];
+		icon?: IconProps['name'];
 		iconClassName?: string;
 		children?: ReactNode;
 		disabled?: boolean;
@@ -23,8 +23,8 @@ export function Button(props: ButtonProps) {
 		iconClassName,
 		children,
 		icon,
-		color = "inherit",
-		variant = "contained",
+		color = 'inherit',
+		variant = 'contained',
 		...rest
 	} = props;
 
@@ -33,8 +33,8 @@ export function Button(props: ButtonProps) {
 		<MUIButton
 			color={color}
 			variant={variant}
-			sx={{textTransform: "none"}}
-			className={classNames("min-h-[36px] flex gap-2", className)}
+			sx={{textTransform: 'none'}}
+			className={classNames('min-h-[36px] flex gap-2', className)}
 			{...rest}>
 			{icon && <Icon className={iconClassName} name={icon} />}
 			{children}

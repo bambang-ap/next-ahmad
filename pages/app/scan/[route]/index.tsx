@@ -1,10 +1,10 @@
-import {FormEventHandler, Fragment, useEffect, useState} from "react";
+import {FormEventHandler, Fragment, useEffect, useState} from 'react';
 
-import {useSession} from "next-auth/react";
-import {useRouter} from "next/router";
-import {KanbanFormType} from "pages/app/kanban";
-import {FieldPath, useForm} from "react-hook-form";
-import {useRecoilState, useSetRecoilState} from "recoil";
+import {useSession} from 'next-auth/react';
+import {useRouter} from 'next/router';
+import {KanbanFormType} from 'pages/app/kanban';
+import {FieldPath, useForm} from 'react-hook-form';
+import {useRecoilState, useSetRecoilState} from 'recoil';
 
 import {
 	KanbanGetRow,
@@ -16,9 +16,9 @@ import {
 	TScanTarget,
 	UnitQty,
 	ZId,
-} from "@appTypes/app.type";
-import {getRejectSelection} from "@appTypes/app.zod";
-import {ScanIds} from "@appTypes/props.type";
+} from '@appTypes/app.type';
+import {getRejectSelection} from '@appTypes/app.zod';
+import {ScanIds} from '@appTypes/props.type';
 import {
 	BorderTd,
 	Button,
@@ -27,12 +27,12 @@ import {
 	RootTable,
 	Select,
 	Text,
-} from "@components";
-import {getLayout} from "@hoc";
-import {useLoader} from "@hooks";
-import {RenderMesin} from "@pageComponent/kanban_ModalChild/RenderMesin";
-import Scrollbar from "@prevComp/Scrollbar";
-import {selectorScanIds} from "@recoil/selectors";
+} from '@components';
+import {getLayout} from '@hoc';
+import {useLoader} from '@hooks';
+import {RenderMesin} from '@pageComponent/kanban_ModalChild/RenderMesin';
+import Scrollbar from '@prevComp/Scrollbar';
+import {selectorScanIds} from '@recoil/selectors';
 import {
 	classNames,
 	dateUtils,
@@ -40,9 +40,9 @@ import {
 	scanMapperByStatus,
 	scanRouterParser,
 	typingCallback,
-} from "@utils";
-import {StorageScan} from "@utils/storage";
-import {trpc} from "@utils/trpc";
+} from '@utils';
+import {StorageScan} from '@utils/storage';
+import {trpc} from '@utils/trpc';
 
 Scan.getLayout = getLayout;
 
@@ -54,7 +54,7 @@ export type Route = {route: TScanTarget};
 
 export type FormTypeScan = Pick<
 	TScan,
-	keyof TScanItem | "lot_no_imi" | "id" | "notes"
+	keyof TScanItem | 'lot_no_imi' | 'id' | 'notes'
 >;
 export type FormType = {
 	form: ZId[];
@@ -67,7 +67,7 @@ export default function Scan() {
 	const [ids, setIds] = useRecoilState(selectorScanIds.get(route)!);
 
 	function addNew() {
-		setIds(prev => [{key: uuid(), id: ""}, ...prev]);
+		setIds(prev => [{key: uuid(), id: ''}, ...prev]);
 	}
 
 	function navigateListData() {
@@ -78,7 +78,7 @@ export default function Scan() {
 		if (!!route) {
 			const prev = StorageScan.get(route)!.get()!;
 			if (prev.length > 0) setIds(prev?.map(e => ({key: uuid(), id: e})));
-			else setIds([{id: "", key: uuid()}]);
+			else setIds([{id: '', key: uuid()}]);
 		}
 	}, [route]);
 
@@ -110,7 +110,7 @@ export default function Scan() {
 	);
 }
 
-type ScanFormType = RouterInput["scan"]["updateV3"];
+type ScanFormType = RouterInput['scan']['updateV3'];
 
 function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const {route, keys} = props;
@@ -149,7 +149,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const isRejected = data?.is_rejected;
 
-	const {notes = "", id_kanban = ""} = dataForm;
+	const {notes = '', id_kanban = ''} = dataForm;
 	const {isProduksi, isQC, width, isFG, colSpan, rejectTitle} =
 		scanRouterParser(route, isRejected);
 
@@ -165,8 +165,8 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		clearErrors();
 
 		handleSubmit(values => {
-			if (route === "qc") {
-				if (confirm("Apakah Anda yakin data tersebut sudah benar?"))
+			if (route === 'qc') {
+				if (confirm('Apakah Anda yakin data tersebut sudah benar?'))
 					return mutate(values);
 
 				return;
@@ -277,7 +277,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 								<Button icon="faCircleXmark" onClick={removeUid} />
 								{isQC && !isRejected && !status && foundedKanbanId && (
 									<Button onClick={toggleReject}>
-										{showReject ? "Batal Reject" : "Reject"}
+										{showReject ? 'Batal Reject' : 'Reject'}
 									</Button>
 								)}
 								{!isFetching && !!data && (
@@ -290,7 +290,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 					</THead>
 					<TBody
 						key={`${route}.${id_kanban}`}
-						className={classNames({"!hidden": isHidden})}>
+						className={classNames({'!hidden': isHidden})}>
 						<Tr>
 							<Td width={width} className="flex-col">
 								<div>Tanggal Kanban :</div>
@@ -372,14 +372,14 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							);
 
 							const prevItem = (isProduksi ? item : curItem) as UnitQty &
-								Pick<TScanNewItem, "item_from_kanban">;
+								Pick<TScanNewItem, 'item_from_kanban'>;
 
 							const prevItemKanban = isProduksi
 								? curItem?.item_from_kanban ?? prevItem
 								: prevItem;
 
 							if (!!rejectItem?.reason && dataForm.reject && !dataForm.reason) {
-								setValue("reason", rejectItem?.reason);
+								setValue('reason', rejectItem?.reason);
 							}
 
 							return (
@@ -466,7 +466,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 														prevItem?.[qtyKey]! -
 														parseFloat(
 															dataForm?.items?.[id]?.[qtyKey]!.toString() ??
-																"0",
+																'0',
 														);
 
 													// @ts-ignore
@@ -532,7 +532,7 @@ function RenderListMesin({
 	disabled: boolean;
 	id_item: string;
 	master_item_id?: string;
-	list_mesin: KanbanGetRow["list_mesin"];
+	list_mesin: KanbanGetRow['list_mesin'];
 }) {
 	const [keyMesin, setKeyMesin] = useState(uuid());
 	const {control, reset} = useForm<KanbanFormType>({

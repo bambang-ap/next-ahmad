@@ -1,6 +1,6 @@
-import FavoriteTwoToneIcon from "@mui/icons-material/FavoriteTwoTone";
-import ShoppingBagTwoToneIcon from "@mui/icons-material/ShoppingBagTwoTone";
-import StarTwoToneIcon from "@mui/icons-material/StarTwoTone";
+import FavoriteTwoToneIcon from '@mui/icons-material/FavoriteTwoTone';
+import ShoppingBagTwoToneIcon from '@mui/icons-material/ShoppingBagTwoTone';
+import StarTwoToneIcon from '@mui/icons-material/StarTwoTone';
 import {
 	Avatar,
 	Box,
@@ -10,7 +10,7 @@ import {
 	styled,
 	Typography,
 	useTheme,
-} from "@mui/material";
+} from '@mui/material';
 
 const AvatarPrimary = styled(Avatar)(
 	({theme}) => `

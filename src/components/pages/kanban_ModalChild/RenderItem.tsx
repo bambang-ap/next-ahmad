@@ -1,17 +1,17 @@
-import {ScanListFormType} from "pages/app/scan/[route]/list";
-import {useWatch} from "react-hook-form";
+import {ScanListFormType} from 'pages/app/scan/[route]/list';
+import {useWatch} from 'react-hook-form';
 
-import {Wrapper} from "@appComponent/Wrapper";
-import {FormProps, UnitQty} from "@appTypes/app.type";
-import {Button, Cells, Input, Table, Text} from "@components";
-import {useLoader} from "@hooks";
-import type {KJD} from "@trpc/routers/kanban/po";
-import {modalTypeParser, qtyMap} from "@utils";
-import {trpc} from "@utils/trpc";
+import {Wrapper} from '@appComponent/Wrapper';
+import {FormProps, UnitQty} from '@appTypes/app.type';
+import {Button, Cells, Input, Table, Text} from '@components';
+import {useLoader} from '@hooks';
+import type {KJD} from '@trpc/routers/kanban/po';
+import {modalTypeParser, qtyMap} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {RenderMesin} from "./RenderMesin";
+import {RenderMesin} from './RenderMesin';
 
-type RenderItemProps = FormProps<ScanListFormType, "control" | "reset"> & {
+type RenderItemProps = FormProps<ScanListFormType, 'control' | 'reset'> & {
 	selectedSppbIn?: KJD;
 };
 
@@ -73,11 +73,11 @@ export function RenderItem({
 			{loader.component}
 			<Table
 				header={[
-					"Kode Item",
-					"Nama Item",
-					"Nomor Lot",
-					"Jumlah",
-					!isPreview && "Action",
+					'Kode Item',
+					'Nama Item',
+					'Nomor Lot',
+					'Jumlah',
+					!isPreview && 'Action',
 				]}
 				data={Object.entries(kanbanItems)}
 				renderItemEach={({Cell, item: [id_item]}) => {
@@ -133,7 +133,7 @@ export function RenderItem({
 										const maxValue = parseFloat(qtyMax?.[keyQty]?.toString()!);
 
 										const currentQty = parseFloat(
-											selectedItem?.[keyQty]?.toString() ?? "0",
+											selectedItem?.[keyQty]?.toString() ?? '0',
 										);
 										const calculatedQty =
 											qtyTotal?.[selectedSppbInItemId]?.[keyQty]! ?? 0;
@@ -186,7 +186,7 @@ export function RenderItem({
 	);
 }
 
-function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells["Cell"]}) {
+function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells['Cell']}) {
 	const {data} = trpc.item.detail.useQuery(idItem);
 
 	return (

@@ -1,11 +1,11 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState} from 'react';
 
-import * as XLSX from "xlsx";
+import * as XLSX from 'xlsx';
 
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {exportData} from "@utils";
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import {exportData} from '@utils';
 
-import {useLoader} from "./useLoader";
+import {useLoader} from './useLoader';
 
 export function useExportData<
 	T,
@@ -34,7 +34,7 @@ export function useNewExportData<
 	W extends UseTRPCQueryResult<T[], unknown>,
 >(
 	query: [useQuery: () => W, header: ObjKeyof<R>[]] | (() => W),
-	renderItem: (item: NonNullable<W["data"]>[number]) => R,
+	renderItem: (item: NonNullable<W['data']>[number]) => R,
 	names?: Parameters<typeof exportData>[1],
 	debug?: true,
 ) {
@@ -66,8 +66,8 @@ export function useExport<
 		debug?: true;
 		header?: ObjKeyof<R>[];
 		names?: [filename?: string, sheetName?: string];
-		loader: Omit<ReturnType<typeof useLoader>, "mutateOpts">;
-		renderItem: (item: NonNullable<W["data"]>[number]) => R;
+		loader: Omit<ReturnType<typeof useLoader>, 'mutateOpts'>;
+		renderItem: (item: NonNullable<W['data']>[number]) => R;
 	},
 	useQuery: () => W,
 ) {
@@ -88,7 +88,7 @@ export function useExport<
 		// eslint-disable-next-line no-console
 		if (debug) console.log(result);
 
-		const [filename = "data", sheetName = "Sheet 1"] = names ?? [];
+		const [filename = 'data', sheetName = 'Sheet 1'] = names ?? [];
 
 		const workbook = XLSX.utils.book_new();
 		workbook.SheetNames.push(sheetName);
@@ -104,7 +104,7 @@ export function useExport<
 
 	useEffect(() => {
 		if (!isInitialLoading && !isFetching && isExporting) {
-			alert("Failed to load data!");
+			alert('Failed to load data!');
 			setIsExporting(false);
 			loader.hide?.();
 		}

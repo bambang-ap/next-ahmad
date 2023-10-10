@@ -8,9 +8,9 @@ import {
 	TableHead,
 	TableProps,
 	TableRow,
-} from "@mui/material";
+} from '@mui/material';
 
-import {classNames} from "@utils";
+import {classNames} from '@utils';
 
 export type StyledCellProps = GetProps<typeof StyledTableCell>;
 
@@ -22,7 +22,7 @@ const StyledTableCell = styled(TableCell)(({valign}) => ({
 const StyledCell = ({children, className, ...rest}: StyledCellProps) => {
 	return (
 		<StyledTableCell {...rest}>
-			<div className={classNames("flex", className)}>{children}</div>
+			<div className={classNames('flex', className)}>{children}</div>
 		</StyledTableCell>
 	);
 };
@@ -34,7 +34,7 @@ const Table = Object.assign(TableRoot, {
 	Td: StyledCell,
 });
 
-TableRoot.displayName = "Table";
+TableRoot.displayName = 'Table';
 function TableRoot({children, ...rest}: TableProps) {
 	return (
 		<TableContainer component={Paper}>

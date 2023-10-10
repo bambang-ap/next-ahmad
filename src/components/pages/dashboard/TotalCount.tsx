@@ -1,10 +1,10 @@
-import {useRouter} from "next/router";
-import {useRecoilValue} from "recoil";
+import {useRouter} from 'next/router';
+import {useRecoilValue} from 'recoil';
 
-import {Button, Text} from "@components";
-import {atomIsMobile} from "@recoil/atoms";
-import {classNames} from "@utils";
-import {trpc} from "@utils/trpc";
+import {Button, Text} from '@components';
+import {atomIsMobile} from '@recoil/atoms';
+import {classNames} from '@utils';
+import {trpc} from '@utils/trpc';
 
 export default function TotalCount() {
 	const {data} = trpc.dashboard.totalCount.useQuery();
@@ -21,16 +21,16 @@ export default function TotalCount() {
 				return (
 					<div
 						key={i}
-						className={classNames("flex flex-wrap p-1 rounded-md", {
-							["w-full"]: isMobile,
-							["w-1/4"]: !isMobile,
+						className={classNames('flex flex-wrap p-1 rounded-md', {
+							['w-full']: isMobile,
+							['w-1/4']: !isMobile,
 						})}>
 						<div
 							className={classNames(
-								"flex flex-col flex-1 justify-between",
-								"h-[150px]",
-								"bg-cyan-600",
-								"bg-green-600",
+								'flex flex-col flex-1 justify-between',
+								'h-[150px]',
+								'bg-cyan-600',
+								'bg-green-600',
 								color,
 							)}>
 							<div className="flex p-4 justify-between items-center">

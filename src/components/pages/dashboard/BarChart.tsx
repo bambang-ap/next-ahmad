@@ -1,7 +1,7 @@
-import {Chart} from "@prevComp/Chart";
-import {trpc} from "@utils/trpc";
+import {Chart} from '@prevComp/Chart';
+import {trpc} from '@utils/trpc';
 
-export default function BarChart({type = "bar"}: {type?: "bar" | "line"}) {
+export default function BarChart({type = 'bar'}: {type?: 'bar' | 'line'}) {
 	const {data} = trpc.dashboard.businessProcess.useQuery();
 
 	const {categories = [], dataChart = []} =
@@ -20,7 +20,7 @@ export default function BarChart({type = "bar"}: {type?: "bar" | "line"}) {
 			height={500}
 			type={type}
 			options={{xaxis: {categories}}}
-			series={[{name: "series-1", data: dataChart}]}
+			series={[{name: 'series-1', data: dataChart}]}
 		/>
 	);
 }

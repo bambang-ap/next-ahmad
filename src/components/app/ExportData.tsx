@@ -1,15 +1,15 @@
-import {useEffect, useState} from "react";
+import {useEffect, useState} from 'react';
 
-import {Button} from "@components";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {exportData} from "@utils";
+import {Button} from '@components';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import {exportData} from '@utils';
 
 type Props<
 	Q extends any[],
 	C extends UseTRPCQueryResult<Q, unknown> = UseTRPCQueryResult<Q, unknown>,
 > = {
 	useQuery: () => C;
-	dataMapper: (data: C["data"]) => any[];
+	dataMapper: (data: C['data']) => any[];
 	names?: Parameters<typeof exportData>[1];
 };
 

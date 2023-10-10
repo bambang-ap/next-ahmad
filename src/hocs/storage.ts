@@ -7,7 +7,7 @@ export class Storage<T> {
 	}
 
 	private initialize(defaultValue: T): any {
-		if (typeof window === "undefined") {
+		if (typeof window === 'undefined') {
 			setTimeout(() => this.initialize(defaultValue), 100);
 			return;
 		}
@@ -41,7 +41,7 @@ export class Storage<T> {
 	set(setter: (prevValue: T) => T): void;
 	set(valueOrSetter: any) {
 		let value = valueOrSetter;
-		if (typeof valueOrSetter === "function") {
+		if (typeof valueOrSetter === 'function') {
 			value = valueOrSetter(this.get()!);
 		}
 		try {

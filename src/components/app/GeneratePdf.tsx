@@ -1,11 +1,11 @@
-import {forwardRef, useImperativeHandle} from "react";
+import {forwardRef, useImperativeHandle} from 'react';
 
-import {jsPDFOptions} from "jspdf";
+import {jsPDFOptions} from 'jspdf';
 
-import {ZId} from "@appTypes/app.type";
-import {CheckBox} from "@components";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
-import {classNames, generatePDF, sleep} from "@utils";
+import {ZId} from '@appTypes/app.type';
+import {CheckBox} from '@components';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import {classNames, generatePDF, sleep} from '@utils';
 
 export type GenPdfRef = {generate: (timeout?: number) => Promise<void>};
 export type GenPdfProps<T, W extends UseTRPCQueryResult<T, unknown>> = {
@@ -16,7 +16,7 @@ export type GenPdfProps<T, W extends UseTRPCQueryResult<T, unknown>> = {
 	splitPagePer?: number;
 	useQueries: () => W[];
 	renderItem: (item: W) => JSX.Element;
-	orientation?: jsPDFOptions["orientation"];
+	orientation?: jsPDFOptions['orientation'];
 };
 
 export const GeneratePdf = forwardRef(function GGenPdf<
@@ -27,8 +27,8 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 		tagId,
 		debug,
 		orientation,
-		filename = "file",
-		width = "w-[1600px]",
+		filename = 'file',
+		width = 'w-[1600px]',
 		useQueries,
 		splitPagePer,
 		renderItem,
@@ -36,7 +36,7 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 
 	const datas = useQueries();
 
-	const className = debug ? "" : "h-0 overflow-hidden -z-10 fixed";
+	const className = debug ? '' : 'h-0 overflow-hidden -z-10 fixed';
 
 	const pageDatas = splitPagePer
 		? datas.reduce<{page: number; datas: W[][]}>(
@@ -68,7 +68,7 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 					<div
 						key={index}
 						id={elementsId![index]}
-						className={classNames("flex flex-wrap", width)}>
+						className={classNames('flex flex-wrap', width)}>
 						{dataList.map(item => renderItem(item))}
 					</div>
 				);
@@ -102,7 +102,7 @@ export function SelectAllButton<
 	data,
 	selected,
 	total = 0,
-	selector = "id",
+	selector = 'id',
 }: SelectAllButtonProps<T, G, D>) {
 	const isSelectedAll = selected === total;
 	const isSomeSelected = selected < total && selected !== 0;
@@ -123,7 +123,7 @@ export function SelectAllButton<
 	return (
 		<CheckBox
 			onCheck={selectAll}
-			value={isSomeSelected ? "@" : isSelectedAll}
+			value={isSomeSelected ? '@' : isSelectedAll}
 		/>
 	);
 }

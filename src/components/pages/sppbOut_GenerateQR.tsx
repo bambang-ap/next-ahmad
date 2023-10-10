@@ -1,30 +1,30 @@
-import {PropsWithChildren} from "react";
+import {PropsWithChildren} from 'react';
 
-import {Wrapper, WrapperProps} from "@appComponent/Wrapper";
-import {RouterOutput, TInstruksiKanban} from "@appTypes/app.type";
+import {Wrapper, WrapperProps} from '@appComponent/Wrapper';
+import {RouterOutput, TInstruksiKanban} from '@appTypes/app.type';
 import {
 	BorderTd,
 	BorderTdProps,
 	RootTable as Table,
 	Text as Txt,
 	TextProps,
-} from "@components";
-import {IMIConst} from "@constants";
-import {CRUD_ENABLED, REJECT_REASON} from "@enum";
+} from '@components';
+import {IMIConst} from '@constants';
+import {CRUD_ENABLED, REJECT_REASON} from '@enum';
 import {
 	classNames,
 	dateUtils,
 	itemInScanParser,
 	paperSizeCalculator,
 	qtyMap,
-} from "@utils";
-import {trpc} from "@utils/trpc";
+} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {qtyList} from "./ModalChild_po";
+import {qtyList} from './ModalChild_po';
 
 const {Tr} = Table;
 
-const font = "font-bold";
+const font = 'font-bold';
 
 function Td({className, ...props}: BorderTdProps) {
 	return (
@@ -36,13 +36,13 @@ function Td({className, ...props}: BorderTdProps) {
 	);
 }
 
-function Wrp(props: Pick<WrapperProps, "children" | "title">) {
+function Wrp(props: Pick<WrapperProps, 'children' | 'title'>) {
 	return (
 		<Wrapper
 			className="px-0"
 			noColon
 			transparent
-			sizes={["flex-1"]}
+			sizes={['flex-1']}
 			{...props}
 		/>
 	);
@@ -51,7 +51,7 @@ function Wrp(props: Pick<WrapperProps, "children" | "title">) {
 function Section({
 	title,
 	children,
-	mid = ":",
+	mid = ':',
 }: PropsWithChildren<{title: string; mid?: string}>) {
 	return (
 		<div className="flex gap-2 flex-1">
@@ -95,7 +95,7 @@ export function SPPBOutGenerateQR({
 	detail,
 	width: widthSize,
 }: {
-	detail?: Partial<RouterOutput["print"]["sppb"]["out"][number]>;
+	detail?: Partial<RouterOutput['print']['sppb']['out'][number]>;
 	width: number;
 }) {
 	const [width, height] = paperSizeCalculator(widthSize, {minus: 45});
@@ -107,7 +107,7 @@ export function SPPBOutGenerateQR({
 		<div
 			id={tagId}
 			style={{width, height}}
-			className={classNames("flex flex-col gap-2 p-4", "justify-between")}>
+			className={classNames('flex flex-col gap-2 p-4', 'justify-between')}>
 			<div className="flex flex-col gap-2 flex-1">
 				<div className="flex flex-col gap-2 p-4 border border-black">
 					<div className="flex justify-between">
@@ -184,7 +184,7 @@ export function SPPBOutGenerateQR({
 							dSJIn: OrmCustomerSPPBIn,
 						} = OrmPOItemSppbIn;
 						const lot_no_imi = OrmCustomerSPPBIn?.dKanbans?.map(e =>
-							e.dScans.map(f => f.lot_no_imi).join(" | "),
+							e.dScans.map(f => f.lot_no_imi).join(' | '),
 						);
 
 						const {rejectedItems} = itemInScanParser(

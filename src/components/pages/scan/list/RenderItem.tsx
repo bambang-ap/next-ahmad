@@ -1,15 +1,15 @@
-import {Text, Wrapper} from "pages/app/scan/[route]/list";
+import {Text, Wrapper} from 'pages/app/scan/[route]/list';
 
-import {THardness, TInstruksiKanban, TParameter} from "@appTypes/app.type";
-import {gap} from "@constants";
-import {CRUD_ENABLED} from "@enum";
-import {classNames, qtyMap} from "@utils";
-import {trpc} from "@utils/trpc";
+import {THardness, TInstruksiKanban, TParameter} from '@appTypes/app.type';
+import {gap} from '@constants';
+import {CRUD_ENABLED} from '@enum';
+import {classNames, qtyMap} from '@utils';
+import {trpc} from '@utils/trpc';
 
-import {D} from "./RenderPdfData";
+import {D} from './RenderPdfData';
 
 type Props = {data: D};
-type Prop = {rootData: D; data: D["dScanItems"][number]};
+type Prop = {rootData: D; data: D['dScanItems'][number]};
 
 export function RenderItems({data}: Props) {
 	return (
@@ -75,10 +75,10 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
 			<Wrapper title="Material">
-				{materialData?.map(e => e.name).join(", ")}
+				{materialData?.map(e => e.name).join(', ')}
 			</Wrapper>
 			<Wrapper title="Hardness">
-				{hardnessData?.map(e => e.name).join(", ")}
+				{hardnessData?.map(e => e.name).join(', ')}
 			</Wrapper>
 			<Wrapper title="Hardness Aktual" />
 			<Wrapper title="Jumlah">
@@ -91,19 +91,19 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 					return `${qty} ${unit}`;
 				})
 					.filter(Boolean)
-					.join(" | ")}
+					.join(' | ')}
 			</Wrapper>
 
-			<div className={classNames("flex min-h-[64px]", gap)}>
+			<div className={classNames('flex min-h-[64px]', gap)}>
 				<div className="bg-white flex justify-center flex-1 p-2">
 					<Text className="self-center">LINE-PROCESS</Text>
 				</div>
 				<div className="bg-white flex justify-center flex-1 p-2">
 					<Text className="self-center">
-						{processData?.map(e => e.name).join(", ")}
+						{processData?.map(e => e.name).join(', ')}
 					</Text>
 				</div>
-				<div className={classNames("bg-white flex flex-col flex-1", gap)}>
+				<div className={classNames('bg-white flex flex-col flex-1', gap)}>
 					<div className="w-1/2 flex self-center">
 						<img src={qrImageKanban} alt="" />
 					</div>

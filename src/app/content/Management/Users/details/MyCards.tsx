@@ -1,7 +1,7 @@
-import {ChangeEvent, useState} from "react";
+import {ChangeEvent, useState} from 'react';
 
-import AddTwoToneIcon from "@mui/icons-material/AddTwoTone";
-import DeleteTwoToneIcon from "@mui/icons-material/DeleteTwoTone";
+import AddTwoToneIcon from '@mui/icons-material/AddTwoTone';
+import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import {
 	Avatar,
 	Box,
@@ -18,7 +18,7 @@ import {
 	styled,
 	Tooltip,
 	Typography,
-} from "@mui/material";
+} from '@mui/material';
 
 const AvatarAddWrapper = styled(Avatar)(
 	({theme}) => `
@@ -29,7 +29,7 @@ const AvatarAddWrapper = styled(Avatar)(
 `,
 );
 
-const CardLogo = styled("img")(
+const CardLogo = styled('img')(
 	({theme}) => `
       border: 1px solid ${theme.colors.alpha.black[30]};
       border-radius: ${theme.general.borderRadius};
@@ -88,7 +88,7 @@ function MyCards() {
 		savedCards: 7,
 	};
 
-	const [selectedValue, setSelectedValue] = useState("a");
+	const [selectedValue, setSelectedValue] = useState('a');
 
 	const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
 		setSelectedValue(event.target.value);
@@ -98,7 +98,7 @@ function MyCards() {
 
 	return (
 		<Card>
-			<CardHeader subheader={data.savedCards + " saved cards"} title="Cards" />
+			<CardHeader subheader={data.savedCards + ' saved cards'} title="Cards" />
 			<Divider />
 			<Box p={3}>
 				<Grid container spacing={3}>
@@ -114,7 +114,7 @@ function MyCards() {
 										•••• 6879
 									</Typography>
 									<Typography variant="subtitle2">
-										Expires:{" "}
+										Expires:{' '}
 										<Typography component="span" color="text.primary">
 											12/24
 										</Typography>
@@ -130,7 +130,7 @@ function MyCards() {
 									value="a"
 									control={
 										<Radio
-											checked={selectedValue === "a"}
+											checked={selectedValue === 'a'}
 											onChange={handleChange}
 											value="a"
 											color="primary"
@@ -159,7 +159,7 @@ function MyCards() {
 										•••• 4634
 									</Typography>
 									<Typography variant="subtitle2">
-										Expires:{" "}
+										Expires:{' '}
 										<Typography component="span" color="text.primary">
 											6/22
 										</Typography>
@@ -175,7 +175,7 @@ function MyCards() {
 									value="b"
 									control={
 										<Radio
-											checked={selectedValue === "b"}
+											checked={selectedValue === 'b'}
 											onChange={handleChange}
 											value="b"
 											color="primary"

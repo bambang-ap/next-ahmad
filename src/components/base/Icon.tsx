@@ -1,14 +1,14 @@
-import * as svgIcon from "@fortawesome/free-solid-svg-icons";
-import {FontAwesomeIcon} from "@fortawesome/react-fontawesome";
-import {FieldValues} from "react-hook-form";
+import * as svgIcon from '@fortawesome/free-solid-svg-icons';
+import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
+import {FieldValues} from 'react-hook-form';
 
 import {
 	ControlledComponentProps,
 	withReactFormController,
-} from "@formController";
-import {classNames} from "@utils";
+} from '@formController';
+import {classNames} from '@utils';
 
-type IconName = Exclude<keyof typeof svgIcon, "prefix" | "fas">;
+type IconName = Exclude<keyof typeof svgIcon, 'prefix' | 'fas'>;
 
 export type IconProps = {
 	name?: LiteralUnion<IconName>;
@@ -30,14 +30,14 @@ export function Icon({name, onClick, className}: IconProps) {
 	);
 }
 
-export function Spinner({className}: Pick<IconProps, "className">) {
+export function Spinner({className}: Pick<IconProps, 'className'>) {
 	return (
-		<Icon name="faSpinner" className={classNames("animate-spin", className)} />
+		<Icon name="faSpinner" className={classNames('animate-spin', className)} />
 	);
 }
 
 function IconFormComponent<F extends FieldValues>(
-	props: ControlledComponentProps<F, Omit<IconProps, "name">>,
+	props: ControlledComponentProps<F, Omit<IconProps, 'name'>>,
 ) {
 	const {controller, ...rest} = props;
 

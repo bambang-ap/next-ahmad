@@ -1,16 +1,16 @@
-import {FC, Fragment, isValidElement, useState} from "react";
+import {FC, Fragment, isValidElement, useState} from 'react';
 
-import {TableCellProps} from "@mui/material";
-import {FieldValues} from "react-hook-form";
+import {TableCellProps} from '@mui/material';
+import {FieldValues} from 'react-hook-form';
 
-import {Input, InputProps, Spinner} from "@components";
-import {WrappedProps} from "@formController";
-import {classNames} from "@utils";
+import {Input, InputProps, Spinner} from '@components';
+import {WrappedProps} from '@formController';
+import {classNames} from '@utils';
 
-import TableRoot from "./TableRoot";
+import TableRoot from './TableRoot';
 
-export * from "./BorderTd";
-export * from "./TableRoot";
+export * from './BorderTd';
+export * from './TableRoot';
 export {TableRoot as RootTable};
 
 export type VRenderItem<T, V = Cells> = MMapValue<T> & V;
@@ -21,7 +21,7 @@ export type TRenderItem<T, R, V = {}> = (
 
 export type CellSelectProps<F extends FieldValues> = Omit<
 	WrappedProps<F, InputProps>,
-	"type"
+	'type'
 > & {
 	CellProps?: TableCellProps;
 };
@@ -44,7 +44,7 @@ export type TableProps<T = any, Cell = {}> = {
 	className?: string;
 	header?: OptionalUnion<
 		// Empty String
-		"∂",
+		'∂',
 		| React.ReactElement<unknown>
 		| string
 		| false
@@ -116,7 +116,7 @@ export function Table<T>(props: TableProps<T, Cells>) {
 		);
 
 	return (
-		<div key={tableKey} className={classNames("w-full", className)}>
+		<div key={tableKey} className={classNames('w-full', className)}>
 			{topComponent}
 			<TableRoot>
 				{header && (
@@ -125,8 +125,8 @@ export function Table<T>(props: TableProps<T, Cells>) {
 							{header.map(head => {
 								if (!head) return null;
 								if (isValidElement(head)) return <Td key="headJsx">{head}</Td>;
-								if (head === "∂") return <Td key={head} />;
-								if (typeof head === "string") return <Td key={head}>{head}</Td>;
+								if (head === '∂') return <Td key={head} />;
+								if (typeof head === 'string') return <Td key={head}>{head}</Td>;
 
 								// @ts-ignore
 								const [title, colSpan] = head;

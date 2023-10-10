@@ -1,13 +1,13 @@
-import {useEffect} from "react";
+import {useEffect} from 'react';
 
-import {useForm} from "react-hook-form";
-import {useRecoilState} from "recoil";
+import {useForm} from 'react-hook-form';
+import {useRecoilState} from 'recoil';
 
-import {TMenu, TRole} from "@appTypes/app.type";
-import {defaultErrorMutation, nonRequiredRefetch} from "@constants";
-import {CRUD_ENABLED} from "@enum";
-import {atomMappedMenu} from "@recoil/atoms";
-import {trpc} from "@utils/trpc";
+import {TMenu, TRole} from '@appTypes/app.type';
+import {defaultErrorMutation, nonRequiredRefetch} from '@constants';
+import {CRUD_ENABLED} from '@enum';
+import {atomMappedMenu} from '@recoil/atoms';
+import {trpc} from '@utils/trpc';
 
 export type FormMenu = Record<
 	string,
@@ -23,12 +23,12 @@ export function useMenu() {
 	const {mutate: mutateMenu} =
 		trpc.menu.mutate.useMutation(defaultErrorMutation);
 	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
-		{type: "menu"},
+		{type: 'menu'},
 		nonRequiredRefetch,
 	);
 	const {data: mappedMenu, refetch: refetchMapped} = trpc.menu.get.useQuery(
 		{
-			type: "menu",
+			type: 'menu',
 			sorted: true,
 		},
 		nonRequiredRefetch,

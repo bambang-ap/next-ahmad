@@ -1,15 +1,15 @@
-import {Divider} from "@mui/material";
-import {Control, UseFormReset, useWatch} from "react-hook-form";
+import {Divider} from '@mui/material';
+import {Control, UseFormReset, useWatch} from 'react-hook-form';
 
-import {TMasterItem} from "@appTypes/app.type";
-import {Button, Select, selectMapper} from "@components";
-import {defaultInstruksi} from "@constants";
-import {useAdditionalData} from "@hooks";
-import {formData} from "@utils";
+import {TMasterItem} from '@appTypes/app.type';
+import {Button, Select, selectMapper} from '@components';
+import {defaultInstruksi} from '@constants';
+import {useAdditionalData} from '@hooks';
+import {formData} from '@utils';
 
-import {FormType} from "./ModalChildMasterItem";
+import {FormType} from './ModalChildMasterItem';
 
-export type ProcessForm = Pick<FormType, "instruksi">;
+export type ProcessForm = Pick<FormType, 'instruksi'>;
 export type RenderProcessProps = {
 	idKat: string;
 	control: Control<ProcessForm>;
@@ -19,7 +19,7 @@ export type RenderProcessProps = {
 export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 	const [instruksiObj = {}] = useWatch({
 		control,
-		name: [`instruksi`],
+		name: ['instruksi'],
 	});
 
 	const instruksis = instruksiObj[idKat] ?? [];
@@ -48,7 +48,7 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 		material: materialKategori,
 	};
 
-	function updateInstruksi(instruksi: TMasterItem["instruksi"][string]) {
+	function updateInstruksi(instruksi: TMasterItem['instruksi'][string]) {
 		reset(prev => {
 			const newData = formData(prev).set(`instruksi.${idKat}`, instruksi);
 			return newData;
@@ -70,10 +70,10 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 				{instruksis.map((instruksi, ii) => {
 					type Key = Exclude<
 						keyof typeof instruksi,
-						| "id_instruksi"
-						| "hardnessKategori"
-						| "parameterKategori"
-						| "materialKategori"
+						| 'id_instruksi'
+						| 'hardnessKategori'
+						| 'parameterKategori'
+						| 'materialKategori'
 					>;
 
 					const filteredDataInstruksi = dataInstruksi?.filter(
@@ -81,11 +81,11 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 							e.id === instruksi.id_instruksi || !instruksiIds?.includes(e.id),
 					);
 
-					const keys: Tuple<Key, 3> = ["material", "hardness", "parameter"];
+					const keys: Tuple<Key, 3> = ['material', 'hardness', 'parameter'];
 
 					function addItem(key: Key) {
 						const copyMesins = instruksis.slice();
-						copyMesins[ii]?.[key].push("");
+						copyMesins[ii]?.[key].push('');
 						updateInstruksi(copyMesins);
 					}
 
@@ -117,8 +117,8 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 										fieldName={`instruksi.${idKat}.${ii}.id_instruksi`}
 										data={selectMapper(
 											filteredDataInstruksi ?? [],
-											"id",
-											"name",
+											'id',
+											'name',
 										)}
 									/>
 									<Button onClick={() => removeInstruksi(ii)}>
@@ -139,7 +139,7 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 								<div className="flex gap-2">
 									{keys.map(key => {
 										const selectedItems = instruksi[key];
-										const isMaterial = key === "material";
+										const isMaterial = key === 'material';
 
 										return (
 											<div
@@ -160,8 +160,8 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 
 													const data = selectMapper(
 														filteredDataItems!,
-														"id",
-														"name",
+														'id',
+														'name',
 													);
 
 													return (
@@ -176,14 +176,14 @@ export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
 																	fieldName={`instruksi.${idKat}.${ii}.${key}Kategori.${iii}`}
 																	data={selectMapper(
 																		kategoriItemMapper[key] ?? [],
-																		"id",
-																		"name",
+																		'id',
+																		'name',
 																	)}
 																/>
 															)}
 
 															<Select
-																key={filteredDataItems?.map(e => e.id).join("")}
+																key={filteredDataItems?.map(e => e.id).join('')}
 																data={data}
 																className="flex-1"
 																control={control}

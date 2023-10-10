@@ -1,15 +1,15 @@
-import {ReactNode} from "react";
+import {ReactNode} from 'react';
 
-import classnames from "clsx";
-import jsPDF, {jsPDFOptions} from "jspdf";
-import clone from "just-clone";
-import * as momentTz from "moment-timezone";
-import objectPath from "object-path";
-import {DeepPartialSkipArrayKey, FieldPath, FieldValues} from "react-hook-form";
-import * as XLSX from "xlsx";
+import classnames from 'clsx';
+import jsPDF, {jsPDFOptions} from 'jspdf';
+import clone from 'just-clone';
+import * as momentTz from 'moment-timezone';
+import objectPath from 'object-path';
+import {DeepPartialSkipArrayKey, FieldPath, FieldValues} from 'react-hook-form';
+import * as XLSX from 'xlsx';
 
-import {Route, RouterOutput, UnitQty} from "@appTypes/app.type";
-import {ModalTypeSelect, TScanItem, TScanTarget} from "@appTypes/app.zod";
+import {Route, RouterOutput, UnitQty} from '@appTypes/app.type';
+import {ModalTypeSelect, TScanItem, TScanTarget} from '@appTypes/app.zod';
 import {
 	defaultErrorMutation,
 	formatDateStringView,
@@ -18,20 +18,20 @@ import {
 	formatHour,
 	paperA4,
 	qtyList,
-} from "@constants";
-import {getPOSppbOutAttributes} from "@database";
-import {REJECT_REASON} from "@enum";
-import {Fields, useLoader} from "@hooks";
+} from '@constants';
+import {getPOSppbOutAttributes} from '@database';
+import {REJECT_REASON} from '@enum';
+import {Fields, useLoader} from '@hooks';
 import {
 	UseTRPCMutationOptions,
 	UseTRPCQueryResult,
-} from "@trpc/react-query/shared";
+} from '@trpc/react-query/shared';
 
 type Qty = typeof qtyList[number];
 
 let typingTimer: NodeJS.Timeout;
 
-momentTz.tz.setDefault("Asia/Jakarta");
+momentTz.tz.setDefault('Asia/Jakarta');
 
 export const moment = momentTz.default;
 
@@ -48,7 +48,7 @@ export const dateUtils = {
 	dateS: convertDateS,
 };
 
-export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
+export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
 	return poData.map(po => {
 		const uu = po.dSJIns?.map(bin => {
 			const dd = bin.dInItems?.map(item => {
@@ -84,8 +84,8 @@ export function isClosedParser(poData: RouterOutput["sppb"]["out"]["getPO"]) {
 
 export function itemInScanParser(
 	kanbans?: Omit<
-		ReturnType<typeof getPOSppbOutAttributes>["RetKanban"],
-		"dKnbItems"
+		ReturnType<typeof getPOSppbOutAttributes>['RetKanban'],
+		'dKnbItems'
 	>[],
 ) {
 	let rejItems: RejItems = {};
@@ -95,7 +95,7 @@ export function itemInScanParser(
 		kanbans?.forEach(knb => {
 			knb.dScans.forEach(scan => {
 				scan.dScanItems.forEach(scnItem => {
-					ret[qtyKey] += parseFloat(scnItem?.[qtyKey]?.toString() ?? "0");
+					ret[qtyKey] += parseFloat(scnItem?.[qtyKey]?.toString() ?? '0');
 				});
 
 				scan.rejScan?.dScanItems.forEach(sRItem => {
@@ -104,7 +104,7 @@ export function itemInScanParser(
 						if (!rejItems[reason]![qtyKey]) rejItems[reason]![qtyKey] = 0;
 
 						rejItems[reason]![qtyKey] += parseFloat(
-							rItem[qtyKey]?.toString() ?? "0",
+							rItem[qtyKey]?.toString() ?? '0',
 						);
 					});
 				});
@@ -118,7 +118,7 @@ export function itemInScanParser(
 }
 
 export function itemSppbOut(
-	outItems?: RouterOutput["sppb"]["out"]["getPO"][number]["dSJIns"][number]["dInItems"][number]["dOutItems"],
+	outItems?: RouterOutput['sppb']['out']['getPO'][number]['dSJIns'][number]['dInItems'][number]['dOutItems'],
 ) {
 	return qtyReduce((ret, {qtyKey: num}) => {
 		outItems?.forEach(itm => {
@@ -172,24 +172,24 @@ export function scanMapperByStatus(
 	cardName?: string,
 ] {
 	switch (target) {
-		case "produksi":
+		case 'produksi':
 			return [
-				"Jumlah Planning",
-				"Jumlah Produksi",
-				"Send to QC",
-				"PROD",
-				"KARTU PRODUKSI",
+				'Jumlah Planning',
+				'Jumlah Produksi',
+				'Send to QC',
+				'PROD',
+				'KARTU PRODUKSI',
 			];
-		case "qc":
+		case 'qc':
 			return [
-				"Jumlah Produksi",
-				"Jumlah QC",
-				"Send to Finish Good",
-				"QC",
-				"KARTU BARANG OK",
+				'Jumlah Produksi',
+				'Jumlah QC',
+				'Send to Finish Good',
+				'QC',
+				'KARTU BARANG OK',
 			];
-		case "finish_good":
-			return ["Jumlah QC", "Jumlah FG", "Diterima", "FG", "KARTU BARANG OK"];
+		case 'finish_good':
+			return ['Jumlah QC', 'Jumlah FG', 'Diterima', 'FG', 'KARTU BARANG OK'];
 		default:
 			return [];
 	}
@@ -197,9 +197,9 @@ export function scanMapperByStatus(
 
 export function prevDataScan(target: TScanTarget, data: TScanItem) {
 	switch (target) {
-		case "qc":
+		case 'qc':
 			return {data: data.item_produksi, reject: data.item_qc_reject};
-		case "finish_good":
+		case 'finish_good':
 			return {data: data.item_qc, reject: null};
 		default:
 			return {data: null, reject: null};
@@ -207,30 +207,30 @@ export function prevDataScan(target: TScanTarget, data: TScanItem) {
 }
 
 export function copyToClipboard(str: string) {
-	const el = document.createElement("textarea");
+	const el = document.createElement('textarea');
 	el.value = str;
-	el.setAttribute("readonly", "");
-	el.style.position = "absolute";
-	el.style.left = "-9999px";
+	el.setAttribute('readonly', '');
+	el.style.position = 'absolute';
+	el.style.left = '-9999px';
 	document.body.appendChild(el);
 	el.select();
-	document.execCommand("copy");
+	document.execCommand('copy');
 	document.body.removeChild(el);
-	alert("Token copied");
+	alert('Token copied');
 }
 
-export function scanRouterParser(route: Route["route"], isRejected?: boolean) {
-	const isProduksi = route === "produksi";
-	const isQC = route === "qc";
-	const isFG = route === "finish_good";
+export function scanRouterParser(route: Route['route'], isRejected?: boolean) {
+	const isProduksi = route === 'produksi';
+	const isQC = route === 'qc';
+	const isFG = route === 'finish_good';
 
 	const title = isProduksi
-		? "Produksi"
+		? 'Produksi'
 		: isQC
-		? "QC"
+		? 'QC'
 		: isFG
-		? "Finish Good"
-		: "";
+		? 'Finish Good'
+		: '';
 
 	return {
 		isQC,
@@ -238,12 +238,12 @@ export function scanRouterParser(route: Route["route"], isRejected?: boolean) {
 		title,
 		isProduksi,
 		colSpan: !isProduksi ? 5 : 4,
-		width: !isProduksi ? "20%" : "25%",
+		width: !isProduksi ? '20%' : '25%',
 		rejectTitle: isRejected
-			? "Alasan reject"
+			? 'Alasan reject'
 			: isQC
-			? "Silahkan sertakan alasan jika Anda ingin menolaknya."
-			: "",
+			? 'Silahkan sertakan alasan jika Anda ingin menolaknya.'
+			: '',
 	};
 }
 
@@ -253,12 +253,12 @@ export function atLeastOneDefined(
 	return Object.values(obj).some(v => v !== undefined);
 }
 
-export function modalTypeParser(type?: ModalTypeSelect, pageName = "") {
-	const isAdd = type === "add";
-	const isEdit = type === "edit";
-	const isPreview = type === "preview";
-	const isDelete = type === "delete";
-	const isSelect = type === "select";
+export function modalTypeParser(type?: ModalTypeSelect, pageName = '') {
+	const isAdd = type === 'add';
+	const isEdit = type === 'edit';
+	const isPreview = type === 'preview';
+	const isDelete = type === 'delete';
+	const isSelect = type === 'select';
 	const isPreviewEdit = isEdit || isPreview;
 
 	return {
@@ -270,16 +270,16 @@ export function modalTypeParser(type?: ModalTypeSelect, pageName = "") {
 		isPreviewEdit,
 		get modalTitle() {
 			switch (type) {
-				case "add":
+				case 'add':
 					return `Tambah ${pageName}`;
-				case "edit":
+				case 'edit':
 					return `Ubah ${pageName}`;
-				case "preview":
+				case 'preview':
 					return `Detail ${pageName}`;
-				case "delete":
+				case 'delete':
 					return `Hapus ${pageName}`;
 				default:
-					return "";
+					return '';
 			}
 		},
 	};
@@ -293,7 +293,7 @@ export function toBase64(
 
 	reader.readAsDataURL(file);
 	reader.onload = function () {
-		if (typeof reader?.result === "string") callback(reader.result);
+		if (typeof reader?.result === 'string') callback(reader.result);
 
 		callback(null);
 	};
@@ -306,19 +306,19 @@ export function toBase64(
 
 export async function generatePDF(
 	ids: string[],
-	filename = "a4",
-	orientation: jsPDFOptions["orientation"] = "p",
+	filename = 'a4',
+	orientation: jsPDFOptions['orientation'] = 'p',
 ) {
-	let doc = new jsPDF({unit: "mm", orientation, format: "a4"});
+	let doc = new jsPDF({unit: 'mm', orientation, format: 'a4'});
 
 	const pageHeight = doc.internal.pageSize.getHeight();
 	const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
 	const scaleWidth =
-		orientation === "p" || orientation === "portrait" ? paperA4[0] : paperA4[1];
+		orientation === 'p' || orientation === 'portrait' ? paperA4[0] : paperA4[1];
 
 	for (let index = 0; index < elements.length; index++) {
 		const element = elements[index];
-		if (index + 1 < elements.length) doc.addPage("a4", orientation);
+		if (index + 1 < elements.length) doc.addPage('a4', orientation);
 		doc = await htmlPage(doc, element!, index);
 	}
 
@@ -343,11 +343,11 @@ export async function generatePDF(
 
 export function paperSizeCalculator(
 	width: number,
-	options?: {orientation?: jsPDFOptions["orientation"]; minus?: number},
+	options?: {orientation?: jsPDFOptions['orientation']; minus?: number},
 ): [width: number, height: number] {
-	const {orientation = "p", minus = 0} = options ?? {};
+	const {orientation = 'p', minus = 0} = options ?? {};
 	const [a, b] = paperA4;
-	const isPortrait = orientation === "p" || orientation === "portrait";
+	const isPortrait = orientation === 'p' || orientation === 'portrait';
 	const scale = isPortrait ? a / b : b / a;
 	const height = width / scale;
 
@@ -361,7 +361,7 @@ export function exportData<T extends object>(
 ) {
 	if (!data) return;
 
-	const [filename = "data", sheetName = "Sheet 1"] = names ?? [];
+	const [filename = 'data', sheetName = 'Sheet 1'] = names ?? [];
 
 	const workbook = XLSX.utils.book_new();
 	workbook.SheetNames.push(sheetName);
@@ -377,7 +377,7 @@ export function importData<T extends object>(file?: File) {
 		fileReader.onload = event => {
 			const data = event.target?.result;
 
-			const workbook = XLSX.read(data, {type: "binary"});
+			const workbook = XLSX.read(data, {type: 'binary'});
 
 			Object.values(workbook.Sheets).forEach((sheet, i) => {
 				if (i > 0) return;
@@ -439,7 +439,7 @@ export function sleep(timeout = 1000) {
 }
 
 export function mutateCallback(
-	{hide, show}: Pick<ReturnType<typeof useLoader>, "hide" | "show">,
+	{hide, show}: Pick<ReturnType<typeof useLoader>, 'hide' | 'show'>,
 	withDefault = true,
 ): any {
 	return {

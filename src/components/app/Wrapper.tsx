@@ -1,13 +1,13 @@
-import {Text} from "@components";
-import {gap} from "@constants";
-import {classNames} from "@utils";
+import {Text} from '@components';
+import {gap} from '@constants';
+import {classNames} from '@utils';
 
 export type WrapperProps = {
 	noColon?: boolean;
 	transparent?: boolean;
 	sizes?: [title?: string, description?: string];
 	className?: string;
-} & Partial<Record<"title" | "children" | "gap", string | null>>;
+} & Partial<Record<'title' | 'children' | 'gap', string | null>>;
 
 export function Wrapper({
 	gap: gapSpacing = gap,
@@ -18,15 +18,15 @@ export function Wrapper({
 	noColon,
 	transparent,
 }: WrapperProps) {
-	const [sizeTitle, sizeDesc] = sizes ?? ["w-1/4", "flex-1"];
+	const [sizeTitle, sizeDesc] = sizes ?? ['w-1/4', 'flex-1'];
 
 	return (
-		<div className={classNames("flex", gapSpacing)}>
+		<div className={classNames('flex', gapSpacing)}>
 			<Text
 				className={classNames(
-					"p-2",
+					'p-2',
 					sizeTitle,
-					{"bg-white": !transparent},
+					{'bg-white': !transparent},
 					className,
 				)}
 				color="black">
@@ -35,8 +35,8 @@ export function Wrapper({
 			{!noColon && (
 				<Text
 					className={classNames(
-						"p-2 px-4",
-						{"bg-white": !transparent},
+						'p-2 px-4',
+						{'bg-white': !transparent},
 						className,
 					)}>
 					:
@@ -44,9 +44,9 @@ export function Wrapper({
 			)}
 			<Text
 				className={classNames(
-					"p-2",
+					'p-2',
 					sizeDesc,
-					{"bg-white": !transparent},
+					{'bg-white': !transparent},
 					className,
 				)}
 				color="black">

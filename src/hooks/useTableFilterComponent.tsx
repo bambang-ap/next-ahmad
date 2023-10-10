@@ -1,54 +1,54 @@
-import {useRef} from "react";
+import {useRef} from 'react';
 
-import {DeepPartialSkipArrayKey, FieldValues, useWatch} from "react-hook-form";
+import {DeepPartialSkipArrayKey, FieldValues, useWatch} from 'react-hook-form';
 
-import {GenExportProps, useGenExport} from "@appComponent/GenerateExport";
+import {GenExportProps, useGenExport} from '@appComponent/GenerateExport';
 import {
 	GeneratePdfV2,
 	GenPdfProps,
 	GenPdfRef,
 	SelectAllButton,
-} from "@appComponent/GeneratePdfV2";
+} from '@appComponent/GeneratePdfV2';
 import {
 	FormProps,
 	ModalTypeSelect,
 	PagingResult,
 	TableFormValue,
-} from "@appTypes/app.type";
-import {Button} from "@baseComps/Touchable/Button";
-import {useExport, useLoader, useTableFilter} from "@hooks";
-import {UseTRPCQueryResult} from "@trpc/react-query/shared";
+} from '@appTypes/app.type';
+import {Button} from '@baseComps/Touchable/Button';
+import {useExport, useLoader, useTableFilter} from '@hooks';
+import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 import {
 	modalTypeParser,
 	nullRenderItem,
 	nullUseQuery,
 	sleep,
 	transformIds,
-} from "@utils";
+} from '@utils';
 
 import {
 	Cells,
 	CellSelect as SelectCell,
 	CellSelectProps,
 	TableProps,
-} from "../components/base/Table";
-import {TableFilter} from "../components/base/Table/TableFilter";
+} from '../components/base/Table';
+import {TableFilter} from '../components/base/Table/TableFilter';
 
 type PrintData = (id: string) => void;
-type G<F extends FieldValues> = Pick<CellSelectProps<F>, "fieldName">;
+type G<F extends FieldValues> = Pick<CellSelectProps<F>, 'fieldName'>;
 export type Fields = {type: ModalTypeSelect} & FieldValues;
 export type TableFilterProps<T, F extends Fields> = Omit<
 	TableProps<
 		T,
 		Cells & {printData: PrintData; CellSelect: (props: G<F>) => JSX.Element}
 	>,
-	"bottomComponent" | "data"
+	'bottomComponent' | 'data'
 > & {
 	disableSearch?: boolean;
 };
 
 type PropsA<T extends {}, F extends Fields> = TableFilterProps<T, F> &
-	FormProps<F, "control" | "reset">;
+	FormProps<F, 'control' | 'reset'>;
 type Props<
 	T extends {},
 	F extends Fields,
@@ -67,7 +67,7 @@ type Props<
 		form: TableFormValue,
 	) => UseTRPCQueryResult<PagingResult<T>, unknown>;
 
-	exportRenderItem: (item: NonNullable<EQ["data"]>[number]) => ER;
+	exportRenderItem: (item: NonNullable<EQ['data']>[number]) => ER;
 	exportUseQuery: () => EQ;
 
 	afterPrint?: NoopVoid;
@@ -131,7 +131,7 @@ export function useTableFilterComponent<
 	) : (
 		<>
 			{(enabledExport || enabledPdf) && (
-				<Button onClick={() => reset(prev => ({...prev, type: "select"}))}>
+				<Button onClick={() => reset(prev => ({...prev, type: 'select'}))}>
 					Select
 				</Button>
 			)}
@@ -147,14 +147,14 @@ export function useTableFilterComponent<
 		if (!enabledPdf) return;
 
 		loader?.show?.();
-		if (typeof idOrAll === "string") {
+		if (typeof idOrAll === 'string') {
 			reset(prev => ({...prev, [property]: {[idOrAll]: true}}));
 			await sleep(250);
 			return printData(true);
 		} else {
 			if (selectedIds.length <= 0) {
 				loader?.hide?.();
-				return alert("Silahkan pilih data terlebih dahulu");
+				return alert('Silahkan pilih data terlebih dahulu');
 			}
 		}
 		await genPdfRef.current?.generate();
@@ -219,7 +219,7 @@ export function useTableFilterComponentV2<
 >(
 	props: Omit<
 		Props<T, F, P, any, any, any, PT, PQ>,
-		"exportRenderItem" | "exportUseQuery" | "enabledExport"
+		'exportRenderItem' | 'exportUseQuery' | 'enabledExport'
 	> & {
 		exportOptions?: GenExportProps<TT, WT>;
 	},
