@@ -1,5 +1,5 @@
 import {TItemUnit} from '@appTypes/app.type';
-import {REJECT_REASON, REJECT_REASON_VIEW} from '@enum';
+import {MenuColorClass, REJECT_REASON, REJECT_REASON_VIEW} from '@enum';
 import type {J, U} from '@trpc/routers/dashboard/main';
 import {classNames, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -31,26 +31,38 @@ export function useQtyData() {
 	});
 
 	const dataList: Data[] = [
-		['PO', dataPo, classNames('bg-emerald-500 text-white ')],
-		['SJ Masuk', dataSppbIn, classNames('bg-amber-500 text-white')],
-		['Kanban', dataKanban, classNames('bg-cyan-500 text-white')],
-		['Produksi', dataProduksi, classNames('bg-blue-500 text-white')],
-		['QC', dataQc, classNames('bg-fuchsia-500 text-white')],
-		['Finish Good', dataFg, classNames('bg-lime-500 text-white')],
-		['SJ Keluar', dataSppbOut, classNames('bg-rose-500 text-white')],
+		['PO', dataPo, classNames(MenuColorClass.PO, 'text-white')],
+		['SJ Masuk', dataSppbIn, classNames(MenuColorClass.SJIn, 'text-white')],
+		['Kanban', dataKanban, classNames(MenuColorClass.Kanban, 'text-white')],
+		['Produksi', dataProduksi, classNames(MenuColorClass.Prod, 'text-white')],
+		['QC', dataQc, classNames(MenuColorClass.QC, 'text-white')],
+		['Finish Good', dataFg, classNames(MenuColorClass.FG, 'text-white')],
+		['SJ Keluar', dataSppbOut, classNames(MenuColorClass.SJOut, 'text-white')],
 		[
 			REJECT_REASON_VIEW.TP,
 			dataRejectTP,
-			classNames('bg-indigo-500 text-white'),
+			classNames(MenuColorClass[REJECT_REASON.TP], 'text-white'),
 		],
-		[REJECT_REASON_VIEW.RP, dataRejectRP, classNames('bg-teal-500 text-white')],
+		[
+			REJECT_REASON_VIEW.RP,
+			dataRejectRP,
+			classNames(MenuColorClass[REJECT_REASON.RP], 'text-white'),
+		],
 		[
 			REJECT_REASON_VIEW.SC,
 			dataRejectSC,
-			classNames('bg-yellow-500 text-white'),
+			classNames(MenuColorClass[REJECT_REASON.SC], 'text-white'),
 		],
-		['OT PO', [dataPo, dataSppbIn], classNames('bg-violet-500 text-white')],
-		['OT Produksi', [dataKanban, dataFg], classNames('bg-sky-500 text-white')],
+		[
+			'OT PO',
+			[dataPo, dataSppbIn],
+			classNames(MenuColorClass.OtPO, 'text-white'),
+		],
+		[
+			'OT Produksi',
+			[dataKanban, dataFg],
+			classNames(MenuColorClass.OtProd, 'text-white'),
+		],
 	];
 
 	function qtyParser(unit: TItemUnit) {

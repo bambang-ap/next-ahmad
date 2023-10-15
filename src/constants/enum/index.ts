@@ -1,5 +1,7 @@
 import {z} from 'zod';
 
+import {classNames, twColors} from '@utils';
+
 export enum CATEGORY_REJECT {
 	A = 'Test Piece',
 	B = 'Re-Proses',
@@ -93,6 +95,37 @@ export enum CRUD_ENABLED {
 	DOCUMENT = 'document_number',
 	ITEM = 'master_item',
 }
+
+export const MenuColorClass = {
+	PO: classNames('bg-emerald-500'),
+	SJIn: classNames('bg-amber-500'),
+	Kanban: classNames('bg-cyan-500'),
+	Prod: classNames('bg-blue-500'),
+	QC: classNames('bg-fuchsia-500'),
+	FG: classNames('bg-lime-500'),
+	SJOut: classNames('bg-rose-500'),
+	[REJECT_REASON.TP]: classNames('bg-indigo-500'),
+	[REJECT_REASON.RP]: classNames('bg-teal-500'),
+	[REJECT_REASON.SC]: classNames('bg-yellow-500'),
+	OtPO: classNames('bg-violet-500'),
+	OtProd: classNames('bg-sky-500'),
+
+	Mesin: classNames('bg-stone-500'),
+	Vehicle: classNames('bg-amber-700'),
+	Cust: classNames('bg-emerald-500'),
+	Material: classNames('bg-teal-500'),
+};
+
+export const MenuColor = Object.entries(MenuColorClass).reduce(
+	(ret, [a, b]) => {
+		type J = typeof twColors;
+		type K = keyof J;
+		type O = keyof J['cyan'];
+		const [aa, bb] = b.replace(/bg-/, '').split('-') as [K, O];
+		return {...ret, [a]: twColors[aa][bb]};
+	},
+	{} as typeof MenuColorClass,
+);
 
 export const Z_TABLES = z.nativeEnum(TABLES);
 export const Z_CRUD_ENABLED = z.nativeEnum(CRUD_ENABLED);

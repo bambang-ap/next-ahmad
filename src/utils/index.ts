@@ -33,6 +33,8 @@ let typingTimer: NodeJS.Timeout;
 
 momentTz.tz.setDefault('Asia/Jakarta');
 
+export {default as twColors} from 'tailwindcss/colors';
+
 export const moment = momentTz.default;
 
 export function typingCallback(callback: () => void, timeout = 500) {

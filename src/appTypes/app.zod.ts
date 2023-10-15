@@ -479,7 +479,7 @@ export const tDashboardInput = z.object({
 	path: z.string().optional(),
 	image: z.string().optional(),
 	count: z.promise(z.number()),
-	className: z.string().optional(),
+	bgColor: z.string().optional(),
 });
 
 export type TDashboard = z.infer<typeof tDashboard>;

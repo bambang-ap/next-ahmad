@@ -14,7 +14,7 @@ export default function TotalCount() {
 
 	return (
 		<div className="-m-1 flex flex-wrap md:-m-2">
-			{data?.map(({path, className: color, image, title, count = 0}, i) => {
+			{data?.map(({path, bgColor, image, title, count = 0}, i) => {
 				function navigate() {
 					push(path!);
 				}
@@ -26,12 +26,10 @@ export default function TotalCount() {
 							['w-1/4']: !isMobile,
 						})}>
 						<div
+							style={{backgroundColor: bgColor}}
 							className={classNames(
 								'flex flex-col flex-1 justify-between',
 								'h-[150px]',
-								'bg-cyan-600',
-								'bg-green-600',
-								color,
 							)}>
 							<div className="flex p-4 justify-between items-center">
 								<div className="flex flex-col flex-1">
