@@ -5,6 +5,7 @@ import {ButtonGroup} from '@components';
 import {DashboardSelectView} from '@constants';
 
 import BarChart from './BarChart';
+import MachineDashboard from './Machine';
 import MainDashboard from './Main';
 import TotalCount from './TotalCount';
 
@@ -37,6 +38,8 @@ function RenderView({control}: {control: Control<J>}) {
 			return <BarChart />;
 		case 'line':
 			return <BarChart type="line" />;
+		case 'machine':
+			return <MachineDashboard />;
 		default:
 			return <TotalCount />;
 	}

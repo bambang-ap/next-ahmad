@@ -32,7 +32,7 @@
 		"telp",
 		"TRPC",
 		"Upsert",
-		"USPPB"
+		"Utama"
 	],
 	"[javascript]": {
 		"editor.defaultFormatter": "esbenp.prettier-vscode"

@@ -1,20 +1,22 @@
-import {Op} from "sequelize";
+import {Op} from 'sequelize';
 
-import {TDashboard, TDashboardTitle, TItemUnit} from "@appTypes/app.type";
-import {unitData} from "@constants";
-import {OrmCustomerPOItem} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure, router} from "@trpc";
-import {qtyMap} from "@utils";
+import {TDashboard, TDashboardTitle, TItemUnit} from '@appTypes/app.type';
+import {unitData} from '@constants';
+import {OrmCustomerPOItem} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure, router} from '@trpc';
+import {qtyMap} from '@utils';
 
-import {appRouter} from "..";
+import {appRouter} from '..';
 
-import {defaultDashboardRouter} from "./default";
-import mainDashboardRouter from "./main";
+import {defaultDashboardRouter} from './default';
+import machineDashboardRouters from './machine';
+import mainDashboardRouter from './main';
 
 const dashboardRouters = router({
 	...defaultDashboardRouter,
 	main: mainDashboardRouter,
+	machine: machineDashboardRouters,
 	unitCountPoItem: procedure.query(({ctx}) => {
 		return checkCredentialV2(ctx, async () => {
 			const items = unitData.map(async unit => {
@@ -35,7 +37,7 @@ const dashboardRouters = router({
 						})
 							.filter(Boolean)
 							.reduce((ret, [, , c]) => {
-								const qty = parseFloat(c?.toString() ?? "0");
+								const qty = parseFloat(c?.toString() ?? '0');
 								return ret + qty;
 							}, 0);
 					})
@@ -47,15 +49,16 @@ const dashboardRouters = router({
 			return Promise.all(items);
 		});
 	}),
+
 	businessProcess: procedure.query(async ({ctx}): Promise<TDashboard[]> => {
 		const parameters: TDashboardTitle[] = [
-			"PO",
-			"SPPB In",
-			"Kanban",
-			"Scan Produksi",
-			"Scan QC",
-			"Scan Finish Good",
-			"SPPB Out",
+			'PO',
+			'SPPB In',
+			'Kanban',
+			'Scan Produksi',
+			'Scan QC',
+			'Scan Finish Good',
+			'SPPB Out',
 		];
 		const routerCaller = appRouter.createCaller(ctx);
 		const datas = await routerCaller.dashboard.totalCount();

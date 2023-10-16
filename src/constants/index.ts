@@ -69,6 +69,7 @@ export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'total', label: 'Total Records'},
 	{value: 'main', label: 'Dashboard Utama'},
 	{value: 'bar', label: 'Business Process'},
+	{value: 'machine', label: 'Dashboard Mesin Produksi'},
 ];
 
 export const cuttingLineClassName =

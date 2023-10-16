@@ -1,6 +1,6 @@
-import {Includeable} from "sequelize";
+import {Includeable} from 'sequelize';
 
-import {Route, TScanTarget} from "@appTypes/app.type";
+import {Route, TScanTarget, UnitQty, UnitUnit} from '@appTypes/app.type';
 import {
 	tCustomer,
 	tCustomerPO,
@@ -16,7 +16,7 @@ import {
 	TScan,
 	tScan,
 	tUser,
-} from "@appTypes/app.zod";
+} from '@appTypes/app.zod';
 import {
 	attrParser,
 	attrParserExclude,
@@ -26,7 +26,9 @@ import {
 	dInItem,
 	dItem,
 	dKanban,
+	dKatMesin,
 	dKnbItem,
+	dMesin,
 	dOutItem,
 	dPo,
 	dPoItem,
@@ -39,26 +41,26 @@ import {
 	dVehicle,
 	NumberOrderAttribute,
 	OrmKanban,
-} from "@database";
-import {PO_STATUS} from "@enum";
+} from '@database';
+import {PO_STATUS} from '@enum';
 
 export function getPrintPoAttributes() {
-	const Po = attrParserExclude(dPo, ["id", "id_customer"]);
+	const Po = attrParserExclude(dPo, ['id', 'id_customer']);
 	const PoItem = attrParserExclude(dPoItem, [
-		"harga",
-		"id",
-		"id_po",
-		"master_item_id",
+		'harga',
+		'id',
+		'id_po',
+		'master_item_id',
 	]);
-	const InItem = attrParserV2(dInItem, ["qty1", "qty2", "qty3"]);
-	const OutItem = attrParserV2(dOutItem, ["qty1", "qty2", "qty3"]);
-	const KnbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
-	const ScanItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
-	const Kanban = attrParserV2(dKanban, ["nomor_kanban"]);
-	const Scan = attrParserV2(dScan, ["status"]);
-	const SJIn = attrParserV2(dSJIn, ["nomor_surat"]);
-	const Item = attrParserV2(dItem, ["name", "kode_item"]);
-	const Cust = attrParserV2(dCust, ["name"]);
+	const InItem = attrParserV2(dInItem, ['qty1', 'qty2', 'qty3']);
+	const OutItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
+	const KnbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);
+	const ScanItem = attrParserV2(dScanItem, ['qty1', 'qty2', 'qty3']);
+	const Kanban = attrParserV2(dKanban, ['nomor_kanban']);
+	const Scan = attrParserV2(dScan, ['status']);
+	const SJIn = attrParserV2(dSJIn, ['nomor_surat']);
+	const Item = attrParserV2(dItem, ['name', 'kode_item']);
+	const Cust = attrParserV2(dCust, ['name']);
 
 	const poIncludeAble: Includeable[] = [
 		Cust,
@@ -116,9 +118,9 @@ export function getPrintPoAttributes() {
 }
 
 export function sppbInGetPage() {
-	const A = attrParser(tCustomerSPPBIn, ["tgl", "id", "id_po", "nomor_surat"]);
-	const B = attrParser(tCustomerPO, ["nomor_po"]);
-	const C = attrParser(tCustomer, ["name", "id"]);
+	const A = attrParser(tCustomerSPPBIn, ['tgl', 'id', 'id_po', 'nomor_surat']);
+	const B = attrParser(tCustomerPO, ['nomor_po']);
+	const C = attrParser(tCustomer, ['name', 'id']);
 	const D = attrParser(tPOItemSppbIn);
 	const E = attrParser(tPOItem);
 	const F = attrParser(tMasterItem);
@@ -135,18 +137,18 @@ export function sppbInGetPage() {
 }
 
 export function exportKanbanAttributes() {
-	const A = attrParser(tKanban, ["nomor_kanban", "keterangan"]);
-	const B = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
-	const C = attrParser(tPOItemSppbIn, ["id_item", "id"]);
-	const D = attrParser(tCustomerPO, ["nomor_po"]);
-	const E = attrParser(tCustomer, ["name"]);
-	const F = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
-	const G = attrParser(tKanbanItem, ["id_item", "qty1", "qty2", "qty3"]);
+	const A = attrParser(tKanban, ['nomor_kanban', 'keterangan']);
+	const B = attrParser(tCustomerSPPBIn, ['nomor_surat']);
+	const C = attrParser(tPOItemSppbIn, ['id_item', 'id']);
+	const D = attrParser(tCustomerPO, ['nomor_po']);
+	const E = attrParser(tCustomer, ['name']);
+	const F = attrParser(tPOItem, ['id', 'unit1', 'unit2', 'unit3']);
+	const G = attrParser(tKanbanItem, ['id_item', 'qty1', 'qty2', 'qty3']);
 	const H = attrParser(tMasterItem, [
-		"kode_item",
-		"name",
-		"instruksi",
-		"kategori_mesinn",
+		'kode_item',
+		'name',
+		'instruksi',
+		'kategori_mesinn',
 	]);
 
 	type Ret = typeof A.obj & {
@@ -161,54 +163,54 @@ export function exportKanbanAttributes() {
 	};
 
 	type Output = Record<
-		| "CUSTOMER"
-		| "NOMOR PO"
-		| "NOMOR SJ"
-		| "NOMOR KANBAN"
-		| "PART NAME"
-		| "PART NO"
-		| "QTY / JUMLAH"
-		| "PROSES"
-		| "KETERANGAN",
+		| 'CUSTOMER'
+		| 'NOMOR PO'
+		| 'NOMOR SJ'
+		| 'NOMOR KANBAN'
+		| 'PART NAME'
+		| 'PART NO'
+		| 'QTY / JUMLAH'
+		| 'PROSES'
+		| 'KETERANGAN',
 		string
 	>;
 
 	return {A, B, C, D, E, F, G, H, Ret: {} as Ret, Output: {} as Output};
 }
-export function exportScanAttributes(route: Route["route"]) {
+export function exportScanAttributes(route: Route['route']) {
 	type Output = Record<
-		| "NO"
-		| "TANGGAL PROSES"
-		| "CUSTOMER"
-		| "PART NAME"
-		| "PART NO"
-		| "QTY / JUMLAH"
-		| "WAKTU / JAM PROSES"
-		| "NO LOT CUSTOMER"
-		| "NO LOT IMI"
-		| "PROSES"
-		| "NOMOR KANBAN"
-		| "NOMOR MESIN"
-		| "NAMA MESIN"
-		| "KETERANGAN",
+		| 'NO'
+		| 'TANGGAL PROSES'
+		| 'CUSTOMER'
+		| 'PART NAME'
+		| 'PART NO'
+		| 'QTY / JUMLAH'
+		| 'WAKTU / JAM PROSES'
+		| 'NO LOT CUSTOMER'
+		| 'NO LOT IMI'
+		| 'PROSES'
+		| 'NOMOR KANBAN'
+		| 'NOMOR MESIN'
+		| 'NAMA MESIN'
+		| 'KETERANGAN',
 		string
 	>;
 
-	const A = attrParser(tScan, ["date", "lot_no_imi", `item_${route}`]);
-	const B = attrParser(tKanban, ["nomor_kanban", "list_mesin", "keterangan"]);
-	const C = attrParser(tCustomerSPPBIn, ["id"]);
-	const D = attrParser(tPOItemSppbIn, ["id", "id_item", "lot_no"]);
-	const E = attrParser(tCustomerPO, ["id"]);
-	const F = attrParser(tCustomer, ["name"]);
-	const G = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
-	const H = attrParser(tKanbanItem, ["id_item"]);
+	const A = attrParser(tScan, ['date', 'lot_no_imi', `item_${route}`]);
+	const B = attrParser(tKanban, ['nomor_kanban', 'list_mesin', 'keterangan']);
+	const C = attrParser(tCustomerSPPBIn, ['id']);
+	const D = attrParser(tPOItemSppbIn, ['id', 'id_item', 'lot_no']);
+	const E = attrParser(tCustomerPO, ['id']);
+	const F = attrParser(tCustomer, ['name']);
+	const G = attrParser(tPOItem, ['id', 'unit1', 'unit2', 'unit3']);
+	const H = attrParser(tKanbanItem, ['id_item']);
 	const I = attrParser(tMasterItem, [
-		"instruksi",
-		"kategori_mesinn",
-		"name",
-		"kode_item",
+		'instruksi',
+		'kategori_mesinn',
+		'name',
+		'kode_item',
 	]);
-	const J = attrParser(tPOItemSppbIn, ["id"]);
+	const J = attrParser(tPOItemSppbIn, ['id']);
 
 	type Ret = typeof A.obj & {
 		OrmKanban: typeof B.obj & {
@@ -230,15 +232,15 @@ export function exportScanAttributes(route: Route["route"]) {
 }
 
 export function scanListAttributes() {
-	const scan = attrParserV2(dScan, ["id", "id_kanban", "status", "updatedAt"]);
+	const scan = attrParserV2(dScan, ['id', 'id_kanban', 'status', 'updatedAt']);
 	const kanban = attrParserV2(dKanban, [
-		"nomor_kanban",
-		"createdAt",
-		"keterangan",
+		'nomor_kanban',
+		'createdAt',
+		'keterangan',
 	]);
-	const sjIn = attrParserV2(dSJIn, ["nomor_surat"]);
-	const po = attrParserV2(dPo, ["nomor_po"]);
-	const cust = attrParserV2(dCust, ["name"]);
+	const sjIn = attrParserV2(dSJIn, ['nomor_surat']);
+	const po = attrParserV2(dPo, ['nomor_po']);
+	const cust = attrParserV2(dCust, ['name']);
 
 	const num = NumberOrderAttribute<TScan>('"dScan"."id"');
 
@@ -255,30 +257,30 @@ export function scanListAttributes() {
 
 export function printScanAttributes() {
 	const scan = attrParserV2(dScan, [
-		"id_kanban",
-		"notes",
-		"updatedAt",
-		"lot_no_imi",
+		'id_kanban',
+		'notes',
+		'updatedAt',
+		'lot_no_imi',
 	]);
 	const scnItem = attrParserV2(dScanItem);
 	const kanban = attrParserV2(dKanban, [
-		"id",
-		"keterangan",
-		"nomor_kanban",
-		"list_mesin",
+		'id',
+		'keterangan',
+		'nomor_kanban',
+		'list_mesin',
 	]);
-	const po = attrParserV2(dPo, ["id"]);
-	const cust = attrParserV2(dCust, ["name"]);
-	const knbItem = attrParserV2(dKnbItem, ["id"]);
+	const po = attrParserV2(dPo, ['id']);
+	const cust = attrParserV2(dCust, ['name']);
+	const knbItem = attrParserV2(dKnbItem, ['id']);
 	const item = attrParserV2(dItem, [
-		"instruksi",
-		"kategori_mesinn",
-		"name",
-		"kode_item",
+		'instruksi',
+		'kategori_mesinn',
+		'name',
+		'kode_item',
 	]);
-	const inItem = attrParserV2(dInItem, ["id", "lot_no"]);
-	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
-	const sjIn = attrParserV2(dSJIn, ["nomor_surat"]);
+	const inItem = attrParserV2(dInItem, ['id', 'lot_no']);
+	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
+	const sjIn = attrParserV2(dSJIn, ['nomor_surat']);
 
 	type Ret = typeof scan.obj & {
 		dScanItems: (typeof scnItem.obj & {
@@ -311,25 +313,25 @@ export function printScanAttributes() {
 }
 
 export function getScanAttributesV2() {
-	const scn = attrParserExclude(dScan, ["id_kanban"]);
-	const scnId = attrParserV2(dScan, ["id"]);
+	const scn = attrParserExclude(dScan, ['id_kanban']);
+	const scnId = attrParserV2(dScan, ['id']);
 	const knb = attrParserV2(dKanban, [
-		"id",
-		"list_mesin",
-		"keterangan",
-		"createdAt",
+		'id',
+		'list_mesin',
+		'keterangan',
+		'createdAt',
 	]);
-	const scItem = attrParserExclude(dScanItem, ["id_scan"]);
-	const scItemId = attrParserV2(dScanItem, ["id"]);
-	const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
-	const user = attrParserV2(dUser, ["name"]);
-	const bin = attrParserV2(dSJIn, ["nomor_surat"]);
-	const po = attrParserV2(dPo, ["id", "nomor_po"]);
-	const cust = attrParserV2(dCust, ["id", "name"]);
-	const mItem = attrParserV2(dItem, ["kode_item", "name", "id"]);
-	const binItem = attrParserV2(dInItem, ["id"]);
+	const scItem = attrParserExclude(dScanItem, ['id_scan']);
+	const scItemId = attrParserV2(dScanItem, ['id']);
+	const knbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);
+	const user = attrParserV2(dUser, ['name']);
+	const bin = attrParserV2(dSJIn, ['nomor_surat']);
+	const po = attrParserV2(dPo, ['id', 'nomor_po']);
+	const cust = attrParserV2(dCust, ['id', 'name']);
+	const mItem = attrParserV2(dItem, ['kode_item', 'name', 'id']);
+	const binItem = attrParserV2(dInItem, ['id']);
 	const sciReject = attrParserV2(dRejItem);
-	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
+	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
 
 	type Ret = Partial<typeof scn.obj> & {
 		dScanItems?: (typeof scItem.obj & {
@@ -377,30 +379,30 @@ export function getScanAttributesV2() {
 
 export function getScanAttributes(route: TScanTarget) {
 	const A = attrParser(tScan, [
-		"lot_no_imi",
-		"item_qc_reject",
-		"item_qc_reject_category",
-		"notes",
-		"item_from_kanban",
-		"id_customer",
+		'lot_no_imi',
+		'item_qc_reject',
+		'item_qc_reject_category',
+		'notes',
+		'item_from_kanban',
+		'id_customer',
 		`item_${route}`,
 		`status_${route}`,
 	]);
 	const B = attrParser(tKanban, [
-		"id",
-		"nomor_kanban",
-		"keterangan",
-		"list_mesin",
-		"createdAt",
+		'id',
+		'nomor_kanban',
+		'keterangan',
+		'list_mesin',
+		'createdAt',
 	]);
-	const C = attrParser(tUser, ["name"]);
-	const D = attrParser(tCustomerPO, ["nomor_po"]);
-	const E = attrParser(tCustomer, ["name"]);
-	const F = attrParser(tCustomerSPPBIn, ["nomor_surat"]);
-	const G = attrParser(tKanbanItem, ["id_item", "id", "qty1", "qty2", "qty3"]);
-	const H = attrParser(tPOItemSppbIn, ["id"]);
+	const C = attrParser(tUser, ['name']);
+	const D = attrParser(tCustomerPO, ['nomor_po']);
+	const E = attrParser(tCustomer, ['name']);
+	const F = attrParser(tCustomerSPPBIn, ['nomor_surat']);
+	const G = attrParser(tKanbanItem, ['id_item', 'id', 'qty1', 'qty2', 'qty3']);
+	const H = attrParser(tPOItemSppbIn, ['id']);
 	const I = attrParser(tPOItem);
-	const J = attrParser(tMasterItem, ["kode_item", "name"]);
+	const J = attrParser(tMasterItem, ['kode_item', 'name']);
 
 	type Ret = typeof A.obj & {
 		OrmKanban: typeof B.obj & {
@@ -420,7 +422,7 @@ export function getScanAttributes(route: TScanTarget) {
 
 export function poGetAttributes() {
 	const A = attrParser(tCustomerPO);
-	const B = attrParser(tCustomer, ["name"]);
+	const B = attrParser(tCustomer, ['name']);
 	const C = attrParser(tPOItem);
 	const D = attrParser(tMasterItem);
 
@@ -435,21 +437,21 @@ export function poGetAttributes() {
 
 export function sppbOutGetAttributes() {
 	const A = attrParser(tCustomerSPPBOutItem, [
-		"id",
-		"id_item",
-		"qty1",
-		"qty2",
-		"qty3",
+		'id',
+		'id_item',
+		'qty1',
+		'qty2',
+		'qty3',
 	]);
 	const B = attrParser(tCustomerSPPBOut);
 	const C = attrParser(tPOItemSppbIn, [
-		"id_item",
-		"id_sppb_in",
-		"master_item_id",
+		'id_item',
+		'id_sppb_in',
+		'master_item_id',
 	]);
-	const D = attrParser(tCustomerSPPBIn, ["id_po"]);
-	const E = attrParser(tCustomer, ["name"]);
-	const F = attrParser(tKendaraan, ["name"]);
+	const D = attrParser(tCustomerSPPBIn, ['id_po']);
+	const E = attrParser(tCustomer, ['name']);
+	const F = attrParser(tKendaraan, ['name']);
 
 	type Ret = typeof B.obj & {
 		OrmCustomer: typeof E.obj;
@@ -465,24 +467,24 @@ export function sppbOutGetAttributes() {
 }
 
 export function getPOSppbOutAttributes() {
-	const kanban = attrParserV2(dKanban, ["id"]);
+	const kanban = attrParserV2(dKanban, ['id']);
 	const sjIn = attrParserV2(dSJIn);
 	const po = attrParserV2(dPo);
-	const scn = attrParserV2(dScan, ["id", "lot_no_imi", "status"]);
-	const scnItem = attrParserV2(dScanItem, ["qty1", "qty2", "qty3"]);
-	const rejItem = attrParserExclude(dRejItem, ["id", "id_item"]);
-	const item = attrParserV2(dItem, ["name", "kode_item", "id"]);
+	const scn = attrParserV2(dScan, ['id', 'lot_no_imi', 'status']);
+	const scnItem = attrParserV2(dScanItem, ['qty1', 'qty2', 'qty3']);
+	const rejItem = attrParserExclude(dRejItem, ['id', 'id_item']);
+	const item = attrParserV2(dItem, ['name', 'kode_item', 'id']);
 	const inItem = attrParserV2(dInItem, [
-		"id",
-		"qty1",
-		"qty2",
-		"qty3",
-		"lot_no",
+		'id',
+		'qty1',
+		'qty2',
+		'qty3',
+		'lot_no',
 	]);
-	const sjOut = attrParserExclude(dSjOut, ["id"]);
-	const outItem = attrParserV2(dOutItem, ["id", "qty1", "qty2", "qty3"]);
-	const poItem = attrParserV2(dPoItem, ["id", "unit1", "unit2", "unit3"]);
-	const knbItem = attrParserV2(dKnbItem, ["id", "qty1", "qty2", "qty3"]);
+	const sjOut = attrParserExclude(dSjOut, ['id']);
+	const outItem = attrParserV2(dOutItem, ['id', 'qty1', 'qty2', 'qty3']);
+	const poItem = attrParserV2(dPoItem, ['id', 'unit1', 'unit2', 'unit3']);
+	const knbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);
 
 	const sjInInclude: Includeable = {
 		...sjIn,
@@ -564,24 +566,24 @@ export function printSppbOutAttributes() {
 		po,
 	} = getPOSppbOutAttributes();
 	const sjOut = attrParserV2(dSjOut, [
-		"id",
-		"id_customer",
-		"date",
-		"invoice_no",
-		"keterangan",
+		'id',
+		'id_customer',
+		'date',
+		'invoice_no',
+		'keterangan',
 	]);
-	const vehicle = attrParserV2(dVehicle, ["name"]);
-	const customer = attrParserV2(dCust, ["name", "alamat"]);
-	const outItem = attrParserV2(dOutItem, ["qty1", "qty2", "qty3"]);
-	const inItem = attrParserV2(dInItem, ["lot_no"]);
+	const vehicle = attrParserV2(dVehicle, ['name']);
+	const customer = attrParserV2(dCust, ['name', 'alamat']);
+	const outItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
+	const inItem = attrParserV2(dInItem, ['lot_no']);
 	const item = attrParserV2(dItem, [
-		"instruksi",
-		"kategori_mesinn",
-		"name",
-		"keterangan",
+		'instruksi',
+		'kategori_mesinn',
+		'name',
+		'keterangan',
 	]);
-	const poItem = attrParserV2(dPoItem, ["unit1", "unit2", "unit3"]);
-	const doc = attrParserV2(dDoc, ["doc_no", "tgl_efektif", "revisi", "terbit"]);
+	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
+	const doc = attrParserV2(dDoc, ['doc_no', 'tgl_efektif', 'revisi', 'terbit']);
 
 	const sjInInclude: Includeable = {
 		...sjIn,
@@ -651,19 +653,19 @@ export function printSppbOutAttributes() {
 }
 
 export function sppbOutGetPoAttributes() {
-	const A = attrParser(tKanban, ["id"]);
+	const A = attrParser(tKanban, ['id']);
 	const B = attrParser(tCustomerSPPBIn);
 	const C = attrParser(tCustomerPO);
 	const D = attrParser(tScan, [
-		"item_finish_good",
-		"status_finish_good",
-		"lot_no_imi",
+		'item_finish_good',
+		'status_finish_good',
+		'lot_no_imi',
 	]);
-	const E = attrParser(tPOItemSppbIn, ["id", "qty1", "qty2", "qty3", "lot_no"]);
-	const F = attrParser(tCustomerSPPBOutItem, ["id", "qty1", "qty2", "qty3"]);
-	const G = attrParser(tMasterItem, ["name", "kode_item", "id"]);
-	const H = attrParser(tPOItem, ["id", "unit1", "unit2", "unit3"]);
-	const I = attrParser(tKanbanItem, ["id", "qty1", "qty2", "qty3"]);
+	const E = attrParser(tPOItemSppbIn, ['id', 'qty1', 'qty2', 'qty3', 'lot_no']);
+	const F = attrParser(tCustomerSPPBOutItem, ['id', 'qty1', 'qty2', 'qty3']);
+	const G = attrParser(tMasterItem, ['name', 'kode_item', 'id']);
+	const H = attrParser(tPOItem, ['id', 'unit1', 'unit2', 'unit3']);
+	const I = attrParser(tKanbanItem, ['id', 'qty1', 'qty2', 'qty3']);
 
 	type Ret = typeof C.obj & {
 		OrmCustomerSPPBIns: (typeof B.obj & {
@@ -694,4 +696,47 @@ export function getRejectAttributes() {
 	};
 
 	return {rejScan, scanItem, scan, Ret: {} as Ret};
+}
+
+export function dashboardMesinAttributes() {
+	const scan = attrParserV2(dScan, ['status']);
+	const scnItem = attrParserExclude(dScanItem, [
+		'id',
+		'id_kanban_item',
+		'id_scan',
+	]);
+	const knbItem = attrParserV2(dKnbItem, ['id']);
+	const inItem = attrParserV2(dInItem, ['id']);
+	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
+	const mesin = attrParserExclude(dMesin, ['name']);
+	const katMesin = attrParserV2(dKatMesin, ['name']);
+
+	type Ret = typeof scnItem.obj & {
+		dScan: typeof scan.obj;
+		dKnbItem: typeof knbItem.obj & {
+			dInItem: typeof inItem.obj & {dPoItem: typeof poItem.obj};
+			dMesin: typeof mesin.obj & {dKatMesin: typeof katMesin.obj};
+		};
+	};
+
+	type Rett = Record<
+		string,
+		{
+			mesin: Ret['dKnbItem']['dMesin'];
+			data: {planning: UnitQty; produksi: UnitQty; unit: UnitUnit};
+		}
+	>;
+
+	return {
+		scan,
+		inItem,
+		scnItem,
+		knbItem,
+		mesin,
+		katMesin,
+		poItem,
+
+		Ret: {} as Ret,
+		Rett: {} as Rett,
+	};
 }

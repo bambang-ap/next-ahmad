@@ -297,7 +297,8 @@ CREATE TABLE public.kanban_item (
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     master_item_id character varying(47),
-    id_item_po character varying(47)
+    id_item_po character varying(47),
+    id_mesin character varying(47)
 );
 
 

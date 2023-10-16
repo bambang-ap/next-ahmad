@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod';
 
 import {
 	AppRouterCaller,
@@ -16,15 +16,15 @@ import {
 	TMesin,
 	TParameter,
 	TParameterKategori,
-} from "@appTypes/app.type";
+} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	TCustomerPO,
 	TCustomerSPPBIn,
 	tKanban,
 	tMasterItem,
-} from "@appTypes/app.zod";
-import {ItemDetail} from "@appTypes/props.type";
+} from '@appTypes/app.zod';
+import {ItemDetail} from '@appTypes/props.type';
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -45,12 +45,12 @@ import {
 	OrmScan,
 	OrmUser,
 	wherePagesV2,
-} from "@database";
-import {checkCredentialV2, pagingResult} from "@server";
-import {procedure} from "@trpc";
-import {appRouter} from "@trpc/routers";
+} from '@database';
+import {checkCredentialV2, pagingResult} from '@server';
+import {procedure} from '@trpc';
+import {appRouter} from '@trpc/routers';
 
-import kanbanPoRouters from "./po";
+import kanbanPoRouters from './po';
 
 type KJKD = {
 	dataProcess: DataProcess[];
@@ -67,9 +67,9 @@ export type DataProcess = {
 export const kanbanGet = {
 	po: kanbanPoRouters,
 	availableMesins: procedure.input(z.string()).query(({ctx, input}) => {
-		return checkCredentialV2(ctx, async (): Promise<TMesin[]> => {
+		return checkCredentialV2(ctx, async () => {
 			const mesins = await OrmMesin.findAll({where: {kategori_mesin: input}});
-			return mesins.map(e => e.dataValues);
+			return mesins.map(e => e.toJSON());
 		});
 	}),
 	nameMesin: procedure
@@ -150,14 +150,14 @@ export const kanbanGet = {
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,
-				order: [["nomor_kanban", "desc"]],
+				order: [['nomor_kanban', 'desc']],
 				offset: (page - 1) * limit,
 				where: wherePagesV2<UUU>(
 					[
-						"nomor_kanban",
-						"$OrmCustomerPO.nomor_po$",
-						"$OrmCustomerSPPBIn.nomor_surat$",
-						"$OrmCustomerPO.OrmCustomer.name$",
+						'nomor_kanban',
+						'$OrmCustomerPO.nomor_po$',
+						'$OrmCustomerSPPBIn.nomor_surat$',
+						'$OrmCustomerPO.OrmCustomer.name$',
 					],
 					search,
 				),
@@ -166,7 +166,7 @@ export const kanbanGet = {
 					{
 						model: OrmCustomerPO,
 						include: [OrmCustomer],
-						attributes: ["id", "nomor_po"] as (keyof TCustomerPO)[],
+						attributes: ['id', 'nomor_po'] as (keyof TCustomerPO)[],
 					},
 				],
 			});
@@ -182,7 +182,7 @@ export const kanbanGet = {
 	get: procedure
 		.input(
 			z.object({
-				type: z.literal("kanban"),
+				type: z.literal('kanban'),
 				where: tKanban.partial().optional(),
 			}),
 		)
@@ -193,8 +193,8 @@ export const kanbanGet = {
 				async (): Promise<KanbanGetRow[]> => {
 					const dataKanban = await OrmKanban.findAll({
 						where,
-						attributes: ["id"],
-						order: [["nomor_kanban", "asc"]],
+						attributes: ['id'],
+						order: [['nomor_kanban', 'asc']],
 					});
 					const detailedKanban = await Promise.all(
 						dataKanban.map(e => routerCaller.kanban.detail(e.dataValues.id)),
@@ -268,7 +268,7 @@ export const kanbanGet = {
 					const dataProcess = await kjsdfjh(mesin.dataValues.kategori_mesin);
 					return {
 						dataProcess,
-						mesin: mesin.dataValues as KJKD["mesin"],
+						mesin: mesin.dataValues as KJKD['mesin'],
 					};
 				});
 
@@ -288,7 +288,7 @@ async function parseDetailKanban(
 		include: [OrmMasterItem],
 	});
 	const dataSppbIn = await routerCaller.sppb.in.get({
-		type: "sppb_in",
+		type: 'sppb_in',
 		where: {id: id_sppb_in},
 	});
 	const dataScan = await OrmScan.findOne({where: {id_kanban: id}});
@@ -312,7 +312,7 @@ async function parseDetailKanban(
 					id_sppb_in: this.dataSppbIn?.id,
 				};
 				return ret;
-			}, {} as KanbanGetRow["items"]);
+			}, {} as KanbanGetRow['items']);
 		},
 	};
 

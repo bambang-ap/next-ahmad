@@ -2,12 +2,7 @@ import {z} from 'zod';
 
 import {SelectPropsData} from '@components';
 import {defaultLimit} from '@constants';
-import {
-	CATEGORY_REJECT_DB,
-	CRUD_ENABLED,
-	REJECT_REASON,
-	REJECT_REASON_VIEW,
-} from '@enum';
+import {CATEGORY_REJECT_DB, REJECT_REASON, REJECT_REASON_VIEW} from '@enum';
 
 export type TDecimal = z.infer<typeof zDecimal>;
 export const zDecimal = z
@@ -209,6 +204,7 @@ export const tKanbanItem = zId.extend({
 	id_item: z.string(),
 	master_item_id: z.string(),
 	id_item_po: z.string(),
+	id_mesin: z.string().optional(),
 	...unitQty.shape,
 });
 
@@ -241,12 +237,6 @@ export const tKanbanExtended = tKanban.extend({
 	mesin: tMesin.array().nullish(),
 	instruksi_kanban: tInstruksiKanban.array().nullish(),
 });
-
-export type USPPB = z.infer<typeof uSPPB>;
-export const uSPPB = z.union([
-	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_IN),
-	z.literal(CRUD_ENABLED.CUSTOMER_SPPB_OUT),
-]);
 
 export type ItemsSppb = z.infer<typeof itemsSppb>;
 export const itemsSppb = tPOItem.pick({id: true, qty1: true}).partial().array();
@@ -555,7 +545,7 @@ export const tDashboardView = z
 	.or(z.literal('main'))
 	.or(z.literal('bar'))
 	.or(z.literal('line'))
-	.or(z.literal('donut'));
+	.or(z.literal('machine'));
 
 export type TSPPBRelation = z.infer<typeof tSPPBRelation>;
 export const tSPPBRelation = zId.extend({
