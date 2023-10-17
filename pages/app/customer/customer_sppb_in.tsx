@@ -102,13 +102,14 @@ export default function SPPBIN() {
 				keyExtractor={item => item?.id}
 				topComponent={<Button onClick={() => showModal('add', {})}>Add</Button>}
 				header={[
+					'No',
 					'Tanggal Surat Jalan',
 					'Nomor PO',
 					'Customer',
 					'Nomor Surat Jalan',
 					!isSelect && 'Action',
 				]}
-				renderItem={({Cell, item}: VRenderItem<SppbInRows>) => {
+				renderItem={({Cell, item}: VRenderItem<SppbInRows>, index: number) => {
 					const {id} = item;
 					return (
 						<>
@@ -119,6 +120,7 @@ export default function SPPBIN() {
 									fieldName={`idSppbIns.${item.id}`}
 								/>
 							)}
+							<Cell>{index + 1}</Cell>
 							<Cell>{dateUtils.date(item.tgl)}</Cell>
 							<Cell>{item.OrmCustomerPO?.nomor_po}</Cell>
 							<Cell>{item.OrmCustomerPO?.OrmCustomer.name}</Cell>

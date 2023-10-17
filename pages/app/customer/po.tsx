@@ -33,7 +33,15 @@ export default function POCustomer() {
 		reset,
 		control,
 		property,
-		header: ['Nomor PO', 'Customer', 'Tanggal', 'Due Date', 'Status', 'Action'],
+		header: [
+			'No',
+			'Nomor PO',
+			'Customer',
+			'Tanggal',
+			'Due Date',
+			'Status',
+			'Action',
+		],
 		topComponent: <Button onClick={() => showModal('add', {})}>Add</Button>,
 		exportOptions: {
 			headers,
@@ -45,7 +53,7 @@ export default function POCustomer() {
 				),
 		},
 		useQuery: form => trpc.customer_po.getV2.useQuery(form),
-		renderItem({item, Cell, CellSelect}) {
+		renderItem({item, Cell, CellSelect}, index) {
 			const {
 				id,
 				tgl_po,
@@ -58,6 +66,7 @@ export default function POCustomer() {
 			return (
 				<>
 					<CellSelect fieldName={`idPo.${id}`} />
+					<Cell>{index + 1}</Cell>
 					<Cell>{nomor_po}</Cell>
 					<Cell>{customer?.name}</Cell>
 					<Cell>{dateUtils.date(tgl_po)}</Cell>

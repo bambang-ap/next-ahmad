@@ -50,6 +50,7 @@ export default function SPPBOUT() {
 			),
 		exportRenderItem: renderItemAsIs,
 		header: [
+			'No',
 			'Nomor Surat',
 			'Kendaraan',
 			'Customer',
@@ -71,12 +72,13 @@ export default function SPPBOUT() {
 		},
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		useQuery: form => trpc.sppb.out.get.useQuery(form),
-		renderItem({Cell, CellSelect, item}) {
+		renderItem({Cell, CellSelect, item}, index) {
 			const {id} = item;
 
 			return (
 				<>
 					<CellSelect fieldName={`idSppbOuts.${id}`} />
+					<Cell>{index + 1}</Cell>
 					<Cell>{item.invoice_no}</Cell>
 					<Cell>{item.OrmKendaraan?.name}</Cell>
 					<Cell>{item.OrmCustomer?.name}</Cell>

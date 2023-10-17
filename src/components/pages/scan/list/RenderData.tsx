@@ -9,6 +9,7 @@ import type {ScanList} from '@trpc/routers/scan';
 import {dateUtils, modalTypeParser} from '@utils';
 
 type Props = {
+	index: number;
 	control: Control<ScanListFormType>;
 	printOne?: (idKanban: string) => void;
 } & GetProps<
@@ -17,7 +18,7 @@ type Props = {
 	Route;
 
 export function RenderData(props: PropsWithChildren<Props>) {
-	const {Cell, item, children, control, CellSelect} = props;
+	const {Cell, item, children, control, CellSelect, index} = props;
 
 	const {type: modalType} = useWatch({control});
 
@@ -30,6 +31,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 	return (
 		<>
 			{isSelect && <CellSelect fieldName={`idScans.${item.id}`} />}
+			<Cell>{index + 1}</Cell>
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
 			<Cell>{data.dPo.dCust.name}</Cell>
 			<Cell>{data.dPo.nomor_po}</Cell>

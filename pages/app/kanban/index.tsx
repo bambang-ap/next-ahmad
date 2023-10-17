@@ -57,6 +57,7 @@ export default function Kanban() {
 		reset,
 		property,
 		header: [
+			'No',
 			'Tanggal',
 			'Nomor PO',
 			'Nomor Kanban',
@@ -102,10 +103,11 @@ export default function Kanban() {
 			},
 		},
 		useQuery: form => trpc.kanban.getPage.useQuery(form),
-		renderItem: ({Cell, CellSelect, item}) => {
+		renderItem: ({Cell, CellSelect, item}, index) => {
 			return (
 				<>
 					<CellSelect fieldName={`idKanbans.${item.id}`} />
+					<Cell>{index + 1}</Cell>
 					<Cell>{dateUtils.date(item.createdAt)}</Cell>
 					<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
 					<Cell>{item.nomor_kanban}</Cell>

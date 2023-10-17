@@ -65,6 +65,7 @@ function RenderScanList() {
 
 		property,
 		header: [
+			'No',
 			'Tanggal',
 			'Customer',
 			'Nomor PO',
@@ -98,10 +99,11 @@ function RenderScanList() {
 				{enabled: selectedIds.length > 0},
 			),
 		useQuery: form => trpc.scan.list.useQuery({...form, target: route}),
-		renderItem(item) {
+		renderItem(item, index) {
 			return (
 				<RenderData
 					{...item}
+					index={index}
 					route={route}
 					control={control}
 					key={item.item.id_kanban}>
