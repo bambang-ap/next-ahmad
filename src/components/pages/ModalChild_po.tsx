@@ -15,7 +15,7 @@ import {
 import {formatDate, selectUnitData} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import type {PoGetV2} from '@trpc/routers/customer_po';
-import {moment, qtyMap} from '@utils';
+import {modalTypeParser, moment, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export type UQtyList = `qty${typeof qtyList[number]}`;
@@ -24,8 +24,7 @@ export const qtyList = [1, 2, 3] as const;
 export type FormType = PoGetV2 & {
 	type: ModalTypePreview;
 	idPo?: MyObject<boolean>;
-}; //& Pick<TCustomerPOExtended, "OrmCustomerPOItems">;
-
+};
 export default function PoModalChild({
 	control,
 	reset: resetForm,
@@ -52,10 +51,9 @@ export default function PoModalChild({
 		field: {onChange: onChangePoItem},
 	} = useController({control, name: 'OrmCustomerPOItems'});
 
-	const {headerTable, isPreview} = {
-		get isPreview() {
-			return modalType === 'preview';
-		},
+	const {isPreview, isPreviewEdit} = modalTypeParser(modalType);
+
+	const {headerTable} = {
 		get headerTable() {
 			const tableHeader: TableProps<any>['header'] = [
 				'No',
@@ -65,7 +63,7 @@ export default function PoModalChild({
 				...qtyList.map(num => `Jumlah ${num}`),
 			];
 
-			if (this.isPreview) return tableHeader;
+			if (isPreview) return tableHeader;
 			return [...tableHeader, 'Action'];
 		},
 	};
@@ -118,7 +116,7 @@ export default function PoModalChild({
 			<div className="flex gap-2">
 				<Select
 					className="flex-1"
-					disabled={isPreview}
+					disabled={isPreviewEdit}
 					firstOption="- Pilih customer -"
 					control={control}
 					data={mappedData}
@@ -165,13 +163,15 @@ export default function PoModalChild({
 							<Fragment key={item.id}>
 								<Cell>{index + 1}</Cell>
 								<Cell width="25%">
-									<Select
-										className="flex-1"
-										label="Nama Item"
-										control={control}
-										data={itemSelections}
-										fieldName={`OrmCustomerPOItems.${index}.master_item_id`}
-									/>
+									{itemSelections.length > 0 && (
+										<Select
+											className="flex-1"
+											label="Nama Item"
+											control={control}
+											data={itemSelections}
+											fieldName={`OrmCustomerPOItems.${index}.master_item_id`}
+										/>
+									)}
 								</Cell>
 								<Cell>{selectedItem?.kode_item}</Cell>
 								<Cell>

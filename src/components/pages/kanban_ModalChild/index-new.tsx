@@ -21,6 +21,7 @@ export function NewKanbanModalChild({
 	control,
 	reset,
 }: FormProps<ScanListFormType, 'control' | 'reset'>) {
+	const dataForm = useWatch({control});
 	const {
 		id: idKanban,
 		id_customer: idCustomer,
@@ -29,7 +30,7 @@ export function NewKanbanModalChild({
 		items: kanbanItems = {},
 		id_po,
 		type: modalType,
-	} = useWatch({control});
+	} = dataForm;
 
 	const {data: dataPo = [], isLoading: isLoadingPo} =
 		trpc.kanban.po.get.useQuery({id: idCustomer!}, {enabled: !!idCustomer});
@@ -129,14 +130,14 @@ export function NewKanbanModalChild({
 						label="PO"
 						isLoading={isLoadingPo}
 						data={selectMapper(
-							dataPo?.filter(e => !e.isClosed),
+							dataPo?.filter(e => e.id === id_po || !e.isClosed),
 							'id',
 							'nomor_po',
 						)}
 					/>
 				)}
 
-				{id_po && (
+				{!!selectedPo && (
 					<Select
 						className="flex-1"
 						control={control}
@@ -144,7 +145,9 @@ export function NewKanbanModalChild({
 						label="Surat Jalan Masuk"
 						firstOption="- Pilih Surat Jalan -"
 						data={selectMapper(
-							selectedPo?.OrmCustomerSPPBIns.filter(e => !e.isClosed) ?? [],
+							selectedPo?.OrmCustomerSPPBIns.filter(
+								e => e.id === idSppbIn || !e.isClosed,
+							) ?? [],
 							'id',
 							'nomor_surat',
 						)}
