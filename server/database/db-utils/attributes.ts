@@ -705,7 +705,7 @@ export function dashboardMesinAttributes() {
 		'id_kanban_item',
 		'id_scan',
 	]);
-	const knbItem = attrParserV2(dKnbItem, ['id']);
+	const knbItem = attrParserV2(dKnbItem, ['id_mesin']);
 	const inItem = attrParserV2(dInItem, ['id']);
 	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
 	const mesin = attrParserExclude(dMesin, ['name']);
@@ -715,7 +715,7 @@ export function dashboardMesinAttributes() {
 		dScan: typeof scan.obj;
 		dKnbItem: typeof knbItem.obj & {
 			dInItem: typeof inItem.obj & {dPoItem: typeof poItem.obj};
-			dMesin: typeof mesin.obj & {dKatMesin: typeof katMesin.obj};
+			dMesin?: typeof mesin.obj & {dKatMesin: typeof katMesin.obj};
 		};
 	};
 

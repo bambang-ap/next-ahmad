@@ -22,3 +22,14 @@ export function useTicker(enabled: boolean, max?: number) {
 
 	return tick;
 }
+
+export function useTickerText(enabled: boolean, max?: number) {
+	const tick = useTicker(enabled, max);
+	const isLoadingText = !enabled
+		? ''
+		: `Harap Tunggu${Array.from({length: tick})
+				.map(() => '.')
+				.join('')}`;
+
+	return {isLoadingText, tick};
+}

@@ -1,22 +1,32 @@
 import {Gallery} from '@baseComps/Gallery';
+import {useTickerText} from '@hooks';
 import {qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export default function MachineDashboard() {
-	const {data} = trpc.dashboard.machine.list.useQuery();
+	const {data, isFetching} = trpc.dashboard.machine.list.useQuery();
+	const {isLoadingText} = useTickerText(isFetching);
+
+	const machineData = entries(data);
+
+	if (isFetching) return <div>{isLoadingText}</div>;
+
+	if (machineData.length <= 0) {
+		return <div>Noting to see here, please insert a data</div>;
+	}
 
 	return (
 		<>
 			<Gallery
 				columns={5}
-				data={entries(data)}
+				data={machineData}
 				renderItem={({item: [, item]}) => {
-					const {nomor_mesin, dKatMesin} = item.mesin;
+					const {nomor_mesin, dKatMesin} = item.mesin ?? {};
 
 					return (
 						<div className="flex flex-col border-2 border-black">
 							<div className="px-4 py-2 text-center flex-1 font-bold text-md">
-								{dKatMesin.name} - {nomor_mesin}
+								{dKatMesin?.name} - {nomor_mesin}
 							</div>
 							<div className="border border-black" />
 							{qtyMap(({qtyKey, unitKey}) => {

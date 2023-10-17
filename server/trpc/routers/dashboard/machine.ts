@@ -1,3 +1,5 @@
+import {Op} from 'sequelize';
+
 import {dashboardMesinAttributes, wherePagesV3} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -23,7 +25,10 @@ const machineDashboardRouters = router({
 		return checkCredentialV2(ctx, async () => {
 			const scnItemData = await scnItem.model.findAll({
 				attributes: scnItem.attributes,
-				where: wherePagesV3<Ret>({'$dScan.status$': 'produksi'}),
+				where: wherePagesV3<Ret>({
+					'$dScan.status$': 'produksi',
+					'$dKnbItem.id_mesin$': {[Op.not]: null},
+				}),
 				include: [
 					{
 						...knbItem,
@@ -36,9 +41,17 @@ const machineDashboardRouters = router({
 				],
 			});
 
+			// return {
+			// 	a: {
+			// 		data: {},
+			// 		mesin: {},
+			// 		scnItemData,
+			// 	},
+			// };
+
 			return scnItemData.reduce<Rett>((ret, e) => {
 				const val = e.toJSON() as unknown as Ret;
-				const mesinId = val.dKnbItem.dMesin.id;
+				const mesinId = val.dKnbItem.dMesin?.id || 'tempId';
 				const {
 					dScan: __,
 					item_from_kanban,
