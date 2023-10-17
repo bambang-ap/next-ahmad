@@ -204,7 +204,7 @@ export const tKanbanItem = zId.extend({
 	id_item: z.string(),
 	master_item_id: z.string(),
 	id_item_po: z.string(),
-	id_mesin: z.string().optional(),
+	id_mesin: z.string().nullish(),
 	...unitQty.shape,
 });
 
