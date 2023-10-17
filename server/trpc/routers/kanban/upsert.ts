@@ -35,7 +35,7 @@ export const kanbanUpsert = {
 				});
 
 				const itemPromises = Object.entries(kanban_items)?.map(
-					([id_item, {id: idItemKanban, id_sppb_in, ...restItemKanban}], i) => {
+					([id_item, {id: idItemKanban, id_sppb_in, ...restItemKanban}]) => {
 						if (id_sppb_in !== rest.id_sppb_in) return null;
 
 						return OrmKanbanItem.upsert({
