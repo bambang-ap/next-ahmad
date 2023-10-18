@@ -17,17 +17,17 @@ export function RenderPdfData({
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
-		<div className={classNames('p-6', className, cuttingLineClassName)}>
+		<div className={classNames('p-2', className, cuttingLineClassName)}>
 			<div className={classNames(gap, padding, 'flex flex-col bg-black')}>
 				<div className={classNames('flex', gap)}>
-					<div className="bg-white flex justify-center flex-1 p-2">
+					<div className="bg-white flex justify-center flex-1 p-1">
 						<Text className="self-center text-4xl text-center">IMI</Text>
 					</div>
-					<div className="bg-white flex justify-center flex-1 p-2">
+					<div className="bg-white flex justify-center flex-1 p-1">
 						<Text className="self-center text-xl text-center">{cardName}</Text>
 					</div>
 					<div className={classNames('flex flex-col flex-1', gap)}>
-						<div className="bg-white flex justify-center flex-1 p-2">
+						<div className="bg-white flex justify-center flex-1 p-1">
 							<Text className="self-center">IMI/FORM/QC/01-14</Text>
 							{/* <Text className="self-center">{formId}</Text> */}
 						</div>

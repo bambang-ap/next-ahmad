@@ -96,15 +96,15 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 
 			<div className={classNames('flex min-h-[64px]', gap)}>
 				<div className="bg-white flex justify-center flex-1 p-2">
-					<Text className="self-center">LINE-PROCESS</Text>
+					<Text className="self-center text-lg mb-2">LINE-PROCESS</Text>
 				</div>
 				<div className="bg-white flex justify-center flex-1 p-2">
-					<Text className="self-center">
+					<Text className="self-center text-lg mb-2">
 						{processData?.map(e => e.name).join(', ')}
 					</Text>
 				</div>
 				<div className={classNames('bg-white flex flex-col flex-1', gap)}>
-					<div className="w-1/2 flex self-center">
+					<div className="w-2/5 flex self-center">
 						<img src={qrImageKanban} alt="" />
 					</div>
 				</div>

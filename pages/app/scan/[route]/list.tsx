@@ -7,7 +7,7 @@ import {useSetRecoilState} from 'recoil';
 
 import {Wrapper as Wrp, WrapperProps} from '@appComponent/Wrapper';
 import {Route} from '@appTypes/app.type';
-import {Button, Form, Modal, ModalRef} from '@components';
+import {Form, Modal, ModalRef} from '@components';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
@@ -52,7 +52,7 @@ function RenderScanList() {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {type} = formData;
-	const {isSelect, modalTitle, isPreview} = modalTypeParser(type);
+	const {modalTitle, isPreview} = modalTypeParser(type);
 	const {title, isQC} = scanRouterParser(route);
 
 	const dateHeader = `Tanggal ${title}`;
@@ -73,13 +73,13 @@ function RenderScanList() {
 			'Nomor Kanban',
 			'Keterangan',
 			dateHeader,
-			!isSelect && 'Action',
+			// !isSelect && 'Action',
 		],
 		genPdfOptions: isQC
 			? {
 					splitPagePer: 4,
 					orientation: 'l',
-					width: 2200,
+					width: 2000,
 					tagId: `${route}-generated`,
 					renderItem: data => (
 						<RenderPdfData className="w-1/2" data={data!} route={route} />
@@ -107,10 +107,10 @@ function RenderScanList() {
 					route={route}
 					control={control}
 					key={item.item.id_kanban}>
-					<Button
+					{/* <Button
 						icon="faMagnifyingGlass"
 						// onClick={() => preview(item.item.id_kanban)}
-					/>
+					/> */}
 				</RenderData>
 			);
 		},
@@ -133,7 +133,8 @@ export function Wrapper(props: WrapperProps) {
 		<Wrp
 			{...props}
 			noColon
-			sizes={['w-1/4 font-semibold', 'flex-1 font-semibold']}
+			smallPadding
+			sizes={['w-1/4 font-semibold text-lg', 'flex-1 font-semibold text-lg']}
 		/>
 	);
 }
