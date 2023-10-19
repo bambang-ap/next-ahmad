@@ -34,16 +34,16 @@ export default function MachineDashboard() {
 								const qtyPlanning = planning[qtyKey];
 								const qtyProduksi = produksi[qtyKey];
 
-								if (!qtyPlanning) return null;
+								if (!qtyPlanning || qtyPlanning == 0) return null;
 
 								return (
 									<div className="flex flex-1 justify-center py-2">
 										<div className="w-full px-4">
 											<div className="text-left font-bold text-2xl">
-												{qtyPlanning} {unit[unitKey]}
+												{qtyPlanning?.toFixed(2)} {unit[unitKey]}
 											</div>
 											<div className="text-right font-bold text-2xl">
-												{qtyProduksi} {unit[unitKey]}
+												{qtyProduksi?.toFixed(2)} {unit[unitKey]}
 											</div>
 										</div>
 									</div>

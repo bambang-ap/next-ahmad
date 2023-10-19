@@ -41,14 +41,6 @@ const machineDashboardRouters = router({
 				],
 			});
 
-			// return {
-			// 	a: {
-			// 		data: {},
-			// 		mesin: {},
-			// 		scnItemData,
-			// 	},
-			// };
-
 			return scnItemData.reduce<Rett>((ret, e) => {
 				const val = e.toJSON() as unknown as Ret;
 				const mesinId = val.dKnbItem.dMesin?.id || 'tempId';
