@@ -9,6 +9,7 @@ type Props = PropsWithChildren<{
 	onCheck?: (value: boolean) => void;
 	value?: boolean | '@';
 	label?: string | false;
+	disabled?: boolean;
 }>;
 
 export function CheckBox({
@@ -16,15 +17,16 @@ export function CheckBox({
 	className,
 	onCheck,
 	value,
+	disabled,
 	label,
 	children: errorMessage,
 }: Props) {
 	return (
 		<div
-			onClick={() => onCheck?.(!value)}
+			onClick={disabled ? noop : () => onCheck?.(!value)}
 			className={classNames(
-				'flex items-center cursor-pointer !px-0 !py-0',
-				{hidden},
+				'flex items-center !px-0 !py-0',
+				{hidden, 'cursor-pointer': !disabled, 'cursor-not-allowed': disabled},
 				className,
 			)}>
 			<div className="flex justify-center items-center mr-2 border rounded h-6 w-6">

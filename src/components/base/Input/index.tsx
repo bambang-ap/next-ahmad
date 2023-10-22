@@ -103,22 +103,6 @@ export function InputComponent<F extends FieldValues>(
 		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
 	}, [value, defaultValue]);
 
-	// if (isDisabled) {
-	// 	return (
-	// 		<div
-	// 			className={classNames(
-	// 				"flex flex-col",
-	// 				"px-4 py-2",
-	// 				"rounded-t-xl",
-	// 				"border border-b-black",
-	// 				className,
-	// 			)}>
-	// 			<Text className="text-sm">{label}</Text>
-	// 			<Text>{value}</Text>
-	// 		</div>
-	// 	);
-	// }
-
 	switch (type) {
 		case 'date': {
 			return (
@@ -182,6 +166,7 @@ export function InputComponent<F extends FieldValues>(
 					value={value}
 					hidden={hidden}
 					onCheck={onCheck}
+					disabled={isDisabled}
 					className={className}>
 					{errorMessage}
 				</CheckBox>

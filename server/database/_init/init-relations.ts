@@ -13,8 +13,13 @@ import {
 	dRejItem,
 	dScan,
 	dScanItem,
+	dSItem,
 	dSJIn,
 	dSjOut,
+	dSPo,
+	dSPoItem,
+	dSppbBridge,
+	dSSUp,
 	dUser,
 	dVehicle,
 	manyToMany,
@@ -48,8 +53,6 @@ import {
 	OrmSupplierPOItem,
 	OrmUser,
 } from '@database';
-
-import {dSppbBridge} from '../models/customer_sppb_relation';
 
 export function initRelations() {
 	oneToMany(OrmMasterItem, OrmCustomerPOItem, 'master_item_id');
@@ -130,9 +133,9 @@ export function initRelations() {
 	oneToMany(dKatMesin, dMesin, 'kategori_mesin');
 	oneToMany(dMesin, dKnbItem, 'id_mesin');
 
-	// oneToMany(dSSUp, dSItem, 'sup_id');
-	// oneToMany(dSSUp, dSPo, 'sup_id');
-	// oneToMany(dSPo, dSPoItem, 'id_po');
+	oneToMany(dSSUp, dSItem, 'sup_id');
+	oneToMany(dSSUp, dSPo, 'sup_id');
+	oneToMany(dSPo, dSPoItem, 'id_po');
 
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 
