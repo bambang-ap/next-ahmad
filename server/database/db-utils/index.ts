@@ -7,6 +7,7 @@ import {
 	ModelStatic,
 	Op,
 	Order,
+	Sequelize,
 	WhereAttributeHashValue,
 } from 'sequelize';
 import {
@@ -19,7 +20,11 @@ import {
 } from 'zod';
 
 import {Context, TMasterItem} from '@appTypes/app.type';
-import {defaultExcludeColumns} from '@constants';
+import {
+	defaultExcludeColumn,
+	defaultExcludeColumns,
+	defaultOrderBy,
+} from '@constants';
 import {appRouter} from '@trpc/routers';
 
 export * from './attributes';
@@ -73,6 +78,18 @@ export function attrParserExclude<T extends {}, K extends keyof T>(
 			? {exclude: defaultExcludeColumns}
 			: undefined) as FindAttributeOptions,
 	};
+}
+
+export function defaultScope(sequelize: Sequelize) {
+	return {
+		sequelize,
+		defaultScope: {
+			...defaultOrderBy,
+			attributes: {
+				exclude: defaultExcludeColumn,
+			},
+		},
+	} as const;
 }
 
 export function ormDecimalType(fieldName: string) {

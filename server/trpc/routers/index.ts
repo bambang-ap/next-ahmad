@@ -1,20 +1,21 @@
-import {router} from "@trpc";
-import {inferRouterInputs, inferRouterOutputs} from "@trpc/server";
+import {router} from '@trpc';
+import {inferRouterInputs, inferRouterOutputs} from '@trpc/server';
 
-import basicRouters from "./basic";
-import customer_poRouters from "./customer_po";
-import dashboardRouters from "./dashboard";
-import exportRouters from "./export";
-import itemRouters from "./item";
-import kanbanRouters from "./kanban";
-import menuRouters from "./menu";
-import miscRouter from "./misc";
-import printRouters from "./print";
-import rejectRouters from "./reject";
-import scanRouters from "./scan";
-import sppbRouters from "./sppb";
-import supplierRouters from "./supplier";
-import user_loginRouters from "./user_login";
+import basicRouters from './basic';
+import customer_poRouters from './customer_po';
+import dashboardRouters from './dashboard';
+import exportRouters from './export';
+import internalRouters from './internal';
+import itemRouters from './item';
+import kanbanRouters from './kanban';
+import menuRouters from './menu';
+import miscRouter from './misc';
+import printRouters from './print';
+import rejectRouters from './reject';
+import scanRouters from './scan';
+import sppbRouters from './sppb';
+import supplierRouters from './supplier';
+import user_loginRouters from './user_login';
 
 export const appRouter = router({
 	...miscRouter,
@@ -31,9 +32,10 @@ export const appRouter = router({
 	export: exportRouters,
 	print: printRouters,
 	reject: rejectRouters,
+	internal: internalRouters,
 });
 
 export type AppRouter = typeof appRouter;
-export type AppRouterCaller = ReturnType<AppRouter["createCaller"]>;
+export type AppRouterCaller = ReturnType<AppRouter['createCaller']>;
 export type RouterInput = inferRouterInputs<AppRouter>;
 export type RouterOutput = inferRouterOutputs<AppRouter>;

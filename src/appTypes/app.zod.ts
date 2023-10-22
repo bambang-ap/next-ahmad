@@ -558,3 +558,35 @@ export function getRejectSelection() {
 		([, value]) => ({label: REJECT_REASON_VIEW[value], value}),
 	);
 }
+
+export type SSupplier = z.infer<typeof sSupplier>;
+export const sSupplier = zId.extend({
+	nama: z.string(),
+	alamat: z.string(),
+	npwp: z.string(),
+});
+
+export type SItem = z.infer<typeof sItem>;
+export const sItem = zId.extend({
+	sup_id: z.string(),
+	nama: z.string(),
+	kode: z.string(),
+	ppn: z.boolean(),
+});
+
+export type SPo = z.infer<typeof sPo>;
+export const sPo = zId.extend({
+	sup_id: z.string(),
+	date: z.string(),
+	due_date: z.string(),
+});
+
+export type SPoItem = z.infer<typeof sPoItem>;
+export const sPoItem = zId.extend({
+	id_po: z.string(),
+	id_item: z.string(),
+	harga: zDecimal,
+	discount: zDecimal,
+	qty: zDecimal,
+	unit: tItemUnit,
+});

@@ -37,6 +37,13 @@ export enum REJECT_REASON_VIEW {
 	SC = 'Scrap',
 }
 
+export enum INTERNAL_TABLES {
+	ITEM = 'internal_item',
+	SUPPLIER = 'internal_supplier',
+	PO = 'internal_po',
+	PO_ITEM = 'internal_po_item',
+}
+
 export enum TABLES {
 	SUPPLIER = 'inv_supplier',
 	SUPPLIER_ITEM = 'inv_supplier_item',

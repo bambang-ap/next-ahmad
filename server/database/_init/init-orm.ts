@@ -1,41 +1,49 @@
-import {Sequelize} from "sequelize";
+import {Sequelize} from 'sequelize';
 
-import {initdRejItem, initdScan, initdScanItem} from "@database";
+import {
+	initdRejItem,
+	initdScan,
+	initdScanItem,
+	initSItem,
+	initSPo,
+	initSPoItem,
+	initSSup,
+} from '@database';
 
-import initOrmCustomer, {initCust} from "../models/customer";
-import initOrmCustomerPO, {initDPo} from "../models/customer_po";
-import initOrmCustomerPOItem, {initPoItem} from "../models/customer_po_item";
-import initOrmCustomerSPPBIn, {initDSJIn} from "../models/customer_sppb_in";
-import initOrmCustomerSPPBOut, {initSjOut} from "../models/customer_sppb_out";
+import initOrmCustomer, {initCust} from '../models/customer';
+import initOrmCustomerPO, {initDPo} from '../models/customer_po';
+import initOrmCustomerPOItem, {initPoItem} from '../models/customer_po_item';
+import initOrmCustomerSPPBIn, {initDSJIn} from '../models/customer_sppb_in';
+import initOrmCustomerSPPBOut, {initSjOut} from '../models/customer_sppb_out';
 import initOrmCustomerSPPBOutItem, {
 	initOutItem,
-} from "../models/customer_sppb_out_item";
-import initSppbBridge from "../models/customer_sppb_relation";
-import initOrmDocument, {initdDoc} from "../models/document";
-import initOrmHardness from "../models/hardness";
-import initOrmHardnessKategori from "../models/hardness_kategori";
-import initOrmMasterItem, {initDItem} from "../models/item";
-import initOrmKanban, {initDKanban} from "../models/kanban";
-import initOrmKanbanInstruksi from "../models/kanban_instruksi";
-import initOrmKanbanItem, {initDKanbanItem} from "../models/kanban_item";
-import initOrmKendaraan, {initVehicle} from "../models/kendaraan";
-import initOrmMaterial from "../models/material";
-import initOrmMaterialKategori from "../models/material_kategori";
-import initOrmMenu from "../models/menu";
-import initOrmMesin, {initMesin} from "../models/mesin";
-import initOrmKategoriMesin, {initKatMesin} from "../models/mesin_kategori";
-import initOrmParameter from "../models/parameter";
-import initOrmParameterKategori from "../models/parameter_kategori";
-import initOrmPOItemSppbIn, {initInItem} from "../models/po_item_sppb_in";
-import initOrmRole from "../models/role";
-import initOrmScan from "../models/scan";
-import initOrmSupplier from "../models/supplier";
-import initOrmSupplierItem from "../models/supplier_item";
-import initOrmSupItemRelation from "../models/supplier_item_relation";
-import initOrmSupplierPO from "../models/supplier_po";
-import initOrmSupplierPOItem from "../models/supplier_po_item";
-import initOrmUser, {initUser} from "../models/user";
-import initOrmCustomerLogin from "../models/user_login";
+} from '../models/customer_sppb_out_item';
+import initSppbBridge from '../models/customer_sppb_relation';
+import initOrmDocument, {initdDoc} from '../models/document';
+import initOrmHardness from '../models/hardness';
+import initOrmHardnessKategori from '../models/hardness_kategori';
+import initOrmMasterItem, {initDItem} from '../models/item';
+import initOrmKanban, {initDKanban} from '../models/kanban';
+import initOrmKanbanInstruksi from '../models/kanban_instruksi';
+import initOrmKanbanItem, {initDKanbanItem} from '../models/kanban_item';
+import initOrmKendaraan, {initVehicle} from '../models/kendaraan';
+import initOrmMaterial from '../models/material';
+import initOrmMaterialKategori from '../models/material_kategori';
+import initOrmMenu from '../models/menu';
+import initOrmMesin, {initMesin} from '../models/mesin';
+import initOrmKategoriMesin, {initKatMesin} from '../models/mesin_kategori';
+import initOrmParameter from '../models/parameter';
+import initOrmParameterKategori from '../models/parameter_kategori';
+import initOrmPOItemSppbIn, {initInItem} from '../models/po_item_sppb_in';
+import initOrmRole from '../models/role';
+import initOrmScan from '../models/scan';
+import initOrmSupplier from '../models/supplier';
+import initOrmSupplierItem from '../models/supplier_item';
+import initOrmSupItemRelation from '../models/supplier_item_relation';
+import initOrmSupplierPO from '../models/supplier_po';
+import initOrmSupplierPOItem from '../models/supplier_po_item';
+import initOrmUser, {initUser} from '../models/user';
+import initOrmCustomerLogin from '../models/user_login';
 
 export function initOrm(ORM: Sequelize) {
 	initOrmCustomer(ORM);
@@ -90,6 +98,11 @@ export function initOrm(ORM: Sequelize) {
 	initMesin(ORM);
 	initKatMesin(ORM);
 	initSppbBridge(ORM);
+
+	initSItem(ORM);
+	initSSup(ORM);
+	initSPo(ORM);
+	initSPoItem(ORM);
 
 	return Promise.resolve();
 }

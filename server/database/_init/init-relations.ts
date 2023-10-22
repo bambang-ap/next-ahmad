@@ -130,6 +130,10 @@ export function initRelations() {
 	oneToMany(dKatMesin, dMesin, 'kategori_mesin');
 	oneToMany(dMesin, dKnbItem, 'id_mesin');
 
+	// oneToMany(dSSUp, dSItem, 'sup_id');
+	// oneToMany(dSSUp, dSPo, 'sup_id');
+	// oneToMany(dSPo, dSPoItem, 'id_po');
+
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 
 	manyToMany([dSJIn, 'id'], [dSjOut, 'id'], [dSppbBridge, ['in_id', 'out_id']]);

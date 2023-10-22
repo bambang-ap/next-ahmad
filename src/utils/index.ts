@@ -459,9 +459,20 @@ export function getIds<
 	F extends Fields,
 	KK extends DeepPartialSkipArrayKey<F>,
 	P extends keyof KK,
->(dataForm: KK, property: P) {
-	const selectedIds = transformIds(dataForm[property]);
+>(dataForm: KK, property?: P) {
+	const selectedIds = !!property ? transformIds(dataForm[property]) : [];
 	return {selectedIds, property};
+}
+
+export function formParser<
+	F extends Fields,
+	KK extends DeepPartialSkipArrayKey<F>,
+	P extends keyof KK,
+>(dataForm: KK, {pageName, property}: {property?: P; pageName?: string}) {
+	const ids = getIds(dataForm, property);
+	const modal = modalTypeParser(dataForm.type, pageName);
+
+	return {...ids, ...modal};
 }
 
 export function transformIds(dataObj?: MyObject<undefined | boolean>) {

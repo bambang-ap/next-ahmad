@@ -59,7 +59,7 @@ type Props<
 	PT,
 	PQ extends UseTRPCQueryResult<PT[], unknown>,
 > = {
-	property: P;
+	property?: P;
 	selector?: ObjKeyof<T>;
 	enabledExport?: boolean;
 	onExport?: () => Promise<void>;
@@ -107,6 +107,7 @@ export function useTableFilterComponent<
 	const {formValue, hookForm} = useTableFilter();
 	const {data, refetch, isFetching} = useQuery(formValue);
 	const genPdfRef = useRef<GenPdfRef>(null);
+	const hasProp = !!property;
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const {mutateOpts, ...loader} = useLoader();
@@ -117,7 +118,7 @@ export function useTableFilterComponent<
 	);
 
 	const {isSelect} = modalTypeParser(dataForm.type);
-	const selectedIds = transformIds(dataForm[property]);
+	const selectedIds = hasProp ? transformIds(dataForm[property]) : [];
 	const enabledPdf = !!genPdfOptions;
 
 	const topComponent = isSelect ? (
@@ -140,10 +141,11 @@ export function useTableFilterComponent<
 	);
 
 	function onCancel() {
-		reset(prev => ({...prev, type: undefined, [property]: {}}));
+		if (hasProp) reset(prev => ({...prev, type: undefined, [property]: {}}));
 	}
 
 	async function printData(idOrAll: true | string): Promise<any> {
+		if (!hasProp) return;
 		if (!enabledPdf) return;
 
 		loader?.show?.();
@@ -186,7 +188,7 @@ export function useTableFilterComponent<
 					renderItemEach?.({...item, printData, CellSelect}, i)!
 				}
 				header={[
-					isSelect && (
+					hasProp && isSelect && (
 						<SelectAllButton
 							// @ts-ignore
 							data={data?.rows}
