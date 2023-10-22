@@ -28,6 +28,7 @@ export const uModalTypeSelect = z.union([
 
 export type TableFormValue = z.infer<typeof tableFormValue>;
 export const tableFormValue = z.object({
+	id: z.string().optional(),
 	search: z.string().optional(),
 	pageTotal: z.number().optional(),
 	page: z.number().optional().default(1),
@@ -571,7 +572,7 @@ export const sItem = zId.extend({
 	sup_id: z.string(),
 	nama: z.string(),
 	kode: z.string(),
-	ppn: z.boolean(),
+	ppn: z.boolean().default(false),
 });
 
 export type SPo = z.infer<typeof sPo>;
@@ -586,7 +587,17 @@ export const sPoItem = zId.extend({
 	id_po: z.string(),
 	id_item: z.string(),
 	harga: zDecimal,
-	discount: zDecimal,
 	qty: zDecimal,
 	unit: tItemUnit,
+	discount: zDecimal.optional(),
+});
+
+export type SPoUpsert = z.infer<typeof sPoUpsert>;
+export const sPoUpsert = sPo.partial({id: true}).extend({
+	dSSUp: sSupplier.optional(),
+	dSPoItems: sPoItem
+		.partial({id: true, id_po: true})
+		.extend({dSItem: sItem.optional(), temp_id: z.string().optional()})
+		.array()
+		.min(1),
 });

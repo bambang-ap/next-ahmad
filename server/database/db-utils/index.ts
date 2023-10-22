@@ -50,6 +50,30 @@ export function attrParser<
 	return {obj: {} as ObjType, keys: attributes as K[]};
 }
 
+export function attrParserZod<
+	T extends ZodRawShape,
+	K extends ObjKeyof<T>,
+	Mask extends noUnrecognized<objectKeyMask<T>, T>,
+>(schema: ZodObject<T>, model: ModelStatic<Model<any>>, attributes?: K[]) {
+	// TODO: Add omit options
+	let obj = schema;
+	if (attributes) {
+		const reducer = attributes.reduce(
+			(a, b) => ({...a, [b]: true}),
+			{} as Mask,
+		);
+		obj = schema.pick(reducer);
+	}
+	// @ts-ignore
+	type ObjType = Pick<z.infer<typeof obj>, K>;
+	return {
+		model,
+		zod: schema,
+		obj: {} as ObjType,
+		attributes: attributes as K[],
+	};
+}
+
 export function attrParserV2<T extends {}, K extends keyof T>(
 	model: ModelStatic<Model<T>>,
 	attributes?: K[],

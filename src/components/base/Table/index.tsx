@@ -116,7 +116,9 @@ export function Table<T>(props: TableProps<T, Cells>) {
 		);
 
 	return (
-		<div key={tableKey} className={classNames('w-full', className)}>
+		<div
+			key={tableKey}
+			className={classNames('flex flex-col w-full gap-2', className)}>
 			{topComponent}
 			<TableRoot>
 				{header && (

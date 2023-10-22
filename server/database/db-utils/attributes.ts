@@ -2,6 +2,7 @@ import {Includeable} from 'sequelize';
 
 import {Route, TScanTarget, UnitQty, UnitUnit} from '@appTypes/app.type';
 import {
+	SPoUpsert,
 	tCustomer,
 	tCustomerPO,
 	tCustomerSPPBIn,
@@ -35,8 +36,12 @@ import {
 	dRejItem,
 	dScan,
 	dScanItem,
+	dSItem,
 	dSJIn,
 	dSjOut,
+	dSPo,
+	dSPoItem,
+	dSSUp,
 	dUser,
 	dVehicle,
 	NumberOrderAttribute,
@@ -739,4 +744,15 @@ export function dashboardMesinAttributes() {
 		Ret: {} as Ret,
 		Rett: {} as Rett,
 	};
+}
+
+export function internalPoAttributes() {
+	const po = attrParserV2(dSPo);
+	const item = attrParserV2(dSItem);
+	const poItem = attrParserV2(dSPoItem);
+	const sup = attrParserV2(dSSUp);
+
+	type Ret = SPoUpsert;
+
+	return {po, item, poItem, sup, Ret: {} as Ret};
 }

@@ -136,6 +136,7 @@ export function initRelations() {
 	oneToMany(dSSUp, dSItem, 'sup_id');
 	oneToMany(dSSUp, dSPo, 'sup_id');
 	oneToMany(dSPo, dSPoItem, 'id_po');
+	oneToMany(dSItem, dSPoItem, 'id_item');
 
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 

@@ -13,6 +13,7 @@ export default function InventoryInternal() {
 			<Button onClick={() => push('/app/internal/form')}>
 				Form Permintaan
 			</Button>
+			<Button onClick={() => push('/app/internal/po')}>PO</Button>
 			<Button onClick={() => push('/app/internal/sj_in')}>SJ Masuk</Button>
 			<Button onClick={() => push('/app/internal/item')}>Item</Button>
 			<Button onClick={() => push('/app/internal/supplier')}>Supplier</Button>

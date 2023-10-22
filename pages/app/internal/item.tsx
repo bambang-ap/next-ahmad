@@ -118,6 +118,7 @@ function RenderModal({control}: FormProps<FormType>) {
 	return (
 		<div className="flex flex-col gap-2">
 			<Select
+				label="Supplier"
 				control={control}
 				fieldName="form.sup_id"
 				data={selectMapper(data?.rows ?? [], 'id', 'nama')}
