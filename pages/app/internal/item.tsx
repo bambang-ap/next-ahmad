@@ -40,16 +40,25 @@ export default function InternalItem() {
 		reset,
 		control,
 		useQuery: form => trpc.internal.item.get.useQuery(form),
-		header: ['No', 'Nama Supplier', 'Kode Item', 'Nama Item', 'PPN', 'Action'],
+		header: [
+			'No',
+			'Nama Supplier',
+			'Kode Item',
+			'Nama Item',
+			'Harga',
+			'PPN',
+			'Action',
+		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, item}, index) => {
-			const {dSSUp, kode, nama, ppn} = item;
+			const {dSSUp, kode, nama, harga, ppn} = item;
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp.nama}</Cell>
 					<Cell>{kode}</Cell>
 					<Cell>{nama}</Cell>
+					<Cell>{harga}</Cell>
 					<Cell>{ppn ? 'Ya' : 'Tidak'}</Cell>
 					<Cell className="gap-2">
 						<Button
@@ -125,6 +134,12 @@ function RenderModal({control}: FormProps<FormType>) {
 			/>
 			<Input control={control} fieldName="form.kode" label="Kode Item" />
 			<Input control={control} fieldName="form.nama" label="Nama Item" />
+			<Input
+				type="decimal"
+				control={control}
+				fieldName="form.harga"
+				label="Harga"
+			/>
 			<Input
 				type="checkbox"
 				control={control}

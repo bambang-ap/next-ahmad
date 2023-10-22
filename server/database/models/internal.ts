@@ -13,6 +13,7 @@ export function initSItem(sequelize: Sequelize) {
 			nama: STRING,
 			ppn: BOOLEAN,
 			sup_id: STRING,
+			harga: ormDecimalType('harga'),
 		},
 		{
 			...defaultScope(sequelize),
@@ -65,7 +66,6 @@ export function initSPoItem(sequelize: Sequelize) {
 		{
 			id: {type: STRING, primaryKey: true},
 			discount: ormDecimalType('discount'),
-			harga: ormDecimalType('harga'),
 			qty: ormDecimalType('qty'),
 			id_item: STRING,
 			id_po: STRING,

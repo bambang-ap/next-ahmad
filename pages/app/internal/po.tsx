@@ -8,6 +8,7 @@ import {
 	Button,
 	Form,
 	Input,
+	InputDummy,
 	Modal,
 	ModalRef,
 	Select,
@@ -175,7 +176,6 @@ function RenderModal({
 						Tambah Item
 					</Button>
 				}
-				header={['Kode Item', 'Nama Item', 'Jumlah', 'Action']}
 				data={form?.dSPoItems}
 				renderItem={({Cell, item}, i) => {
 					const idItem = item.id ?? item.temp_id!;
@@ -186,7 +186,7 @@ function RenderModal({
 					const itemSelections = selectMapper(
 						dataItem?.rows ?? [],
 						'id',
-						'nama',
+						'kode',
 					).filter(
 						e => e.value === item.id_item || !selectedItems.includes(e.value),
 					);
@@ -198,7 +198,7 @@ function RenderModal({
 								control={control}
 								fieldName={`form.dSPoItems.${i}.qty`}
 							/>
-							<Cell>
+							<Cell width="30%">
 								<Select
 									className="flex-1"
 									label="Kode Item"
@@ -207,14 +207,12 @@ function RenderModal({
 									fieldName={`form.dSPoItems.${i}.id_item`}
 								/>
 							</Cell>
-							<Cell>{nameItem}</Cell>
 							<Cell>
-								<Input
-									type="decimal"
+								<InputDummy
 									className="flex-1"
-									label="Harga"
-									control={control}
-									fieldName={`form.dSPoItems.${i}.harga`}
+									label="Nama Item"
+									byPassValue={nameItem}
+									disabled
 								/>
 							</Cell>
 							<Cell className="gap-2">

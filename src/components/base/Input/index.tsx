@@ -4,7 +4,7 @@ import {TextField, useTheme} from '@mui/material';
 import {CalendarPicker} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
-import {FieldValues} from 'react-hook-form';
+import {FieldValues, useForm} from 'react-hook-form';
 
 import {FormContext, Icon, Modal, ModalRef, Spinner, Text} from '@components';
 import {
@@ -242,4 +242,12 @@ export function InputComponent<F extends FieldValues>(
 			);
 		}
 	}
+}
+
+export function InputDummy(
+	props: Omit<GetProps<typeof Input>, 'control' | 'fieldName'>,
+) {
+	const {control} = useForm({defaultValues: {dummyInput: ''}});
+
+	return <Input control={control} fieldName="dummyInput" {...props} />;
 }

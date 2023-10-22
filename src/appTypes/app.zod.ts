@@ -572,6 +572,7 @@ export const sItem = zId.extend({
 	sup_id: z.string(),
 	nama: z.string(),
 	kode: z.string(),
+	harga: zDecimal,
 	ppn: z.boolean().default(false),
 });
 
@@ -586,7 +587,6 @@ export type SPoItem = z.infer<typeof sPoItem>;
 export const sPoItem = zId.extend({
 	id_po: z.string(),
 	id_item: z.string(),
-	harga: zDecimal,
 	qty: zDecimal,
 	unit: tItemUnit,
 	discount: zDecimal.optional(),
