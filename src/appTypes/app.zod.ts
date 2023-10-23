@@ -619,7 +619,7 @@ export const sInItem = zId.extend({
 
 export type SInUpsert = z.infer<typeof sInUpsert>;
 export const sInUpsert = sSjIn.partial({id: true}).extend({
-	oPo: sPo.extend({dSSUp: sSupplier.optional()}).optional(),
+	oPo: sPo.extend({oSup: sSupplier.optional()}).optional(),
 	oInItems: sInItem
 		.extend({
 			temp_id: z.string(),
