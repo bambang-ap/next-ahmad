@@ -41,6 +41,7 @@ import {
 	OrmMasterItem,
 	OrmMaterial,
 	OrmMaterialKategori,
+	OrmMenu,
 	OrmMesin,
 	OrmParameter,
 	OrmParameterKategori,
@@ -143,6 +144,7 @@ export function initRelations() {
 	oneToMany(oSjIn, oInItem, 'in_id');
 	oneToMany(oPoItem, oInItem, 'id_item');
 
+	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 
 	manyToMany([dSJIn, 'id'], [dSjOut, 'id'], [dSppbBridge, ['in_id', 'out_id']]);

@@ -5,19 +5,10 @@ import {
 	literal,
 	Model,
 	ModelStatic,
-	Op,
 	Order,
 	Sequelize,
-	WhereAttributeHashValue,
 } from 'sequelize';
-import {
-	noUnrecognized,
-	objectKeyMask,
-	Primitive,
-	z,
-	ZodObject,
-	ZodRawShape,
-} from 'zod';
+import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from 'zod';
 
 import {Context, TMasterItem} from '@appTypes/app.type';
 import {
@@ -30,6 +21,7 @@ import {appRouter} from '@trpc/routers';
 export * from './attributes';
 export * from './getPoStatus';
 export * from './relation';
+export * from './where';
 
 export function attrParser<
 	T extends ZodRawShape,
@@ -124,61 +116,6 @@ export function ormDecimalType(fieldName: string) {
 			const value = this?.getDataValue?.(fieldName);
 			return value ? parseFloat(value ?? 0) : 0;
 		},
-	};
-}
-
-export function wherePages(
-	searchKey?: string | string[],
-	search?: string,
-): any {
-	if (!searchKey || !search) return undefined;
-
-	if (!Array.isArray(searchKey)) {
-		return {
-			[searchKey]: {
-				[Op.iLike]: `%${search}%`,
-			},
-		};
-	}
-
-	return {
-		[Op.or]: searchKey.map(key => {
-			return {
-				[key]: {
-					[Op.iLike]: `%${search}%`,
-				},
-			};
-		}),
-	};
-}
-
-export function wherePagesV2<T extends {}>(
-	searchKey: (Path<ObjectNonArray<T>> | `$${Path<ObjectNonArray<T>>}$`)[],
-	search?: string | WhereAttributeHashValue<any>,
-	like = true,
-): any {
-	if (!search) return undefined;
-
-	return {
-		[Op.or]: searchKey.map(key => {
-			return {[key]: !like ? search : {[Op.iLike]: `%${search}%`}};
-		}),
-	};
-}
-
-export function wherePagesV3<T extends {}>(
-	searchKey: Partial<
-		Record<
-			Path<ObjectNonArray<T>> | `$${Path<ObjectNonArray<T>>}$`,
-			Primitive | WhereAttributeHashValue<any>
-		>
-	>,
-): any {
-	return {
-		[Op.and]: Object.entries(searchKey).map(keys => {
-			const [key, value] = keys;
-			return {[key]: value};
-		}),
 	};
 }
 
