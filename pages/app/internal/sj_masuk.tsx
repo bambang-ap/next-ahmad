@@ -3,7 +3,7 @@ import {FormEventHandler, Fragment, useRef} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
 
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
-import {SPoUpsert} from '@appTypes/app.zod';
+import {SInUpsert} from '@appTypes/app.zod';
 import {
 	Button,
 	Form,
@@ -14,15 +14,15 @@ import {
 	Select,
 	selectMapper,
 	Table,
+	Text,
 } from '@components';
-import {selectUnitData} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import {formParser, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
-	form: SPoUpsert;
+	form: SInUpsert;
 	type: ModalTypeSelect;
 	selectedIds: MyObject<boolean>;
 };
@@ -43,16 +43,16 @@ export default function InternalSiIn() {
 		reset,
 		control,
 		useQuery: form => trpc.internal.in.get.useQuery(form),
-		header: ['No', 'Nama Supplier', 'Date', 'Due Date', 'Action'],
+		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, item}, index) => {
-			const {oSup: dSSUp, date, due_date} = item;
+			const {date, oPo} = item;
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
-					<Cell>{dSSUp?.nama}</Cell>
+					<Cell>{oPo?.oSup?.nama}</Cell>
+					<Cell>{oPo?.nomor_po}</Cell>
 					<Cell>{date}</Cell>
-					<Cell>{due_date}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
@@ -116,35 +116,43 @@ function RenderModal({
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
 	const {isDelete} = modalTypeParser(type);
-	const {data: dataSupplier} = trpc.internal.supplier.get.useQuery({
+	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
 	});
-	const {data: dataItem} = trpc.internal.item.get.useQuery(
+	const {data: dataPo} = trpc.internal.po.get.useQuery(
 		{limit: 9999, id: form?.sup_id},
 		{enabled: !!form?.sup_id},
 	);
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 
+	const selectedPo = dataPo?.rows.find(e => e.id === form?.id_po);
 	const selectedItems =
-		form?.oPoItems?.map(e => e.id_item).filter(Boolean) ?? [];
+		form?.oInItems?.map(e => e.id_item).filter(Boolean) ?? [];
+
+	const {keyPo, keySup} = {
+		keySup: `${!!dataSup}${form?.sup_id}`,
+		get keyPo() {
+			return `${this.keySup}${!!selectedPo}${form?.id_po}`;
+		},
+	};
 
 	function addItem() {
 		reset(prev => {
-			const oItems = prev.form.oPoItems?.slice?.() ?? [];
-			oItems.push({temp_id: uuid()} as typeof oItems[number]);
-			return {...prev, form: {...prev.form, oPoItems: oItems}};
+			const oInItems = prev.form.oInItems?.slice?.() ?? [];
+			oInItems.push({temp_id: uuid()} as typeof oInItems[number]);
+			return {...prev, form: {...prev.form, oInItems}};
 		});
 	}
 
 	function removeItem(id: string) {
 		reset(prev => {
-			const oItems = prev.form.oPoItems?.slice?.() ?? [];
+			const oItems = prev.form.oInItems?.slice?.() ?? [];
 			const index = oItems.findIndex(e => e.id === id || e.temp_id === id);
 
 			return {
 				...prev,
-				form: {...prev.form, oPoItems: oItems.remove(index)},
+				form: {...prev.form, oInItems: oItems.remove(index)},
 			};
 		});
 	}
@@ -152,23 +160,22 @@ function RenderModal({
 	return (
 		<div className="flex flex-col gap-2">
 			<Select
+				key={keySup}
 				label="Supplier"
 				control={control}
 				fieldName="form.sup_id"
-				data={selectMapper(dataSupplier?.rows ?? [], 'id', 'nama')}
+				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
-			<Input
-				type="date"
+
+			<Select
+				key={keyPo}
+				label="PO"
 				control={control}
-				fieldName="form.date"
-				label="Kode Item"
+				fieldName="form.id_po"
+				data={selectMapper(dataPo?.rows ?? [], 'id', 'nomor_po')}
 			/>
-			<Input
-				type="date"
-				control={control}
-				fieldName="form.due_date"
-				label="Nama Item"
-			/>
+
+			<Input type="date" control={control} fieldName="form.date" label="Date" />
 
 			<Table
 				topComponent={
@@ -176,34 +183,39 @@ function RenderModal({
 						Tambah Item
 					</Button>
 				}
-				data={form?.oPoItems}
+				data={form?.oInItems}
 				renderItem={({Cell, item}, i) => {
 					const idItem = item.id ?? item.temp_id!;
-					const oItem =
-						item.oItem ?? dataItem?.rows.find(e => e.id === item.id_item);
+					const poItem = selectedPo?.oPoItems.find(e => e.id === item.id_item);
+					const oItem = poItem?.oItem;
+					const keyItem = `${keyPo}${!!poItem}${idItem}`;
 
 					const itemSelections = selectMapper(
-						dataItem?.rows ?? [],
+						selectedPo?.oPoItems ?? [],
 						'id',
-						'kode',
+						'oItem.kode',
 					).filter(
 						e => e.value === item.id_item || !selectedItems.includes(e.value),
 					);
+
+					const value = poItem?.qty;
+					const max = value;
 
 					return (
 						<Fragment key={idItem}>
 							<Input
 								hidden
 								control={control}
-								fieldName={`form.oPoItems.${i}.qty`}
+								fieldName={`form.oInItems.${i}.qty`}
 							/>
 							<Cell width="30%">
 								<Select
+									key={keyItem}
 									className="flex-1"
 									label="Kode Item"
 									control={control}
 									data={itemSelections}
-									fieldName={`form.oPoItems.${i}.id_item`}
+									fieldName={`form.oInItems.${i}.id_item`}
 								/>
 							</Cell>
 							<Cell>
@@ -229,14 +241,10 @@ function RenderModal({
 									className="flex-1"
 									label="Jumlah"
 									control={control}
-									fieldName={`form.oPoItems.${i}.qty`}
-								/>
-								<Select
-									label="Unit"
-									className="flex-1"
-									control={control}
-									data={selectUnitData}
-									fieldName={`form.oPoItems.${i}.unit`}
+									defaultValue={value}
+									fieldName={`form.oInItems.${i}.qty`}
+									rightAcc={<Text>{poItem?.unit}</Text>}
+									rules={{max: {value: max!, message: `Max is ${max}`}}}
 								/>
 							</Cell>
 

@@ -42,6 +42,8 @@ export enum INTERNAL_TABLES {
 	SUPPLIER = 'internal_supplier',
 	PO = 'internal_po',
 	PO_ITEM = 'internal_po_item',
+	SJ_IN = 'internal_sj_in',
+	SJ_IN_ITEM = 'internal_sj_in_item',
 }
 
 export enum TABLES {

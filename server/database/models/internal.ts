@@ -99,7 +99,7 @@ export function initOSjIn(sequelize: Sequelize) {
 		},
 		{
 			...defaultScope(sequelize),
-			tableName: INTERNAL_TABLES.PO_ITEM,
+			tableName: INTERNAL_TABLES.SJ_IN,
 		},
 	);
 
@@ -117,7 +117,7 @@ export function initOInItem(sequelize: Sequelize) {
 		},
 		{
 			...defaultScope(sequelize),
-			tableName: INTERNAL_TABLES.PO_ITEM,
+			tableName: INTERNAL_TABLES.SJ_IN_ITEM,
 		},
 	);
 

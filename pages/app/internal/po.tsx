@@ -43,14 +43,15 @@ export default function InternalPo() {
 		reset,
 		control,
 		useQuery: form => trpc.internal.po.get.useQuery(form),
-		header: ['No', 'Nama Supplier', 'Date', 'Due Date', 'Action'],
+		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Due Date', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, item}, index) => {
-			const {oSup: dSSUp, date, due_date} = item;
+			const {oSup: dSSUp, date, due_date, nomor_po} = item;
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp?.nama}</Cell>
+					<Cell>{nomor_po}</Cell>
 					<Cell>{date}</Cell>
 					<Cell>{due_date}</Cell>
 					<Cell className="gap-2">
@@ -115,8 +116,8 @@ function RenderModal({
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
-	const {isDelete} = modalTypeParser(type);
-	const {data: dataSupplier} = trpc.internal.supplier.get.useQuery({
+	const {isDelete, isEdit} = modalTypeParser(type);
+	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
 	});
 	const {data: dataItem} = trpc.internal.item.get.useQuery(
@@ -126,6 +127,7 @@ function RenderModal({
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 
+	const keySup = `${!!dataSup}${form?.sup_id}`;
 	const selectedItems =
 		form?.oPoItems?.map(e => e.id_item).filter(Boolean) ?? [];
 
@@ -152,10 +154,12 @@ function RenderModal({
 	return (
 		<div className="flex flex-col gap-2">
 			<Select
+				key={keySup}
 				label="Supplier"
+				disabled={isEdit}
 				control={control}
 				fieldName="form.sup_id"
-				data={selectMapper(dataSupplier?.rows ?? [], 'id', 'nama')}
+				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
 			<Input type="date" control={control} fieldName="form.date" label="Date" />
 			<Input
@@ -176,6 +180,7 @@ function RenderModal({
 					const idItem = item.id ?? item.temp_id!;
 					const oItem =
 						item.oItem ?? dataItem?.rows.find(e => e.id === item.id_item);
+					const keyItem = `${keySup}${!!dataItem}${!!oItem}${idItem}`;
 
 					const itemSelections = selectMapper(
 						dataItem?.rows ?? [],
@@ -194,9 +199,11 @@ function RenderModal({
 							/>
 							<Cell width="30%">
 								<Select
-									className="flex-1"
-									label="Kode Item"
+									key={keyItem}
+									disabled={isEdit}
 									control={control}
+									label="Kode Item"
+									className="flex-1"
 									data={itemSelections}
 									fieldName={`form.oPoItems.${i}.id_item`}
 								/>

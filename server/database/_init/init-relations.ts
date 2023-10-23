@@ -141,6 +141,7 @@ export function initRelations() {
 	oneToMany(oPo, oSjIn, 'id_po');
 	oneToMany(oItem, oPoItem, 'id_item');
 	oneToMany(oSjIn, oInItem, 'in_id');
+	oneToMany(oPoItem, oInItem, 'id_item');
 
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 

@@ -597,8 +597,8 @@ export type SPoUpsert = z.infer<typeof sPoUpsert>;
 export const sPoUpsert = sPo.partial({id: true}).extend({
 	oSup: sSupplier.optional(),
 	oPoItems: oPoItem
-		.partial({id: true, id_po: true})
-		.extend({oItem: sItem.optional(), temp_id: z.string().optional()})
+		.extend({oItem: sItem, temp_id: z.string()})
+		.partial({id: true, id_po: true, oItem: true, temp_id: true})
 		.array()
 		.min(1),
 });
@@ -619,14 +619,15 @@ export const sInItem = zId.extend({
 
 export type SInUpsert = z.infer<typeof sInUpsert>;
 export const sInUpsert = sSjIn.partial({id: true}).extend({
-	oPo: sPo.extend({dSSUp: sSupplier.optional()}),
+	oPo: sPo.extend({dSSUp: sSupplier.optional()}).optional(),
 	oInItems: sInItem
 		.extend({
-			temp_id: z.string().optional(),
+			temp_id: z.string(),
 			oSjIn: sSjIn.extend({
 				dSPoItem: oPoItem.extend({oItem: sItem.optional()}),
 			}),
 		})
+		.partial({id: true, in_id: true, temp_id: true, oSjIn: true})
 		.array()
 		.min(1),
 });

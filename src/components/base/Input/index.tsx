@@ -106,14 +106,14 @@ export function InputComponent<F extends FieldValues>(
 	switch (type) {
 		case 'date': {
 			return (
-				<div className={classNames('pt-2 cursor-pointer', className)}>
+				<div className={classNames('relative pt-2 cursor-pointer', className)}>
+					<div
+						className="absolute z-10 w-full h-full"
+						onClick={isDisabled ? undefined : () => modalRef.current?.show()}
+					/>
 					<TextField
 						{...defaultTextFieldProps}
-						onClick={isDisabled ? undefined : () => modalRef.current?.show()}
-						InputLabelProps={{
-							...defaultTextFieldProps.InputLabelProps,
-							// shrink: type === 'date' ? true : undefined,
-						}}
+						InputLabelProps={defaultTextFieldProps.InputLabelProps}
 						className="cursor-pointer w-full"
 						error={!!errorMessage}
 						fullWidth
@@ -127,7 +127,9 @@ export function InputComponent<F extends FieldValues>(
 								WebkitTextFillColor: theme.colors.alpha.black[50],
 							},
 							'& .MuiInputBase-root.Mui-disabled': {
-								backgroundColor: theme.colors.alpha.black[10],
+								backgroundColor: isDisabled
+									? theme.colors.alpha.black[10]
+									: theme.colors.alpha.white,
 							},
 						}}
 						placeholder={formatDateView}
