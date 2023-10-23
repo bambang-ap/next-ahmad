@@ -1,12 +1,19 @@
 import {BOOLEAN, Model, Sequelize, STRING} from 'sequelize';
 
-import {SItem, SPo, SPoItem, SSupplier} from '@appTypes/app.zod';
+import {
+	SInItem,
+	SItem,
+	SPo,
+	SPoItem,
+	SSjIn,
+	SSupplier,
+} from '@appTypes/app.zod';
 import {defaultScope, ormDecimalType} from '@database';
 import {INTERNAL_TABLES} from '@enum';
 
-export class dSItem extends Model<SItem> {}
-export function initSItem(sequelize: Sequelize) {
-	dSItem.init(
+export class oItem extends Model<SItem> {}
+export function initOItem(sequelize: Sequelize) {
+	oItem.init(
 		{
 			id: {type: STRING, primaryKey: true},
 			kode: STRING,
@@ -21,12 +28,12 @@ export function initSItem(sequelize: Sequelize) {
 		},
 	);
 
-	return dSItem;
+	return oItem;
 }
 
-export class dSSUp extends Model<SSupplier> {}
-export function initSSup(sequelize: Sequelize) {
-	dSSUp.init(
+export class oSup extends Model<SSupplier> {}
+export function initOSup(sequelize: Sequelize) {
+	oSup.init(
 		{
 			id: {type: STRING, primaryKey: true},
 			alamat: STRING,
@@ -39,17 +46,18 @@ export function initSSup(sequelize: Sequelize) {
 		},
 	);
 
-	return dSSUp;
+	return oSup;
 }
 
-export class dSPo extends Model<SPo> {}
-export function initSPo(sequelize: Sequelize) {
-	dSPo.init(
+export class oPo extends Model<SPo> {}
+export function initOPo(sequelize: Sequelize) {
+	oPo.init(
 		{
 			id: {type: STRING, primaryKey: true},
 			date: STRING,
 			due_date: STRING,
 			sup_id: STRING,
+			nomor_po: STRING,
 		},
 		{
 			...defaultScope(sequelize),
@@ -57,12 +65,12 @@ export function initSPo(sequelize: Sequelize) {
 		},
 	);
 
-	return dSPo;
+	return oPo;
 }
 
-export class dSPoItem extends Model<SPoItem> {}
-export function initSPoItem(sequelize: Sequelize) {
-	dSPoItem.init(
+export class oPoItem extends Model<SPoItem> {}
+export function initOPoItem(sequelize: Sequelize) {
+	oPoItem.init(
 		{
 			id: {type: STRING, primaryKey: true},
 			discount: ormDecimalType('discount'),
@@ -77,5 +85,41 @@ export function initSPoItem(sequelize: Sequelize) {
 		},
 	);
 
-	return dSPoItem;
+	return oPoItem;
+}
+
+export class oSjIn extends Model<SSjIn> {}
+export function initOSjIn(sequelize: Sequelize) {
+	oSjIn.init(
+		{
+			id: {type: STRING, primaryKey: true},
+			date: STRING,
+			id_po: STRING,
+			sup_id: STRING,
+		},
+		{
+			...defaultScope(sequelize),
+			tableName: INTERNAL_TABLES.PO_ITEM,
+		},
+	);
+
+	return oSjIn;
+}
+
+export class oInItem extends Model<SInItem> {}
+export function initOInItem(sequelize: Sequelize) {
+	oInItem.init(
+		{
+			id: {type: STRING, primaryKey: true},
+			qty: ormDecimalType('qty'),
+			id_item: STRING,
+			in_id: STRING,
+		},
+		{
+			...defaultScope(sequelize),
+			tableName: INTERNAL_TABLES.PO_ITEM,
+		},
+	);
+
+	return oInItem;
 }

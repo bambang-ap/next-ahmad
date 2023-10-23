@@ -4,10 +4,12 @@ import {
 	initdRejItem,
 	initdScan,
 	initdScanItem,
-	initSItem,
-	initSPo,
-	initSPoItem,
-	initSSup,
+	initOInItem,
+	initOItem,
+	initOPo,
+	initOPoItem,
+	initOSjIn,
+	initOSup,
 } from '@database';
 
 import initOrmCustomer, {initCust} from '../models/customer';
@@ -99,10 +101,12 @@ export function initOrm(ORM: Sequelize) {
 	initKatMesin(ORM);
 	initSppbBridge(ORM);
 
-	initSItem(ORM);
-	initSSup(ORM);
-	initSPo(ORM);
-	initSPoItem(ORM);
+	initOItem(ORM);
+	initOSup(ORM);
+	initOPo(ORM);
+	initOPoItem(ORM);
+	initOSjIn(ORM);
+	initOInItem(ORM);
 
 	return Promise.resolve();
 }

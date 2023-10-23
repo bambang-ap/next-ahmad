@@ -27,9 +27,9 @@ type FormType = {
 	selectedIds: MyObject<boolean>;
 };
 
-InternalPo.getLayout = getLayout;
+InternalSiIn.getLayout = getLayout;
 
-export default function InternalPo() {
+export default function InternalSiIn() {
 	const modalRef = useRef<ModalRef>(null);
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
@@ -42,7 +42,7 @@ export default function InternalPo() {
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
-		useQuery: form => trpc.internal.po.get.useQuery(form),
+		useQuery: form => trpc.internal.in.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Date', 'Due Date', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, item}, index) => {
@@ -73,9 +73,9 @@ export default function InternalPo() {
 	});
 
 	const {mutateAsync: mutateUpsert} =
-		trpc.internal.po.upsert.useMutation(mutateOpts);
+		trpc.internal.in.upsert.useMutation(mutateOpts);
 	const {mutateAsync: mutateDelete} =
-		trpc.internal.po.delete.useMutation(mutateOpts);
+		trpc.internal.in.delete.useMutation(mutateOpts);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -157,12 +157,17 @@ function RenderModal({
 				fieldName="form.sup_id"
 				data={selectMapper(dataSupplier?.rows ?? [], 'id', 'nama')}
 			/>
-			<Input type="date" control={control} fieldName="form.date" label="Date" />
+			<Input
+				type="date"
+				control={control}
+				fieldName="form.date"
+				label="Kode Item"
+			/>
 			<Input
 				type="date"
 				control={control}
 				fieldName="form.due_date"
-				label="Due Date"
+				label="Nama Item"
 			/>
 
 			<Table

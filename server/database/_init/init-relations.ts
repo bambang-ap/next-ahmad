@@ -13,18 +13,18 @@ import {
 	dRejItem,
 	dScan,
 	dScanItem,
-	dSItem,
 	dSJIn,
 	dSjOut,
-	dSPo,
-	dSPoItem,
 	dSppbBridge,
-	dSSUp,
 	dUser,
 	dVehicle,
 	manyToMany,
+	oInItem,
+	oItem,
 	oneToMany,
 	oneToOne,
+	oPo,
+	oPoItem,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -52,6 +52,8 @@ import {
 	OrmSupplierPO,
 	OrmSupplierPOItem,
 	OrmUser,
+	oSjIn,
+	oSup,
 } from '@database';
 
 export function initRelations() {
@@ -133,10 +135,12 @@ export function initRelations() {
 	oneToMany(dKatMesin, dMesin, 'kategori_mesin');
 	oneToMany(dMesin, dKnbItem, 'id_mesin');
 
-	oneToMany(dSSUp, dSItem, 'sup_id');
-	oneToMany(dSSUp, dSPo, 'sup_id');
-	oneToMany(dSPo, dSPoItem, 'id_po');
-	oneToMany(dSItem, dSPoItem, 'id_item');
+	oneToMany(oSup, oItem, 'sup_id');
+	oneToMany(oSup, oPo, 'sup_id');
+	oneToMany(oPo, oPoItem, 'id_po');
+	oneToMany(oPo, oSjIn, 'id_po');
+	oneToMany(oItem, oPoItem, 'id_item');
+	oneToMany(oSjIn, oInItem, 'in_id');
 
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 

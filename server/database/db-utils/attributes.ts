@@ -2,6 +2,7 @@ import {Includeable} from 'sequelize';
 
 import {Route, TScanTarget, UnitQty, UnitUnit} from '@appTypes/app.type';
 import {
+	SInUpsert,
 	SPoUpsert,
 	tCustomer,
 	tCustomerPO,
@@ -36,16 +37,18 @@ import {
 	dRejItem,
 	dScan,
 	dScanItem,
-	dSItem,
 	dSJIn,
 	dSjOut,
-	dSPo,
-	dSPoItem,
-	dSSUp,
 	dUser,
 	dVehicle,
 	NumberOrderAttribute,
+	oInItem,
+	oItem,
+	oPo,
+	oPoItem,
 	OrmKanban,
+	oSjIn,
+	oSup,
 } from '@database';
 import {PO_STATUS} from '@enum';
 
@@ -747,12 +750,25 @@ export function dashboardMesinAttributes() {
 }
 
 export function internalPoAttributes() {
-	const po = attrParserV2(dSPo);
-	const item = attrParserV2(dSItem);
-	const poItem = attrParserV2(dSPoItem);
-	const sup = attrParserV2(dSSUp);
+	const po = attrParserV2(oPo);
+	const item = attrParserV2(oItem);
+	const poItem = attrParserV2(oPoItem);
+	const sup = attrParserV2(oSup);
 
 	type Ret = SPoUpsert;
 
 	return {po, item, poItem, sup, Ret: {} as Ret};
+}
+
+export function internalInAttributes() {
+	const sjIn = attrParserV2(oSjIn);
+	const inItem = attrParserV2(oInItem);
+	const po = attrParserV2(oPo);
+	const item = attrParserV2(oItem);
+	const poItem = attrParserV2(oPoItem);
+	const sup = attrParserV2(oSup);
+
+	type Ret = SInUpsert;
+
+	return {po, sjIn, inItem, item, poItem, sup, Ret: {} as Ret};
 }

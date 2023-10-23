@@ -16,9 +16,9 @@ type FormType = {
 	selectedIds: MyObject<boolean>;
 };
 
-InternalItem.getLayout = getLayout;
+InternalSupplier.getLayout = getLayout;
 
-export default function InternalItem() {
+export default function InternalSupplier() {
 	const modalRef = useRef<ModalRef>(null);
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();

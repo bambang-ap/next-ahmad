@@ -7,7 +7,7 @@ import {internalPoAttributes, oPo, oPoItem} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
-export const poRouters = router({
+export const inRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type RetOutput = typeof Ret;
 

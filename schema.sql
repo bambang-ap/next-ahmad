@@ -181,12 +181,28 @@ CREATE TABLE public.instruksi_kanban (
 ALTER TABLE public.instruksi_kanban OWNER TO postgres;
 
 --
+-- Name: internal_in_item; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.internal_in_item (
+    id character varying(47) NOT NULL,
+    in_id character varying(47),
+    id_item character varying(47),
+    qty numeric,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.internal_in_item OWNER TO postgres;
+
+--
 -- Name: internal_item; Type: TABLE; Schema: public; Owner: postgres
 --
 
 CREATE TABLE public.internal_item (
     id character varying(47) NOT NULL,
-    sup_id character varying(100),
+    sup_id character varying(47),
     nama character varying(100),
     kode character varying(100),
     ppn boolean DEFAULT false,
@@ -220,8 +236,8 @@ ALTER TABLE public.internal_po OWNER TO postgres;
 
 CREATE TABLE public.internal_po_item (
     id character varying(47) NOT NULL,
-    id_po character varying(100),
-    id_item character varying(100),
+    id_po character varying(47),
+    id_item character varying(47),
     discount numeric,
     qty numeric,
     unit character varying(10),
@@ -231,6 +247,22 @@ CREATE TABLE public.internal_po_item (
 
 
 ALTER TABLE public.internal_po_item OWNER TO postgres;
+
+--
+-- Name: internal_sj_in; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.internal_sj_in (
+    id character varying(47) NOT NULL,
+    id_po character varying(47),
+    sup_id character varying(47),
+    date character varying(30),
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.internal_sj_in OWNER TO postgres;
 
 --
 -- Name: internal_supplier; Type: TABLE; Schema: public; Owner: postgres
@@ -806,6 +838,14 @@ ALTER TABLE ONLY public.instruksi_kanban
 
 
 --
+-- Name: internal_in_item internal_in_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_in_item
+    ADD CONSTRAINT internal_in_item_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: internal_supplier internal_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -827,6 +867,14 @@ ALTER TABLE ONLY public.internal_po_item
 
 ALTER TABLE ONLY public.internal_po
     ADD CONSTRAINT internal_po_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: internal_sj_in internal_sj_in_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_sj_in
+    ADD CONSTRAINT internal_sj_in_pkey PRIMARY KEY (id);
 
 
 --

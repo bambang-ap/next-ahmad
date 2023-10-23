@@ -1,6 +1,6 @@
 import {sSupplier, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {dSSUp} from '@database';
+import {oSup} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -8,7 +8,7 @@ export const supplierRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page} = input;
 		return checkCredentialV2(ctx, async () => {
-			const {count, rows} = await dSSUp.findAndCountAll();
+			const {count, rows} = await oSup.findAndCountAll();
 
 			return pagingResult(
 				count,
@@ -22,7 +22,7 @@ export const supplierRouters = router({
 		.input(sSupplier.partial({id: true}))
 		.mutation(({ctx, input}) => {
 			return checkCredentialV2(ctx, async () => {
-				await dSSUp.upsert({...input, id: input.id ?? generateId('IS-')});
+				await oSup.upsert({...input, id: input.id ?? generateId('IS-')});
 
 				return Success;
 			});
@@ -30,7 +30,7 @@ export const supplierRouters = router({
 
 	delete: procedure.input(zId).mutation(({ctx, input}) => {
 		return checkCredentialV2(ctx, async () => {
-			await dSSUp.destroy({where: {id: input.id}});
+			await oSup.destroy({where: {id: input.id}});
 
 			return Success;
 		});

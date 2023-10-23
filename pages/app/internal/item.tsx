@@ -51,7 +51,7 @@ export default function InternalItem() {
 		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, item}, index) => {
-			const {dSSUp, kode, nama, harga, ppn} = item;
+			const {oSup: dSSUp, kode, nama, harga, ppn} = item;
 			return (
 				<>
 					<Cell>{index + 1}</Cell>

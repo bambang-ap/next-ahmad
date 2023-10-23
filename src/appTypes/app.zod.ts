@@ -581,10 +581,11 @@ export const sPo = zId.extend({
 	sup_id: z.string(),
 	date: z.string(),
 	due_date: z.string(),
+	nomor_po: z.string(),
 });
 
-export type SPoItem = z.infer<typeof sPoItem>;
-export const sPoItem = zId.extend({
+export type SPoItem = z.infer<typeof oPoItem>;
+export const oPoItem = zId.extend({
 	id_po: z.string(),
 	id_item: z.string(),
 	qty: zDecimal,
@@ -594,10 +595,38 @@ export const sPoItem = zId.extend({
 
 export type SPoUpsert = z.infer<typeof sPoUpsert>;
 export const sPoUpsert = sPo.partial({id: true}).extend({
-	dSSUp: sSupplier.optional(),
-	dSPoItems: sPoItem
+	oSup: sSupplier.optional(),
+	oPoItems: oPoItem
 		.partial({id: true, id_po: true})
-		.extend({dSItem: sItem.optional(), temp_id: z.string().optional()})
+		.extend({oItem: sItem.optional(), temp_id: z.string().optional()})
+		.array()
+		.min(1),
+});
+
+export type SSjIn = z.infer<typeof sSjIn>;
+export const sSjIn = zId.extend({
+	sup_id: z.string(),
+	id_po: z.string(),
+	date: zDecimal,
+});
+
+export type SInItem = z.infer<typeof sInItem>;
+export const sInItem = zId.extend({
+	in_id: z.string(),
+	id_item: z.string(),
+	qty: zDecimal,
+});
+
+export type SInUpsert = z.infer<typeof sInUpsert>;
+export const sInUpsert = sSjIn.partial({id: true}).extend({
+	oPo: sPo.extend({dSSUp: sSupplier.optional()}),
+	oInItems: sInItem
+		.extend({
+			temp_id: z.string().optional(),
+			oSjIn: sSjIn.extend({
+				dSPoItem: oPoItem.extend({oItem: sItem.optional()}),
+			}),
+		})
 		.array()
 		.min(1),
 });

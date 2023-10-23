@@ -24,7 +24,7 @@ import {classNames, moment} from '@utils';
 import {CheckBox} from './CheckBox';
 
 export type InputProps = {
-	byPassValue?: string;
+	byPassValue?: string | number;
 	hidden?: boolean;
 	placeholder?: string;
 	label?: string;
