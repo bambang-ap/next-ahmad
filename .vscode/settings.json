@@ -73,6 +73,5 @@
 		"className\\w+",
 		"\\w+ClassName"
 	],
-	"files.exclude": {},
 	"inlineFold.maskChar": "◦◦◦"
 }
