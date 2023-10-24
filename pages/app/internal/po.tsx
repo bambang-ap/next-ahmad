@@ -161,6 +161,7 @@ function RenderModal({
 				fieldName="form.sup_id"
 				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
+			<Input control={control} fieldName="form.nomor_po" label="Nomor PO" />
 			<Input type="date" control={control} fieldName="form.date" label="Date" />
 			<Input
 				type="date"
