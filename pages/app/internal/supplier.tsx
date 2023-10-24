@@ -108,6 +108,7 @@ function RenderModal({control}: FormProps<FormType>) {
 	return (
 		<div className="flex flex-col gap-2">
 			<Input control={control} fieldName="form.nama" label="Nama" />
+			<Input control={control} fieldName="form.telp" label="NPWP" />
 			<Input control={control} fieldName="form.npwp" label="NPWP" />
 			<Input
 				multiline

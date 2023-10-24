@@ -69,14 +69,17 @@ export async function checkCredentialV2<T>(
 export async function genInvoice<T extends object, P extends string>(
 	orm: ModelStatic<Model<T>>,
 	prefix: P,
-	counter: (data?: Model<T>['dataValues']) => string | undefined,
+	counterCb: (
+		data?: Model<T>['dataValues'],
+	) => string /* | [value: string, reverse: true] */ | undefined,
 	// @ts-ignore
 	order: keyof T = 'createdAt',
 	length = 5,
 ): Promise<`${P}/${string}`> {
 	// @ts-ignore
 	const count = await orm.findOne({order: [[order, 'DESC']]});
-	const counterResult = counter(count?.dataValues)?.replace(/[^0-9.]/g, '');
+	const counter = counterCb(count?.dataValues)?.split('/');
+	const counterResult = counter?.[counter.length - 1]?.replace(/[^0-9]/g, '');
 	const countString = (parseInt(counterResult ?? '0') + 1)
 		.toString()
 		.padStart(length, '0');

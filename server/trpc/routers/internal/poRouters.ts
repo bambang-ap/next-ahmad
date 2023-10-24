@@ -1,17 +1,19 @@
+import moment from 'moment';
 import {Op} from 'sequelize';
 
 import {PagingResult, TableFormValue} from '@appTypes/app.type';
 import {sPoUpsert, tableFormValue, zId, zIds} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {internalPoAttributes, oPo, oPoItem, wherePagesV3} from '@database';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {checkCredentialV2, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {generateId} from '@utils';
+
+export type RetPoInternal = ReturnType<typeof internalPoAttributes>['Ret'];
 
 async function agd(input: TableFormValue, where?: any) {
-	type RetOutput = typeof Ret;
-
 	const {id: supId, page, limit} = input;
-	const {Ret, item, po, poItem, sup} = internalPoAttributes();
+	const {item, po, poItem, sup} = internalPoAttributes();
 
 	const {count, rows} = await po.model.findAndCountAll({
 		limit,
@@ -20,32 +22,38 @@ async function agd(input: TableFormValue, where?: any) {
 		where: !!supId ? {sup_id: supId, ...where} : where,
 	});
 
-	return {count, rows: rows.map(e => e.toJSON() as unknown as RetOutput)};
+	return {count, rows: rows.map(e => e.toJSON() as unknown as RetPoInternal)};
 }
 
 export const poRouters = router({
-	export: procedure.input(zIds).query(({ctx, input}) => {
-		type RetOutput = typeof Ret;
-		const {Ret} = internalPoAttributes();
+	getInvoice: procedure.query(() => {
+		const now = moment();
+		const month = now.get('month');
+		const year = now.get('year');
 
-		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
+		return genInvoice(
+			oPo,
+			`IMI/P.O/${month.toRoman()}/${year}`,
+			value => value?.nomor_po,
+			'nomor_po',
+		);
+	}),
+	export: procedure.input(zIds).query(({ctx, input}) => {
+		return checkCredentialV2(ctx, async (): Promise<RetPoInternal[]> => {
 			const {rows} = await agd(
 				{limit: 9999, page: 1},
-				wherePagesV3<RetOutput>({id: input.ids}),
+				wherePagesV3<RetPoInternal>({id: input.ids}),
 			);
 
 			return rows;
 		});
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		type RetOutput = typeof Ret;
-
 		const {limit, page} = input;
-		const {Ret} = internalPoAttributes();
 
 		return checkCredentialV2(
 			ctx,
-			async (): Promise<PagingResult<RetOutput>> => {
+			async (): Promise<PagingResult<RetPoInternal>> => {
 				const {count, rows} = await agd(input);
 
 				return pagingResult(count, page, limit, rows);

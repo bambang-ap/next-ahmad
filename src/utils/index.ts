@@ -33,29 +33,45 @@ let typingTimer: NodeJS.Timeout;
 
 momentTz.tz.setDefault('Asia/Jakarta');
 
+function convertDate(format: string, date?: LiteralUnion<'now'>) {
+	const isNow = date === 'now';
+
+	if (!isNow && !date) return null;
+
+	return moment(isNow ? undefined : date).format(format);
+}
+
+export const dateUtils = {
+	date: (date?: LiteralUnion<'now'>) => convertDate(formatDateView, date),
+	hour: (date?: LiteralUnion<'now'>) => convertDate(formatHour, date),
+	dateS: (date?: LiteralUnion<'now'>) =>
+		convertDate(formatDateStringView, date),
+	full: (date?: LiteralUnion<'now'>) => convertDate(formatFullView, date),
+};
+
 export {default as twColors} from 'tailwindcss/colors';
 
 export const moment = momentTz.default;
+export const classNames = classnames;
 
 export function typingCallback(callback: () => void, timeout = 500) {
 	clearTimeout(typingTimer);
 	typingTimer = setTimeout(callback, timeout);
 }
 
-export const classNames = classnames;
-export const dateUtils = {
-	full: convertFull,
-	hour: convertHour,
-	date: convertDate,
-	dateS: convertDateS,
-};
+export function numberFormat(
+	qty: number,
+	currency = true,
+	minimumFractionDigits = 0,
+	maximumFractionDigits = 0,
+) {
+	const formated = new Intl.NumberFormat('id-ID', {
+		minimumFractionDigits,
+		maximumFractionDigits,
+		...(currency ? {style: 'currency', currency: 'IDR'} : {}),
+	}).format(qty);
 
-export function generateId(id?: string) {
-	const now = moment();
-	return classNames(id, now.format('YY MM DD'), uuid().slice(-4)).replace(
-		/\s/g,
-		'',
-	);
+	return formated;
 }
 
 export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
@@ -143,6 +159,14 @@ type V = {
 	unitKey: `unit${Qty}`;
 	num: Qty;
 };
+
+export function generateId(id?: string) {
+	const now = moment();
+	return classNames(id, now.format('YY MM DD'), uuid().slice(-4)).replace(
+		/\s/g,
+		'',
+	);
+}
 
 export function qtyReduce(
 	callback: (ret: UnitQty, value: V, index: number) => UnitQty,
@@ -414,30 +438,6 @@ export function formData<T extends FieldValues, P extends FieldPath<T>>(
 			return clonedObj;
 		},
 	};
-}
-
-function convertDateS(date?: string) {
-	if (!date) return null;
-
-	return moment(date).format(formatDateStringView);
-}
-
-function convertDate(date?: string) {
-	if (!date) return null;
-
-	return moment(date).format(formatDateView);
-}
-
-function convertHour(date?: string) {
-	if (!date) return null;
-
-	return moment(date).format(formatHour);
-}
-
-function convertFull(date?: string) {
-	if (!date) return null;
-
-	return moment(date).format(formatFullView);
 }
 
 export function sleep(timeout = 1000) {

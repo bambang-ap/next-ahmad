@@ -8,7 +8,8 @@ export type WrapperProps = {
 	sizes?: [title?: string, description?: string];
 	className?: string;
 	smallPadding?: boolean;
-} & Partial<Record<'title' | 'children' | 'gap', string | null>>;
+	children?: JSX.Element[] | JSX.Element | string;
+} & Partial<Record<'title' | 'gap', string | null>>;
 
 export function Wrapper({
 	gap: gapSpacing = gap,

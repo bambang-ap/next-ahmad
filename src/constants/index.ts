@@ -21,12 +21,14 @@ export const gap = 'gap-px';
 export const padding = 'p-px';
 
 export const IMIConst = {
+	shortName: 'IMI',
 	name: 'PT. INDOHEAT METAL INTI',
 	address1: 'Jl. Desa Anggadita, Kec. Klari',
 	address2: 'Karawang, Jawa Barat 41371',
 	phone: '(0267) 432168',
 	fax: '(0267) 432268',
-};
+	email: 'indoheatt@yahoo.co.id',
+} as const;
 
 export const unitData: TItemUnit[] = [
 	'pcs',

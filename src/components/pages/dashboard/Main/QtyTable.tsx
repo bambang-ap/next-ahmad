@@ -5,7 +5,7 @@ import {Icon} from '@baseComps/Icon';
 import {BorderTd, BorderTdProps, RootTable as Table} from '@baseComps/Table';
 import {unitData} from '@constants';
 import {useQtyData} from '@hooks';
-import {classNames} from '@utils';
+import {classNames, numberFormat} from '@utils';
 
 import {FormValue} from './';
 
@@ -81,12 +81,7 @@ export default function QtyTable({
 										key={`${unit}${index}`}
 										rootClassName={className}
 										className="justify-end w-32">
-										{!!qty
-											? new Intl.NumberFormat('id-ID', {
-													minimumFractionDigits: 3,
-													maximumFractionDigits: 3,
-											  }).format(qty)
-											: '-'}
+										{!!qty ? numberFormat(qty, false, 3, 3) : '-'}
 									</Td>
 								))}
 							</Tr>

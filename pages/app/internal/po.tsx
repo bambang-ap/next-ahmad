@@ -2,9 +2,11 @@ import {FormEventHandler, Fragment, useRef} from 'react';
 
 import {useForm, useWatch} from 'react-hook-form';
 
+import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SPoUpsert} from '@appTypes/app.zod';
 import {
+	BorderTd,
 	Button,
 	Form,
 	Input,
@@ -15,10 +17,11 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
-import {selectUnitData} from '@constants';
+import {IMIConst, selectUnitData} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
-import {formParser, modalTypeParser} from '@utils';
+import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
+import {dateUtils, formParser, modalTypeParser, numberFormat} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -35,21 +38,25 @@ export default function InternalPo() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete /*  selectedIds, property */} =
-		formParser(dataForm, {
+	const {modalTitle, isPreview, isDelete, selectedIds, property} = formParser(
+		dataForm,
+		{
 			pageName: 'PO',
 			property: 'selectedIds',
-		});
+		},
+	);
 
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
-		// property,
-		// genPdfOptions: {
-		// 	tagId: 'fgh',
-		// 	renderItem: item => <RenderPdf {...item}/>,
-		// 	useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
-		// },
+		property,
+		genPdfOptions: {
+			tagId: 'internal-po',
+			splitPagePer: 1,
+			width: 750,
+			renderItem: item => <RenderPdf {...item} />,
+			useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
+		},
 		useQuery: form => trpc.internal.po.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Due Date', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
@@ -109,7 +116,6 @@ export default function InternalPo() {
 	return (
 		<>
 			{component}
-			{/* <RenderPdf /> */}
 			<Modal size="lg" title={modalTitle} ref={modalRef}>
 				<Form
 					context={{hideButton: isPreview, disabled: isPreview}}
@@ -130,6 +136,7 @@ function RenderModal({
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
 	});
+	const {data: invoice} = trpc.internal.po.getInvoice.useQuery();
 	const {data: dataItem} = trpc.internal.item.get.useQuery(
 		{limit: 9999, id: form?.sup_id},
 		{enabled: !!form?.sup_id},
@@ -171,13 +178,25 @@ function RenderModal({
 				fieldName="form.sup_id"
 				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
-			<Input control={control} fieldName="form.nomor_po" label="Nomor PO" />
+			<Input
+				disabled
+				control={control}
+				defaultValue={invoice}
+				fieldName="form.nomor_po"
+				label="Nomor PO"
+			/>
 			<Input type="date" control={control} fieldName="form.date" label="Date" />
 			<Input
 				type="date"
 				control={control}
 				fieldName="form.due_date"
 				label="Due Date"
+			/>
+			<Input
+				control={control}
+				defaultValue={invoice}
+				fieldName="form.keterangan"
+				label="Keterangan"
 			/>
 
 			<Table
@@ -211,7 +230,7 @@ function RenderModal({
 							<Cell width="30%">
 								<Select
 									key={keyItem}
-									disabled={isEdit}
+									disabled={isEdit && !!item.id}
 									control={control}
 									label="Kode Item"
 									className="flex-1"
@@ -266,22 +285,114 @@ function RenderModal({
 	);
 }
 
-// function RenderPdf() {
-// 	return (
-// 		<>
-// 			<table className="w-full">
-// 				<tr>
-// 					<BorderTd row className="flex-1">
-// 						<div>IMI</div>
-// 						<div>PT. Indoheat Metal Inti</div>
-// 					</BorderTd>
-// 					<BorderTd className="flex-1">Purchase Order</BorderTd>
-// 					<BorderTd row className="flex-1">
-// 						<div>Tanggal Efektif</div>
-// 						<div>01/01/2011</div>
-// 					</BorderTd>
-// 				</tr>
-// 			</table>
-// 		</>
-// 	);
-// }
+function RenderPdf(props: RetPoInternal) {
+	const {date, nomor_po, oPoItems, oSup, keterangan} = props;
+
+	const {jumlah, ppn, total} = oPoItems.reduce(
+		(ret, item) => {
+			const {oItem, qty} = item;
+
+			const sum = oItem?.harga! * qty;
+			const ppnValue = oItem?.ppn ? sum * 0.11 : 0;
+
+			ret.jumlah += sum;
+			ret.ppn += ppnValue;
+			ret.total += sum + ppnValue;
+			return ret;
+		},
+		{jumlah: 0, ppn: 0, total: 0},
+	);
+
+	return (
+		<div className="w-full bg-white p-2 flex flex-col gap-2">
+			<table className="w-full">
+				<tr>
+					<BorderTd col>
+						<div>{IMIConst.shortName}</div>
+						<div>{IMIConst.name}</div>
+					</BorderTd>
+					<BorderTd>Purchase Order</BorderTd>
+					<BorderTd col>
+						<div>Tanggal Efektif</div>
+						<div>01/01/2011</div>
+					</BorderTd>
+				</tr>
+			</table>
+
+			<div>Tanggal {dateUtils.dateS(date)}</div>
+
+			<Wrapper title="No. P.O">{nomor_po}</Wrapper>
+			<Wrapper title="Kepada">
+				<div>{oSup?.nama}</div>
+				<div>{oSup?.alamat}</div>
+			</Wrapper>
+			<Wrapper title="Telp">{oSup?.telp}</Wrapper>
+
+			<table className="w-full">
+				<tr>
+					<BorderTd>NO.</BorderTd>
+					<BorderTd>Nama Barang</BorderTd>
+					<BorderTd>Qty</BorderTd>
+					<BorderTd>Satuan</BorderTd>
+					<BorderTd>Harga /Satuan</BorderTd>
+					<BorderTd>Jumlah</BorderTd>
+				</tr>
+				{oPoItems.map((item, index) => {
+					const {qty, unit, oItem} = item;
+					const sum = oItem?.harga! * qty;
+
+					return (
+						<tr key={item.id}>
+							<BorderTd>{index + 1}</BorderTd>
+							<BorderTd>{oItem?.nama}</BorderTd>
+							<BorderTd>{qty}</BorderTd>
+							<BorderTd>{unit}</BorderTd>
+							<BorderTd>{numberFormat(oItem?.harga!)}</BorderTd>
+							<BorderTd>{numberFormat(sum)}</BorderTd>
+						</tr>
+					);
+				})}
+				<tr>
+					<BorderTd colSpan={5}>Jumlah</BorderTd>
+					<BorderTd>{numberFormat(jumlah)}</BorderTd>
+				</tr>
+				<tr>
+					<BorderTd colSpan={5}>PPN 11%</BorderTd>
+					<BorderTd>{numberFormat(ppn)}</BorderTd>
+				</tr>
+				<tr>
+					<BorderTd colSpan={5}>Total</BorderTd>
+					<BorderTd>{numberFormat(total)}</BorderTd>
+				</tr>
+			</table>
+
+			<Wrapper noColon title="Ket:">
+				{keterangan!}
+			</Wrapper>
+			<div>Atas Perhatian dan Kerjasamanya kami ucapkan terima kasih.</div>
+
+			<div className="w-full flex justify-end">
+				<table className="w-2/3">
+					<tr>
+						<BorderTd center>Prepared</BorderTd>
+						<BorderTd center>Checked</BorderTd>
+						<BorderTd center>Approved</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd height={75}></BorderTd>
+						<BorderTd height={75}></BorderTd>
+						<BorderTd height={75}></BorderTd>
+					</tr>
+					<tr>
+						<BorderTd className="text-transparent">.</BorderTd>
+						<BorderTd className="text-transparent">.</BorderTd>
+						<BorderTd className="text-transparent">.</BorderTd>
+					</tr>
+				</table>
+			</div>
+
+			<div className="text-center">{`${IMIConst.address1}, ${IMIConst.address2}`}</div>
+			<div className="text-center">{`Telp : ${IMIConst.phone} Fax : ${IMIConst.fax} e-mail : ${IMIConst.email}`}</div>
+		</div>
+	);
+}

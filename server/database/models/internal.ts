@@ -40,6 +40,7 @@ export function initOSup(sequelize: Sequelize) {
 			alamat: STRING,
 			npwp: STRING,
 			nama: STRING,
+			telp: STRING,
 		},
 		{
 			...defaultScope(sequelize),

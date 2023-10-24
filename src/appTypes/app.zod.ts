@@ -569,6 +569,7 @@ export type SSupplier = z.infer<typeof sSupplier>;
 export const sSupplier = zId.extend({
 	nama: z.string(),
 	alamat: z.string(),
+	telp: z.string(),
 	npwp: z.string(),
 });
 
@@ -601,6 +602,7 @@ export const sPo = zId.extend({
 	date: z.string(),
 	due_date: z.string(),
 	nomor_po: z.string(),
+	keterangan: z.string().nullish(),
 });
 
 export type SPoItem = z.infer<typeof oPoItem>;
