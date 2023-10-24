@@ -131,7 +131,7 @@ export function useTableFilterComponent<
 		</>
 	) : (
 		<>
-			{(enabledExport || enabledPdf) && (
+			{hasProp && (
 				<Button onClick={() => reset(prev => ({...prev, type: 'select'}))}>
 					Select
 				</Button>

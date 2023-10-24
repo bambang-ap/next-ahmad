@@ -5,6 +5,7 @@ import {useForm, useWatch} from 'react-hook-form';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SPoUpsert} from '@appTypes/app.zod';
 import {
+	BorderTd,
 	Button,
 	Form,
 	Input,
@@ -35,20 +36,31 @@ export default function InternalPo() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'PO',
-	});
+	const {modalTitle, isPreview, isDelete, selectedIds, property} = formParser(
+		dataForm,
+		{
+			pageName: 'PO',
+			property: 'selectedIds',
+		},
+	);
 
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
+		// property,
+		genPdfOptions: {
+			tagId: 'fgh',
+			renderItem: item => <></>,
+			useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
+		},
 		useQuery: form => trpc.internal.po.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Due Date', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
-		renderItem: ({Cell, item}, index) => {
+		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {oSup: dSSUp, date, due_date, nomor_po} = item;
 			return (
 				<>
+					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp?.nama}</Cell>
 					<Cell>{nomor_po}</Cell>
@@ -100,6 +112,7 @@ export default function InternalPo() {
 	return (
 		<>
 			{component}
+			{/* <RenderPdf /> */}
 			<Modal size="lg" title={modalTitle} ref={modalRef}>
 				<Form
 					context={{hideButton: isPreview, disabled: isPreview}}
@@ -253,5 +266,25 @@ function RenderModal({
 
 			<Button type="submit">Submit</Button>
 		</div>
+	);
+}
+
+function RenderPdf() {
+	return (
+		<>
+			<table className="w-full">
+				<tr>
+					<BorderTd row className="flex-1">
+						<div>IMI</div>
+						<div>PT. Indoheat Metal Inti</div>
+					</BorderTd>
+					<BorderTd className="flex-1">Purchase Order</BorderTd>
+					<BorderTd row className="flex-1">
+						<div>Tanggal Efektif</div>
+						<div>01/01/2011</div>
+					</BorderTd>
+				</tr>
+			</table>
+		</>
 	);
 }

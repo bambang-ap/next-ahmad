@@ -1,33 +1,54 @@
 import {Op} from 'sequelize';
 
-import {PagingResult} from '@appTypes/app.type';
-import {sPoUpsert, tableFormValue, zId} from '@appTypes/app.zod';
+import {PagingResult, TableFormValue} from '@appTypes/app.type';
+import {sPoUpsert, tableFormValue, zId, zIds} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {internalPoAttributes, oPo, oPoItem} from '@database';
+import {internalPoAttributes, oPo, oPoItem, wherePagesV3} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
+async function agd(input: TableFormValue, where?: any) {
+	type RetOutput = typeof Ret;
+
+	const {id: supId, page, limit} = input;
+	const {Ret, item, po, poItem, sup} = internalPoAttributes();
+
+	const {count, rows} = await po.model.findAndCountAll({
+		limit,
+		offset: (page - 1) * limit,
+		include: [sup, {...poItem, include: [item]}],
+		where: !!supId ? {sup_id: supId, ...where} : where,
+	});
+
+	return {count, rows: rows.map(e => e.toJSON() as unknown as RetOutput)};
+}
+
 export const poRouters = router({
+	export: procedure.input(zIds).query(({ctx, input}) => {
+		type RetOutput = typeof Ret;
+		const {Ret} = internalPoAttributes();
+
+		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
+			const {rows} = await agd(
+				{limit: 9999, page: 1},
+				wherePagesV3<RetOutput>({id: input.ids}),
+			);
+
+			return rows;
+		});
+	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type RetOutput = typeof Ret;
 
-		const {limit, page, id: supId} = input;
-		const {Ret, item, po, poItem, sup} = internalPoAttributes();
+		const {limit, page} = input;
+		const {Ret} = internalPoAttributes();
 
 		return checkCredentialV2(
 			ctx,
 			async (): Promise<PagingResult<RetOutput>> => {
-				const {count, rows} = await po.model.findAndCountAll({
-					include: [sup, {...poItem, include: [item]}],
-					where: !!supId ? {sup_id: supId} : {},
-				});
+				const {count, rows} = await agd(input);
 
-				return pagingResult(
-					count,
-					page,
-					limit,
-					rows.map(e => e.toJSON() as unknown as RetOutput),
-				);
+				return pagingResult(count, page, limit, rows);
 			},
 		);
 	}),
