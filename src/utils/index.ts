@@ -50,6 +50,14 @@ export const dateUtils = {
 	dateS: convertDateS,
 };
 
+export function generateId(id?: string) {
+	const now = moment();
+	return classNames(id, now.format('YY MM DD'), uuid().slice(-4)).replace(
+		/\s/g,
+		'',
+	);
+}
+
 export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
 	return poData.map(po => {
 		const uu = po.dSJIns?.map(bin => {

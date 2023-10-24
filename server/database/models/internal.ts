@@ -1,10 +1,11 @@
-import {BOOLEAN, Model, Sequelize, STRING} from 'sequelize';
+import {BOOLEAN, JSONB, Model, Sequelize, STRING} from 'sequelize';
 
 import {
 	SInItem,
 	SItem,
 	SPo,
 	SPoItem,
+	SReqForm,
 	SSjIn,
 	SSupplier,
 } from '@appTypes/app.zod';
@@ -122,4 +123,23 @@ export function initOInItem(sequelize: Sequelize) {
 	);
 
 	return oInItem;
+}
+
+export class oForm extends Model<SReqForm> {}
+export function initOForm(sequelize: Sequelize) {
+	oForm.init(
+		{
+			id: {type: STRING, primaryKey: true},
+			date: STRING,
+			due_date: STRING,
+			items: JSONB,
+			status: STRING,
+		},
+		{
+			...defaultScope(sequelize),
+			tableName: INTERNAL_TABLES.REQUEST,
+		},
+	);
+
+	return oForm;
 }

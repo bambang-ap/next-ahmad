@@ -5,7 +5,6 @@ import {useForm, useWatch} from 'react-hook-form';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SPoUpsert} from '@appTypes/app.zod';
 import {
-	BorderTd,
 	Button,
 	Form,
 	Input,
@@ -36,23 +35,21 @@ export default function InternalPo() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete, selectedIds, property} = formParser(
-		dataForm,
-		{
+	const {modalTitle, isPreview, isDelete /*  selectedIds, property */} =
+		formParser(dataForm, {
 			pageName: 'PO',
 			property: 'selectedIds',
-		},
-	);
+		});
 
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
 		// property,
-		genPdfOptions: {
-			tagId: 'fgh',
-			renderItem: item => <></>,
-			useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
-		},
+		// genPdfOptions: {
+		// 	tagId: 'fgh',
+		// 	renderItem: item => <RenderPdf {...item}/>,
+		// 	useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
+		// },
 		useQuery: form => trpc.internal.po.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Due Date', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
@@ -269,22 +266,22 @@ function RenderModal({
 	);
 }
 
-function RenderPdf() {
-	return (
-		<>
-			<table className="w-full">
-				<tr>
-					<BorderTd row className="flex-1">
-						<div>IMI</div>
-						<div>PT. Indoheat Metal Inti</div>
-					</BorderTd>
-					<BorderTd className="flex-1">Purchase Order</BorderTd>
-					<BorderTd row className="flex-1">
-						<div>Tanggal Efektif</div>
-						<div>01/01/2011</div>
-					</BorderTd>
-				</tr>
-			</table>
-		</>
-	);
-}
+// function RenderPdf() {
+// 	return (
+// 		<>
+// 			<table className="w-full">
+// 				<tr>
+// 					<BorderTd row className="flex-1">
+// 						<div>IMI</div>
+// 						<div>PT. Indoheat Metal Inti</div>
+// 					</BorderTd>
+// 					<BorderTd className="flex-1">Purchase Order</BorderTd>
+// 					<BorderTd row className="flex-1">
+// 						<div>Tanggal Efektif</div>
+// 						<div>01/01/2011</div>
+// 					</BorderTd>
+// 				</tr>
+// 			</table>
+// 		</>
+// 	);
+// }

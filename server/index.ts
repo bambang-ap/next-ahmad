@@ -1,17 +1,18 @@
-import {moment} from "@utils";
-import {NextApiRequest, NextApiResponse} from "next";
-import {getServerSession} from "next-auth";
-import {authOptions} from "pages/api/auth/[...nextauth]";
-import {Model, ModelStatic} from "sequelize";
+import {NextApiRequest, NextApiResponse} from 'next';
+import {getServerSession} from 'next-auth';
+import {authOptions} from 'pages/api/auth/[...nextauth]';
+import {Model, ModelStatic} from 'sequelize';
 
-import {PagingResult, TSession} from "@appTypes/app.type";
-import {TRPCError} from "@trpc/server";
-import {classNames} from "@utils";
+import {PagingResult, TSession} from '@appTypes/app.type';
+import {TRPCError} from '@trpc/server';
+import {moment} from '@utils';
+
+export {generateId} from '@utils';
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
-	if (req.headers["user-agent"]?.toLowerCase()?.includes("postman")) {
+	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
 		return {
-			session: {user: {role: "admin"}} as TSession,
+			session: {user: {role: 'admin'}} as TSession,
 			hasSession: true,
 		};
 	}
@@ -43,7 +44,7 @@ export const checkCredential = async (
 ) => {
 	const {hasSession} = await getSession(req, res);
 
-	if (!hasSession) return Response(res).error("You have no credentials");
+	if (!hasSession) return Response(res).error('You have no credentials');
 
 	return callback();
 };
@@ -57,36 +58,28 @@ export async function checkCredentialV2<T>(
 
 	if (!hasSession) {
 		throw new TRPCError({
-			code: "FORBIDDEN",
-			message: "You have no credentials",
+			code: 'FORBIDDEN',
+			message: 'You have no credentials',
 		});
 	}
 
 	return callback(session);
 }
 
-export function generateId(id?: string) {
-	const now = moment();
-	return classNames(id, now.format("YY MM DD"), uuid().slice(-4)).replace(
-		/\s/g,
-		"",
-	);
-}
-
 export async function genInvoice<T extends object, P extends string>(
 	orm: ModelStatic<Model<T>>,
 	prefix: P,
-	counter: (data?: Model<T>["dataValues"]) => string | undefined,
+	counter: (data?: Model<T>['dataValues']) => string | undefined,
 	// @ts-ignore
-	order: keyof T = "createdAt",
+	order: keyof T = 'createdAt',
 	length = 5,
 ): Promise<`${P}/${string}`> {
 	// @ts-ignore
-	const count = await orm.findOne({order: [[order, "DESC"]]});
-	const counterResult = counter(count?.dataValues)?.replace(/[^0-9.]/g, "");
-	const countString = (parseInt(counterResult ?? "0") + 1)
+	const count = await orm.findOne({order: [[order, 'DESC']]});
+	const counterResult = counter(count?.dataValues)?.replace(/[^0-9.]/g, '');
+	const countString = (parseInt(counterResult ?? '0') + 1)
 		.toString()
-		.padStart(length, "0");
+		.padStart(length, '0');
 	return `${prefix}/${countString}`;
 }
 

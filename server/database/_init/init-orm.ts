@@ -4,6 +4,7 @@ import {
 	initdRejItem,
 	initdScan,
 	initdScanItem,
+	initOForm,
 	initOInItem,
 	initOItem,
 	initOPo,
@@ -107,6 +108,7 @@ export function initOrm(ORM: Sequelize) {
 	initOPoItem(ORM);
 	initOSjIn(ORM);
 	initOInItem(ORM);
+	initOForm(ORM);
 
 	return Promise.resolve();
 }

@@ -2,7 +2,12 @@ import {z} from 'zod';
 
 import {SelectPropsData} from '@components';
 import {defaultLimit} from '@constants';
-import {CATEGORY_REJECT_DB, REJECT_REASON, REJECT_REASON_VIEW} from '@enum';
+import {
+	CATEGORY_REJECT_DB,
+	REJECT_REASON,
+	REJECT_REASON_VIEW,
+	REQ_FORM_STATUS,
+} from '@enum';
 
 export type TDecimal = z.infer<typeof zDecimal>;
 export const zDecimal = z
@@ -574,6 +579,20 @@ export const sItem = zId.extend({
 	kode: z.string(),
 	harga: zDecimal,
 	ppn: z.boolean().default(false),
+});
+
+const sItemReqForm = zId.extend({
+	qty: zDecimal,
+	unit: tItemUnit,
+	keterangan: z.string().optional(),
+});
+
+export type SReqForm = z.infer<typeof sReqForm>;
+export const sReqForm = zId.extend({
+	date: z.string(),
+	due_date: z.string(),
+	items: sItemReqForm.array().min(1),
+	status: z.nativeEnum(REQ_FORM_STATUS).default(REQ_FORM_STATUS.req),
 });
 
 export type SPo = z.infer<typeof sPo>;

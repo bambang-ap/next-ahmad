@@ -106,7 +106,12 @@ export function InputComponent<F extends FieldValues>(
 	switch (type) {
 		case 'date': {
 			return (
-				<div className={classNames('relative pt-2 cursor-pointer', className)}>
+				<div
+					className={classNames(
+						'relative pt-2',
+						{'cursor-pointer': !isDisabled},
+						className,
+					)}>
 					<div
 						className="absolute z-10 w-full h-full"
 						onClick={isDisabled ? undefined : () => modalRef.current?.show()}

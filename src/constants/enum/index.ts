@@ -2,6 +2,10 @@ import {z} from 'zod';
 
 import {classNames, twColors} from '@utils';
 
+export enum REQ_FORM_STATUS {
+	req = 'request',
+}
+
 export enum CATEGORY_REJECT {
 	A = 'Test Piece',
 	B = 'Re-Proses',
@@ -44,6 +48,7 @@ export enum INTERNAL_TABLES {
 	PO_ITEM = 'internal_po_item',
 	SJ_IN = 'internal_sj_in',
 	SJ_IN_ITEM = 'internal_sj_in_item',
+	REQUEST = 'internal_request',
 }
 
 export enum TABLES {
