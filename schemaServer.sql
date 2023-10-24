@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.3 (Debian 15.3-1.pgdg110+1)
+-- Dumped from database version 15.3
 -- Dumped by pg_dump version 15.3
 
 SET statement_timeout = 0;
@@ -15,6 +15,13 @@ SET check_function_bodies = false;
 SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
+
+--
+-- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
+--
+
+COMMENT ON SCHEMA public IS '';
+
 
 SET default_tablespace = '';
 
@@ -202,7 +209,8 @@ CREATE TABLE public.internal_po (
     due_date character varying(30),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    nomor_po character varying(100)
+    nomor_po character varying(100),
+    keterangan character varying(100)
 );
 
 
@@ -225,6 +233,24 @@ CREATE TABLE public.internal_po_item (
 
 
 ALTER TABLE public.internal_po_item OWNER TO postgres;
+
+--
+-- Name: internal_request; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.internal_request (
+    id character varying(47) NOT NULL,
+    sup_id character varying(47),
+    date character varying(30),
+    due_date character varying(30),
+    items json DEFAULT '[]'::json,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone,
+    status character varying(100)
+);
+
+
+ALTER TABLE public.internal_request OWNER TO postgres;
 
 --
 -- Name: internal_sj_in; Type: TABLE; Schema: public; Owner: postgres
@@ -268,7 +294,8 @@ CREATE TABLE public.internal_supplier (
     alamat character varying(100),
     npwp character varying(100),
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    telp character varying(20)
 );
 
 
@@ -861,6 +888,14 @@ ALTER TABLE ONLY public.internal_po_item
 
 ALTER TABLE ONLY public.internal_po
     ADD CONSTRAINT internal_po_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: internal_request internal_request_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_request
+    ADD CONSTRAINT internal_request_pkey PRIMARY KEY (id);
 
 
 --
@@ -1651,6 +1686,13 @@ ALTER TABLE ONLY public.user_login
 
 ALTER TABLE ONLY public.user_pengguna
     ADD CONSTRAINT user_role_fkey FOREIGN KEY (role) REFERENCES public.role(id) NOT VALID;
+
+
+--
+-- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
+--
+
+REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 
 
 --

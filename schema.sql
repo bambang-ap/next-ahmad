@@ -209,7 +209,8 @@ CREATE TABLE public.internal_po (
     due_date character varying(30),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    nomor_po character varying(100)
+    nomor_po character varying(100),
+    keterangan character varying(100)
 );
 
 
@@ -232,6 +233,24 @@ CREATE TABLE public.internal_po_item (
 
 
 ALTER TABLE public.internal_po_item OWNER TO postgres;
+
+--
+-- Name: internal_request; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.internal_request (
+    id character varying(47) NOT NULL,
+    sup_id character varying(47),
+    date character varying(30),
+    due_date character varying(30),
+    items json DEFAULT '[]'::json,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone,
+    status character varying(100)
+);
+
+
+ALTER TABLE public.internal_request OWNER TO postgres;
 
 --
 -- Name: internal_sj_in; Type: TABLE; Schema: public; Owner: postgres
@@ -275,7 +294,8 @@ CREATE TABLE public.internal_supplier (
     alamat character varying(100),
     npwp character varying(100),
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    telp character varying(20)
 );
 
 
@@ -868,6 +888,14 @@ ALTER TABLE ONLY public.internal_po_item
 
 ALTER TABLE ONLY public.internal_po
     ADD CONSTRAINT internal_po_pkey PRIMARY KEY (id);
+
+
+--
+-- Name: internal_request internal_request_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_request
+    ADD CONSTRAINT internal_request_pkey PRIMARY KEY (id);
 
 
 --

@@ -205,7 +205,7 @@ export function SPPBOutGenerateQR({
 
 										return (
 											<Td width={115} className="flex-col" key={num}>
-												<Wrp title={item[qtyKey]?.toString()}>{unit}</Wrp>
+												<Wrp title={item[qtyKey]?.toString()}>{unit!}</Wrp>
 												{!!qtyRejectTP && (
 													<Wrp title={REJECT_REASON.TP}>
 														{`${qtyRejectTP?.toString()} ${unit}`}

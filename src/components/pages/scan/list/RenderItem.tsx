@@ -72,8 +72,8 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 			<Wrapper title="Nomor Kanban">
 				{dataItem?.dKnbItem?.dKanban.nomor_kanban}
 			</Wrapper>
-			<Wrapper title="Nama Barang">{masterItem?.name}</Wrapper>
-			<Wrapper title="Part No.">{masterItem?.kode_item}</Wrapper>
+			<Wrapper title="Nama Barang">{masterItem?.name!}</Wrapper>
+			<Wrapper title="Part No.">{masterItem?.kode_item!}</Wrapper>
 			<Wrapper title="Material">
 				{materialData?.map(e => e.name).join(', ')}
 			</Wrapper>
