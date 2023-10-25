@@ -115,7 +115,7 @@ function RenderModal({
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
-	const {isDelete} = modalTypeParser(type);
+
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
 	});
@@ -123,12 +123,19 @@ function RenderModal({
 		{limit: 9999, id: form?.sup_id},
 		{enabled: !!form?.sup_id},
 	);
+	const {data: poItems} = trpc.internal.in.get_closed.useQuery(
+		{id: form?.id_po!},
+		{enabled: !!form?.id_po},
+	);
+
+	const {isDelete, isEdit} = modalTypeParser(type);
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 
 	const selectedPo = dataPo?.rows.find(e => e.id === form?.id_po);
-	const selectedItems =
-		form?.oInItems?.map(e => e.id_item).filter(Boolean) ?? [];
+	const selectedItems = form?.oInItems;
+	const selectedIdItems =
+		selectedItems?.map(e => e.id_item).filter(Boolean) ?? [];
 
 	const {keyPo, keySup} = {
 		keySup: `${!!dataSup}${form?.sup_id}`,
@@ -187,19 +194,21 @@ function RenderModal({
 				renderItem={({Cell, item}, i) => {
 					const idItem = item.id ?? item.temp_id!;
 					const poItem = selectedPo?.oPoItems.find(e => e.id === item.id_item);
+					const selPoItem = poItems?.find(e => e.id === poItem?.id);
+					const inItem = selPoItem?.oInItems.find(e => e.id === idItem);
 					const oItem = poItem?.oItem;
 					const keyItem = `${keyPo}${!!poItem}${idItem}`;
 
 					const itemSelections = selectMapper(
 						selectedPo?.oPoItems ?? [],
 						'id',
-						'oItem.kode',
+						'oItem.nama',
 					).filter(
-						e => e.value === item.id_item || !selectedItems.includes(e.value),
+						e => e.value === item.id_item || !selectedIdItems.includes(e.value),
 					);
 
-					const value = poItem?.qty;
-					const max = value;
+					const defaultValue = selPoItem?.max;
+					const max = isEdit ? defaultValue! + inItem?.qty! : defaultValue;
 
 					return (
 						<Fragment key={idItem}>
@@ -212,7 +221,7 @@ function RenderModal({
 								<Select
 									key={keyItem}
 									className="flex-1"
-									label="Kode Item"
+									label="Nama Item"
 									control={control}
 									data={itemSelections}
 									fieldName={`form.oInItems.${i}.id_item`}
@@ -221,8 +230,8 @@ function RenderModal({
 							<Cell>
 								<InputDummy
 									className="flex-1"
-									label="Nama Item"
-									byPassValue={oItem?.nama}
+									label="Kode Item"
+									byPassValue={oItem?.kode}
 									disabled
 								/>
 							</Cell>
@@ -241,7 +250,7 @@ function RenderModal({
 									className="flex-1"
 									label="Jumlah"
 									control={control}
-									defaultValue={value}
+									defaultValue={defaultValue}
 									fieldName={`form.oInItems.${i}.qty`}
 									rightAcc={<Text>{poItem?.unit}</Text>}
 									rules={{max: {value: max!, message: `Max is ${max}`}}}

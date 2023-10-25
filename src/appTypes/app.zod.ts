@@ -652,3 +652,6 @@ export const sInUpsert = sSjIn.partial({id: true}).extend({
 		.array()
 		.min(1),
 });
+
+export type SStock = z.infer<typeof sStock>;
+export const sStock = zId.extend({});

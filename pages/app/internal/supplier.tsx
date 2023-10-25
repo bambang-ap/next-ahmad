@@ -32,14 +32,15 @@ export default function InternalSupplier() {
 		reset,
 		control,
 		useQuery: form => trpc.internal.supplier.get.useQuery(form),
-		header: ['No', 'Nama', 'Alamat', 'NPWP', 'Action'],
+		header: ['No', 'Nama', 'Telp', 'Alamat', 'NPWP', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, item}, index) => {
-			const {alamat, nama, npwp} = item;
+			const {alamat, nama, telp, npwp} = item;
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
 					<Cell>{nama}</Cell>
+					<Cell>{telp}</Cell>
 					<Cell>{alamat}</Cell>
 					<Cell>{npwp}</Cell>
 					<Cell className="gap-2">
@@ -108,7 +109,7 @@ function RenderModal({control}: FormProps<FormType>) {
 	return (
 		<div className="flex flex-col gap-2">
 			<Input control={control} fieldName="form.nama" label="Nama" />
-			<Input control={control} fieldName="form.telp" label="NPWP" />
+			<Input control={control} fieldName="form.telp" label="Telp" />
 			<Input control={control} fieldName="form.npwp" label="NPWP" />
 			<Input
 				multiline

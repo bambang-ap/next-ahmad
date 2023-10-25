@@ -8,6 +8,36 @@ import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
 export const inRouters = router({
+	/**
+	 * @param id_po
+	 */
+	get_closed: procedure.input(zId).query(({ctx, input}) => {
+		const {inItem, poItem} = internalInAttributes();
+		const id_po = input.id;
+
+		type Ret = typeof poItem.obj & {
+			oInItems: typeof inItem.obj[];
+		};
+		type RetOutput = {
+			max: number;
+			isClosed: boolean;
+		} & Ret;
+
+		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
+			const data = await poItem.model.findAll({
+				where: {id_po},
+				include: [inItem],
+			});
+
+			return data.map(e => {
+				const val = e.toJSON() as unknown as Ret;
+
+				const total = val.oInItems.reduce((ret, cur) => ret + cur.qty, 0);
+
+				return {...val, isClosed: total === val.qty, max: val.qty - total};
+			});
+		});
+	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type RetOutput = typeof Ret;
 
@@ -43,17 +73,18 @@ export const inRouters = router({
 				id: id_sj_in ?? generateId('ISIN-'),
 			});
 
+			const in_id = generatedPo.dataValues.id;
 			const includedId = oInItems.map(e => e.id).filter(Boolean);
 			const items = oInItems.map(async item => {
 				const {id, ...inItem} = item;
 				await oInItem.upsert({
 					...inItem,
+					in_id,
 					id: id ?? generateId('ISINI-'),
-					in_id: generatedPo.dataValues.id,
 				});
 			});
 
-			await oInItem.destroy({where: {id: {[Op.notIn]: includedId}}});
+			await oInItem.destroy({where: {id: {[Op.notIn]: includedId}, in_id}});
 			await Promise.all(items);
 
 			return Success;

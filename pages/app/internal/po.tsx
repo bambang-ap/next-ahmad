@@ -215,7 +215,7 @@ function RenderModal({
 					const itemSelections = selectMapper(
 						dataItem?.rows ?? [],
 						'id',
-						'kode',
+						'nama',
 					).filter(
 						e => e.value === item.id_item || !selectedItems.includes(e.value),
 					);
@@ -232,7 +232,7 @@ function RenderModal({
 									key={keyItem}
 									disabled={isEdit && !!item.id}
 									control={control}
-									label="Kode Item"
+									label="Nama Item"
 									className="flex-1"
 									data={itemSelections}
 									fieldName={`form.oPoItems.${i}.id_item`}
@@ -241,8 +241,8 @@ function RenderModal({
 							<Cell>
 								<InputDummy
 									className="flex-1"
-									label="Nama Item"
-									byPassValue={oItem?.nama}
+									label="Kode Item"
+									byPassValue={oItem?.kode}
 									disabled
 								/>
 							</Cell>
