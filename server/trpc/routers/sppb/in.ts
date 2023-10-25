@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod';
 
 import {
 	PagingResult,
@@ -7,7 +7,7 @@ import {
 	TPOItem,
 	TPOItemSppbIn,
 	UnitQty,
-} from "@appTypes/app.type";
+} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	tCustomerPO,
@@ -17,8 +17,8 @@ import {
 	tPOItemSppbIn,
 	tUpsertSppbIn,
 	zId,
-} from "@appTypes/app.zod";
-import {defaultLimit, Success} from "@constants";
+} from '@appTypes/app.zod';
+import {defaultLimit, Success} from '@constants';
 import {
 	attrParser,
 	OrmCustomer,
@@ -29,37 +29,37 @@ import {
 	OrmPOItemSppbIn,
 	sppbInGetPage,
 	wherePagesV2,
-} from "@database";
-import {checkCredentialV2, generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+} from '@database';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
-import {appRouter} from "..";
+import {appRouter} from '..';
 
-import {qtyMap, qtyReduce} from "@utils";
+import {qtyMap, qtyReduce} from '@utils';
 
-import {GetPageRows} from "../customer_po";
+import {GetPageRows} from '../customer_po';
 
 type GetPage = PagingResult<SppbInRows>;
-export type SppbInRows = ReturnType<typeof sppbInGetPage>["Ret"];
+export type SppbInRows = ReturnType<typeof sppbInGetPage>['Ret'];
 
 const sppbInRouters = router({
 	po: router({
 		gett: procedure
 			.input(tCustomerPO.pick({id_customer: true}))
 			.query(({ctx, input}) => {
-				const A = attrParser(tCustomerPO, ["id", "nomor_po"]);
+				const A = attrParser(tCustomerPO, ['id', 'nomor_po']);
 				const B = attrParser(tPOItem, [
-					"id",
-					"master_item_id",
-					"qty1",
-					"qty2",
-					"qty3",
-					"unit1",
-					"unit2",
-					"unit3",
+					'id',
+					'master_item_id',
+					'qty1',
+					'qty2',
+					'qty3',
+					'unit1',
+					'unit2',
+					'unit3',
 				]);
-				const C = attrParser(tMasterItem, ["name", "kode_item"]);
-				const D = attrParser(tPOItemSppbIn, ["qty1", "qty2", "qty3"]);
+				const C = attrParser(tMasterItem, ['name', 'kode_item']);
+				const D = attrParser(tPOItemSppbIn, ['qty1', 'qty2', 'qty3']);
 
 				type Ret = typeof A.obj & {
 					isClosed?: boolean;
@@ -98,7 +98,7 @@ const sppbInRouters = router({
 							const totalQty = qtyReduce((r, {qtyKey}) => {
 								let qty: number = r[qtyKey]!;
 								vall.OrmPOItemSppbIns.forEach(itm => {
-									qty += parseFloat(itm[qtyKey]!?.toString() ?? "0");
+									qty += parseFloat(itm[qtyKey]!?.toString() ?? '0');
 								});
 								return {...r, [qtyKey]: qty};
 							});
@@ -114,7 +114,7 @@ const sppbInRouters = router({
 						return {
 							...val,
 							OrmCustomerPOItems: u,
-							isClosed: !u.map(e => e.isClosed).includes(false),
+							isClosed: !u.map(v => v.isClosed).includes(false),
 						};
 					});
 				});
@@ -164,7 +164,7 @@ const sppbInRouters = router({
 	get: procedure
 		.input(
 			z.object({
-				type: z.literal("sppb_in"),
+				type: z.literal('sppb_in'),
 				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)
@@ -192,9 +192,9 @@ const sppbInRouters = router({
 					offset: (page - 1) * limit,
 					where: wherePagesV2<SppbInRows>(
 						[
-							"nomor_surat",
-							"$OrmCustomerPO.nomor_po$",
-							"$OrmCustomerPO.OrmCustomer.name$",
+							'nomor_surat',
+							'$OrmCustomerPO.nomor_po$',
+							'$OrmCustomerPO.OrmCustomer.name$',
 						],
 						search,
 					),
@@ -228,7 +228,7 @@ const sppbInRouters = router({
 
 				const [{dataValues: createdSppb}] = await OrmCustomerSPPBIn.upsert({
 					...rest,
-					id: id || generateId("SPPBIN_"),
+					id: id || generateId('SPPBIN_'),
 				});
 
 				const existingPoItemPromises = (
@@ -252,7 +252,7 @@ const sppbInRouters = router({
 						...item,
 						id_item,
 						id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
-						id: idItem || generateId("SPPBINITM_"),
+						id: idItem || generateId('SPPBINITM_'),
 					});
 				});
 

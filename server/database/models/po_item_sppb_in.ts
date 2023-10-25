@@ -1,10 +1,10 @@
-import {DataTypes, Model, Sequelize, STRING} from "sequelize";
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
-import {TPOItemSppbIn} from "@appTypes/app.zod";
-import {defaultExcludeColumn} from "@constants";
-import {TABLES} from "@enum";
+import {TPOItemSppbIn} from '@appTypes/app.zod';
+import {defaultExcludeColumn} from '@constants';
+import {TABLES} from '@enum';
 
-import {unitQtyField} from "./customer_po_item";
+import {unitQtyField} from './customer_po_item';
 
 export class OrmPOItemSppbIn extends Model<TPOItemSppbIn> {}
 

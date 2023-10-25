@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-import {TCustomer} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {CRUD_ENABLED} from "@enum";
+import {TCustomer} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {CRUD_ENABLED} from '@enum';
 
 export class OrmCustomer extends Model<TCustomer> {}
 

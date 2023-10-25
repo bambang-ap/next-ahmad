@@ -1,9 +1,9 @@
-import {zIds} from "@appTypes/app.zod";
-import {getPrintPoAttributes} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure} from "@trpc";
+import {zIds} from '@appTypes/app.zod';
+import {getPrintPoAttributes} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure} from '@trpc';
 
-import {appRouter} from "..";
+import {appRouter} from '..';
 
 const exportPoRouters = {
 	po: procedure.input(zIds).query(({ctx, input}) => {

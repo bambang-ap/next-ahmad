@@ -1,5 +1,5 @@
-import {Op} from "sequelize";
-import {z} from "zod";
+import {Op} from 'sequelize';
+import {z} from 'zod';
 
 import {
 	tableFormValue,
@@ -7,16 +7,16 @@ import {
 	TSupplierItem,
 	tSupplierItemUpsert,
 	zId,
-} from "@appTypes/app.zod";
-import {Success, through} from "@constants";
+} from '@appTypes/app.zod';
+import {Success, through} from '@constants';
 import {
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
 	wherePages,
-} from "@database";
-import {checkCredentialV2, generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+} from '@database';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
 const supplierItemRouters = router({
 	get: procedure
@@ -27,9 +27,9 @@ const supplierItemRouters = router({
 				const {limit, page, search, withSupplier = true} = input;
 				const {count, rows} = await OrmSupplierItem.findAndCountAll({
 					limit,
-					order: [["name_item", "desc"]],
+					order: [['name_item', 'desc']],
 					offset: (page - 1) * limit,
-					where: wherePages("name_item", search),
+					where: wherePages('name_item', search),
 					include: withSupplier ? [{model: OrmSupplier, through}] : [],
 				});
 
@@ -48,7 +48,7 @@ const supplierItemRouters = router({
 			return checkCredentialV2(ctx, async () => {
 				const [item] = await OrmSupplierItem.upsert({
 					...items,
-					id: items.id || generateId("SP_I_"),
+					id: items.id || generateId('SP_I_'),
 				});
 
 				const relationToRemove = await OrmSupItemRelation.findAll({
@@ -64,7 +64,7 @@ const supplierItemRouters = router({
 					});
 
 					await OrmSupItemRelation.upsert({
-						id: relation?.dataValues.id ?? generateId("SP_IR_"),
+						id: relation?.dataValues.id ?? generateId('SP_IR_'),
 						item_id: item.dataValues.id,
 						supplier_id,
 					});

@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod';
 
 import {
 	exportKanbanAttributes,
@@ -11,10 +11,10 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	processMapper,
-} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure} from "@trpc";
-import {qtyMap} from "@utils";
+} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure} from '@trpc';
+import {qtyMap} from '@utils';
 
 const exportKanbanRouters = {
 	kanban: procedure
@@ -70,19 +70,19 @@ const exportKanbanRouters = {
 
 					return {
 						CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
-						"NOMOR PO": val.OrmCustomerPO.nomor_po,
-						"NOMOR SJ": val.OrmCustomerSPPBIn.nomor_surat,
-						"NOMOR KANBAN": val.nomor_kanban,
-						"PART NAME": name!,
-						"PART NO": kode_item!,
-						"QTY / JUMLAH": qtyMap(({qtyKey, unitKey}) => {
+						'NOMOR PO': val.OrmCustomerPO.nomor_po,
+						'NOMOR SJ': val.OrmCustomerSPPBIn.nomor_surat,
+						'NOMOR KANBAN': val.nomor_kanban,
+						'PART NAME': name!,
+						'PART NO': kode_item!,
+						'QTY / JUMLAH': qtyMap(({qtyKey, unitKey}) => {
 							const qty = item?.[qtyKey];
 							const unit = poItem?.[unitKey];
 							if (!qty) return;
 							return `${qty} ${unit}`;
 						})
 							.filter(Boolean)
-							.join(" | "),
+							.join(' | '),
 						PROSES: proses,
 						KETERANGAN: val.keterangan!,
 					};

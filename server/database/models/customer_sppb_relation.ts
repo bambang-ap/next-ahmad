@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize, STRING} from "sequelize";
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
-import {TSPPBRelation} from "@appTypes/app.zod";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TSPPBRelation} from '@appTypes/app.zod';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class dSppbBridge extends Model<TSPPBRelation> {}
 

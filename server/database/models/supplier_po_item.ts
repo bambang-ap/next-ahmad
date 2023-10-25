@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize, STRING} from "sequelize";
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
-import {TSupplierPOItem} from "@appTypes/app.zod";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TSupplierPOItem} from '@appTypes/app.zod';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmSupplierPOItem extends Model<TSupplierPOItem> {}
 

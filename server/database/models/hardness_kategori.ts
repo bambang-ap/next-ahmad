@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-import {THardnessKategori} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {THardnessKategori} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmHardnessKategori extends Model<THardnessKategori> {}
 

@@ -1,7 +1,7 @@
-import {Includeable, Op} from "sequelize";
-import {z} from "zod";
+import {Includeable, Op} from 'sequelize';
+import {z} from 'zod';
 
-import {PagingResult, TMasterItem, UQtyList} from "@appTypes/app.type";
+import {PagingResult, TMasterItem, UQtyList} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	TCustomer,
@@ -10,8 +10,8 @@ import {
 	TPOItem,
 	tPOItem,
 	zId,
-} from "@appTypes/app.zod";
-import {defaultLimit, qtyList, Success} from "@constants";
+} from '@appTypes/app.zod';
+import {defaultLimit, qtyList, Success} from '@constants';
 import {
 	getCurrentPOStatus,
 	OrmCustomer,
@@ -22,14 +22,14 @@ import {
 	OrmPOItemSppbIn,
 	poGetAttributes,
 	wherePagesV2,
-} from "@database";
-import {PO_STATUS} from "@enum";
-import {checkCredentialV2, generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+} from '@database';
+import {PO_STATUS} from '@enum';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
-import {appRouter} from ".";
+import {appRouter} from '.';
 
-export type PoGetV2 = ReturnType<typeof poGetAttributes>["Ret"];
+export type PoGetV2 = ReturnType<typeof poGetAttributes>['Ret'];
 export type GetPage = PagingResult<GetPageRows>;
 export type GetPageRows = TCustomerPO & {
 	status: PO_STATUS;
@@ -40,7 +40,7 @@ export type GetPageRows = TCustomerPO & {
 
 type III = Pick<
 	GetPageRows,
-	"id" | "id_customer" | "po_item" | "isClosed" | "nomor_po"
+	'id' | 'id_customer' | 'po_item' | 'isClosed' | 'nomor_po'
 >;
 
 const customer_poRouters = router({
@@ -50,7 +50,7 @@ const customer_poRouters = router({
 				.pick({id: true})
 				.partial()
 				.extend({
-					type: z.literal("customer_po"),
+					type: z.literal('customer_po'),
 				}),
 		)
 		.query(async ({ctx, input}): Promise<III[]> => {
@@ -76,7 +76,7 @@ const customer_poRouters = router({
 				attributes: A.keys,
 				offset: (page - 1) * limit,
 				where: wherePagesV2<PoGetV2>(
-					["nomor_po", "$OrmCustomer.name$"],
+					['nomor_po', '$OrmCustomer.name$'],
 					search,
 				),
 				include: [
@@ -104,7 +104,7 @@ const customer_poRouters = router({
 	getPage: procedure
 		.input(
 			tableFormValue.partial().extend({
-				type: z.literal("customer_po").optional(),
+				type: z.literal('customer_po').optional(),
 				id: z.string().array().or(z.string()).optional(),
 			}),
 		)
@@ -129,7 +129,7 @@ const customer_poRouters = router({
 				const {count, rows: allPO} = await OrmCustomerPO.findAndCountAll(
 					idPo ? {where: {id: idPo}, include} : limitation,
 				);
-				const joinedPOPromises = allPO.map<Promise<GetPage["rows"][number]>>(
+				const joinedPOPromises = allPO.map<Promise<GetPage['rows'][number]>>(
 					async po => {
 						const dataValues = po.toJSON() as TCustomerPO & {
 							OrmCustomer?: TCustomer;
@@ -200,12 +200,12 @@ const customer_poRouters = router({
 				const {po_item, ...body} = input;
 				const {dataValues: createdPo} = await OrmCustomerPO.create({
 					...body,
-					id: generateId("PO_"),
+					id: generateId('PO_'),
 				});
 				po_item.forEach(async item => {
 					await OrmCustomerPOItem.create({
 						...item,
-						id: generateId("POI_"),
+						id: generateId('POI_'),
 						id_po: createdPo.id,
 					});
 				});
@@ -242,7 +242,7 @@ const customer_poRouters = router({
 
 					return OrmCustomerPOItem.upsert({
 						...item,
-						id: itemId || generateId("POI_"),
+						id: itemId || generateId('POI_'),
 						id_po: input.id,
 					});
 				});

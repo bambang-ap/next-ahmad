@@ -1,7 +1,7 @@
-import {tRoute, zIds} from "@appTypes/app.zod";
-import {printScanAttributes} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure} from "@trpc";
+import {tRoute, zIds} from '@appTypes/app.zod';
+import {printScanAttributes} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure} from '@trpc';
 
 export const printScanRouter = {
 	scan: procedure.input(zIds.extend(tRoute.shape)).query(({ctx, input}) => {

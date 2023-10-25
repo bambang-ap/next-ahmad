@@ -1,17 +1,17 @@
-import {DataTypes, Model, Sequelize, STRING} from "sequelize";
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
-import {TPOItem} from "@appTypes/app.type";
-import {defaultExcludeColumn} from "@constants";
-import {ormDecimalType} from "@database";
-import {TABLES} from "@enum";
+import {TPOItem} from '@appTypes/app.type';
+import {defaultExcludeColumn} from '@constants';
+import {ormDecimalType} from '@database';
+import {TABLES} from '@enum';
 
 export class OrmCustomerPOItem extends Model<TPOItem> {}
 export class dPoItem extends Model<TPOItem> {}
 
 export const unitQtyField = {
-	qty1: ormDecimalType("qty1"),
-	qty2: ormDecimalType("qty2"),
-	qty3: ormDecimalType("qty3"),
+	qty1: ormDecimalType('qty1'),
+	qty2: ormDecimalType('qty2'),
+	qty3: ormDecimalType('qty3'),
 	// qty4: ormDecimalType("qty4"),
 	// qty5: ormDecimalType("qty5"),
 };
@@ -21,7 +21,7 @@ export function initPoItem(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_po: {type: STRING},
-			harga: ormDecimalType("harga"),
+			harga: ormDecimalType('harga'),
 			master_item_id: STRING,
 			unit1: STRING,
 			unit2: STRING,
@@ -50,7 +50,7 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			id_po: {type: STRING},
-			harga: ormDecimalType("harga"),
+			harga: ormDecimalType('harga'),
 			master_item_id: STRING,
 			unit1: STRING,
 			unit2: STRING,

@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize, STRING} from "sequelize";
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
-import {TSupItemRelation} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TSupItemRelation} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmSupItemRelation extends Model<TSupItemRelation> {}
 

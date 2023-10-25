@@ -1,4 +1,4 @@
-import {Model, ModelStatic} from "sequelize";
+import {Model, ModelStatic} from 'sequelize';
 
 type OO<T extends {}> = [model: ModelStatic<Model<T>>, foreignKey: ObjKeyof<T>];
 type OG<T extends {}> = [

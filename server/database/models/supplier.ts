@@ -1,11 +1,11 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-import {TSupplier} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TSupplier} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmSupplier extends Model<TSupplier> {
-	static _alias = "Supplier" as const;
+	static _alias = 'Supplier' as const;
 }
 
 export default function initOrmSupplier(sequelize: Sequelize) {

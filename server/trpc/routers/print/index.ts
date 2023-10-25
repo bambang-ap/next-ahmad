@@ -1,17 +1,17 @@
-import {TScanTarget} from "@appTypes/app.type";
-import {zIds} from "@appTypes/app.zod";
+import {TScanTarget} from '@appTypes/app.type';
+import {zIds} from '@appTypes/app.zod';
 import {
 	getPrintPoAttributes,
 	printSppbOutAttributes,
 	wherePagesV3,
-} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure, router} from "@trpc";
+} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure, router} from '@trpc';
 
-import {printKanbanRouter} from "./kanban";
-import {printScanRouter} from "./scan";
+import {printKanbanRouter} from './kanban';
+import {printScanRouter} from './scan';
 
-export type SppbOutGet = ReturnType<typeof printSppbOutAttributes>["Ret"];
+export type SppbOutGet = ReturnType<typeof printSppbOutAttributes>['Ret'];
 
 const printRouters = router({
 	...printKanbanRouter,
@@ -36,8 +36,8 @@ const printRouters = router({
 				const data = await sjOut.model.findAll({
 					where: wherePagesV3<typeof Ret>({
 						id: input.ids,
-						"$dOutItems.dInItem.dSJIn.dKanbans.dScans.status$":
-							"finish_good" as TScanTarget,
+						'$dOutItems.dInItem.dSJIn.dKanbans.dScans.status$':
+							'finish_good' as TScanTarget,
 					}),
 					attributes: sjOut.attributes,
 					include: [

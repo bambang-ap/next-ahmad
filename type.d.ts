@@ -38,12 +38,12 @@ declare namespace NodeJS {
 	}
 }
 
-declare module "react-qr-scanner" {
-	import {HTMLAttributes} from "react";
+declare module 'react-qr-scanner' {
+	import {HTMLAttributes} from 'react';
 	export type QRResult = {text: string} | null;
 	export type QRReaderProps = {
 		delay?: number;
-		style?: HTMLAttributes<HTMLDivElement>["style"];
+		style?: HTMLAttributes<HTMLDivElement>['style'];
 		onScan: (result: QRResult) => void;
 		onError: (err: any) => void;
 	};
@@ -55,7 +55,7 @@ declare module "react-qr-scanner" {
 
 type Join<K, P> = K extends string | number
 	? P extends string | number
-		? `${K}${"" extends P ? "" : "."}${P}`
+		? `${K}${'' extends P ? '' : '.'}${P}`
 		: never
 	: never;
 
@@ -93,10 +93,10 @@ type Paths<T, D extends number = 10> = [D] extends [never]
 				? `${K}` | Join<K, Paths<T[K], Prev[D]>>
 				: never;
 	  }[keyof T]
-	: "";
+	: '';
 
 type Leaves<T, D extends number = 10> = [D] extends [never]
 	? never
 	: T extends object
 	? {[K in keyof T]-?: Join<K, Leaves<T[K], Prev[D]>>}[keyof T]
-	: "";
+	: '';

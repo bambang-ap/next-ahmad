@@ -1,4 +1,4 @@
-import {z} from "zod";
+import {z} from 'zod';
 
 import {
 	TCustomer,
@@ -9,8 +9,8 @@ import {
 	TPOItemSppbIn,
 	UQty,
 	UQtyList,
-} from "@appTypes/app.type";
-import {zIds} from "@appTypes/app.zod";
+} from '@appTypes/app.type';
+import {zIds} from '@appTypes/app.zod';
 import {
 	OrmCustomer,
 	OrmCustomerPO,
@@ -19,38 +19,38 @@ import {
 	OrmMasterItem,
 	OrmPOItemSppbIn,
 	processMapper,
-} from "@database";
-import {REJECT_REASON_VIEW} from "@enum";
-import {checkCredentialV2} from "@server";
-import {procedure, router} from "@trpc";
-import {itemInScanParser, qtyMap} from "@utils";
+} from '@database';
+import {REJECT_REASON_VIEW} from '@enum';
+import {checkCredentialV2} from '@server';
+import {procedure, router} from '@trpc';
+import {itemInScanParser, qtyMap} from '@utils';
 
-import {appRouter} from "..";
+import {appRouter} from '..';
 
 type InResult = Record<
-	| "NO"
-	| "TANGGAL SJ MASUK"
-	| "CUSTOMER"
-	| "NO PO"
-	| "NO SURAT JALAN MASUK"
-	| "PART NAME"
-	| "PART NO"
-	| "NO LOT CUSTOMER"
-	| "PROSES"
-	| "KETERANGAN",
+	| 'NO'
+	| 'TANGGAL SJ MASUK'
+	| 'CUSTOMER'
+	| 'NO PO'
+	| 'NO SURAT JALAN MASUK'
+	| 'PART NAME'
+	| 'PART NO'
+	| 'NO LOT CUSTOMER'
+	| 'PROSES'
+	| 'KETERANGAN',
 	string
 >;
 
 type OutResult = Record<
-	| "NO"
-	| "TANGGAL SJ KELUAR "
-	| "CUSTOMER"
-	| "NO SURAT JALAN MASUK"
-	| "PART NAME / ITEM"
-	| "NO PO"
-	| "NO SURAT JALAN KELUAR"
-	| "PROSES"
-	| "KETERANGAN",
+	| 'NO'
+	| 'TANGGAL SJ KELUAR '
+	| 'CUSTOMER'
+	| 'NO SURAT JALAN MASUK'
+	| 'PART NAME / ITEM'
+	| 'NO PO'
+	| 'NO SURAT JALAN KELUAR'
+	| 'PROSES'
+	| 'KETERANGAN',
 	string | number
 > &
 	Partial<Record<`${REJECT_REASON_VIEW} ${UQty}` | UQtyList, string>>;
@@ -90,7 +90,7 @@ const exportSppbRouters = router({
 						});
 						const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
 							const qty = item[qtyKey];
-							if (!qty) return {[qtyKey.toUpperCase()]: ""};
+							if (!qty) return {[qtyKey.toUpperCase()]: ''};
 							return {
 								[qtyKey.toUpperCase()]: `${qty} ${item.OrmCustomerPOItem[unitKey]}`,
 							};
@@ -98,13 +98,13 @@ const exportSppbRouters = router({
 
 						result.push({
 							NO: NO.toString(),
-							"TANGGAL SJ MASUK": val.tgl,
+							'TANGGAL SJ MASUK': val.tgl,
 							CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
-							"NO PO": val.OrmCustomerPO.nomor_po,
-							"NO SURAT JALAN MASUK": val.nomor_surat,
-							"PART NAME": item.OrmMasterItem.name!,
-							"PART NO": item.OrmMasterItem.kode_item!,
-							"NO LOT CUSTOMER": item.lot_no!,
+							'NO PO': val.OrmCustomerPO.nomor_po,
+							'NO SURAT JALAN MASUK': val.nomor_surat,
+							'PART NAME': item.OrmMasterItem.name!,
+							'PART NO': item.OrmMasterItem.kode_item!,
+							'NO LOT CUSTOMER': item.lot_no!,
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 							PROSES: instruksi,
 							KETERANGAN: item.OrmMasterItem.keterangan!,
@@ -162,11 +162,11 @@ const exportSppbRouters = router({
 					result.push({
 						NO: i.toString(),
 						CUSTOMER: dCust.name,
-						"NO PO": dPo.nomor_po!,
-						"NO SURAT JALAN MASUK": dSJIn?.nomor_surat!,
-						"NO SURAT JALAN KELUAR": invoice_no,
-						"TANGGAL SJ KELUAR ": date,
-						"PART NAME / ITEM": dItem.name!,
+						'NO PO': dPo.nomor_po!,
+						'NO SURAT JALAN MASUK': dSJIn?.nomor_surat!,
+						'NO SURAT JALAN KELUAR': invoice_no,
+						'TANGGAL SJ KELUAR ': date,
+						'PART NAME / ITEM': dItem.name!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 						PROSES: instruksi,
 						KETERANGAN: dItem.keterangan!,

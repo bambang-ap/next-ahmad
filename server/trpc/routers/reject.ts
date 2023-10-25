@@ -1,9 +1,9 @@
-import {tableFormValue} from "@appTypes/app.zod";
-import {getRejectAttributes} from "@database";
-import {checkCredentialV2, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+import {tableFormValue} from '@appTypes/app.zod';
+import {getRejectAttributes} from '@database';
+import {checkCredentialV2, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
-export type RejectRetType = ReturnType<typeof getRejectAttributes>["Ret"];
+export type RejectRetType = ReturnType<typeof getRejectAttributes>['Ret'];
 
 const rejectRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {

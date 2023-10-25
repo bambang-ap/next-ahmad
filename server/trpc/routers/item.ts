@@ -1,13 +1,13 @@
-import {z} from "zod";
+import {z} from 'zod';
 
-import {PagingResult} from "@appTypes/app.type";
-import {tableFormValue, TMasterItem, tMasterItem, zId} from "@appTypes/app.zod";
-import {Success} from "@constants";
-import {OrmKategoriMesin, OrmMasterItem, wherePages} from "@database";
-import {checkCredentialV2, generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+import {PagingResult} from '@appTypes/app.type';
+import {tableFormValue, TMasterItem, tMasterItem, zId} from '@appTypes/app.zod';
+import {Success} from '@constants';
+import {OrmKategoriMesin, OrmMasterItem, wherePages} from '@database';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
-import {appRouter} from ".";
+import {appRouter} from '.';
 
 type GetItem = TMasterItem & {
 	nameMesins: string[];
@@ -41,11 +41,11 @@ const itemRouters = router({
 			return checkCredentialV2(ctx, async (): Promise<PagingResult<IUI>> => {
 				const {count, rows} = await OrmMasterItem.findAndCountAll({
 					limit,
-					attributes: ["id", "name", "kode_item"],
-					order: [["id", "asc"]],
+					attributes: ['id', 'name', 'kode_item'],
+					order: [['id', 'asc']],
 					offset: (page - 1) * limit,
 					where: wherePages(
-						["name", "kode_item"] as (keyof TMasterItem)[],
+						['name', 'kode_item'] as (keyof TMasterItem)[],
 						search,
 					),
 				});
@@ -63,7 +63,7 @@ const itemRouters = router({
 	upsert: procedure
 		.input(tMasterItem.partial({id: true}))
 		.mutation(({ctx, input}) => {
-			const {id = generateId("MI"), ...body} = input;
+			const {id = generateId('MI'), ...body} = input;
 			return checkCredentialV2(ctx, async () => {
 				await OrmMasterItem.upsert({id, ...body});
 

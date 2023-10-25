@@ -1,8 +1,8 @@
-import {router} from "@trpc";
+import {router} from '@trpc';
 
-import supplierItemRouters from "./item";
-import supplierPoRouters from "./po";
-import supplierRouters from "./supplier";
+import supplierItemRouters from './item';
+import supplierPoRouters from './po';
+import supplierRouters from './supplier';
 
 const supplierRouter = router({
 	...supplierRouters,

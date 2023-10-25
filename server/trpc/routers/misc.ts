@@ -127,10 +127,10 @@ where schemaname not in ('pg_catalog', 'pg_toast')`,
 			),
 		)
 		.query(({input}) => {
-			function generateQr(type: image_type, input?: string) {
-				if (!input) return null;
+			function generateQr(type: image_type, inputStr?: string) {
+				if (!inputStr) return null;
 
-				const qrImage = qr.imageSync(input, {type});
+				const qrImage = qr.imageSync(inputStr, {type});
 
 				if (type === 'svg') return `data:image/svg+xml;utf8,${qrImage}`;
 
@@ -139,13 +139,13 @@ where schemaname not in ('pg_catalog', 'pg_toast')`,
 			}
 
 			function renderQrGenerated(
-				input?: string | string[],
+				inputStr?: string | string[],
 				type: image_type = 'png',
 			) {
-				if (Array.isArray(input))
-					return input.map(input => generateQr(type, input));
+				if (Array.isArray(inputStr))
+					return inputStr.map(strInput => generateQr(type, strInput));
 
-				return generateQr(type, input);
+				return generateQr(type, inputStr);
 			}
 
 			if (!input) return null;

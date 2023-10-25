@@ -1,8 +1,8 @@
-import {DataTypes, JSONB, Model, Sequelize} from "sequelize";
+import {DataTypes, JSONB, Model, Sequelize} from 'sequelize';
 
-import {TScan} from "@appTypes/app.type";
-import {defaultExcludeColumn} from "@constants";
-import {TABLES} from "@enum";
+import {TScan} from '@appTypes/app.type';
+import {defaultExcludeColumn} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmScan extends Model<TScan> {}
 

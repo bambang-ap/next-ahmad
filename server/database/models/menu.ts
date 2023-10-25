@@ -1,8 +1,8 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-import {TMenu} from "@appTypes/app.zod";
-import {defaultExcludeColumn} from "@constants";
-import {TABLES} from "@enum";
+import {TMenu} from '@appTypes/app.zod';
+import {defaultExcludeColumn} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmMenu extends Model<TMenu> {}
 
@@ -21,7 +21,7 @@ export default function initOrmMenu(sequelize: Sequelize) {
 			sequelize,
 			tableName: TABLES.MENU,
 			defaultScope: {
-				order: [["index", "asc"]],
+				order: [['index', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

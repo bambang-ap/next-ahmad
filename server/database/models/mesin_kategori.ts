@@ -1,11 +1,11 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-import {TKategoriMesin} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TKategoriMesin} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmKategoriMesin extends Model<TKategoriMesin> {
-	static _alias = "dataKMesin" as const;
+	static _alias = 'dataKMesin' as const;
 }
 
 export default function initOrmKategoriMesin(sequelize: Sequelize) {
@@ -19,7 +19,7 @@ export default function initOrmKategoriMesin(sequelize: Sequelize) {
 			tableName: TABLES.MESIN_KATEGORI,
 			defaultScope: {
 				...defaultOrderBy,
-				order: [["name", "asc"]],
+				order: [['name', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},
@@ -31,7 +31,7 @@ export default function initOrmKategoriMesin(sequelize: Sequelize) {
 }
 
 export class dKatMesin extends Model<TKategoriMesin> {
-	static _alias = "dataKMesin" as const;
+	static _alias = 'dataKMesin' as const;
 }
 
 export function initKatMesin(sequelize: Sequelize) {
@@ -45,7 +45,7 @@ export function initKatMesin(sequelize: Sequelize) {
 			tableName: TABLES.MESIN_KATEGORI,
 			defaultScope: {
 				...defaultOrderBy,
-				order: [["name", "asc"]],
+				order: [['name', 'asc']],
 				attributes: {
 					exclude: defaultExcludeColumn,
 				},

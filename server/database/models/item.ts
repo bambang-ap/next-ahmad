@@ -1,8 +1,8 @@
-import {ARRAY, DataTypes, JSONB, Model, Sequelize, STRING} from "sequelize";
+import {ARRAY, DataTypes, JSONB, Model, Sequelize, STRING} from 'sequelize';
 
-import {TMasterItem} from "@appTypes/app.zod";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TMasterItem} from '@appTypes/app.zod';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmMasterItem extends Model<TMasterItem> {}
 

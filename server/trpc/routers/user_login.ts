@@ -1,10 +1,10 @@
-import {moment} from "@utils";
-import {z} from "zod";
+import {z} from 'zod';
 
-import {OrmUser, OrmUserLogin} from "@database";
-import {generateId} from "@server";
-import {procedure, router} from "@trpc";
-import {TRPCError} from "@trpc/server";
+import {OrmUser, OrmUserLogin} from '@database';
+import {generateId} from '@server';
+import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
+import {moment} from '@utils';
 
 const user_loginRouters = router({
 	getToken: procedure.input(z.string()).query(async ({input: id_user}) => {
@@ -15,10 +15,10 @@ const user_loginRouters = router({
 		return hasToken.dataValues.id;
 	}),
 	generate: procedure.input(z.string()).mutation(async ({input: id_user}) => {
-		const expiredAt = moment().add(1, "month").toDate();
+		const expiredAt = moment().add(1, 'month').toDate();
 		const hasData = await OrmUser.findOne({where: {id: id_user}});
 
-		if (!hasData) throw new TRPCError({code: "UNAUTHORIZED"});
+		if (!hasData) throw new TRPCError({code: 'UNAUTHORIZED'});
 
 		const hasDataLogin = await OrmUserLogin.findOne({
 			where: {id_user},
@@ -27,7 +27,7 @@ const user_loginRouters = router({
 		const [retValue] = await OrmUserLogin.upsert({
 			id_user,
 			expiredAt,
-			id: hasDataLogin?.dataValues.id || generateId("UL_"),
+			id: hasDataLogin?.dataValues.id || generateId('UL_'),
 		});
 
 		return retValue;

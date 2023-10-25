@@ -1,13 +1,13 @@
-import {Includeable} from "sequelize";
+import {Includeable} from 'sequelize';
 
-import {tRoute, TScanTarget, zId} from "@appTypes/app.zod";
-import {dScan, getScanAttributesV2, OrmKanban} from "@database";
-import {checkCredentialV2} from "@server";
-import {procedure} from "@trpc";
-import {TRPCError} from "@trpc/server";
-import {scanRouterParser} from "@utils";
+import {tRoute, TScanTarget, zId} from '@appTypes/app.zod';
+import {dScan, getScanAttributesV2, OrmKanban} from '@database';
+import {checkCredentialV2} from '@server';
+import {procedure} from '@trpc';
+import {TRPCError} from '@trpc/server';
+import {scanRouterParser} from '@utils';
 
-import type {ScanGetV2} from "./";
+import type {ScanGetV2} from './';
 
 export const getScan = {
 	getV3: procedure.input(zId.extend(tRoute.shape)).query(({ctx, input}) => {
@@ -64,7 +64,7 @@ export const getScan = {
 
 		return checkCredentialV2(ctx, async (): Promise<ScanGetV2> => {
 			const {isFG, isProduksi, isQC} = scanRouterParser(route);
-			const status: TScanTarget = isQC ? "produksi" : isFG ? "qc" : route;
+			const status: TScanTarget = isQC ? 'produksi' : isFG ? 'qc' : route;
 
 			const count = await dScan.count({
 				where: {status, id_kanban: id},
@@ -80,14 +80,14 @@ export const getScan = {
 			});
 
 			if (!isProduksi && count <= 0) {
-				throw new TRPCError({code: "NOT_FOUND"});
+				throw new TRPCError({code: 'NOT_FOUND'});
 			}
 
 			const data = await asdd(route);
 
 			if (!data) {
 				const prevData = await asdd(
-					route === "qc" ? "produksi" : route === "finish_good" ? "qc" : route,
+					route === 'qc' ? 'produksi' : route === 'finish_good' ? 'qc' : route,
 				);
 
 				if (prevData) {
@@ -103,7 +103,7 @@ export const getScan = {
 				});
 
 				return {
-					dKanban: kanban?.dataValues as unknown as ScanGetV2["dKanban"],
+					dKanban: kanban?.dataValues as unknown as ScanGetV2['dKanban'],
 				};
 			}
 

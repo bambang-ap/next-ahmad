@@ -1,4 +1,4 @@
-import {PagingResult, TDataScan, TScan} from "@appTypes/app.type";
+import {PagingResult, TDataScan, TScan} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	tRoute,
@@ -10,8 +10,8 @@ import {
 	tScanTarget,
 	UnitQty,
 	zId,
-} from "@appTypes/app.zod";
-import {Success} from "@constants";
+} from '@appTypes/app.zod';
+import {Success} from '@constants';
 import {
 	dScan,
 	getScanAttributes,
@@ -29,30 +29,30 @@ import {
 	OrmUser,
 	scanListAttributes,
 	wherePagesV2,
-} from "@database";
-import {CATEGORY_REJECT_DB} from "@enum";
-import {checkCredentialV2, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
-import {appRouter} from "@trpc/routers";
-import {TRPCError} from "@trpc/server";
-import {moment, qtyMap} from "@utils";
+} from '@database';
+import {CATEGORY_REJECT_DB} from '@enum';
+import {checkCredentialV2, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
+import {appRouter} from '@trpc/routers';
+import {TRPCError} from '@trpc/server';
+import {moment, qtyMap} from '@utils';
 
-import {getScan} from "./get";
-import {updateScan} from "./update";
+import {getScan} from './get';
+import {updateScan} from './update';
 
-export type ScanList = ReturnType<typeof scanListAttributes>["Ret"];
-export type ScanGet = ReturnType<typeof getScanAttributes>["Ret"];
-export type ScanGetV2 = ReturnType<typeof getScanAttributesV2>["Ret"];
+export type ScanList = ReturnType<typeof scanListAttributes>['Ret'];
+export type ScanGet = ReturnType<typeof getScanAttributes>['Ret'];
+export type ScanGetV2 = ReturnType<typeof getScanAttributesV2>['Ret'];
 
 type ListResult = PagingResult<ScanList>;
 
 function enabled(target: TScanTarget, dataScan?: TScan) {
 	switch (target) {
-		case "produksi":
+		case 'produksi':
 			return true;
-		case "qc":
+		case 'qc':
 			return dataScan?.status_produksi;
-		case "finish_good":
+		case 'finish_good':
 			return dataScan?.status_qc;
 		// case 'out_barang':
 		// 	return dataScan?.status_finish_good;
@@ -90,11 +90,11 @@ const scanRouters = router({
 						status: target,
 						...wherePagesV2<ScanList>(
 							[
-								"$dKanban.keterangan$",
-								"$dKanban.nomor_kanban$",
-								"$dKanban.dPo.nomor_po$",
-								"$dKanban.dSJIn.nomor_surat$",
-								"$dKanban.dPo.dCust.name$",
+								'$dKanban.keterangan$',
+								'$dKanban.nomor_kanban$',
+								'$dKanban.dPo.nomor_po$',
+								'$dKanban.dSJIn.nomor_surat$',
+								'$dKanban.dPo.dCust.name$',
 							],
 							search,
 						),
@@ -168,7 +168,7 @@ const scanRouters = router({
 				async (): Promise<TDataScan | null> => {
 					const routerCaller = appRouter.createCaller({req, res});
 					const dataKanban = await routerCaller.kanban.get({
-						type: "kanban",
+						type: 'kanban',
 						where: {id},
 					});
 
@@ -181,8 +181,8 @@ const scanRouters = router({
 						// @ts-ignore
 						if (!enabled(target, dataScann))
 							throw new TRPCError({
-								code: "NOT_FOUND",
-								message: "Data tidak ditemukan",
+								code: 'NOT_FOUND',
+								message: 'Data tidak ditemukan',
 							});
 
 						// @ts-ignore
@@ -213,13 +213,13 @@ const scanRouters = router({
 
 					if (!dataScan) {
 						throw new TRPCError({
-							code: "BAD_REQUEST",
-							message: "Failed to get dataScan",
+							code: 'BAD_REQUEST',
+							message: 'Failed to get dataScan',
 						});
 					}
 
 					if (!enabled(target, dataScan?.dataValues!)) {
-						throw new TRPCError({code: "BAD_REQUEST", message: "Failed"});
+						throw new TRPCError({code: 'BAD_REQUEST', message: 'Failed'});
 					}
 
 					const date: TScanDate = {
@@ -233,7 +233,7 @@ const scanRouters = router({
 					);
 
 					switch (target) {
-						case "qc":
+						case 'qc':
 							const i = 0;
 							const {item_qc, item_qc_reject, item_qc_reject_category} = rest;
 							let updateFg = false;
@@ -277,9 +277,9 @@ const scanRouters = router({
 						default:
 							const promisedUpdateItem = rest[itemTarget]?.map(
 								async ([idItem, ...qtys]) => {
-									const f = qtyMap(({qtyKey}, i) => {
-										if (!qtys[i]) return;
-										return {[qtyKey]: qtys[i]};
+									const f = qtyMap(({qtyKey}, index) => {
+										if (!qtys[index]) return;
+										return {[qtyKey]: qtys[index]};
 									});
 									const updatedQty = f.reduce(
 										(a, b) => ({...a, ...b}),

@@ -5,19 +5,19 @@ import {
 	ModelAttributes,
 	Optional,
 	Sequelize,
-} from "sequelize";
+} from 'sequelize';
 
-import {TUser} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TUser} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmUser extends Model<TUser> {
-	static _alias = "dataUser" as const;
+	static _alias = 'dataUser' as const;
 }
 
 export function ormUserAttributes(): [
 	ModelAttributes<OrmUser, Optional<TUser, never>>,
-	Omit<InitOptions<OrmUser>, "sequelize">,
+	Omit<InitOptions<OrmUser>, 'sequelize'>,
 ] {
 	return [
 		{
@@ -32,7 +32,7 @@ export function ormUserAttributes(): [
 			defaultScope: {
 				...defaultOrderBy,
 				attributes: {
-					exclude: [...defaultExcludeColumn, "password"],
+					exclude: [...defaultExcludeColumn, 'password'],
 				},
 			},
 		},
@@ -47,12 +47,12 @@ export default function initOrmUser(sequelize: Sequelize) {
 }
 
 export class dUser extends Model<TUser> {
-	static _alias = "dataUser" as const;
+	static _alias = 'dataUser' as const;
 }
 
 export function dUserAttributes(): [
 	ModelAttributes<dUser, Optional<TUser, never>>,
-	Omit<InitOptions<dUser>, "sequelize">,
+	Omit<InitOptions<dUser>, 'sequelize'>,
 ] {
 	return [
 		{
@@ -67,7 +67,7 @@ export function dUserAttributes(): [
 			defaultScope: {
 				...defaultOrderBy,
 				attributes: {
-					exclude: [...defaultExcludeColumn, "password"],
+					exclude: [...defaultExcludeColumn, 'password'],
 				},
 			},
 		},

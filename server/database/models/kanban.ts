@@ -1,12 +1,12 @@
-import {DataTypes, Model, Sequelize} from "sequelize";
+import {DataTypes, Model, Sequelize} from 'sequelize';
 
-import {TKanban} from "@appTypes/app.zod";
-import {defaultExcludeColumn} from "@constants";
-import {TABLES} from "@enum";
+import {TKanban} from '@appTypes/app.zod';
+import {defaultExcludeColumn} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmKanban extends Model<TKanban> {
-	static _aliasCreatedBy = "dataCreatedBy" as const;
-	static _aliasUpdatedBy = "dataUpdatedBy" as const;
+	static _aliasCreatedBy = 'dataCreatedBy' as const;
+	static _aliasUpdatedBy = 'dataUpdatedBy' as const;
 }
 
 export default function initOrmKanban(sequelize: Sequelize) {
@@ -40,8 +40,8 @@ export default function initOrmKanban(sequelize: Sequelize) {
 }
 
 export class dKanban extends Model<TKanban> {
-	static _aliasCreatedBy = "dataCreatedBy" as const;
-	static _aliasUpdatedBy = "dataUpdatedBy" as const;
+	static _aliasCreatedBy = 'dataCreatedBy' as const;
+	static _aliasUpdatedBy = 'dataUpdatedBy' as const;
 }
 
 export function initDKanban(sequelize: Sequelize) {

@@ -45,7 +45,6 @@ const machineDashboardRouters = router({
 				const val = e.toJSON() as unknown as Ret;
 				const mesinId = val.dKnbItem.dMesin?.id || 'tempId';
 				const {
-					dScan: __,
 					item_from_kanban,
 					dKnbItem: {
 						dInItem: {dPoItem},
@@ -63,7 +62,7 @@ const machineDashboardRouters = router({
 						mesin: val.dKnbItem.dMesin,
 					};
 				} else {
-					const {data, mesin} = ret[mesinId]!;
+					const {data, mesin: mm} = ret[mesinId]!;
 					let {planning, produksi, unit} = data;
 
 					qtyMap(({qtyKey}) => {
@@ -79,7 +78,7 @@ const machineDashboardRouters = router({
 						planning[qtyKey] = qPlan + qPlans;
 					});
 
-					ret[mesinId] = {mesin, data: {unit, produksi, planning}};
+					ret[mesinId] = {mesin: mm, data: {unit, produksi, planning}};
 				}
 
 				return ret;

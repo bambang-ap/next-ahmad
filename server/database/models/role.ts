@@ -5,17 +5,17 @@ import {
 	ModelAttributes,
 	Optional,
 	Sequelize,
-} from "sequelize";
+} from 'sequelize';
 
-import {TRole} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TRole} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmRole extends Model<TRole> {}
 
 export function ormRoleAttributes(): [
 	ModelAttributes<OrmRole, Optional<TRole, never>>,
-	Omit<InitOptions<OrmRole>, "sequelize">,
+	Omit<InitOptions<OrmRole>, 'sequelize'>,
 ] {
 	return [
 		{

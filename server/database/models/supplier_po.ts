@@ -1,8 +1,8 @@
-import {BOOLEAN, DataTypes, Model, NUMBER, Sequelize, STRING} from "sequelize";
+import {BOOLEAN, DataTypes, Model, NUMBER, Sequelize, STRING} from 'sequelize';
 
-import {TSupplierPO} from "@appTypes/app.type";
-import {defaultExcludeColumn, defaultOrderBy} from "@constants";
-import {TABLES} from "@enum";
+import {TSupplierPO} from '@appTypes/app.type';
+import {defaultExcludeColumn, defaultOrderBy} from '@constants';
+import {TABLES} from '@enum';
 
 export class OrmSupplierPO extends Model<TSupplierPO> {}
 

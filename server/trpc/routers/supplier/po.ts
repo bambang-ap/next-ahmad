@@ -1,6 +1,6 @@
-import {Model} from "sequelize";
+import {Model} from 'sequelize';
 
-import {PagingResult} from "@appTypes/app.type";
+import {PagingResult} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	TSupItemRelation,
@@ -11,17 +11,17 @@ import {
 	TSupplierPOUpsert,
 	tSupplierPOUpsert,
 	zId,
-} from "@appTypes/app.zod";
-import {Success} from "@constants";
+} from '@appTypes/app.zod';
+import {Success} from '@constants';
 import {
 	OrmSupItemRelation,
 	OrmSupplier,
 	OrmSupplierItem,
 	OrmSupplierPO,
 	OrmSupplierPOItem,
-} from "@database";
-import {checkCredentialV2, generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+} from '@database';
+import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
 type GetPage = TSupplierPOUpsert & {
 	supplier?: TSupplier;
@@ -44,7 +44,7 @@ const supplierPoRouters = router({
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<GetPage>> => {
 			const {count, rows: data} = await OrmSupplierPO.findAndCountAll({
 				limit,
-				order: [["id", "asc"]],
+				order: [['id', 'asc']],
 				offset: (page - 1) * limit,
 				include: [
 					{
@@ -75,7 +75,7 @@ const supplierPoRouters = router({
 						const {OrmSupplier: Sup, OrmSupplierItem: SupItem} = Relation;
 						supplier = Sup!;
 						return {...ret, [SupItem?.id!]: restValues};
-					}, {} as GetPage["items"]),
+					}, {} as GetPage['items']),
 				};
 			});
 
@@ -95,7 +95,7 @@ const supplierPoRouters = router({
 
 				const [dataPo] = await OrmSupplierPO.upsert({
 					...body,
-					id: id || generateId("SP_PO_"),
+					id: id || generateId('SP_PO_'),
 				});
 
 				Object.entries(items).forEach(async ([item_id, {id_po, ...item}]) => {
@@ -104,7 +104,7 @@ const supplierPoRouters = router({
 					});
 					await OrmSupplierPOItem.upsert({
 						...item,
-						id: item.id ?? generateId("SP_PI_"),
+						id: item.id ?? generateId('SP_PI_'),
 						id_po: id_po ?? dataPo.dataValues.id,
 						// @ts-ignore
 						id_supplier_item: relation?.dataValues.id,

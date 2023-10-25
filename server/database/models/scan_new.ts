@@ -1,13 +1,13 @@
-import {BOOLEAN, JSONB, Model, Sequelize, STRING} from "sequelize";
+import {BOOLEAN, JSONB, Model, Sequelize, STRING} from 'sequelize';
 
-import {TScanNew, TScanNewItem, TScanRejectItem} from "@appTypes/app.type";
-import {defaultExcludeColumns} from "@constants";
-import {TABLES} from "@enum";
+import {TScanNew, TScanNewItem, TScanRejectItem} from '@appTypes/app.type';
+import {defaultExcludeColumns} from '@constants';
+import {TABLES} from '@enum';
 
-import {unitQtyField} from "./customer_po_item";
+import {unitQtyField} from './customer_po_item';
 
 export class dScan extends Model<TScanNew> {
-	static _aliasReject = "rejScan" as const;
+	static _aliasReject = 'rejScan' as const;
 }
 
 export function initdScan(sequelize: Sequelize) {

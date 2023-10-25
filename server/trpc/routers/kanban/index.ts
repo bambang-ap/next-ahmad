@@ -1,15 +1,15 @@
-import {z} from "zod";
+import {z} from 'zod';
 
-import {zId} from "@appTypes/app.zod";
-import {Success} from "@constants";
-import {OrmKanban, OrmKanbanItem, OrmScan} from "@database";
-import {checkCredentialV2, genInvoice} from "@server";
-import {procedure, router} from "@trpc";
-import {TRPCError} from "@trpc/server";
+import {zId} from '@appTypes/app.zod';
+import {Success} from '@constants';
+import {OrmKanban, OrmKanbanItem, OrmScan} from '@database';
+import {checkCredentialV2, genInvoice} from '@server';
+import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
-import {kanbanGet} from "./get";
-import {kanbanImage} from "./image";
-import {kanbanUpsert} from "./upsert";
+import {kanbanGet} from './get';
+import {kanbanImage} from './image';
+import {kanbanUpsert} from './upsert';
 
 const kanbanRouters = router({
 	...kanbanGet,
@@ -18,9 +18,9 @@ const kanbanRouters = router({
 	getInvoice: procedure.query(() =>
 		genInvoice(
 			OrmKanban,
-			"KNB/IMI",
+			'KNB/IMI',
 			value => value?.nomor_kanban,
-			"nomor_kanban",
+			'nomor_kanban',
 		),
 	),
 	printed: procedure.input(z.string().array()).mutation(({ctx, input}) => {
@@ -42,7 +42,7 @@ const kanbanRouters = router({
 		.mutation(async ({input: {id}, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
 				if (!id) {
-					throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});
+					throw new TRPCError({code: 'BAD_REQUEST', message: 'ID is required'});
 				}
 
 				await OrmScan.destroy({where: {id_kanban: id}});
@@ -58,7 +58,7 @@ const kanbanRouters = router({
 			return checkCredentialV2({req, res}, async () => {
 				if (!id) {
 					// throw new TRPCError({code: "BAD_REQUEST", message: "ID is required"});
-					return {message: "Failed"};
+					return {message: 'Failed'};
 				}
 
 				await OrmKanbanItem.destroy({where: {id}});

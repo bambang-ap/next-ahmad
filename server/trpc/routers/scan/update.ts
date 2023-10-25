@@ -1,17 +1,17 @@
-import {z} from "zod";
+import {z} from 'zod';
 
 import {
 	tScanItemReject,
 	tScanNew,
 	tScanNewItem,
 	UnitQty,
-} from "@appTypes/app.zod";
-import {Success} from "@constants";
-import {dRejItem, dScan, dScanItem, OrmKanbanItem} from "@database";
-import {REJECT_REASON} from "@enum";
-import {checkCredentialV2, generateId} from "@server";
-import {procedure} from "@trpc";
-import {atLeastOneDefined, qtyMap, qtyReduce} from "@utils";
+} from '@appTypes/app.zod';
+import {Success} from '@constants';
+import {dRejItem, dScan, dScanItem, OrmKanbanItem} from '@database';
+import {REJECT_REASON} from '@enum';
+import {checkCredentialV2, generateId} from '@server';
+import {procedure} from '@trpc';
+import {atLeastOneDefined, qtyMap, qtyReduce} from '@utils';
 
 export const updateScan = {
 	updateV3: procedure
@@ -48,8 +48,8 @@ export const updateScan = {
 					const kanbanItemQty = qtyReduce((ret, {qtyKey}) => {
 						const aa = outStandingQty?.[qtyKey];
 						const bb = kanbanItem.dataValues?.[qtyKey];
-						const curQty = parseFloat(aa?.toString() ?? "0");
-						const prevQty = parseFloat(bb?.toString() ?? "0");
+						const curQty = parseFloat(aa?.toString() ?? '0');
+						const prevQty = parseFloat(bb?.toString() ?? '0');
 
 						return {
 							...ret,
@@ -72,7 +72,7 @@ export const updateScan = {
 					...scanData,
 					status,
 					id_kanban,
-					id: existingScan?.dataValues.id ?? generateId("SN_"),
+					id: existingScan?.dataValues.id ?? generateId('SN_'),
 				});
 
 				for (const [id_item, item] of Object.entries(items)) {
@@ -88,13 +88,13 @@ export const updateScan = {
 						id_scan: updatedScan.id,
 						id_kanban_item: id_item,
 						item_from_kanban: item.item_from_kanban,
-						id: existingItem?.dataValues.id ?? generateId("SNI_"),
+						id: existingItem?.dataValues.id ?? generateId('SNI_'),
 					});
 
 					let outStandingQty = qtyReduce((ret, {qtyKey}) => {
-						const curQty = parseFloat(item?.[qtyKey]?.toString() ?? "0");
+						const curQty = parseFloat(item?.[qtyKey]?.toString() ?? '0');
 						const prevQty = parseFloat(
-							prevItems?.[id_item]?.[qtyKey]?.toString() ?? "0",
+							prevItems?.[id_item]?.[qtyKey]?.toString() ?? '0',
 						);
 						return {...ret, [qtyKey]: prevQty - curQty};
 					});
@@ -114,7 +114,7 @@ export const updateScan = {
 
 							await dRejItem.create({
 								...rejectItems?.[id_item]!,
-								id: generateId("SIR_"),
+								id: generateId('SIR_'),
 								id_item: dataValues.id,
 								reason,
 							});
@@ -123,7 +123,7 @@ export const updateScan = {
 								const qtyOT = rejectItems?.[id_item]!;
 								qtyMap(({qtyKey}) => {
 									const a = outStandingQty[qtyKey]!;
-									const b = parseFloat(qtyOT[qtyKey]?.toString() ?? "0");
+									const b = parseFloat(qtyOT[qtyKey]?.toString() ?? '0');
 									outStandingQty[qtyKey] = a - b;
 								});
 								await updateOT(id_item, qtyOT);
@@ -133,7 +133,7 @@ export const updateScan = {
 
 					const hasOT =
 						Object.values(outStandingQty).filter(
-							qty => parseFloat(qty?.toString() ?? "0") > 0,
+							qty => parseFloat(qty?.toString() ?? '0') > 0,
 						).length > 0;
 
 					if (hasOT) await updateOT(id_item, outStandingQty);

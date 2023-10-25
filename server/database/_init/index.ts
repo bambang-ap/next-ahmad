@@ -1,9 +1,9 @@
-import {ModelDefined, Optional, Sequelize} from "sequelize";
+import {ModelDefined, Optional, Sequelize} from 'sequelize';
 
-import {isProd} from "@constants";
+import {isProd} from '@constants';
 
-import {initOrm} from "./init-orm";
-import {initRelations} from "./init-relations";
+import {initOrm} from './init-orm';
+import {initRelations} from './init-relations';
 
 export type DefinedModel<
 	T extends {},
@@ -29,7 +29,7 @@ export const ORM = new Sequelize(
 	{
 		// query: {raw: true},
 		// logging: isProd ? false : true,
-		dialect: "postgres",
+		dialect: 'postgres',
 		port: isProd ? PROD_PGSQL_PORT : DEV_PGSQL_PORT,
 		host: isProd ? PROD_PGSQL_HOST : DEV_PGSQL_HOST,
 		logging: false,

@@ -1,7 +1,7 @@
-import {Op} from "sequelize";
-import {z} from "zod";
+import {Op} from 'sequelize';
+import {z} from 'zod';
 
-import {tableFormValue, uModalType} from "@appTypes/app.zod";
+import {tableFormValue, uModalType} from '@appTypes/app.zod';
 import {
 	OrmCustomer,
 	OrmCustomerSPPBIn,
@@ -21,11 +21,11 @@ import {
 	OrmRole,
 	OrmUser,
 	wherePages,
-} from "@database";
-import {CRUD_ENABLED, eOpKeys, TABLES, Z_CRUD_ENABLED} from "@enum";
-import {generateId, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
-import {TRPCError} from "@trpc/server";
+} from '@database';
+import {CRUD_ENABLED, eOpKeys, TABLES, Z_CRUD_ENABLED} from '@enum';
+import {generateId, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
 const basicUnion = z.union([
 	z.string(),
@@ -63,13 +63,13 @@ function getMappingCrud() {
 
 export const basicWhere = basicWherer.or(z.string()).transform(obj => {
 	try {
-		if (typeof obj === "string") return JSON.parse(obj);
+		if (typeof obj === 'string') return JSON.parse(obj);
 	} catch (err) {
 		return undefined;
 	}
 
 	return Object.entries(obj).reduce<BasicWherer>((ret, [key, val]) => {
-		if (typeof val === "object") {
+		if (typeof val === 'object') {
 			return {
 				...ret,
 				[key]: Object.entries(val).reduce((r, [k, v]) => {
@@ -97,11 +97,11 @@ const basicRouters = router({
 			const MAPPING_CRUD_ORM = getMappingCrud();
 			const {target, where, limit, page, search, searchKey} = input;
 
-			if (!target) throw new TRPCError({code: "BAD_REQUEST"});
+			if (!target) throw new TRPCError({code: 'BAD_REQUEST'});
 
 			const limitation = {
 				limit,
-				order: [["id", "asc"]],
+				order: [['id', 'asc']],
 				offset: (page - 1) * limit,
 				where: wherePages(searchKey, search),
 			};
@@ -125,7 +125,7 @@ const basicRouters = router({
 			const MAPPING_CRUD_ORM = getMappingCrud();
 			// @ts-ignore
 			const orm = MAPPING_CRUD_ORM[target];
-			const ormResult = await orm.findAll({where, order: [["id", "asc"]]});
+			const ormResult = await orm.findAll({where, order: [['id', 'asc']]});
 			return ormResult;
 		}),
 
@@ -146,15 +146,15 @@ const basicRouters = router({
 			const orm = MAPPING_CRUD_ORM[target];
 
 			switch (type) {
-				case "delete":
+				case 'delete':
 					return orm.destroy({where: {id}});
-				case "edit":
+				case 'edit':
 					return orm.update(rest, {where: {id}});
 				default:
 					const idFirst = target
-						?.split("_")
+						?.split('_')
 						.map(e => e[0])
-						.join("")
+						.join('')
 						.toUpperCase();
 					return orm.create({...rest, id: generateId(idFirst)});
 			}

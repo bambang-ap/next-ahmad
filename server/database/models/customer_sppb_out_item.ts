@@ -1,10 +1,10 @@
-import {DataTypes, Model, Sequelize, STRING} from "sequelize";
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
-import {TCustomerSPPBOutItem} from "@appTypes/app.type";
-import {defaultExcludeColumn} from "@constants";
-import {TABLES} from "@enum";
+import {TCustomerSPPBOutItem} from '@appTypes/app.type';
+import {defaultExcludeColumn} from '@constants';
+import {TABLES} from '@enum';
 
-import {unitQtyField} from "./customer_po_item";
+import {unitQtyField} from './customer_po_item';
 
 export class OrmCustomerSPPBOutItem extends Model<TCustomerSPPBOutItem> {}
 
