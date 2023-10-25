@@ -10,7 +10,7 @@ import {
 	dRejItem,
 	dScan,
 	dScanItem,
-	orderPages,
+	groupPages,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBOutItem,
 	OrmKanbanItem,
@@ -134,7 +134,7 @@ const mainDashboardRouter = router({
 
 			const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
 
-			const group = orderPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
+			const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
 			const data = scnItem.model.findAll({
 				group,
 				where: wherePagesV3<Ret>({'$dScan.status$': target}),
@@ -185,7 +185,7 @@ const mainDashboardRouter = router({
 
 				const {rejItem, inItem, knbItem, poItem, scnItem} = getAttributes();
 
-				const group = orderPages<Ret>(
+				const group = groupPages<Ret>(
 					`dScanItem.dKnbItem.dInItem.dPoItem.unit${num}`,
 				);
 				const data = rejItem.model.findAll({

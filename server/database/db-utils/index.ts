@@ -1,4 +1,3 @@
-import {Path} from 'react-hook-form';
 import {
 	DECIMAL,
 	FindAttributeOptions,
@@ -117,12 +116,6 @@ export function ormDecimalType(fieldName: string) {
 			return value ? parseFloat(value ?? 0) : 0;
 		},
 	};
-}
-
-export function orderPages<T extends {}>(
-	searchKey: Path<ObjectNonArray<T>>,
-): any {
-	return searchKey;
 }
 
 export async function processMapper(

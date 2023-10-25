@@ -1,6 +1,20 @@
 import {Path} from 'react-hook-form';
-import {Op, WhereAttributeHashValue} from 'sequelize';
+import {col, Op, WhereAttributeHashValue} from 'sequelize';
 import {Primitive} from 'zod';
+
+export function groupPages<T extends {}>(
+	searchKey: Path<ObjectNonArray<T>>,
+): any {
+	return searchKey;
+}
+
+export function orderPages<T extends {}>(
+	searchKey: Partial<Record<Path<ObjectNonArray<T>>, boolean>>,
+): any {
+	return entries(searchKey).map(([key, value]) => {
+		return [col(key), value ? 'asc' : 'desc'];
+	});
+}
 
 export function wherePages(
 	searchKey?: string | string[],

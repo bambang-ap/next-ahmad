@@ -175,8 +175,8 @@ export function SppbOutModalChild({
 											<Table
 												data={dInItems}
 												header={[
-													'Kode Item',
 													'Nama Item',
+													'Kode Item',
 													'Nomor Lot',
 													'Nomor Lot IMI',
 													'Jumlah',

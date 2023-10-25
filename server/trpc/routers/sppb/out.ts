@@ -5,19 +5,20 @@ import {
 	TCustomerSPPBOutUpsert,
 	TKanbanUpsertItem,
 	TScanTarget,
-} from "@appTypes/app.type";
+} from '@appTypes/app.type';
 import {
 	tableFormValue,
 	tCustomerSPPBOutUpsert,
 	TScan,
 	zId,
-} from "@appTypes/app.zod";
-import {Success} from "@constants";
+} from '@appTypes/app.zod';
+import {Success} from '@constants';
 import {
 	dOutItem,
 	dSjOut,
 	dSppbBridge,
 	getPOSppbOutAttributes,
+	orderPages,
 	OrmCustomer,
 	OrmCustomerSPPBIn,
 	OrmCustomerSPPBOut,
@@ -28,17 +29,17 @@ import {
 	sppbOutGetAttributes,
 	wherePagesV2,
 	wherePagesV3,
-} from "@database";
-import {checkCredentialV2, generateId, genInvoice, pagingResult} from "@server";
-import {procedure, router} from "@trpc";
+} from '@database';
+import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
+import {procedure, router} from '@trpc';
 
-import {z} from "zod";
+import {z} from 'zod';
 
-import {appRouter} from "..";
+import {appRouter} from '..';
 
 type GetPage = PagingResult<TCustomerSPPBOutUpsert>;
 export type GetFGRet = TScan & {
-	kanban: Omit<KanbanGetRow, "items"> & {
+	kanban: Omit<KanbanGetRow, 'items'> & {
 		items: MyObject<TKanbanUpsertItem & {lot_no_imi?: string}>;
 	};
 };
@@ -52,13 +53,19 @@ const sppbOutRouters = router({
 
 		return checkCredentialV2(ctx, async () => {
 			const wherer = wherePagesV3<RetOutput>({
-				"$dSJIns.dKanbans.dScans.status$": "finish_good" as TScanTarget,
+				'$dSJIns.dKanbans.dScans.status$': 'finish_good' as TScanTarget,
+			});
+
+			const order = orderPages<RetOutput>({
+				'dSJIns.dInItems.dItem.kode_item': true,
 			});
 
 			const dataPO = await po.model.findAll({
+				order,
+				logging: true,
+				include: [sjInInclude],
 				attributes: po.attributes,
 				where: {id_customer, ...wherer},
-				include: [sjInInclude],
 			});
 
 			return dataPO.map(e => e.toJSON() as unknown as RetOutput);
@@ -67,9 +74,9 @@ const sppbOutRouters = router({
 	getInvoice: procedure.query(() =>
 		genInvoice(
 			OrmCustomerSPPBOut,
-			"SJ/IMI",
+			'SJ/IMI',
 			value => value?.invoice_no,
-			"invoice_no",
+			'invoice_no',
 		),
 	),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
@@ -84,10 +91,10 @@ const sppbOutRouters = router({
 				offset: (page - 1) * limit,
 				where: wherePagesV2<RetType>(
 					[
-						"invoice_no",
-						"keterangan",
-						"$OrmCustomer.name$",
-						"$OrmKendaraan.name$",
+						'invoice_no',
+						'keterangan',
+						'$OrmCustomer.name$',
+						'$OrmKendaraan.name$',
 					],
 					search,
 				),
@@ -114,12 +121,12 @@ const sppbOutRouters = router({
 			const allDataSppbIn = data.map<TCustomerSPPBOutUpsert>(e => {
 				// @ts-ignore
 				const {OrmCustomerSPPBOutItems, ...rest} = e.dataValues as RetType;
-				const po = OrmCustomerSPPBOutItems.reduce<TCustomerSPPBOutUpsert["po"]>(
+				const po = OrmCustomerSPPBOutItems.reduce<TCustomerSPPBOutUpsert['po']>(
 					(ret, cure) => {
 						// @ts-ignore
 						const {OrmPOItemSppbIn: sppbinItem, id_item, ...cur} =
 							// @ts-ignore
-							cure?.dataValues as RetType["OrmCustomerSPPBOutItems"][number];
+							cure?.dataValues as RetType['OrmCustomerSPPBOutItems'][number];
 						const id_po = sppbinItem.OrmCustomerSPPBIn.id_po;
 						const id_sppb_in = sppbinItem.id_sppb_in;
 
@@ -173,17 +180,17 @@ const sppbOutRouters = router({
 					where: {status_finish_good: true, id_customer: input},
 					attributes: {
 						exclude: [
-							"item_produksi",
-							"item_qc",
-							"status_produksi",
-							"status_qc",
+							'item_produksi',
+							'item_qc',
+							'status_produksi',
+							'status_qc',
 						] as (keyof TScan)[],
 					},
 				});
 
 				const dataScanPromise = dataScan.map(async ({dataValues}) => {
 					const [kanban] = await routerCaller.kanban.get({
-						type: "kanban",
+						type: 'kanban',
 						where: {id: dataValues.id_kanban},
 					});
 
@@ -232,7 +239,7 @@ const sppbOutRouters = router({
 				const {po, ...rest} = input;
 				const [dataSppbOut] = await OrmCustomerSPPBOut.upsert({
 					...rest,
-					id: input.id ?? generateId("SPPBO_"),
+					id: input.id ?? generateId('SPPBO_'),
 				});
 
 				const items: TCustomerSPPBOutItem[] = [];
@@ -249,7 +256,7 @@ const sppbOutRouters = router({
 
 						await dSppbBridge.upsert({
 							...bridgeWherer,
-							id: isExist?.dataValues.id ?? generateId("SJB-"),
+							id: isExist?.dataValues.id ?? generateId('SJB-'),
 						});
 
 						for (const [id_item, item] of Object.entries(bin.items)) {
@@ -258,7 +265,7 @@ const sppbOutRouters = router({
 								qty1: item.qty1,
 								qty2: item.qty2,
 								qty3: item.qty3,
-								id: item.id ?? generateId("SJOI-"),
+								id: item.id ?? generateId('SJOI-'),
 								id_sppb_out: dataSppbOut.dataValues.id,
 							});
 						}
@@ -266,7 +273,7 @@ const sppbOutRouters = router({
 				}
 
 				await OrmCustomerSPPBOutItem.bulkCreate(items, {
-					updateOnDuplicate: ["id"],
+					updateOnDuplicate: ['id'],
 				});
 
 				return Success;
