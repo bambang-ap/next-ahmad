@@ -10,6 +10,7 @@ import {
 	initOPo,
 	initOPoItem,
 	initOSjIn,
+	initOStock,
 	initOSup,
 } from '@database';
 
@@ -109,6 +110,7 @@ export function initOrm(ORM: Sequelize) {
 	initOSjIn(ORM);
 	initOInItem(ORM);
 	initOForm(ORM);
+	initOStock(ORM);
 
 	return Promise.resolve();
 }

@@ -357,7 +357,7 @@ function RenderPdf(props: RetPoInternal) {
 					<BorderTd>{numberFormat(jumlah)}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd colSpan={5}>PPN 11%</BorderTd>
+					<BorderTd colSpan={5}>PPn 11%</BorderTd>
 					<BorderTd>{numberFormat(ppn)}</BorderTd>
 				</tr>
 				<tr>

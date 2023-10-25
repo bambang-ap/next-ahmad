@@ -654,4 +654,16 @@ export const sInUpsert = sSjIn.partial({id: true}).extend({
 });
 
 export type SStock = z.infer<typeof sStock>;
-export const sStock = zId.extend({});
+export const sStock = sItem
+	.partial()
+	.required({id: true, sup_id: true})
+	.omit({nama: true, kode: true})
+	.extend({
+		nama: z.string().nullish(),
+		kode: z.string().nullish(),
+
+		id_item: z.string().nullish(),
+		usedQty: zDecimal.default(0),
+		unit: tItemUnit,
+		qty: zDecimal,
+	});

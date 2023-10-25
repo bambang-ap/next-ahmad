@@ -49,6 +49,7 @@ export enum INTERNAL_TABLES {
 	SJ_IN = 'internal_sj_in',
 	SJ_IN_ITEM = 'internal_sj_in_item',
 	REQUEST = 'internal_request',
+	STOCK = 'internal_stock',
 }
 
 export enum TABLES {

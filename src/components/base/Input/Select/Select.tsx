@@ -117,7 +117,12 @@ function SelectComponent<F extends FieldValues>({
 	}
 
 	return (
-		<div className={classNames('pt-2', className)}>
+		<div
+			className={classNames(
+				'pt-2',
+				{'cursor-not-allowed': isDisabled},
+				className,
+			)}>
 			<Autocomplete
 				loading={isLoading}
 				loadingText={isLoadingText}

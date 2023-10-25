@@ -104,7 +104,7 @@ export default function POSupplier() {
 					'Nama Supplier',
 					'Tgl PO',
 					'Tgl Request Kirim',
-					'PPN',
+					'PPn',
 					'Keterangan',
 					'Action',
 				]}
@@ -226,7 +226,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 					placeholder="Tanggal Permintaan Pengiriman"
 					label="Tanggal"
 				/>
-				<Input type="checkbox" control={control} fieldName="ppn" label="PPN" />
+				<Input type="checkbox" control={control} fieldName="ppn" label="PPn" />
 			</div>
 
 			<Table

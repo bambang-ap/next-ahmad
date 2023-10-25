@@ -54,6 +54,7 @@ import {
 	OrmSupplierPOItem,
 	OrmUser,
 	oSjIn,
+	oStock,
 	oSup,
 } from '@database';
 
@@ -137,6 +138,8 @@ export function initRelations() {
 	oneToMany(dMesin, dKnbItem, 'id_mesin');
 
 	oneToMany(oSup, oItem, 'sup_id');
+	oneToMany(oSup, oStock, 'sup_id');
+	oneToMany(oItem, oStock, 'id_item');
 	oneToMany(oSup, oPo, 'sup_id');
 	oneToMany(oPo, oPoItem, 'id_po');
 	oneToMany(oPo, oSjIn, 'id_po');

@@ -3,7 +3,7 @@ import {FormEventHandler, useRef} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
 
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
-import {SItem} from '@appTypes/app.zod';
+import {SStock} from '@appTypes/app.zod';
 import {
 	Button,
 	Form,
@@ -13,20 +13,22 @@ import {
 	Select,
 	selectMapper,
 } from '@components';
+import {selectUnitData} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import {formParser, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
-	form: SItem;
+	form: SStock;
+	isSelection: boolean;
 	type: ModalTypeSelect;
 	selectedIds: MyObject<boolean>;
 };
 
-InternalItem.getLayout = getLayout;
+InternalStock.getLayout = getLayout;
 
-export default function InternalItem() {
+export default function InternalStock() {
 	const modalRef = useRef<ModalRef>(null);
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
@@ -39,7 +41,7 @@ export default function InternalItem() {
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
-		useQuery: form => trpc.internal.item.get.useQuery(form),
+		useQuery: form => trpc.internal.stock.get.useQuery(form),
 		header: [
 			'No',
 			'Nama Supplier',
@@ -49,17 +51,27 @@ export default function InternalItem() {
 			'PPn',
 			'Action',
 		],
-		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
+		topComponent: (
+			<>
+				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
+					Selection Add
+				</Button>
+				<Button onClick={() => showModal({type: 'add'})}>Manual Add</Button>
+			</>
+		),
 		renderItem: ({Cell, item}, index) => {
-			const {oSup: dSSUp, kode, nama, harga, ppn} = item;
+			const {oSup: dSSUp, kode, nama, harga, ppn, oItem} = item;
+
+			const isPPn = typeof oItem?.ppn === 'boolean' ? oItem?.ppn : ppn;
+
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp.nama}</Cell>
-					<Cell>{kode}</Cell>
-					<Cell>{nama}</Cell>
-					<Cell>{harga}</Cell>
-					<Cell>{ppn ? 'Ya' : 'Tidak'}</Cell>
+					<Cell>{oItem?.kode ?? kode}</Cell>
+					<Cell>{oItem?.nama ?? nama}</Cell>
+					<Cell>{oItem?.harga ?? harga}</Cell>
+					<Cell>{isPPn ? 'Ya' : 'Tidak'}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
@@ -80,9 +92,9 @@ export default function InternalItem() {
 	});
 
 	const {mutateAsync: mutateUpsert} =
-		trpc.internal.item.upsert.useMutation(mutateOpts);
+		trpc.internal.stock.upsert.useMutation(mutateOpts);
 	const {mutateAsync: mutateDelete} =
-		trpc.internal.item.delete.useMutation(mutateOpts);
+		trpc.internal.stock.delete.useMutation(mutateOpts);
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -118,25 +130,61 @@ export default function InternalItem() {
 }
 
 function RenderModal({control}: FormProps<FormType>) {
-	const {type} = useWatch({control});
+	const {type, form, isSelection: selection} = useWatch({control});
 	const {isDelete} = modalTypeParser(type);
-	const {data} = trpc.internal.supplier.get.useQuery({limit: 9999});
+	const {data: dataSup} = trpc.internal.supplier.get.useQuery({limit: 9999});
+	const {data: dataItem} = trpc.internal.item.get.useQuery(
+		{limit: 9999, id: form?.sup_id},
+		{enabled: !!form?.sup_id},
+	);
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
+
+	const isSelection = selection || !!form?.id_item;
+	const itemSelections = selectMapper(dataItem?.rows ?? [], 'id', 'nama');
+	const item = dataItem?.rows?.find(e => e.id === form?.id_item);
+	const {keyItem, keySup} = {
+		keySup: `${form?.sup_id}${!!dataSup}`,
+		get keyItem() {
+			return `${this.keySup}${!!dataItem}${form?.id_item}`;
+		},
+	};
 
 	return (
 		<div className="flex flex-col gap-2">
 			<Select
+				key={keySup}
 				label="Supplier"
 				control={control}
 				fieldName="form.sup_id"
-				data={selectMapper(data?.rows ?? [], 'id', 'nama')}
+				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
-			<Input control={control} fieldName="form.kode" label="Kode Item" />
-			<Input control={control} fieldName="form.nama" label="Nama Item" />
+
+			{isSelection ? (
+				<Select
+					key={keyItem}
+					control={control}
+					label="Nama Item"
+					className="flex-1"
+					data={itemSelections}
+					fieldName="form.id_item"
+				/>
+			) : (
+				<Input control={control} fieldName="form.nama" label="Nama Item" />
+			)}
+
+			<Input
+				disabled={isSelection}
+				control={control}
+				label="Kode Item"
+				fieldName="form.kode"
+				byPassValue={item?.kode}
+			/>
 
 			<div className="flex gap-2">
 				<Input
+					disabled={isSelection}
+					byPassValue={item?.harga}
 					type="decimal"
 					control={control}
 					fieldName="form.harga"
@@ -144,10 +192,28 @@ function RenderModal({control}: FormProps<FormType>) {
 					className="flex-1"
 				/>
 				<Input
+					disabled={isSelection}
+					byPassValue={item?.ppn}
 					type="checkbox"
 					control={control}
 					fieldName="form.ppn"
 					label="PPn"
+				/>
+			</div>
+
+			<div className="flex gap-2">
+				<Input
+					className="flex-1"
+					control={control}
+					fieldName="form.qty"
+					label="Qty"
+				/>
+				<Select
+					className="flex-1"
+					label="Unit"
+					control={control}
+					fieldName="form.unit"
+					data={selectUnitData}
 				/>
 			</div>
 

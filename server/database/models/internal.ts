@@ -7,10 +7,35 @@ import {
 	SPoItem,
 	SReqForm,
 	SSjIn,
+	SStock,
 	SSupplier,
 } from '@appTypes/app.zod';
 import {defaultScope, ormDecimalType} from '@database';
 import {INTERNAL_TABLES} from '@enum';
+
+export class oStock extends Model<SStock> {}
+export function initOStock(sequelize: Sequelize) {
+	oStock.init(
+		{
+			id: {type: STRING, primaryKey: true},
+			id_item: STRING,
+			sup_id: STRING,
+			kode: STRING,
+			nama: STRING,
+			ppn: BOOLEAN,
+			unit: STRING,
+			qty: ormDecimalType('qty'),
+			harga: ormDecimalType('harga'),
+			usedQty: ormDecimalType('usedQty'),
+		},
+		{
+			...defaultScope(sequelize),
+			tableName: INTERNAL_TABLES.STOCK,
+		},
+	);
+
+	return oStock;
+}
 
 export class oItem extends Model<SItem> {}
 export function initOItem(sequelize: Sequelize) {
