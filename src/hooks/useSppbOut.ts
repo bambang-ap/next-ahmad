@@ -2,11 +2,8 @@ import {TCustomer, TKendaraan} from '@appTypes/app.type';
 import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
 
-export function useSppbOut(idCustomer?: string) {
+export function useSppbOut() {
 	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();
-	const {data: dataFg = []} = trpc.sppb.out.getFg.useQuery(idCustomer, {
-		enabled: !!idCustomer,
-	});
 	const {data: dataKendaraan = []} = trpc.basic.get.useQuery<any, TKendaraan[]>(
 		{target: CRUD_ENABLED.KENDARAAN},
 	);
@@ -14,5 +11,5 @@ export function useSppbOut(idCustomer?: string) {
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 
-	return {invoiceId, dataFg, dataKendaraan, dataCustomer};
+	return {invoiceId, dataKendaraan, dataCustomer};
 }

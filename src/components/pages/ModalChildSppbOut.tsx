@@ -24,7 +24,7 @@ export function SppbOutModalChild({
 		{enabled: !!id_customer},
 	);
 
-	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut(id_customer);
+	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut();
 	const {isDelete, isEdit} = modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
