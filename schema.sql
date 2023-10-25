@@ -285,6 +285,28 @@ CREATE TABLE public.internal_sj_in_item (
 ALTER TABLE public.internal_sj_in_item OWNER TO postgres;
 
 --
+-- Name: internal_stock; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.internal_stock (
+    id character varying(47) NOT NULL,
+    sup_id character varying(47),
+    nama character varying(100),
+    kode character varying(100),
+    ppn boolean DEFAULT false,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone,
+    harga numeric,
+    "usedQty" numeric,
+    qty numeric,
+    unit character varying(20),
+    id_item character varying(47)
+);
+
+
+ALTER TABLE public.internal_stock OWNER TO postgres;
+
+--
 -- Name: internal_supplier; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -907,6 +929,14 @@ ALTER TABLE ONLY public.internal_sj_in
 
 
 --
+-- Name: internal_stock internal_stock_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_stock
+    ADD CONSTRAINT internal_stock_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: internal_item internal_supplier_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1502,6 +1532,14 @@ ALTER TABLE ONLY public.internal_sj_in_item
 
 ALTER TABLE ONLY public.internal_sj_in
     ADD CONSTRAINT internal_sj_in_sup_id_fkey FOREIGN KEY (sup_id) REFERENCES public.internal_supplier(id);
+
+
+--
+-- Name: internal_stock internal_stock_id_item_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_stock
+    ADD CONSTRAINT internal_stock_id_item_fkey FOREIGN KEY (id_item) REFERENCES public.internal_item(id);
 
 
 --
