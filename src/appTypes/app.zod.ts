@@ -644,11 +644,9 @@ export const sInUpsert = sSjIn.partial({id: true}).extend({
 	oInItems: sInItem
 		.extend({
 			temp_id: z.string(),
-			oSjIn: sSjIn.extend({
-				dSPoItem: oPoItem.extend({oItem: sItem.optional()}),
-			}),
+			oPoItem: oPoItem.extend({oItem: sItem.optional()}),
 		})
-		.partial({id: true, in_id: true, temp_id: true, oSjIn: true})
+		.partial({id: true, in_id: true, temp_id: true})
 		.array()
 		.min(1),
 });
@@ -663,7 +661,7 @@ export const sStock = sItem
 		kode: z.string().nullish(),
 
 		id_item: z.string().nullish(),
-		usedQty: zDecimal.default(0),
+		usedQty: zDecimal.default(0).optional(),
 		unit: tItemUnit,
 		qty: zDecimal,
 	});

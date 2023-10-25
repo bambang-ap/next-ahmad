@@ -51,40 +51,6 @@ export const Input = withReactFormController(InputComponent);
 export function InputComponent<F extends FieldValues>(
 	props: ControlledComponentProps<F, InputProps>,
 ) {
-	const {type = 'text', disabled, className} = props;
-
-	const formContext = useContext(FormContext);
-
-	const isDisabled = formContext?.disabled || disabled;
-
-	if (type === 'checkbox') return <InputRenderer {...props} />;
-
-	return (
-		<div
-			className={classNames(
-				'relative pt-2',
-				{'cursor-not-allowed': isDisabled},
-				className,
-			)}>
-			{isDisabled && type !== 'date' && (
-				<div className="absolute z-10 w-full h-full" />
-			)}
-			<InputRenderer {...props} />
-		</div>
-	);
-}
-
-export function InputDummy(
-	props: Omit<GetProps<typeof Input>, 'control' | 'fieldName'>,
-) {
-	const {control} = useForm({defaultValues: {dummyInput: ''}});
-
-	return <Input control={control} fieldName="dummyInput" {...props} />;
-}
-
-function InputRenderer<F extends FieldValues>(
-	props: ControlledComponentProps<F, InputProps>,
-) {
 	let restProps: MyObject<any> = {};
 	const theme = useTheme();
 	const {
@@ -140,9 +106,14 @@ function InputRenderer<F extends FieldValues>(
 	switch (type) {
 		case 'date': {
 			return (
-				<>
+				<div
+					className={classNames(
+						'relative pt-2',
+						{'cursor-pointer': !isDisabled},
+						className,
+					)}>
 					<div
-						className="absolute z-10 w-full h-full cursor-pointer"
+						className="absolute z-10 w-full h-full"
 						onClick={isDisabled ? undefined : () => modalRef.current?.show()}
 					/>
 					<TextField
@@ -188,10 +159,9 @@ function InputRenderer<F extends FieldValues>(
 							/>
 						</LocalizationProvider>
 					</Modal>
-				</>
+				</div>
 			);
 		}
-
 		case 'checkbox': {
 			const byPassed = typeof byPassValue !== 'undefined';
 
@@ -242,7 +212,7 @@ function InputRenderer<F extends FieldValues>(
 			};
 
 			return (
-				<>
+				<div className={classNames({hidden}, 'pt-2', className)}>
 					<TextField
 						{...defaultTextFieldProps}
 						multiline={multiline}
@@ -277,8 +247,16 @@ function InputRenderer<F extends FieldValues>(
 						{...field}
 					/>
 					{errorMessage}
-				</>
+				</div>
 			);
 		}
 	}
+}
+
+export function InputDummy(
+	props: Omit<GetProps<typeof Input>, 'control' | 'fieldName'>,
+) {
+	const {control} = useForm({defaultValues: {dummyInput: ''}});
+
+	return <Input control={control} fieldName="dummyInput" {...props} />;
 }

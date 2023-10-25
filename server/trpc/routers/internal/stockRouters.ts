@@ -20,7 +20,6 @@ export const stockRouters = router({
 
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<Ret>> => {
 			const {count, rows} = await stock.model.findAndCountAll({
-				logging: true,
 				include: [sup, item],
 				where: !sup_id ? {} : {sup_id},
 			});
@@ -38,7 +37,7 @@ export const stockRouters = router({
 		.input(sStock.partial({id: true}))
 		.mutation(({ctx, input}) => {
 			return checkCredentialV2(ctx, async () => {
-				await oStock.upsert({...input, id: input.id ?? generateId('II-')});
+				await oStock.upsert({...input, id: input.id ?? generateId('IST-')});
 
 				return Success;
 			});

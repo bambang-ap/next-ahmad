@@ -3,9 +3,10 @@ import {Op} from 'sequelize';
 import {PagingResult} from '@appTypes/app.type';
 import {sInUpsert, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {internalInAttributes, oInItem, oSjIn} from '@database';
+import {internalInAttributes, oInItem, ORM, oSjIn, oStock} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
 export const inRouters = router({
 	/**
@@ -68,26 +69,63 @@ export const inRouters = router({
 		const {oInItems, id: id_sj_in, ...sjIn} = input ?? {};
 
 		return checkCredentialV2(ctx, async () => {
-			const [generatedPo] = await oSjIn.upsert({
-				...sjIn,
-				id: id_sj_in ?? generateId('ISIN-'),
-			});
+			const transaction = await ORM.transaction();
 
-			const in_id = generatedPo.dataValues.id;
-			const includedId = oInItems.map(e => e.id).filter(Boolean);
-			const items = oInItems.map(async item => {
-				const {id, ...inItem} = item;
-				await oInItem.upsert({
-					...inItem,
-					in_id,
-					id: id ?? generateId('ISINI-'),
+			try {
+				const [generatedPo] = await oSjIn.upsert(
+					{...sjIn, id: id_sj_in ?? generateId('ISIN-')},
+					{transaction},
+				);
+
+				const in_id = generatedPo.dataValues.id;
+				const includedId = oInItems.map(e => e.id).filter(Boolean);
+				const items = oInItems.map(async item => {
+					const {id, ...inItem} = item;
+					const result = await oInItem.upsert(
+						{...inItem, in_id, id: id ?? generateId('ISINI-')},
+						{transaction},
+					);
+
+					return [...result, inItem] as const;
 				});
-			});
 
-			await oInItem.destroy({where: {id: {[Op.notIn]: includedId}, in_id}});
-			await Promise.all(items);
+				await oInItem.destroy({
+					transaction,
+					where: {id: {[Op.notIn]: includedId}, in_id},
+				});
 
-			return Success;
+				const promisedItems = await Promise.all(items);
+				const stocks = promisedItems.map(async ([item, error, inItem]) => {
+					if (!error) {
+						const {qty} = item.toJSON();
+						const {id_item, ...stockValues} = {
+							qty,
+							sup_id: sjIn.sup_id,
+							unit: inItem.oPoItem.unit,
+							id_item: inItem.oPoItem.id_item,
+						};
+
+						const stock = await oStock.findOne({where: {id_item}});
+
+						if (!stock) {
+							await oStock.create(
+								{...stockValues, id_item, id: generateId('IST-')},
+								{transaction},
+							);
+						} else {
+							const val = stock.toJSON();
+							await oStock.upsert({...val, qty: val.qty + qty}, {transaction});
+						}
+					}
+				});
+
+				await Promise.all(stocks);
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				throw new TRPCError({code: 'BAD_REQUEST'});
+			}
 		});
 	}),
 	delete: procedure.input(zId).mutation(({ctx, input}) => {

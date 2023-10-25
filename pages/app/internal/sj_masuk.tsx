@@ -197,7 +197,6 @@ function RenderModal({
 					const selPoItem = poItems?.find(e => e.id === poItem?.id);
 					const inItem = selPoItem?.oInItems.find(e => e.id === idItem);
 					const oItem = poItem?.oItem;
-					const keyItem = `${keyPo}${!!poItem}${idItem}`;
 
 					const itemSelections = selectMapper(
 						selectedPo?.oPoItems ?? [],
@@ -209,13 +208,21 @@ function RenderModal({
 
 					const defaultValue = selPoItem?.max;
 					const max = isEdit ? defaultValue! + inItem?.qty! : defaultValue;
+					const keyItem = `${keyPo}${!!poItem}${idItem}${defaultValue}`;
+					const keyQty = `${keyItem}${defaultValue}`;
 
 					return (
 						<Fragment key={idItem}>
 							<Input
 								hidden
 								control={control}
-								fieldName={`form.oInItems.${i}.qty`}
+								fieldName={`form.oInItems.${i}.id`}
+							/>
+							<Input
+								hidden
+								control={control}
+								defaultValue={selPoItem}
+								fieldName={`form.oInItems.${i}.oPoItem`}
 							/>
 							<Cell width="30%">
 								<Select
@@ -246,6 +253,8 @@ function RenderModal({
 							</Cell>
 							<Cell className="gap-2">
 								<Input
+									shouldUnregister
+									key={keyQty}
 									type="decimal"
 									className="flex-1"
 									label="Jumlah"

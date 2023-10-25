@@ -48,6 +48,7 @@ export default function InternalStock() {
 			'Kode Item',
 			'Nama Item',
 			'Harga',
+			'Qty',
 			'PPn',
 			'Action',
 		],
@@ -60,7 +61,7 @@ export default function InternalStock() {
 			</>
 		),
 		renderItem: ({Cell, item}, index) => {
-			const {oSup: dSSUp, kode, nama, harga, ppn, oItem} = item;
+			const {oSup: dSSUp, kode, nama, harga, ppn, qty, unit, oItem} = item;
 
 			const isPPn = typeof oItem?.ppn === 'boolean' ? oItem?.ppn : ppn;
 
@@ -71,6 +72,7 @@ export default function InternalStock() {
 					<Cell>{oItem?.kode ?? kode}</Cell>
 					<Cell>{oItem?.nama ?? nama}</Cell>
 					<Cell>{oItem?.harga ?? harga}</Cell>
+					<Cell>{`${qty} ${unit}`}</Cell>
 					<Cell>{isPPn ? 'Ya' : 'Tidak'}</Cell>
 					<Cell className="gap-2">
 						<Button
