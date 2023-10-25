@@ -81,12 +81,16 @@ export const inRouters = router({
 				const includedId = oInItems.map(e => e.id).filter(Boolean);
 				const items = oInItems.map(async item => {
 					const {id, ...inItem} = item;
+					const idItem = id ?? generateId('ISINI-');
+
+					const prevItem = await oInItem.findOne({where: {id: idItem}});
+
 					const result = await oInItem.upsert(
-						{...inItem, in_id, id: id ?? generateId('ISINI-')},
+						{...inItem, in_id, id: idItem},
 						{transaction},
 					);
 
-					return [...result, inItem] as const;
+					return [...result, inItem, prevItem?.dataValues] as const;
 				});
 
 				await oInItem.destroy({
@@ -95,21 +99,23 @@ export const inRouters = router({
 				});
 
 				const promisedItems = await Promise.all(items);
-				const stocks = promisedItems.map(async ([item, error, inItem]) => {
+				const stocks = promisedItems.map(async itemIn => {
+					const [item, error, inItem, prevItem] = itemIn;
+
 					if (!error) {
-						const {qty} = item.toJSON();
-						const {id_item, ...stockValues} = {
-							qty,
+						const {id_item, qty, ...stockValues} = {
 							sup_id: sjIn.sup_id,
 							unit: inItem.oPoItem.unit,
 							id_item: inItem.oPoItem.id_item,
+							qty:
+								item.toJSON().qty - parseFloat(prevItem?.qty.toString() ?? '0'),
 						};
 
 						const stock = await oStock.findOne({where: {id_item}});
 
 						if (!stock) {
 							await oStock.create(
-								{...stockValues, id_item, id: generateId('IST-')},
+								{...stockValues, qty, id_item, id: generateId('IST-')},
 								{transaction},
 							);
 						} else {
@@ -129,11 +135,40 @@ export const inRouters = router({
 		});
 	}),
 	delete: procedure.input(zId).mutation(({ctx, input}) => {
-		return checkCredentialV2(ctx, async () => {
-			await oInItem.destroy({where: {in_id: input.id}});
-			await oSjIn.destroy({where: {id: input.id}});
+		const {inItem, poItem} = internalInAttributes();
 
-			return Success;
+		type Ret = typeof inItem.obj & {oPoItem: typeof poItem.obj};
+
+		return checkCredentialV2(ctx, async () => {
+			const transaction = await ORM.transaction();
+			try {
+				const prevItems = await inItem.model.findAll({
+					where: {in_id: input.id},
+					include: [poItem],
+				});
+
+				const updateStocks = prevItems.map(async item => {
+					const {qty, oPoItem} = item.toJSON() as unknown as Ret;
+					const stock = await oStock.findOne({
+						where: {id_item: oPoItem.id_item},
+					});
+
+					await oStock.update(
+						{qty: parseFloat(stock?.dataValues.qty.toString() ?? '0') - qty},
+						{transaction, where: {id_item: oPoItem.id_item}},
+					);
+				});
+
+				await Promise.all(updateStocks);
+				await oInItem.destroy({where: {in_id: input.id}, transaction});
+				await oSjIn.destroy({where: {id: input.id}, transaction});
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				throw new TRPCError({code: 'BAD_REQUEST'});
+			}
 		});
 	}),
 });
