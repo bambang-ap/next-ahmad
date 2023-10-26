@@ -58,10 +58,12 @@ function stockUpdate(
 	const stocks = promisedItems.map(async itemIn => {
 		const [item, error, inItem, prevItem] = itemIn;
 
-		const id_item_in = item.dataValues.id;
+		const {id: id_item_in, nama, kode} = item.dataValues;
 
 		if (!error) {
 			const {qty, ...stockValues} = {
+				nama,
+				kode,
 				sup_id,
 				id_item: inItem?.oPoItem?.id_item,
 				unit: inItem.unit ?? inItem?.oPoItem?.unit!,
