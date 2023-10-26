@@ -271,7 +271,11 @@ CREATE TABLE public.internal_sj_in_item (
     id_item character varying(47),
     qty numeric,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    unit character varying(20),
+    harga numeric,
+    kode character varying(100),
+    nama character varying(100)
 );
 
 
@@ -293,7 +297,8 @@ CREATE TABLE public.internal_stock (
     "usedQty" numeric,
     qty numeric,
     unit character varying(20),
-    id_item character varying(47)
+    id_item character varying(47),
+    id_item_in character varying(47)
 );
 
 
