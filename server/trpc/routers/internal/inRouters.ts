@@ -223,16 +223,17 @@ export const inRouters = router({
 				});
 
 				const updateStocks = prevItems.map(async item => {
-					const {qty, oPoItem} = item.toJSON() as unknown as Ret;
-					if (!oPoItem) return null;
+					const {qty, id, oPoItem} = item.toJSON() as unknown as Ret;
 
-					const stock = await oStock.findOne({
-						where: {id_item: oPoItem.id_item},
-					});
+					const where = oPoItem?.id_item
+						? {id_item: oPoItem.id_item}
+						: {id_item_in: id};
+
+					const stock = await oStock.findOne({where});
 
 					return oStock.update(
 						{qty: parseFloat(stock?.dataValues.qty.toString() ?? '0') - qty},
-						{transaction, where: {id_item: oPoItem.id_item}},
+						{transaction, where},
 					);
 				});
 
