@@ -141,6 +141,7 @@ export function initRelations() {
 	oneToMany(oSup, oStock, 'sup_id');
 	oneToMany(oItem, oStock, 'id_item');
 	oneToMany(oSup, oPo, 'sup_id');
+	oneToMany(oSup, oSjIn, 'sup_id');
 	oneToMany(oPo, oPoItem, 'id_po');
 	oneToMany(oPo, oSjIn, 'id_po');
 	oneToMany(oItem, oPoItem, 'id_item');

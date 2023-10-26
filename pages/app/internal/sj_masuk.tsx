@@ -16,6 +16,7 @@ import {
 	Table,
 	Text,
 } from '@components';
+import {selectUnitData} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import {formParser, modalTypeParser} from '@utils';
@@ -23,6 +24,7 @@ import {trpc} from '@utils/trpc';
 
 type FormType = {
 	form: SInUpsert;
+	isSelection: boolean;
 	type: ModalTypeSelect;
 	selectedIds: MyObject<boolean>;
 };
@@ -44,13 +46,20 @@ export default function InternalSiIn() {
 		control,
 		useQuery: form => trpc.internal.in.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Action'],
-		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
+		topComponent: (
+			<>
+				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
+					Selection Add
+				</Button>
+				<Button onClick={() => showModal({type: 'add'})}>Manual Add</Button>
+			</>
+		),
 		renderItem: ({Cell, item}, index) => {
 			const {date, oPo} = item;
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
-					<Cell>{oPo?.oSup?.nama}</Cell>
+					<Cell>{item.oSup?.nama}</Cell>
 					<Cell>{oPo?.nomor_po}</Cell>
 					<Cell>{date}</Cell>
 					<Cell className="gap-2">
@@ -72,6 +81,8 @@ export default function InternalSiIn() {
 		},
 	});
 
+	const {mutateAsync: mutateManual} =
+		trpc.internal.in.upsert_manual.useMutation(mutateOpts);
 	const {mutateAsync: mutateUpsert} =
 		trpc.internal.in.upsert.useMutation(mutateOpts);
 	const {mutateAsync: mutateDelete} =
@@ -81,8 +92,24 @@ export default function InternalSiIn() {
 		e.preventDefault();
 		clearErrors();
 		handleSubmit(async value => {
-			if (isDelete) mutateDelete({id: value.form.id!}, {onSuccess});
-			else mutateUpsert(value.form, {onSuccess});
+			const {isSelection: selct, form} = value;
+			if (isDelete) return mutateDelete({id: value.form.id!}, {onSuccess});
+			else {
+				const isSelection = selct || !!form?.id_po;
+
+				if (isSelection) return mutateUpsert(value.form, {onSuccess});
+				else
+					return mutateManual(
+						{
+							// @ts-ignore
+							oInItems: form.oInItems,
+							sup_id: form.sup_id,
+							date: form.date,
+							id: form?.id,
+						},
+						{onSuccess},
+					);
+			}
 
 			function onSuccess() {
 				refetch();
@@ -114,7 +141,7 @@ function RenderModal({
 	control,
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
-	const {type, form} = useWatch({control});
+	const {type, form, isSelection: selct} = useWatch({control});
 
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
@@ -132,6 +159,7 @@ function RenderModal({
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 
+	const isSelection = selct || !!form?.id_po;
 	const selectedPo = dataPo?.rows.find(e => e.id === form?.id_po);
 	const selectedItems = form?.oInItems;
 	const selectedIdItems =
@@ -174,13 +202,15 @@ function RenderModal({
 				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
 
-			<Select
-				key={keyPo}
-				label="PO"
-				control={control}
-				fieldName="form.id_po"
-				data={selectMapper(dataPo?.rows ?? [], 'id', 'nomor_po')}
-			/>
+			{isSelection && (
+				<Select
+					key={keyPo}
+					label="PO"
+					control={control}
+					fieldName="form.id_po"
+					data={selectMapper(dataPo?.rows ?? [], 'id', 'nomor_po')}
+				/>
+			)}
 
 			<Input type="date" control={control} fieldName="form.date" label="Date" />
 
@@ -225,45 +255,92 @@ function RenderModal({
 								fieldName={`form.oInItems.${i}.oPoItem`}
 							/>
 							<Cell width="30%">
-								<Select
-									key={keyItem}
-									className="flex-1"
-									label="Nama Item"
-									control={control}
-									data={itemSelections}
-									fieldName={`form.oInItems.${i}.id_item`}
-								/>
+								{isSelection ? (
+									<Select
+										key={keyItem}
+										className="flex-1"
+										label="Nama Item"
+										control={control}
+										data={itemSelections}
+										fieldName={`form.oInItems.${i}.id_item`}
+									/>
+								) : (
+									<Input
+										control={control}
+										className="flex-1"
+										label="Nama Item"
+										fieldName={`form.oInItems.${i}.nama`}
+									/>
+								)}
 							</Cell>
 							<Cell>
-								<InputDummy
-									className="flex-1"
-									label="Kode Item"
-									byPassValue={oItem?.kode}
-									disabled
-								/>
+								{isSelection ? (
+									<InputDummy
+										className="flex-1"
+										label="Kode Item"
+										byPassValue={oItem?.kode}
+										disabled
+									/>
+								) : (
+									<Input
+										control={control}
+										className="flex-1"
+										label="Kode Item"
+										fieldName={`form.oInItems.${i}.kode`}
+									/>
+								)}
 							</Cell>
 							<Cell>
-								<InputDummy
-									className="flex-1"
-									label="Harga"
-									type="decimal"
-									byPassValue={oItem?.harga}
-									disabled
-								/>
+								{isSelection ? (
+									<InputDummy
+										className="flex-1"
+										label="Harga"
+										type="decimal"
+										byPassValue={oItem?.harga}
+										disabled
+									/>
+								) : (
+									<Input
+										type="decimal"
+										label="Harga"
+										control={control}
+										className="flex-1"
+										fieldName={`form.oInItems.${i}.harga`}
+									/>
+								)}
 							</Cell>
 							<Cell className="gap-2">
-								<Input
-									shouldUnregister
-									key={keyQty}
-									type="decimal"
-									className="flex-1"
-									label="Jumlah"
-									control={control}
-									defaultValue={defaultValue}
-									fieldName={`form.oInItems.${i}.qty`}
-									rightAcc={<Text>{poItem?.unit}</Text>}
-									rules={{max: {value: max!, message: `Max is ${max}`}}}
-								/>
+								{isSelection ? (
+									<Input
+										shouldUnregister
+										key={keyQty}
+										type="decimal"
+										className="flex-1"
+										label="Jumlah"
+										control={control}
+										defaultValue={defaultValue}
+										fieldName={`form.oInItems.${i}.qty`}
+										rightAcc={<Text>{poItem?.unit}</Text>}
+										rules={{max: {value: max!, message: `Max is ${max}`}}}
+									/>
+								) : (
+									<>
+										<Input
+											type="decimal"
+											control={control}
+											className="flex-1"
+											label="Qty"
+											fieldName={`form.oInItems.${i}.qty`}
+										/>
+										<Select
+											label="Unit"
+											className="flex-1"
+											control={control}
+											data={selectUnitData}
+											fieldName={`form.oInItems.${i}.unit`}
+										/>
+									</>
+								)}
 							</Cell>
 
 							<Cell>

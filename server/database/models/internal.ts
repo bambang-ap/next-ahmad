@@ -24,6 +24,7 @@ export function initOStock(sequelize: Sequelize) {
 			nama: STRING,
 			ppn: BOOLEAN,
 			unit: STRING,
+			id_item_in: STRING,
 			qty: ormDecimalType('qty'),
 			harga: ormDecimalType('harga'),
 			usedQty: ormDecimalType('usedQty'),
@@ -139,8 +140,14 @@ export function initOInItem(sequelize: Sequelize) {
 		{
 			id: {type: STRING, primaryKey: true},
 			qty: ormDecimalType('qty'),
-			id_item: STRING,
 			in_id: STRING,
+
+			id_item: STRING,
+
+			harga: STRING,
+			kode: STRING,
+			nama: STRING,
+			unit: STRING,
 		},
 		{
 			...defaultScope(sequelize),

@@ -1,12 +1,89 @@
-import {Op} from 'sequelize';
+import {Op, Transaction} from 'sequelize';
 
 import {PagingResult} from '@appTypes/app.type';
-import {sInUpsert, tableFormValue, zId} from '@appTypes/app.zod';
+import {
+	SInItem,
+	SInUpsert,
+	sInUpsert,
+	sInUpsertManual,
+	SSjIn,
+	tableFormValue,
+	zId,
+} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {internalInAttributes, oInItem, ORM, oSjIn, oStock} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
+
+async function itemUpdate(
+	transaction: Transaction,
+	sjIn: SSjIn,
+	oInItems: SInUpsert['oInItems'],
+) {
+	const in_id = sjIn.id;
+	const includedId = oInItems.map(e => e.id).filter(Boolean);
+	const items = oInItems.map(async item => {
+		const {id, ...inItem} = item;
+		const idItem = id ?? generateId('ISINI-');
+
+		const prevItem = await oInItem.findOne({where: {id: idItem}});
+
+		const result = await oInItem.upsert(
+			{...inItem, in_id, id: idItem},
+			{transaction},
+		);
+
+		return [...result, inItem, prevItem?.dataValues] as const;
+	});
+
+	await oInItem.destroy({
+		transaction,
+		where: {id: {[Op.notIn]: includedId}, in_id},
+	});
+
+	return Promise.all(items);
+}
+
+function stockUpdate(
+	transaction: Transaction,
+	promisedItems: (readonly [
+		oInItem,
+		boolean | null,
+		SInUpsert['oInItems'][number],
+		SInItem | undefined,
+	])[],
+	sup_id: string,
+) {
+	const stocks = promisedItems.map(async itemIn => {
+		const [item, error, inItem, prevItem] = itemIn;
+
+		const id_item_in = item.dataValues.id;
+
+		if (!error) {
+			const {qty, ...stockValues} = {
+				sup_id,
+				id_item: inItem?.oPoItem?.id_item,
+				unit: inItem.unit ?? inItem?.oPoItem?.unit!,
+				qty: item.toJSON().qty - parseFloat(prevItem?.qty.toString() ?? '0'),
+			};
+
+			const stock = await oStock.findOne({where: {id_item_in}});
+
+			if (!stock) {
+				await oStock.create(
+					{...stockValues, id_item_in, qty, id: generateId('IST-')},
+					{transaction},
+				);
+			} else {
+				const val = stock.toJSON();
+				await oStock.upsert({...val, qty: val.qty + qty}, {transaction});
+			}
+		}
+	});
+
+	return Promise.all(stocks);
+}
 
 export const inRouters = router({
 	/**
@@ -50,7 +127,8 @@ export const inRouters = router({
 			async (): Promise<PagingResult<RetOutput>> => {
 				const {count, rows} = await sjIn.model.findAndCountAll({
 					include: [
-						{...po, include: [sup]},
+						po,
+						sup,
 						{...inItem, include: [{...poItem, include: [item]}]},
 					],
 					where: !!id_po ? {id_po} : {},
@@ -65,6 +143,44 @@ export const inRouters = router({
 			},
 		);
 	}),
+
+	upsert_manual: procedure.input(sInUpsertManual).mutation(({ctx, input}) => {
+		const {oInItems, id: id_sj_in, ...sjIn} = input ?? {};
+
+		return checkCredentialV2(ctx, async () => {
+			const transaction = await ORM.transaction();
+
+			try {
+				const [generatedSjIn] = await oSjIn.upsert(
+					{...sjIn, id: id_sj_in ?? generateId('ISIN-')},
+					{transaction},
+				);
+
+				const in_id = generatedSjIn.dataValues.id;
+				const includedId = oInItems.map(e => e.id).filter(Boolean);
+
+				await oInItem.destroy({
+					transaction,
+					where: {id: {[Op.notIn]: includedId}, in_id},
+				});
+
+				const promisedItems = await itemUpdate(
+					transaction,
+					generatedSjIn.dataValues,
+					oInItems,
+				);
+
+				await stockUpdate(transaction, promisedItems, sjIn.sup_id);
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				throw new TRPCError({code: 'BAD_REQUEST'});
+			}
+		});
+	}),
+
 	upsert: procedure.input(sInUpsert).mutation(({ctx, input}) => {
 		const {oInItems, id: id_sj_in, ...sjIn} = input ?? {};
 
@@ -72,60 +188,19 @@ export const inRouters = router({
 			const transaction = await ORM.transaction();
 
 			try {
-				const [generatedPo] = await oSjIn.upsert(
+				const [generatedSjIn] = await oSjIn.upsert(
 					{...sjIn, id: id_sj_in ?? generateId('ISIN-')},
 					{transaction},
 				);
 
-				const in_id = generatedPo.dataValues.id;
-				const includedId = oInItems.map(e => e.id).filter(Boolean);
-				const items = oInItems.map(async item => {
-					const {id, ...inItem} = item;
-					const idItem = id ?? generateId('ISINI-');
-
-					const prevItem = await oInItem.findOne({where: {id: idItem}});
-
-					const result = await oInItem.upsert(
-						{...inItem, in_id, id: idItem},
-						{transaction},
-					);
-
-					return [...result, inItem, prevItem?.dataValues] as const;
-				});
-
-				await oInItem.destroy({
+				const promisedItems = await itemUpdate(
 					transaction,
-					where: {id: {[Op.notIn]: includedId}, in_id},
-				});
+					generatedSjIn.dataValues,
+					oInItems,
+				);
 
-				const promisedItems = await Promise.all(items);
-				const stocks = promisedItems.map(async itemIn => {
-					const [item, error, inItem, prevItem] = itemIn;
+				await stockUpdate(transaction, promisedItems, sjIn.sup_id);
 
-					if (!error) {
-						const {id_item, qty, ...stockValues} = {
-							sup_id: sjIn.sup_id,
-							unit: inItem.oPoItem.unit,
-							id_item: inItem.oPoItem.id_item,
-							qty:
-								item.toJSON().qty - parseFloat(prevItem?.qty.toString() ?? '0'),
-						};
-
-						const stock = await oStock.findOne({where: {id_item}});
-
-						if (!stock) {
-							await oStock.create(
-								{...stockValues, qty, id_item, id: generateId('IST-')},
-								{transaction},
-							);
-						} else {
-							const val = stock.toJSON();
-							await oStock.upsert({...val, qty: val.qty + qty}, {transaction});
-						}
-					}
-				});
-
-				await Promise.all(stocks);
 				await transaction.commit();
 				return Success;
 			} catch (err) {
@@ -149,11 +224,13 @@ export const inRouters = router({
 
 				const updateStocks = prevItems.map(async item => {
 					const {qty, oPoItem} = item.toJSON() as unknown as Ret;
+					if (!oPoItem) return null;
+
 					const stock = await oStock.findOne({
 						where: {id_item: oPoItem.id_item},
 					});
 
-					await oStock.update(
+					return oStock.update(
 						{qty: parseFloat(stock?.dataValues.qty.toString() ?? '0') - qty},
 						{transaction, where: {id_item: oPoItem.id_item}},
 					);
