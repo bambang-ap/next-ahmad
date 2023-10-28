@@ -634,7 +634,7 @@ export const sSjIn = zId.extend({
 export type SInItem = z.infer<typeof sInItem>;
 export const sInItem = zId.extend({
 	in_id: z.string(),
-	qty: zDecimal,
+	qty: zDecimal.pipe(z.number().min(0.01)),
 
 	id_item: z.string().nullish(),
 
@@ -678,7 +678,7 @@ export const sStock = sItem
 		nama: z.string().nullish(),
 		kode: z.string().nullish(),
 
-		id_item_in: z.string(),
+		id_item_in: z.string().nullish(),
 		id_item: z.string().nullish(),
 		usedQty: zDecimal.default(0).optional(),
 		unit: tItemUnit,

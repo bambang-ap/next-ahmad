@@ -147,6 +147,7 @@ export function InputComponent<F extends FieldValues>(
 						{...restProps}
 						{...field}
 					/>
+					{errorMessage}
 					<Modal ref={modalRef}>
 						<LocalizationProvider dateAdapter={AdapterMoment}>
 							<CalendarPicker

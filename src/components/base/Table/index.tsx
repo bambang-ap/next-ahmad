@@ -92,27 +92,30 @@ export function Table<T>(props: TableProps<T, Cells>) {
 			</Tr>
 		) : (
 			data &&
-			data.length > 0 &&
-			data.mmap((item, index) => {
-				const itemWithCell = {...item, Cell: Td};
-				const renderEach = renderItemEach?.(itemWithCell, index);
-				const renderItemRow = renderItem?.(itemWithCell, index);
-				const key = keyExtractor?.(item.item, index) ?? index;
+			(data.length > 0 ? (
+				data.mmap((item, index) => {
+					const itemWithCell = {...item, Cell: Td};
+					const renderEach = renderItemEach?.(itemWithCell, index);
+					const renderItemRow = renderItem?.(itemWithCell, index);
+					const key = keyExtractor?.(item.item, index) ?? index;
 
-				const eachRenderer = renderEach && renderItemEach && (
-					<Tr>{renderEach}</Tr>
-				);
+					const eachRenderer = renderEach && renderItemEach && (
+						<Tr>{renderEach}</Tr>
+					);
 
-				return (
-					<Fragment key={key}>
-						{reverseEachItem && eachRenderer}
-						<Tr className={classNames({hidden: !renderItemRow})}>
-							{renderItemRow}
-						</Tr>
-						{!reverseEachItem && eachRenderer}
-					</Fragment>
-				);
-			})
+					return (
+						<Fragment key={key}>
+							{reverseEachItem && eachRenderer}
+							<Tr className={classNames({hidden: !renderItemRow})}>
+								{renderItemRow}
+							</Tr>
+							{!reverseEachItem && eachRenderer}
+						</Fragment>
+					);
+				})
+			) : (
+				<></>
+			))
 		);
 
 	return (

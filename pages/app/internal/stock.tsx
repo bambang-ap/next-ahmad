@@ -35,7 +35,7 @@ export default function InternalStock() {
 	const dataForm = watch();
 
 	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'Item',
+		pageName: 'Stock',
 	});
 
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
@@ -55,9 +55,11 @@ export default function InternalStock() {
 		topComponent: (
 			<>
 				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
-					Selection Add
+					Tambah Stok Suplier
 				</Button>
-				<Button onClick={() => showModal({type: 'add'})}>Manual Add</Button>
+				<Button onClick={() => showModal({type: 'add'})}>
+					Tambah Stok Non Suplier
+				</Button>
 			</>
 		),
 		renderItem: ({Cell, item}, index) => {

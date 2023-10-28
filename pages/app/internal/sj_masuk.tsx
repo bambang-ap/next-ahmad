@@ -38,7 +38,7 @@ export default function InternalSiIn() {
 	const dataForm = watch();
 
 	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'PO',
+		pageName: 'Surat Jalan Masuk',
 	});
 
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
@@ -49,9 +49,11 @@ export default function InternalSiIn() {
 		topComponent: (
 			<>
 				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
-					Selection Add
+					Tambah SJ PO
 				</Button>
-				<Button onClick={() => showModal({type: 'add'})}>Manual Add</Button>
+				<Button onClick={() => showModal({type: 'add'})}>
+					Tambah SJ Non PO
+				</Button>
 			</>
 		),
 		renderItem: ({Cell, item}, index) => {

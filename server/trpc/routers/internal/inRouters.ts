@@ -60,17 +60,22 @@ function stockUpdate(
 
 		const {id: id_item_in, nama, kode} = item.dataValues;
 
+		const id_item = inItem?.oPoItem?.id_item;
+		const hasIdItem = !!id_item;
+
 		if (!error) {
 			const {qty, ...stockValues} = {
 				nama,
 				kode,
 				sup_id,
-				id_item: inItem?.oPoItem?.id_item,
+				id_item,
 				unit: inItem.unit ?? inItem?.oPoItem?.unit!,
 				qty: item.toJSON().qty - parseFloat(prevItem?.qty.toString() ?? '0'),
 			};
 
-			const stock = await oStock.findOne({where: {id_item_in}});
+			const stock = await oStock.findOne({
+				where: hasIdItem ? {id_item} : {id_item_in},
+			});
 
 			if (!stock) {
 				await oStock.create(
