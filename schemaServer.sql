@@ -192,6 +192,22 @@ CREATE TABLE public.internal_item (
 ALTER TABLE public.internal_item OWNER TO postgres;
 
 --
+-- Name: internal_out_barang; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.internal_out_barang (
+    id character varying(47) NOT NULL,
+    id_stock character varying(47),
+    qty character varying(47),
+    keterangan character varying(255),
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone
+);
+
+
+ALTER TABLE public.internal_out_barang OWNER TO postgres;
+
+--
 -- Name: internal_po; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -294,7 +310,6 @@ CREATE TABLE public.internal_stock (
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     harga numeric,
-    "usedQty" numeric,
     qty numeric,
     unit character varying(20),
     id_item character varying(47),
@@ -895,6 +910,14 @@ ALTER TABLE ONLY public.internal_supplier
 
 
 --
+-- Name: internal_out_barang internal_out_barang_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_out_barang
+    ADD CONSTRAINT internal_out_barang_pkey PRIMARY KEY (id);
+
+
+--
 -- Name: internal_po_item internal_po_item_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1474,6 +1497,14 @@ ALTER TABLE ONLY public.customer_sppb_relation
 
 ALTER TABLE ONLY public.internal_item
     ADD CONSTRAINT internal_item_sup_id_fkey FOREIGN KEY (sup_id) REFERENCES public.internal_supplier(id);
+
+
+--
+-- Name: internal_out_barang internal_out_barang_id_stock_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_out_barang
+    ADD CONSTRAINT internal_out_barang_id_stock_fkey FOREIGN KEY (id_stock) REFERENCES public.internal_stock(id);
 
 
 --
