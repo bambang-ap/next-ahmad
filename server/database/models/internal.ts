@@ -3,6 +3,7 @@ import {BOOLEAN, JSONB, Model, Sequelize, STRING} from 'sequelize';
 import {
 	SInItem,
 	SItem,
+	SOutBarang,
 	SPo,
 	SPoItem,
 	SReqForm,
@@ -27,10 +28,9 @@ export function initOStock(sequelize: Sequelize) {
 			id_item_in: STRING,
 			qty: ormDecimalType('qty'),
 			harga: ormDecimalType('harga'),
-			usedQty: ormDecimalType('usedQty'),
 		},
 		{
-			...defaultScope(sequelize),
+			...defaultScope(sequelize, false),
 			tableName: INTERNAL_TABLES.STOCK,
 		},
 	);
@@ -175,4 +175,22 @@ export function initOForm(sequelize: Sequelize) {
 	);
 
 	return oForm;
+}
+
+export class oOut extends Model<SOutBarang> {}
+export function initOOut(sequelize: Sequelize) {
+	oOut.init(
+		{
+			id: {type: STRING, primaryKey: true},
+			id_stock: STRING,
+			keterangan: STRING,
+			qty: ormDecimalType('qty'),
+		},
+		{
+			...defaultScope(sequelize),
+			tableName: INTERNAL_TABLES.OUT,
+		},
+	);
+
+	return oOut;
 }

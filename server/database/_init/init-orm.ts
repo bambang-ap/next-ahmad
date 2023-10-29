@@ -7,6 +7,7 @@ import {
 	initOForm,
 	initOInItem,
 	initOItem,
+	initOOut,
 	initOPo,
 	initOPoItem,
 	initOSjIn,
@@ -111,6 +112,7 @@ export function initOrm(ORM: Sequelize) {
 	initOInItem(ORM);
 	initOForm(ORM);
 	initOStock(ORM);
+	initOOut(ORM);
 
 	return Promise.resolve();
 }

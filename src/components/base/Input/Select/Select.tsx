@@ -35,6 +35,30 @@ export type SelectProps = {
 
 export const Select = withReactFormController(SelectComponent);
 
+export function selectMapperV2<T extends FieldValues, P extends FieldPath<T>>(
+	data: T[],
+	value: P,
+	opts?: {labels?: P[]; joiner?: string},
+) {
+	const {joiner = ' - ', labels} = opts ?? {};
+
+	// eslint-disable-next-line @typescript-eslint/no-unused-vars
+	return data.map<SelectPropsData>(_item => {
+		function finder(path?: string) {
+			if (!path) return undefined;
+
+			return eval(`_item?.${path.replace(/\./g, '?.')}`);
+		}
+
+		const labelsMap = labels?.map(label => finder(label));
+
+		return {
+			value: finder(value),
+			label: labels ? labelsMap?.join(joiner) : undefined,
+		};
+	});
+}
+
 export function selectMapper<T extends FieldValues, P extends FieldPath<T>>(
 	data: T[],
 	value: P | P[] | [string, P][],

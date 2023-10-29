@@ -3,7 +3,6 @@ import {FormEventHandler, useRef} from 'react';
 import {useForm, useWatch} from 'react-hook-form';
 
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
-import {SStock} from '@appTypes/app.zod';
 import {
 	Button,
 	Form,
@@ -12,15 +11,17 @@ import {
 	ModalRef,
 	Select,
 	selectMapper,
+	Table,
 } from '@components';
 import {selectUnitData} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
-import {formParser, modalTypeParser} from '@utils';
+import type {RetStock} from '@trpc/routers/internal/stockRouters';
+import {dateUtils, formParser, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
-	form: SStock;
+	form: RetStock;
 	isSelection: boolean;
 	type: ModalTypeSelect;
 	selectedIds: MyObject<boolean>;
@@ -34,7 +35,7 @@ export default function InternalStock() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
+	const {modalTitle, isOther, isPreview, isDelete} = formParser(dataForm, {
 		pageName: 'Stock',
 	});
 
@@ -49,6 +50,7 @@ export default function InternalStock() {
 			'Nama Item',
 			'Harga',
 			'Qty',
+			'Qty Keluar',
 			'PPn',
 			'Action',
 		],
@@ -63,7 +65,17 @@ export default function InternalStock() {
 			</>
 		),
 		renderItem: ({Cell, item}, index) => {
-			const {oSup: dSSUp, kode, nama, harga, ppn, qty, unit, oItem} = item;
+			const {
+				oSup: dSSUp,
+				kode,
+				nama,
+				harga,
+				ppn,
+				qty,
+				unit,
+				oItem,
+				usedQty,
+			} = item;
 
 			const isPPn = typeof oItem?.ppn === 'boolean' ? oItem?.ppn : ppn;
 
@@ -74,12 +86,17 @@ export default function InternalStock() {
 					<Cell>{oItem?.kode ?? kode}</Cell>
 					<Cell>{oItem?.nama ?? nama}</Cell>
 					<Cell>{oItem?.harga ?? harga}</Cell>
-					<Cell>{`${qty} ${unit}`}</Cell>
+					<Cell>{`${qty - usedQty} ${unit}`}</Cell>
+					<Cell>{`${usedQty} ${unit}`}</Cell>
 					<Cell>{isPPn ? 'Ya' : 'Tidak'}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
 							onClick={() => showModal({type: 'preview', form: item})}
+						/>
+						<Button
+							icon="faHistory"
+							onClick={() => showModal({type: 'other', form: item})}
 						/>
 						<Button
 							icon="faEdit"
@@ -122,10 +139,10 @@ export default function InternalStock() {
 	return (
 		<>
 			{component}
-			<Modal title={modalTitle} ref={modalRef}>
+			<Modal title={isOther ? 'Qty Story' : modalTitle} ref={modalRef}>
 				<Form
-					context={{hideButton: isPreview, disabled: isPreview}}
-					onSubmit={submit}>
+					onSubmit={submit}
+					context={{hideButton: isPreview, disabled: isPreview}}>
 					<RenderModal control={control} />
 				</Form>
 			</Modal>
@@ -133,14 +150,45 @@ export default function InternalStock() {
 	);
 }
 
+function QtyHistory({control}: FormProps<FormType>) {
+	const {form} = useWatch({control});
+
+	const {unit, oOuts} = form ?? {};
+
+	return (
+		<Table
+			data={oOuts}
+			renderItem={({Cell, item}) => {
+				const {qty, createdAt, keterangan} = item ?? {};
+
+				return (
+					<>
+						<Cell className="flex-1" width="35%">
+							{dateUtils.full(createdAt)}
+						</Cell>
+						<Cell className="flex-1" width="15%">
+							{qty} {unit}
+						</Cell>
+						<Cell className="flex-1" width="50%">
+							{keterangan}
+						</Cell>
+					</>
+				);
+			}}
+		/>
+	);
+}
+
 function RenderModal({control}: FormProps<FormType>) {
 	const {type, form, isSelection: selection} = useWatch({control});
-	const {isDelete} = modalTypeParser(type);
+	const {isDelete, isOther} = modalTypeParser(type);
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({limit: 9999});
 	const {data: dataItem} = trpc.internal.item.get.useQuery(
 		{limit: 9999, id: form?.sup_id},
 		{enabled: !!form?.sup_id},
 	);
+
+	if (isOther) return <QtyHistory control={control} />;
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 

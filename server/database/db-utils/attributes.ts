@@ -44,10 +44,12 @@ import {
 	NumberOrderAttribute,
 	oInItem,
 	oItem,
+	oOut,
 	oPo,
 	oPoItem,
 	OrmKanban,
 	oSjIn,
+	oStock,
 	oSup,
 } from '@database';
 import {PO_STATUS} from '@enum';
@@ -771,4 +773,21 @@ export function internalInAttributes() {
 	type Ret = SInUpsert;
 
 	return {po, sjIn, inItem, item, poItem, sup, Ret: {} as Ret};
+}
+
+export function internalStockAttributes() {
+	const stock = attrParserV2(oStock);
+	const item = attrParserV2(oItem);
+	const sup = attrParserV2(oSup);
+	const out = attrParserV2(oOut);
+
+	type Ret = typeof stock.obj & {
+		usedQty: number;
+		isClosed: boolean;
+		oSup: typeof sup.obj;
+		oItem: typeof item.obj;
+		oOuts: typeof out.obj[];
+	};
+
+	return {stock, item, sup, out, Ret: {} as Ret};
 }

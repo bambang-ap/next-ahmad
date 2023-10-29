@@ -95,11 +95,11 @@ export function attrParserExclude<T extends {}, K extends keyof T>(
 	};
 }
 
-export function defaultScope(sequelize: Sequelize) {
+export function defaultScope(sequelize: Sequelize, withOrder = true) {
 	return {
 		sequelize,
 		defaultScope: {
-			...defaultOrderBy,
+			...(withOrder ? defaultOrderBy : {}),
 			attributes: {
 				exclude: defaultExcludeColumn,
 			},

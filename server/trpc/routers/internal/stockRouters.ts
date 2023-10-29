@@ -1,35 +1,35 @@
 import {PagingResult} from '@appTypes/app.type';
 import {sStock, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {attrParserV2, oItem, oStock, oSup} from '@database';
+import {internalStockAttributes, orderPages, oStock} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+
+export type RetStock = ReturnType<typeof internalStockAttributes>['Ret'];
 
 export const stockRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, id: sup_id} = input;
 
-		const stock = attrParserV2(oStock);
-		const item = attrParserV2(oItem);
-		const sup = attrParserV2(oSup);
+		const {item, out, stock, sup} = internalStockAttributes();
 
-		type Ret = typeof stock.obj & {
-			oItem: typeof item.obj;
-			oSup: typeof sup.obj;
-		};
-
-		return checkCredentialV2(ctx, async (): Promise<PagingResult<Ret>> => {
+		return checkCredentialV2(ctx, async (): Promise<PagingResult<RetStock>> => {
 			const {count, rows} = await stock.model.findAndCountAll({
-				include: [sup, item],
+				logging: true,
+				include: [out, sup, item],
 				where: !sup_id ? {} : {sup_id},
+				order: orderPages<RetStock>({'oOuts.createdAt': false}),
 			});
 
-			return pagingResult(
-				count,
-				page,
-				limit,
-				rows.map(e => e.toJSON() as unknown as Ret),
-			);
+			const data = rows.map(e => {
+				const val = e.toJSON() as unknown as RetStock;
+
+				const usedQty = val.oOuts.reduce((total, {qty}) => total + qty, 0);
+
+				return {...val, usedQty, isClosed: val.qty - usedQty <= 0};
+			});
+
+			return pagingResult(count, page, limit, data);
 		});
 	}),
 

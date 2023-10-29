@@ -21,6 +21,7 @@ export const uModalType = z.union([
 	z.literal('add'),
 	z.literal('edit'),
 	z.literal('delete'),
+	z.literal('other'),
 ]);
 export type ModalTypePreview = z.infer<typeof uModalTypePreview>;
 export const uModalTypePreview = z.union([uModalType, z.literal('preview')]);
@@ -680,7 +681,14 @@ export const sStock = sItem
 
 		id_item_in: z.string().nullish(),
 		id_item: z.string().nullish(),
-		usedQty: zDecimal.default(0).optional(),
 		unit: tItemUnit,
 		qty: zDecimal,
 	});
+
+export type SOutBarang = z.infer<typeof sOutBarang>;
+export const sOutBarang = zId.extend({
+	qty: zDecimal,
+	id_stock: z.string(),
+	keterangan: z.string().nullish(),
+	createdAt: z.string().optional(),
+});

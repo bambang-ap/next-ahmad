@@ -23,6 +23,7 @@ import {
 	oItem,
 	oneToMany,
 	oneToOne,
+	oOut,
 	oPo,
 	oPoItem,
 	OrmCustomer,
@@ -147,6 +148,7 @@ export function initRelations() {
 	oneToMany(oItem, oPoItem, 'id_item');
 	oneToMany(oSjIn, oInItem, 'in_id');
 	oneToMany(oPoItem, oInItem, 'id_item');
+	oneToMany(oStock, oOut, 'id_stock');
 
 	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);

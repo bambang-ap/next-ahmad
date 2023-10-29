@@ -293,12 +293,14 @@ export function modalTypeParser(type?: ModalTypeSelect, pageName = '') {
 	const isPreview = type === 'preview';
 	const isDelete = type === 'delete';
 	const isSelect = type === 'select';
+	const isOther = type === 'other';
 	const isPreviewEdit = isEdit || isPreview;
 
 	return {
 		isEdit,
 		isPreview,
 		isAdd,
+		isOther,
 		isDelete,
 		isSelect,
 		isPreviewEdit,
