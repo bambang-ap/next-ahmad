@@ -92,7 +92,8 @@ const exportSppbRouters = router({
 							const qty = item[qtyKey];
 							if (!qty) return {[qtyKey.toUpperCase()]: ''};
 							return {
-								[qtyKey.toUpperCase()]: `${qty} ${item.OrmCustomerPOItem[unitKey]}`,
+								[qtyKey.toUpperCase()]: `${qty}`,
+								[unitKey.toUpperCase()]: `${item.OrmCustomerPOItem[unitKey]}`,
 							};
 						});
 
@@ -144,15 +145,18 @@ const exportSppbRouters = router({
 						if (!qty) return {};
 
 						return {
-							[qtyKey.ucwords()]: `${qty} ${unit}`,
+							[qtyKey.ucwords()]: `${qty}`,
+							[unitKey.ucwords()]: `${unit}`,
 							...(qtyRejectTP
 								? {
-										[`${REJECT_REASON_VIEW.TP} ${num}`]: `${qtyRejectTP} ${unit}`,
+										[`${REJECT_REASON_VIEW.TP} ${num}`]: `${qtyRejectTP}`,
+										[`UNIT ${REJECT_REASON_VIEW.TP} ${num}`]: `${unit}`,
 								  }
 								: {}),
 							...(qtyRejectRP
 								? {
-										[`${REJECT_REASON_VIEW.RP} ${num}`]: `${qtyRejectRP} ${unit}`,
+										[`${REJECT_REASON_VIEW.RP} ${num}`]: `${qtyRejectRP}`,
+										[`UNIT ${REJECT_REASON_VIEW.RP} ${num}`]: `${unit}`,
 								  }
 								: {}),
 						};

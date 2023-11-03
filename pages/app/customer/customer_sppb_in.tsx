@@ -97,6 +97,7 @@ export default function SPPBIN() {
 				control={control}
 				reset={reset}
 				property="idSppbIns"
+				enabledExport
 				useQuery={form => trpc.sppb.in.getPage.useQuery(form)}
 				exportResult={exportResult}
 				keyExtractor={item => item?.id}

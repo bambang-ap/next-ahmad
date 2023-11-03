@@ -16,6 +16,13 @@ import {
 	TableFormValue,
 } from '@appTypes/app.type';
 import {Button} from '@baseComps/Touchable/Button';
+import {
+	Cells,
+	CellSelect as SelectCell,
+	CellSelectProps,
+	TableFilter,
+	TableProps,
+} from '@components';
 import {useExport, useLoader, useTableFilter} from '@hooks';
 import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 import {
@@ -25,14 +32,6 @@ import {
 	sleep,
 	transformIds,
 } from '@utils';
-
-import {
-	Cells,
-	CellSelect as SelectCell,
-	CellSelectProps,
-	TableProps,
-} from '../components/base/Table';
-import {TableFilter} from '../components/base/Table/TableFilter';
 
 type PrintData = (id: string) => void;
 type G<F extends FieldValues> = Pick<CellSelectProps<F>, 'fieldName'>;
@@ -53,9 +52,9 @@ type Props<
 	T extends {},
 	F extends Fields,
 	P extends keyof DeepPartialSkipArrayKey<F>,
-	JHJHHJJHHJ,
+	ET,
 	ER extends {},
-	EQ extends UseTRPCQueryResult<JHJHHJJHHJ[], unknown>,
+	EQ extends UseTRPCQueryResult<ET[], unknown>,
 	PT,
 	PQ extends UseTRPCQueryResult<PT[], unknown>,
 > = {

@@ -1,5 +1,5 @@
 import {Headers} from '@appComponent/GenerateExport';
-import {UnitQty, UnitUnit, UQty} from '@appTypes/app.type';
+import {UnitQty, UnitUnit} from '@appTypes/app.type';
 import {getPrintPoAttributes} from '@database';
 import {qtyMap} from '@utils';
 
@@ -13,8 +13,14 @@ export function exportPoMapper(): MapperReturn<
 > {
 	let i = 0;
 
-	const qtyHeader = Array.from({length: 11}).reduce<`Qty ${UQty}`[]>(ret => {
-		return [...ret, ...qtyMap(({num}) => `Qty ${num}` as const)];
+	const qtyHeader = Array.from({length: 2}).reduce<string[]>(ret => {
+		return [
+			...ret,
+			...qtyMap(({qtyKey, unitKey}) => [qtyKey, unitKey]).reduce(
+				(a, b) => [...a, ...b],
+				[],
+			),
+		];
 	}, []);
 
 	const headers: Headers = [
@@ -26,55 +32,79 @@ export function exportPoMapper(): MapperReturn<
 			[2, 'Due Date PO'],
 			[2, 'Nama Item'],
 			[2, 'Kode Item'],
-			['PO', 3],
+			['PO', 6],
 			[2, 'Nomor SJ Masuk'],
-			['SJ Masuk', 3],
+			['SJ Masuk', 6],
 			[2, 'Nomor Kanban'],
-			['Kanban', 3],
-			['Produksi', 3],
-			['QC', 3],
-			['Finish Good', 3],
-			['Reject', 3],
-			['SJ Keluar', 3],
-			['OT GLOBAL ( DARI SJ MASUK - SJ KELUAR )', 3],
-			['OT PO ( PO MASUK - SJ MASUK )', 3],
-			['OT KANBAN ( KANBAN - FG )', 3],
+			['Kanban', 6],
+			['Produksi', 6],
+			['QC', 6],
+			['Finish Good', 6],
+			['Reject', 6],
+			['SJ Keluar', 6],
+			['OT GLOBAL ( DARI SJ MASUK - SJ KELUAR )', 6],
+			['OT PO ( PO MASUK - SJ MASUK )', 6],
+			['OT KANBAN ( KANBAN - FG )', 6],
 		],
 		qtyHeader,
 	];
 
 	function renderQty(units: UnitUnit, qtys?: UnitQty) {
-		return qtyMap(({qtyKey, unitKey}) => {
-			const qty = qtys?.[qtyKey];
+		return (
+			<>
+				{qtyMap(({qtyKey, unitKey}) => {
+					const qty = qtys?.[qtyKey];
 
-			if (!qtys || !qty || qty == 0) return <td />;
+					if (!qtys || !qty || qty == 0) {
+						return (
+							<>
+								<td />
+								<td />
+							</>
+						);
+					}
 
-			return (
-				<td>
-					{qty} {units[unitKey]}
-				</td>
-			);
-		});
+					return (
+						<>
+							<td>{qty}</td>
+							<td>{units[unitKey]}</td>
+						</>
+					);
+				})}
+			</>
+		);
 	}
 
 	function renderOTQty(units: UnitUnit, qtys1?: UnitQty, qtys2?: UnitQty) {
-		return qtyMap(({qtyKey, unitKey}) => {
-			const qty1 = qtys1?.[qtyKey];
-			const qty2 = qtys2?.[qtyKey];
+		return (
+			<>
+				{qtyMap(({qtyKey, unitKey}) => {
+					const qty1 = qtys1?.[qtyKey];
+					const qty2 = qtys2?.[qtyKey];
 
-			const qty1N = parseFloat(qty1?.toString() ?? '0');
-			const qty2N = parseFloat(qty2?.toString() ?? '0');
+					const qty1N = parseFloat(qty1?.toString() ?? '0');
+					const qty2N = parseFloat(qty2?.toString() ?? '0');
 
-			const calculated = qty1N - qty2N;
+					const calculated = qty1N - qty2N;
 
-			if ((!qtys1 && !qtys2) || calculated <= 0) return <td />;
+					if ((!qtys1 && !qtys2) || calculated <= 0) {
+						return (
+							<>
+								<td />
+								<td />
+							</>
+						);
+					}
 
-			return (
-				<td>
-					{calculated} {units[unitKey]}
-				</td>
-			);
-		});
+					return (
+						<>
+							<td>{calculated}</td>
+							<td>{units[unitKey]}</td>
+						</>
+					);
+				})}
+			</>
+		);
 	}
 
 	return {

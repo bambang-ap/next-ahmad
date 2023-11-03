@@ -45,8 +45,12 @@ const exportScanRouters = {
 					const {dPo} = dKanban ?? {};
 					const {dCust} = dPo ?? {};
 
-					const enIe = qtyReduce((retQty, {qtyKey}) => {
-						return {...retQty, [qtyKey]: scnItem[qtyKey]};
+					const enIe = qtyReduce((retQty, {qtyKey, unitKey}) => {
+						return {
+							...retQty,
+							[qtyKey]: scnItem[qtyKey],
+							[unitKey]: dInItem?.dPoItem[unitKey],
+						};
 					});
 
 					const instruksi = await processMapper(ctx, dItem);

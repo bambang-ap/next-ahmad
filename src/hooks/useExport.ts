@@ -7,27 +7,6 @@ import {exportData} from '@utils';
 
 import {useLoader} from './useLoader';
 
-export function useExportData<
-	T,
-	W extends UseTRPCQueryResult<T, unknown>,
-	R extends {},
->(
-	useQueries: () => W[],
-	renderItem: (item: W) => R,
-	names?: Parameters<typeof exportData>[1],
-) {
-	const datas = useQueries();
-
-	const result = datas.map(renderItem);
-
-	function exportResult(callback?: NoopVoid) {
-		exportData(result, names);
-		callback?.();
-	}
-
-	return {exportResult};
-}
-
 export function useNewExportData<
 	T,
 	R extends {},

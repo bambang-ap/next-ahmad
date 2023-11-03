@@ -179,7 +179,6 @@ export function exportKanbanAttributes() {
 		| 'NOMOR KANBAN'
 		| 'PART NAME'
 		| 'PART NO'
-		| 'QTY / JUMLAH'
 		| 'PROSES'
 		| 'KETERANGAN',
 		string

@@ -68,6 +68,15 @@ const exportKanbanRouters = {
 
 					const proses = await processMapper(ctx, {instruksi, kategori_mesinn});
 
+					const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
+						const qty = item?.[qtyKey];
+						if (!qty) return {[qtyKey.toUpperCase()]: ''};
+						return {
+							[qtyKey.toUpperCase()]: `${qty}`,
+							[unitKey.toUpperCase()]: `${poItem?.[unitKey]}`,
+						};
+					});
+
 					return {
 						CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
 						'NOMOR PO': val.OrmCustomerPO.nomor_po,
@@ -75,14 +84,7 @@ const exportKanbanRouters = {
 						'NOMOR KANBAN': val.nomor_kanban,
 						'PART NAME': name!,
 						'PART NO': kode_item!,
-						'QTY / JUMLAH': qtyMap(({qtyKey, unitKey}) => {
-							const qty = item?.[qtyKey];
-							const unit = poItem?.[unitKey];
-							if (!qty) return;
-							return `${qty} ${unit}`;
-						})
-							.filter(Boolean)
-							.join(' | '),
+						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 						PROSES: proses,
 						KETERANGAN: val.keterangan!,
 					};
