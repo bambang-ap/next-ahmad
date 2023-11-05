@@ -62,7 +62,6 @@ const sppbOutRouters = router({
 
 			const dataPO = await po.model.findAll({
 				order,
-				logging: true,
 				include: [sjInInclude],
 				attributes: po.attributes,
 				where: {id_customer, ...wherer},

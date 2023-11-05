@@ -15,7 +15,6 @@ export const stockRouters = router({
 
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<RetStock>> => {
 			const {count, rows} = await stock.model.findAndCountAll({
-				logging: true,
 				include: [out, sup, item],
 				where: !sup_id ? {} : {sup_id},
 				order: orderPages<RetStock>({'oOuts.createdAt': false}),

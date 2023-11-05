@@ -67,7 +67,6 @@ const printRouters = router({
 
 		return checkCredentialV2(ctx, async (): Promise<RetOutput[]> => {
 			const dataPO = await Po.model.findAll({
-				logging: true,
 				raw: true,
 				nest: true,
 				where: {id: input.ids},
