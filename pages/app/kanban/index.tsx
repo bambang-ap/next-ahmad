@@ -11,7 +11,7 @@ import {
 	TKanbanUpsert,
 } from '@appTypes/app.zod';
 import {Button, Form, Modal, ModalRef} from '@components';
-import {cuttingLineClassName, nonRequiredRefetch} from '@constants';
+import {cuttingLineClassName, isProd, nonRequiredRefetch} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import {RenderKanbanCardV2} from '@pageComponent/KanbanCardV2';
@@ -58,6 +58,7 @@ export default function Kanban() {
 		property,
 		header: [
 			'No',
+			!isProd && 'ID Kanban',
 			'Tanggal',
 			'Nomor PO',
 			'Nomor Kanban',
@@ -108,6 +109,7 @@ export default function Kanban() {
 				<>
 					<CellSelect fieldName={`idKanbans.${item.id}`} />
 					<Cell>{index + 1}</Cell>
+					{!isProd && <Cell>{item.id}</Cell>}
 					<Cell>{dateUtils.date(item.createdAt)}</Cell>
 					<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
 					<Cell>{item.nomor_kanban}</Cell>

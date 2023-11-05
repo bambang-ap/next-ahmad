@@ -78,7 +78,10 @@ export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
 	return poData.map(po => {
 		const uu = po.dSJIns?.map(bin => {
 			const dd = bin.dInItems?.map(item => {
-				const {itemInScan, rejectedItems} = itemInScanParser(bin?.dKanbans);
+				const {itemInScan, rejectedItems} = itemInScanParser(
+					item.id,
+					bin?.dKanbans,
+				);
 				const currentQty = itemSppbOut(item.dOutItems);
 
 				const compare = qtyMap(({qtyKey}) => {
@@ -109,10 +112,8 @@ export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
 }
 
 export function itemInScanParser(
-	kanbans?: Omit<
-		ReturnType<typeof getPOSppbOutAttributes>['RetKanban'],
-		'dKnbItems'
-	>[],
+	idItemSppbIn: string,
+	kanbans?: ReturnType<typeof getPOSppbOutAttributes>['RetKanban'][],
 ) {
 	let rejItems: RejItems = {};
 	type RejItems = Partial<Record<REJECT_REASON, UnitQty>>;
@@ -121,7 +122,9 @@ export function itemInScanParser(
 		kanbans?.forEach(knb => {
 			knb.dScans.forEach(scan => {
 				scan.dScanItems.forEach(scnItem => {
-					ret[qtyKey] += parseFloat(scnItem?.[qtyKey]?.toString() ?? '0');
+					if (idItemSppbIn === knb.dKnbItems?.[0]?.id_item) {
+						ret[qtyKey] += parseFloat(scnItem?.[qtyKey]?.toString() ?? '0');
+					}
 				});
 
 				scan.rejScan?.dScanItems.forEach(sRItem => {

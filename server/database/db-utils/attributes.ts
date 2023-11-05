@@ -493,7 +493,13 @@ export function getPOSppbOutAttributes() {
 	const sjOut = attrParserExclude(dSjOut, ['id']);
 	const outItem = attrParserV2(dOutItem, ['id', 'qty1', 'qty2', 'qty3']);
 	const poItem = attrParserV2(dPoItem, ['id', 'unit1', 'unit2', 'unit3']);
-	const knbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);
+	const knbItem = attrParserV2(dKnbItem, [
+		'id',
+		'id_item',
+		'qty1',
+		'qty2',
+		'qty3',
+	]);
 
 	const sjInInclude: Includeable = {
 		...sjIn,
@@ -571,6 +577,7 @@ export function printSppbOutAttributes() {
 		scnItem,
 		rejItem,
 		kanban,
+		knbItem,
 		sjIn,
 		po,
 	} = getPOSppbOutAttributes();
@@ -584,7 +591,7 @@ export function printSppbOutAttributes() {
 	const vehicle = attrParserV2(dVehicle, ['name']);
 	const customer = attrParserV2(dCust, ['name', 'alamat']);
 	const outItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
-	const inItem = attrParserV2(dInItem, ['lot_no']);
+	const inItem = attrParserV2(dInItem, ['id', 'lot_no']);
 	const item = attrParserV2(dItem, [
 		'instruksi',
 		'kategori_mesinn',
@@ -601,6 +608,7 @@ export function printSppbOutAttributes() {
 				...kanban,
 				include: [
 					doc,
+					knbItem,
 					{
 						...scan,
 						include: [
@@ -624,6 +632,7 @@ export function printSppbOutAttributes() {
 			dInItem: typeof inItem.obj & {
 				dSJIn: typeof sjIn.obj & {
 					dKanbans: (typeof kanban.obj & {
+						dKnbItems: typeof knbItem.obj[];
 						dScans: (typeof scan.obj & {
 							dScanItems: typeof scnItem.obj[];
 							[dScan._aliasReject]?: typeof scan.obj & {

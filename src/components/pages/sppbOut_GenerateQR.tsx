@@ -188,6 +188,7 @@ export function SPPBOutGenerateQR({
 						);
 
 						const {rejectedItems} = itemInScanParser(
+							OrmPOItemSppbIn.id,
 							OrmCustomerSPPBIn?.dKanbans,
 						);
 

@@ -134,7 +134,7 @@ const exportSppbRouters = router({
 						kategori_mesinn: dItem.kategori_mesinn,
 					});
 
-					const {rejectedItems} = itemInScanParser(dSJIn.dKanbans);
+					const {rejectedItems} = itemInScanParser(dInItem.id, dSJIn.dKanbans);
 
 					const qtyMapping = qtyMap(({qtyKey, num, unitKey}) => {
 						const qty = outItem[qtyKey];
