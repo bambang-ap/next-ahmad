@@ -1,5 +1,4 @@
-import {TScanTarget} from '@appTypes/app.type';
-import {zIds} from '@appTypes/app.zod';
+import {TScanTarget, zIds} from '@appTypes/app.zod';
 import {
 	getPrintPoAttributes,
 	printSppbOutAttributes,

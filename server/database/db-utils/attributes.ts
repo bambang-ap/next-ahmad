@@ -616,7 +616,7 @@ export function printSppbOutAttributes() {
 							{
 								...scan,
 								as: dScan._aliasReject,
-								include: [{...scnItem, include: [rejItem]}],
+								include: [{...scnItem, separate: true, include: [rejItem]}],
 							},
 						],
 					},
