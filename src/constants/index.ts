@@ -40,9 +40,7 @@ export const unitData: TItemUnit[] = [
 	'pallet',
 ];
 export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
-	unit => ({
-		value: unit,
-	}),
+	value => ({value}),
 );
 
 export const dataPerPageSelection: SelectPropsData<number>[] = [

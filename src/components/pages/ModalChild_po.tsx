@@ -2,7 +2,7 @@ import {Fragment, useEffect} from 'react';
 
 import {Control, useController, UseFormReset, useWatch} from 'react-hook-form';
 
-import {ModalTypePreview, TCustomer} from '@appTypes/app.type';
+import {ModalTypePreview, TCustomer, TItemUnit} from '@appTypes/app.type';
 import {
 	Button,
 	Input,
@@ -185,6 +185,19 @@ export default function PoModalChild({
 									/>
 								</Cell>
 								{qtyMap(({num, qtyKey, unitKey}) => {
+									const isTwo = num === 2;
+									const theVal = item[qtyKey];
+
+									const presetUnit: undefined | TItemUnit =
+										num === 1 ? 'pcs' : isTwo ? 'kg' : undefined;
+
+									const shouldUnregister = isTwo && !!theVal;
+									const presetUnitValue = isTwo
+										? !!theVal
+											? presetUnit
+											: undefined
+										: presetUnit;
+
 									return (
 										<Cell key={num} className="gap-2">
 											<Input
@@ -195,15 +208,27 @@ export default function PoModalChild({
 												fieldName={`OrmCustomerPOItems.${index}.${qtyKey}`}
 												label="Qty"
 											/>
-											<Select
-												disabled={isPreview}
-												className="flex-1"
-												firstOption="- Pilih unit -"
-												control={control}
-												fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
-												data={selectUnitData}
-												label="Unit"
-											/>
+											{!!presetUnit ? (
+												<Input
+													disabled
+													label="Unit"
+													control={control}
+													className="flex-1"
+													defaultValue={presetUnitValue}
+													shouldUnregister={shouldUnregister}
+													fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
+												/>
+											) : (
+												<Select
+													disabled={isPreview}
+													className="flex-1"
+													firstOption="- Pilih unit -"
+													control={control}
+													fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
+													data={selectUnitData}
+													label="Unit"
+												/>
+											)}
 										</Cell>
 									);
 								})}
