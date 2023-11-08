@@ -13,9 +13,10 @@ import {
 	Select,
 	selectMapper,
 } from '@components';
+import {ppnMultiply, ppnPercentage} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
-import {formParser, modalTypeParser} from '@utils';
+import {formParser, modalTypeParser, numberFormat} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -58,8 +59,8 @@ export default function InternalItem() {
 					<Cell>{dSSUp.nama}</Cell>
 					<Cell>{kode}</Cell>
 					<Cell>{nama}</Cell>
-					<Cell>{harga}</Cell>
-					<Cell>{ppn ? 'Ya' : 'Tidak'}</Cell>
+					<Cell>{numberFormat(harga)}</Cell>
+					<Cell>{numberFormat(ppn ? harga * ppnMultiply : 0)}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
@@ -147,7 +148,7 @@ function RenderModal({control}: FormProps<FormType>) {
 					type="checkbox"
 					control={control}
 					fieldName="form.ppn"
-					label="PPn"
+					label={`PPn ${ppnPercentage}%`}
 				/>
 			</div>
 

@@ -18,6 +18,9 @@ export * from './colors';
 export * from './pages';
 export * from './sizes';
 
+export const ppnPercentage = 11;
+export const ppnMultiply = ppnPercentage * 0.01;
+
 export const gap = 'gap-px';
 export const padding = 'p-px';
 

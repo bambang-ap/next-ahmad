@@ -17,7 +17,12 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
-import {IMIConst, selectUnitDataInternal} from '@constants';
+import {
+	IMIConst,
+	ppnMultiply,
+	ppnPercentage,
+	selectUnitDataInternal,
+} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
@@ -293,7 +298,7 @@ function RenderPdf(props: RetPoInternal) {
 			const {oItem, qty} = item;
 
 			const sum = oItem?.harga! * qty;
-			const ppnValue = oItem?.ppn ? sum * 0.11 : 0;
+			const ppnValue = oItem?.ppn ? sum * ppnMultiply : 0;
 
 			ret.jumlah += sum;
 			ret.ppn += ppnValue;
@@ -357,7 +362,7 @@ function RenderPdf(props: RetPoInternal) {
 					<BorderTd>{numberFormat(jumlah)}</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd colSpan={5}>PPn 11%</BorderTd>
+					<BorderTd colSpan={5}>PPn {ppnPercentage}%</BorderTd>
 					<BorderTd>{numberFormat(ppn)}</BorderTd>
 				</tr>
 				<tr>
