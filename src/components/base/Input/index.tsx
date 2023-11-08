@@ -36,6 +36,8 @@ export type InputProps = {
 	isLoading?: boolean;
 	isError?: boolean;
 	errorMessage?: string;
+	minDate?: moment.Moment;
+	maxDate?: moment.Moment;
 	type?:
 		| 'number'
 		| 'decimal'
@@ -73,6 +75,8 @@ export function InputComponent<F extends FieldValues>(
 		isError = false,
 		errorMessage: message,
 		decimalValue = decimalValuee,
+		maxDate,
+		minDate,
 	} = props;
 
 	const formContext = useContext(FormContext);
@@ -151,9 +155,13 @@ export function InputComponent<F extends FieldValues>(
 					<Modal ref={modalRef}>
 						<LocalizationProvider dateAdapter={AdapterMoment}>
 							<CalendarPicker
+								minDate={minDate}
+								maxDate={maxDate}
 								date={moment(value)}
 								allowSameDateSelection
-								onChange={date => {
+								onChange={(date, state) => {
+									if (state !== 'finish') return;
+
 									modalRef.current?.hide();
 									onChange(date?.format(formatDate));
 								}}

@@ -1,7 +1,20 @@
 import {TScanTarget, ZId} from '@appTypes/app.type';
 import {through} from '@constants';
-import {dInItem, dKanban, dPo, dPoItem, dScan, dSJIn, dSjOut} from '@database';
-import {PO_STATUS} from '@enum';
+import {
+	attrParserV2,
+	dInItem,
+	dKanban,
+	dPo,
+	dPoItem,
+	dScan,
+	dSJIn,
+	dSjOut,
+	oInItem,
+	oPo,
+	oPoItem,
+} from '@database';
+import {INTERNAL_PO_STATUS, PO_STATUS} from '@enum';
+import {moment} from '@utils';
 
 export async function getCurrentPOStatus(id: string): Promise<PO_STATUS> {
 	interface RootObject {
@@ -79,4 +92,46 @@ export async function getCurrentPOStatus(id: string): Promise<PO_STATUS> {
 	if (stats.includes(PO_STATUS.C)) return PO_STATUS.C;
 	if (stats.includes(PO_STATUS.B)) return PO_STATUS.B;
 	return PO_STATUS.A;
+}
+
+export async function getInternalPOStatus(
+	id: string,
+): Promise<INTERNAL_PO_STATUS | undefined> {
+	type Ret = typeof aPo.obj & {
+		oPoItems: (typeof aPoItem.obj & {oInItems: typeof aInItem.obj[]})[];
+	};
+
+	const aPo = attrParserV2(oPo, ['due_date']);
+	const aPoItem = attrParserV2(oPoItem, ['qty']);
+	const aInItem = attrParserV2(oInItem, ['qty']);
+
+	const po = await aPo.model.findOne({
+		// logging: true,
+		where: {id},
+		attributes: aPo.attributes,
+		include: [{...aPoItem, include: [aInItem]}],
+	});
+
+	if (!!po) {
+		const {due_date, oPoItems} = po.toJSON() as unknown as Ret;
+
+		const now = moment(),
+			mDue = moment(due_date);
+		if (mDue.diff(now, 'minute') < 0) return INTERNAL_PO_STATUS.D;
+
+		const y = oPoItems.map(f => {
+			const j = f.oInItems.reduce((total, {qty}) => total + qty, 0);
+			return f.qty === j;
+		});
+
+		if (y.length > 1 && y.includes(false) && y.includes(true))
+			return INTERNAL_PO_STATUS.B;
+		if (y.length > 0 && !y.includes(false)) return INTERNAL_PO_STATUS.C;
+
+		// return INTERNAL_PO_STATUS.C;
+		// return INTERNAL_PO_STATUS.B;
+		return INTERNAL_PO_STATUS.A;
+	}
+
+	return;
 }

@@ -1,13 +1,18 @@
-import moment from 'moment';
 import {Op} from 'sequelize';
 
 import {PagingResult, TableFormValue} from '@appTypes/app.type';
 import {sPoUpsert, tableFormValue, zId, zIds} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {internalPoAttributes, oPo, oPoItem, wherePagesV3} from '@database';
+import {
+	getInternalPOStatus,
+	internalPoAttributes,
+	oPo,
+	oPoItem,
+	wherePagesV3,
+} from '@database';
 import {checkCredentialV2, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
-import {generateId} from '@utils';
+import {generateId, moment} from '@utils';
 
 export type RetPoInternal = ReturnType<typeof internalPoAttributes>['Ret'];
 
@@ -15,14 +20,28 @@ async function agd(input: TableFormValue, where?: any) {
 	const {id: supId, page, limit} = input;
 	const {item, po, poItem, sup} = internalPoAttributes();
 
-	const {count, rows} = await po.model.findAndCountAll({
+	const {count, rows: data} = await po.model.findAndCountAll({
 		limit,
 		offset: (page - 1) * limit,
+
+		// NOTE: it supposed to be like this
+		// for the items, it can be loaded at modal shown
+		// include: [sup, /* {...poItem, include: [item]} */],
 		include: [sup, {...poItem, include: [item]}],
 		where: !!supId ? {sup_id: supId, ...where} : where,
 	});
 
-	return {count, rows: rows.map(e => e.toJSON() as unknown as RetPoInternal)};
+	const rows = await Promise.all(
+		data.map(async e => {
+			const val = e.toJSON() as unknown as RetPoInternal;
+
+			const status = await getInternalPOStatus(val.id as string);
+
+			return {...val, status};
+		}),
+	);
+
+	return {count, rows};
 }
 
 export const poRouters = router({

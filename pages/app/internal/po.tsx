@@ -26,7 +26,13 @@ import {
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
-import {dateUtils, formParser, modalTypeParser, numberFormat} from '@utils';
+import {
+	dateUtils,
+	formParser,
+	modalTypeParser,
+	moment,
+	numberFormat,
+} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -63,10 +69,18 @@ export default function InternalPo() {
 			useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
 		},
 		useQuery: form => trpc.internal.po.get.useQuery(form),
-		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Due Date', 'Action'],
+		header: [
+			'No',
+			'Nama Supplier',
+			'Nomor PO',
+			'Date',
+			'Due Date',
+			'Status',
+			'Action',
+		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
-			const {oSup: dSSUp, date, due_date, nomor_po} = item;
+			const {oSup: dSSUp, date, due_date, status, nomor_po} = item;
 			return (
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
@@ -75,6 +89,7 @@ export default function InternalPo() {
 					<Cell>{nomor_po}</Cell>
 					<Cell>{date}</Cell>
 					<Cell>{due_date}</Cell>
+					<Cell>{status}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
@@ -137,6 +152,7 @@ function RenderModal({
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
+
 	const {isDelete, isEdit} = modalTypeParser(type);
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
@@ -190,13 +206,28 @@ function RenderModal({
 				fieldName="form.nomor_po"
 				label="Nomor PO"
 			/>
-			<Input type="date" control={control} fieldName="form.date" label="Date" />
-			<Input
-				type="date"
-				control={control}
-				fieldName="form.due_date"
-				label="Due Date"
-			/>
+
+			<div className="flex gap-2">
+				<Input
+					type="date"
+					control={control}
+					className="flex-1"
+					fieldName="form.date"
+					label="Date"
+				/>
+
+				{!!form?.date && (
+					<Input
+						type="date"
+						label="Due Date"
+						className="flex-1"
+						control={control}
+						fieldName="form.due_date"
+						minDate={moment(form.date).add(1, 'day')}
+					/>
+				)}
+			</div>
+
 			<Input
 				control={control}
 				defaultValue={invoice}

@@ -4,6 +4,7 @@ import {SelectPropsData} from '@components';
 import {defaultLimit} from '@constants';
 import {
 	CATEGORY_REJECT_DB,
+	INTERNAL_PO_STATUS,
 	REJECT_REASON,
 	REJECT_REASON_VIEW,
 	REQ_FORM_STATUS,
@@ -624,6 +625,7 @@ export const oPoItem = zId.extend({
 
 export type SPoUpsert = z.infer<typeof sPoUpsert>;
 export const sPoUpsert = sPo.partial({id: true}).extend({
+	status: z.nativeEnum(INTERNAL_PO_STATUS).optional(),
 	oSup: sSupplier.optional(),
 	oPoItems: oPoItem
 		.extend({oItem: sItem, temp_id: z.string()})

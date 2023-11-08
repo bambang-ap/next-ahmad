@@ -29,6 +29,13 @@ export enum PO_STATUS {
 	H = 'Unknown',
 }
 
+export enum INTERNAL_PO_STATUS {
+	A = 'Open',
+	B = 'Partial',
+	C = 'Closed',
+	D = 'Overdue',
+}
+
 export enum REJECT_REASON {
 	TP = 'TP',
 	RP = 'RP',
