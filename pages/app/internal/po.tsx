@@ -17,7 +17,7 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
-import {IMIConst, selectUnitData} from '@constants';
+import {IMIConst, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
@@ -267,7 +267,7 @@ function RenderModal({
 									label="Unit"
 									className="flex-1"
 									control={control}
-									data={selectUnitData}
+									data={selectUnitDataInternal}
 									fieldName={`form.oPoItems.${i}.unit`}
 								/>
 							</Cell>

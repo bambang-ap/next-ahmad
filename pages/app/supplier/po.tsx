@@ -18,7 +18,7 @@ import {
 	Table,
 	TableFilter,
 } from '@components';
-import {selectUnitData} from '@constants';
+import {selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useLoader, useTableFilter} from '@hooks';
 import {classNames, modalTypeParser} from '@utils';
@@ -259,7 +259,7 @@ function ModalChildPOSupplier({control, reset}: ModalChildProps) {
 								<Select
 									control={control}
 									fieldName={`items.${id_item}.unit`}
-									data={selectUnitData}
+									data={selectUnitDataInternal}
 								/>
 							</Cell>
 							<Cell>{(item?.harga ?? 0) * (item?.qty ?? 0)}</Cell>

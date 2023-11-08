@@ -10,6 +10,7 @@ import {
 	TMasterItem,
 	TScanTarget,
 } from '@appTypes/app.type';
+import {TItemUnitInternal} from '@appTypes/app.zod';
 import {SelectPropsData} from '@components';
 import {TRPCClientError} from '@trpc/client';
 
@@ -42,6 +43,15 @@ export const unitData: TItemUnit[] = [
 export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
 	value => ({value}),
 );
+
+export const unitDataInternal: TItemUnitInternal[] = [
+	...unitData,
+	'lembar',
+	'liter',
+	'tabung',
+];
+export const selectUnitDataInternal: SelectPropsData<TItemUnitInternal>[] =
+	unitDataInternal.map(value => ({value}));
 
 export const dataPerPageSelection: SelectPropsData<number>[] = [
 	{value: 5},

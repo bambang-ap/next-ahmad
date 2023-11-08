@@ -16,7 +16,7 @@ import {
 	Table,
 	Text,
 } from '@components';
-import {selectUnitData} from '@constants';
+import {selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import {formParser, modalTypeParser} from '@utils';
@@ -338,7 +338,7 @@ function RenderModal({
 											label="Unit"
 											className="flex-1"
 											control={control}
-											data={selectUnitData}
+											data={selectUnitDataInternal}
 											fieldName={`form.oInItems.${i}.unit`}
 										/>
 									</>

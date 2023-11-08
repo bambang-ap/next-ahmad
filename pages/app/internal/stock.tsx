@@ -13,7 +13,7 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
-import {selectUnitData} from '@constants';
+import {selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import type {RetStock} from '@trpc/routers/internal/stockRouters';
@@ -265,7 +265,7 @@ function RenderModal({control}: FormProps<FormType>) {
 					label="Unit"
 					control={control}
 					fieldName="form.unit"
-					data={selectUnitData}
+					data={selectUnitDataInternal}
 				/>
 			</div>
 

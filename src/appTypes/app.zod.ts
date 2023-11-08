@@ -82,15 +82,20 @@ export const tCustomer = zId.extend({
 });
 
 export type TItemUnit = z.infer<typeof tItemUnit>;
-export const tItemUnit = z.union([
-	z.literal('pcs'),
-	z.literal('drum'),
-	z.literal('kg'),
-	z.literal('box'),
-	z.literal('set'),
-	z.literal('carton'),
-	z.literal('pallet'),
-]);
+export const tItemUnit = z
+	.literal('pcs')
+	.or(z.literal('drum'))
+	.or(z.literal('kg'))
+	.or(z.literal('box'))
+	.or(z.literal('set'))
+	.or(z.literal('carton'))
+	.or(z.literal('pallet'));
+
+export type TItemUnitInternal = z.infer<typeof tItemUnitInternal>;
+export const tItemUnitInternal = tItemUnit
+	.or(z.literal('lembar'))
+	.or(z.literal('liter'))
+	.or(z.literal('tabung'));
 
 export type UnitQty = z.infer<typeof unitQty>;
 export const unitQty = z.object({
@@ -584,8 +589,10 @@ export const sItem = zId.extend({
 });
 
 const sItemReqForm = zId.extend({
+	name: z.string(),
 	qty: zDecimal,
 	unit: tItemUnit,
+	code: z.string().optional(),
 	keterangan: z.string().optional(),
 });
 

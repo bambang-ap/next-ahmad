@@ -5,7 +5,7 @@ import {useForm, useWatch} from 'react-hook-form';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SReqForm} from '@appTypes/app.zod';
 import {Button, Form, Input, Modal, ModalRef, Select, Table} from '@components';
-import {selectUnitData} from '@constants';
+import {selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import {formParser, generateId, modalTypeParser} from '@utils';
@@ -151,6 +151,22 @@ function RenderModal({
 
 					return (
 						<Fragment key={idItem}>
+							<Cell>
+								<Input
+									control={control}
+									className="flex-1"
+									label="Nama Item"
+									fieldName={`form.items.${i}.name`}
+								/>
+							</Cell>
+							<Cell>
+								<Input
+									control={control}
+									className="flex-1"
+									label="Kode Item"
+									fieldName={`form.items.${i}.code`}
+								/>
+							</Cell>
 							<Cell className="gap-2">
 								<Input
 									type="decimal"
@@ -163,7 +179,7 @@ function RenderModal({
 									label="Unit"
 									className="flex-1"
 									control={control}
-									data={selectUnitData}
+									data={selectUnitDataInternal}
 									fieldName={`form.items.${i}.unit`}
 								/>
 							</Cell>
