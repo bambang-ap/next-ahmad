@@ -16,13 +16,6 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
---
--- Name: SCHEMA public; Type: COMMENT; Schema: -; Owner: pg_database_owner
---
-
-COMMENT ON SCHEMA public IS '';
-
-
 SET default_tablespace = '';
 
 SET default_table_access_method = heap;
@@ -1760,13 +1753,6 @@ ALTER TABLE ONLY public.user_login
 
 ALTER TABLE ONLY public.user_pengguna
     ADD CONSTRAINT user_role_fkey FOREIGN KEY (role) REFERENCES public.role(id) NOT VALID;
-
-
---
--- Name: SCHEMA public; Type: ACL; Schema: -; Owner: pg_database_owner
---
-
-REVOKE USAGE ON SCHEMA public FROM PUBLIC;
 
 
 --
