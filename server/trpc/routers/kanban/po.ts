@@ -68,10 +68,7 @@ const kanbanPoRouters = router({
 							separate: true,
 							model: OrmPOItemSppbIn,
 							attributes: {
-								exclude: [
-									...defaultExcludeColumn,
-									'lot_no',
-								] as KeyOf<TPOItemSppbIn>,
+								exclude: [...defaultExcludeColumn] as KeyOf<TPOItemSppbIn>,
 							},
 							include: [
 								{

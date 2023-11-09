@@ -25,7 +25,7 @@ export function SppbOutModalChild({
 	);
 
 	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut();
-	const {isDelete, isEdit} = modalTypeParser(modalType);
+	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
@@ -134,6 +134,7 @@ export function SppbOutModalChild({
 									);
 
 									const {dInItems} = sppbInSelected ?? {};
+
 									const sppbKey = `${poKey}${sppb.id_sppb_in}`;
 
 									const availableSppbIn = poSelected?.dSJIns?.filter(e => {
@@ -187,11 +188,13 @@ export function SppbOutModalChild({
 														id: id_item,
 														lot_no,
 														currentQty,
+														isClosed,
 														dPoItem,
 														itemInScan,
 														rejectedItems,
 														dOutItems,
 													} = item ?? {};
+
 													const items = sppb.items?.[id_item];
 
 													const lot_no_imi = sppbInSelected?.dKanbans
@@ -199,6 +202,8 @@ export function SppbOutModalChild({
 														.join(' | ');
 
 													const hj = dOutItems.find(e => e.id === items?.id);
+
+													if (isClosed && !isPreviewEdit) return <></>;
 
 													return (
 														<>

@@ -126,7 +126,16 @@ export default function SPPBOUT() {
 	};
 
 	function showModal({type, ...rest}: Partial<FormValue>) {
+		// NOTE: must revert it
 		reset({...rest, type});
+		// reset({
+		// 	...rest,
+
+		// 	id_customer: 'C230711a3e7',
+		// 	po: [{id_po: 'PO_2311018f92', sppb_in: [{}]}],
+
+		// 	type,
+		// });
 		modalRef.current?.show();
 	}
 

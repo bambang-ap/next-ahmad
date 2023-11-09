@@ -338,7 +338,7 @@ export function getScanAttributesV2() {
 	const po = attrParserV2(dPo, ['id', 'nomor_po']);
 	const cust = attrParserV2(dCust, ['id', 'name']);
 	const mItem = attrParserV2(dItem, ['kode_item', 'name', 'id']);
-	const binItem = attrParserV2(dInItem, ['id']);
+	const binItem = attrParserV2(dInItem, ['id', 'lot_no']);
 	const sciReject = attrParserV2(dRejItem);
 	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
 

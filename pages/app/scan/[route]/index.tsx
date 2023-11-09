@@ -24,6 +24,7 @@ import {
 	Button,
 	Form,
 	Input,
+	InputDummy,
 	RootTable,
 	Select,
 	Text,
@@ -325,7 +326,13 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 						<Tr>
 							<Td>NO PO : {OrmCustomerPO?.nomor_po}</Td>
 							<Td>NO Surat : {OrmCustomerSPPBIn?.nomor_surat}</Td>
-							<Td>
+							<Td className="gap-2">
+								<InputDummy
+									disabled
+									label="Nomor Lot"
+									className="flex-1"
+									byPassValue={data?.dKanban?.dKnbItems?.[0]?.dInItem?.lot_no}
+								/>
 								<Input
 									disabled={!isProduksi}
 									className="flex-1"
@@ -402,6 +409,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 										)}
 										<Td>{OrmMasterItem.kode_item}</Td>
 										<Td>{OrmMasterItem.name}</Td>
+
 										<Td className="gap-2">
 											{qtyMap(({unitKey, qtyKey, num}) => {
 												if (!poItem[unitKey]) return null;
