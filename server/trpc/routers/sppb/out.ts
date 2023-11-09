@@ -1,7 +1,6 @@
 import {
 	KanbanGetRow,
 	PagingResult,
-	TCustomerSPPBOutItem,
 	TCustomerSPPBOutUpsert,
 	TKanbanUpsertItem,
 	TScanTarget,
@@ -19,12 +18,9 @@ import {
 	dSppbBridge,
 	getPOSppbOutAttributes,
 	orderPages,
-	OrmCustomer,
-	OrmCustomerSPPBIn,
+	ORM,
 	OrmCustomerSPPBOut,
 	OrmCustomerSPPBOutItem,
-	OrmKendaraan,
-	OrmPOItemSppbIn,
 	OrmScan,
 	sppbOutGetAttributes,
 	wherePagesV2,
@@ -32,6 +28,7 @@ import {
 } from '@database';
 import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
 import {z} from 'zod';
 
@@ -70,6 +67,7 @@ const sppbOutRouters = router({
 			return dataPO.map(e => e.toJSON() as unknown as RetOutput);
 		});
 	}),
+
 	getInvoice: procedure.query(() =>
 		genInvoice(
 			OrmCustomerSPPBOut,
@@ -78,97 +76,74 @@ const sppbOutRouters = router({
 			'invoice_no',
 		),
 	),
-	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, search} = input;
-		const {A, B, C, D, E, F, Ret} = sppbOutGetAttributes();
 
+	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type RetType = typeof Ret;
 
+		const {limit, page, search} = input;
+		const {outItem, sjOut, inItem, sjIn, cust, vehicle, Ret} =
+			sppbOutGetAttributes();
+
+		function remapData(data: RetType): TCustomerSPPBOutUpsert {
+			let po: TCustomerSPPBOutUpsert['po'] = [];
+
+			const {dOutItems, ...rest} = data;
+
+			for (const {dInItem: sppbinItem, id_item, ...cur} of dOutItems) {
+				const id_po = sppbinItem.dSJIn.id_po;
+				const id_sppb_in = sppbinItem.id_sppb_in;
+
+				const isPoExist = po.findIndex(itm => itm.id_po === id_po) >= 0;
+
+				if (!isPoExist) po.push({id_po, sppb_in: []});
+
+				const iPo = po.findIndex(itm => itm.id_po === id_po);
+				const isInExist =
+					po?.[iPo]?.sppb_in.findIndex(itm => itm.id_sppb_in === id_sppb_in)! >=
+					0;
+
+				if (!isInExist) po[iPo]?.sppb_in.push({id_sppb_in, items: {}});
+
+				const iSjIn = po?.[iPo]?.sppb_in.findIndex(
+					itm => itm.id_sppb_in === id_sppb_in,
+				)!;
+
+				po[iPo]!.sppb_in[iSjIn]!.items[id_item] = {
+					...cur,
+					id_item_po: sppbinItem.id_item,
+					master_item_id: sppbinItem.master_item_id,
+				};
+			}
+
+			return {...rest, po};
+		}
+
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
-			const {count, rows: data} = await OrmCustomerSPPBOut.findAndCountAll({
+			const {count, rows: data} = await sjOut.model.findAndCountAll({
 				limit,
 				offset: (page - 1) * limit,
+				attributes: sjOut.attributes,
 				where: wherePagesV2<RetType>(
-					[
-						'invoice_no',
-						'keterangan',
-						'$OrmCustomer.name$',
-						'$OrmKendaraan.name$',
-					],
+					['invoice_no', 'keterangan', '$dCust.name$', '$dVehicle.name$'],
 					search,
 				),
-				attributes: B.keys,
 				include: [
-					{model: OrmKendaraan, attributes: F.keys},
-					{model: OrmCustomer, attributes: E.keys},
-					{
-						model: OrmCustomerSPPBOutItem,
-						attributes: A.keys,
-						separate: true,
-						include: [
-							{
-								model: OrmPOItemSppbIn,
-								attributes: C.keys,
-								include: [{attributes: D.keys, model: OrmCustomerSPPBIn}],
-							},
-						],
-					},
+					vehicle,
+					cust,
+					{...outItem, separate: true, include: [{...inItem, include: [sjIn]}]},
 				],
 			});
 
-			// @ts-ignore
 			const allDataSppbIn = data.map<TCustomerSPPBOutUpsert>(e => {
-				// @ts-ignore
-				const {OrmCustomerSPPBOutItems, ...rest} = e.dataValues as RetType;
-				const po = OrmCustomerSPPBOutItems.reduce<TCustomerSPPBOutUpsert['po']>(
-					(ret, cure) => {
-						// @ts-ignore
-						const {OrmPOItemSppbIn: sppbinItem, id_item, ...cur} =
-							// @ts-ignore
-							cure?.dataValues as RetType['OrmCustomerSPPBOutItems'][number];
-						const id_po = sppbinItem.OrmCustomerSPPBIn.id_po;
-						const id_sppb_in = sppbinItem.id_sppb_in;
+				const val = e.toJSON() as unknown as RetType;
 
-						const iPo = ret.findIndex(itm => itm.id_po === id_po);
-
-						if (iPo >= 0) {
-							const iSppbIn = ret[iPo]!.sppb_in.findIndex(
-								f => f.id_sppb_in === id_sppb_in,
-							);
-							if (iSppbIn >= 0) {
-							} else {
-								ret[iPo]?.sppb_in;
-							}
-						} else {
-							ret.push({
-								id_po,
-								sppb_in: [
-									{
-										id_sppb_in,
-										// @ts-ignore
-										items: {
-											[id_item]: {
-												...cur,
-												id_item_po: sppbinItem.id_item,
-												master_item_id: sppbinItem.master_item_id,
-												id: cur.id,
-											},
-										},
-									},
-								],
-							});
-						}
-						return ret;
-					},
-					[],
-				);
-
-				return {...rest, po};
+				return remapData(val);
 			});
 
-			return pagingResult(count, page, limit, allDataSppbIn);
+			return pagingResult(count, page, limit, allDataSppbIn, data);
 		});
 	}),
+
 	getFg: procedure
 		.input(z.string().optional())
 		.query(({input, ctx: {req, res}}): Promise<GetFGRet[]> => {
@@ -231,51 +206,57 @@ const sppbOutRouters = router({
 				}
 			});
 		}),
+
 	upsert: procedure
 		.input(tCustomerSPPBOutUpsert.partial({id: true}))
 		.mutation(({ctx: {req, res}, input}) => {
 			return checkCredentialV2({req, res}, async () => {
-				const {po, ...rest} = input;
-				const [dataSppbOut] = await OrmCustomerSPPBOut.upsert({
-					...rest,
-					id: input.id ?? generateId('SPPBO_'),
-				});
+				const transaction = await ORM.transaction();
 
-				const items: TCustomerSPPBOutItem[] = [];
+				try {
+					const {po, ...rest} = input;
+					const [dataSppbOut] = await OrmCustomerSPPBOut.upsert({
+						...rest,
+						id: input.id ?? generateId('SPPBO_'),
+					});
 
-				for (const cur of po) {
-					for (const bin of cur.sppb_in) {
-						const bridgeWherer = {
-							in_id: bin.id_sppb_in,
-							out_id: dataSppbOut.dataValues.id,
-						};
-						const isExist = await dSppbBridge.findOne({
-							where: bridgeWherer,
-						});
-
-						await dSppbBridge.upsert({
-							...bridgeWherer,
-							id: isExist?.dataValues.id ?? generateId('SJB-'),
-						});
-
-						for (const [id_item, item] of Object.entries(bin.items)) {
-							items.push({
-								id_item,
-								qty1: item.qty1,
-								qty2: item.qty2,
-								qty3: item.qty3,
-								id: item.id ?? generateId('SJOI-'),
-								id_sppb_out: dataSppbOut.dataValues.id,
+					for (const cur of po) {
+						for (const bin of cur.sppb_in) {
+							const bridgeWhere = {
+								in_id: bin.id_sppb_in,
+								out_id: dataSppbOut.dataValues.id,
+							};
+							const isExist = await dSppbBridge.findOne({
+								where: bridgeWhere,
 							});
+
+							await dSppbBridge.upsert(
+								{
+									...bridgeWhere,
+									id: isExist?.dataValues.id ?? generateId('SJB-'),
+								},
+								{logging: true},
+							);
+
+							for (const [id_item, item] of Object.entries(bin.items)) {
+								await OrmCustomerSPPBOutItem.upsert({
+									id_item,
+									qty1: item.qty1,
+									qty2: item.qty2,
+									qty3: item.qty3,
+									id: item.id ?? generateId('SJOI-'),
+									id_sppb_out: dataSppbOut.dataValues.id,
+								});
+							}
 						}
 					}
+
+					await transaction.commit();
+					return Success;
+				} catch (err) {
+					await transaction.rollback();
+					throw new TRPCError({code: 'BAD_REQUEST'});
 				}
-
-				await OrmCustomerSPPBOutItem.bulkCreate(items, {
-					updateOnDuplicate: ['id'],
-				});
-
-				return Success;
 			});
 		}),
 	delete: procedure.input(zId).mutation(({ctx: {req, res}, input}) => {

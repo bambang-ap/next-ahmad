@@ -23,10 +23,13 @@ export type FormValue = {
 const widthSize = 1250;
 
 export default function SPPBOUT() {
-	const {control, reset, watch, clearErrors, handleSubmit} =
+	const {control, reset, unregister, watch, clearErrors, handleSubmit} =
 		useForm<FormValue>();
 
 	const dataForm = watch();
+
+	// console.log(dataForm);
+
 	const modalRef = useRef<ModalRef>(null);
 
 	const {type: modalType} = dataForm;
@@ -80,8 +83,8 @@ export default function SPPBOUT() {
 					<CellSelect fieldName={`idSppbOuts.${id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{item.invoice_no}</Cell>
-					<Cell>{item.OrmKendaraan?.name}</Cell>
-					<Cell>{item.OrmCustomer?.name}</Cell>
+					<Cell>{item.dVehicle?.name}</Cell>
+					<Cell>{item.dCust?.name}</Cell>
 					<Cell>{item.keterangan}</Cell>
 
 					{!isSelect && (
@@ -136,6 +139,7 @@ export default function SPPBOUT() {
 
 		// 	type,
 		// });
+
 		modalRef.current?.show();
 	}
 
@@ -147,7 +151,11 @@ export default function SPPBOUT() {
 					onSubmit={submit}
 					context={{disabled: isPreview, hideButton: isPreview}}
 					className="flex flex-col gap-2 max-h-[600px] overflow-y-auto">
-					<SppbOutModalChild reset={reset} control={control} />
+					<SppbOutModalChild
+						unregister={unregister}
+						reset={reset}
+						control={control}
+					/>
 
 					{(isAdd || isEdit) && <Button type="submit">Submit</Button>}
 				</Form>

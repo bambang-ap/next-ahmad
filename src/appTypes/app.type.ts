@@ -108,6 +108,7 @@ export type PagingResult<T> = {
 	page: number;
 	totalPage: number;
 	limit: number;
+	debug?: unknown;
 };
 
 export type KanbanGetRow = TKanban & {

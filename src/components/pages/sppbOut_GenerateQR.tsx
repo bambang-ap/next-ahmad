@@ -183,9 +183,19 @@ export function SPPBOutGenerateQR({
 							dPoItem: OrmCustomerPOItem,
 							dSJIn: OrmCustomerSPPBIn,
 						} = OrmPOItemSppbIn;
-						const lot_no_imi = OrmCustomerSPPBIn?.dKanbans?.map(e =>
-							e.dScans.map(f => f.lot_no_imi).join(' | '),
-						);
+						const lot_no_imi = OrmCustomerSPPBIn?.dKanbans.map(e => {
+							const eae = e.dScans
+								.map((f, i) => {
+									if (e.dKnbItems[i]?.id_item !== itemm.dInItem.id)
+										return undefined;
+
+									return f.lot_no_imi;
+								})
+								.filter(Boolean)
+								.join(' | ');
+
+							return eae;
+						});
 
 						const {rejectedItems} = itemInScanParser(
 							OrmPOItemSppbIn.id,

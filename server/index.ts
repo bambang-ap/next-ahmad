@@ -91,11 +91,12 @@ export function pagingResult<T extends unknown>(
 	page: number,
 	limit: number,
 	rows: T[],
+	debug?: any,
 ): PagingResult<T> {
 	const mod = count % limit;
 	const totalPage = (count - mod) / limit + (mod > 0 ? 1 : 0);
 
-	return {count, page, limit, totalPage, rows};
+	return {count, page, limit, totalPage, rows, debug};
 }
 
 // export function ormDecimalType(fieldName: string) {

@@ -307,8 +307,8 @@ export const tCustomerSPPBOut = zId.extend({
 export type TCustomerSPPBOutUpsert = z.infer<typeof tCustomerSPPBOutUpsert>;
 export const tCustomerSPPBOutUpsert = tCustomerSPPBOut.extend({
 	po: tCustomerSPPBOutPo.array(),
-	OrmCustomer: tCustomer.partial().optional(),
-	OrmKendaraan: tKendaraan.partial().optional(),
+	dCust: tCustomer.partial().optional(),
+	dVehicle: tKendaraan.partial().optional(),
 });
 
 export type TMaterial = z.infer<typeof tMaterial>;

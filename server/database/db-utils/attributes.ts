@@ -7,11 +7,9 @@ import {
 	tCustomer,
 	tCustomerPO,
 	tCustomerSPPBIn,
-	tCustomerSPPBOut,
 	tCustomerSPPBOutItem,
 	tKanban,
 	tKanbanItem,
-	tKendaraan,
 	tMasterItem,
 	tPOItem,
 	tPOItemSppbIn,
@@ -445,34 +443,42 @@ export function poGetAttributes() {
 }
 
 export function sppbOutGetAttributes() {
-	const A = attrParser(tCustomerSPPBOutItem, [
+	const outItem = attrParserV2(dOutItem, [
 		'id',
 		'id_item',
 		'qty1',
 		'qty2',
 		'qty3',
 	]);
-	const B = attrParser(tCustomerSPPBOut);
-	const C = attrParser(tPOItemSppbIn, [
+	const sjOut = attrParserV2(dSjOut);
+	const inItem = attrParserV2(dInItem, [
 		'id_item',
 		'id_sppb_in',
 		'master_item_id',
 	]);
-	const D = attrParser(tCustomerSPPBIn, ['id_po']);
-	const E = attrParser(tCustomer, ['name']);
-	const F = attrParser(tKendaraan, ['name']);
+	const sjIn = attrParserV2(dSJIn, ['id_po']);
+	const cust = attrParserV2(dCust, ['name']);
+	const vehicle = attrParserV2(dVehicle, ['name']);
 
-	type Ret = typeof B.obj & {
-		OrmCustomer: typeof E.obj;
-		OrmKendaraan: typeof F.obj;
-		OrmCustomerSPPBOutItems: (typeof A.obj & {
-			OrmPOItemSppbIn: typeof C.obj & {
-				OrmCustomerSPPBIn: typeof D.obj;
+	type Ret = typeof sjOut.obj & {
+		dCust: typeof cust.obj;
+		dVehicle: typeof vehicle.obj;
+		dOutItems: (typeof outItem.obj & {
+			dInItem: typeof inItem.obj & {
+				dSJIn: typeof sjIn.obj;
 			};
 		})[];
 	};
 
-	return {A, B, C, D, E, F, Ret: {} as Ret};
+	return {
+		outItem,
+		sjOut,
+		inItem,
+		sjIn,
+		cust,
+		vehicle,
+		Ret: {} as Ret,
+	};
 }
 
 export function getPOSppbOutAttributes() {

@@ -10,10 +10,16 @@ import {isClosedParser, modalTypeParser, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export function SppbOutModalChild({
-	control,
 	reset,
-}: FormProps<FormValue, 'control' | 'reset'>) {
-	const {id_customer, type: modalType, po: listPO} = useWatch({control});
+	control,
+	unregister,
+}: FormProps<FormValue, 'control' | 'reset' | 'unregister'>) {
+	const {
+		id_customer,
+		type: modalType,
+		po: listPO,
+		id: idSjOut,
+	} = useWatch({control});
 
 	const {
 		data: poDataa = [],
@@ -195,9 +201,12 @@ export function SppbOutModalChild({
 														dOutItems,
 													} = item ?? {};
 
+													// console.log(dOutItems);
+
 													const items = sppb.items?.[id_item];
 
 													const lot_no_imi = sppbInSelected?.dKanbans
+														.filter(e => e.dKnbItems?.[0]?.id_item === item.id)
 														?.map(e => e.dScans?.[0]?.lot_no_imi)
 														.join(' | ');
 
@@ -208,15 +217,15 @@ export function SppbOutModalChild({
 													return (
 														<>
 															<Input
+																hidden
 																control={control}
-																className="hidden"
 																shouldUnregister
 																defaultValue={dItem?.id}
 																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
 															/>
 															<Input
+																hidden
 																control={control}
-																className="hidden"
 																shouldUnregister
 																defaultValue={dPoItem.id}
 																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
@@ -291,6 +300,16 @@ export function SppbOutModalChild({
 																	);
 																})}
 															</Cell>
+															{/* <Cell>
+																<Button
+																	icon="faTrash"
+																	onClick={() => {
+																		unregister(
+																			`po.${i}.sppb_in.${ii}.items.${id_item}`,
+																		);
+																	}}
+																/>
+															</Cell> */}
 														</>
 													);
 												}}
