@@ -10,16 +10,11 @@ import {isClosedParser, modalTypeParser, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export function SppbOutModalChild({
+	// unregister,
 	reset,
 	control,
-	unregister,
 }: FormProps<FormValue, 'control' | 'reset' | 'unregister'>) {
-	const {
-		id_customer,
-		type: modalType,
-		po: listPO,
-		id: idSjOut,
-	} = useWatch({control});
+	const {id_customer, type: modalType, po: listPO} = useWatch({control});
 
 	const {
 		data: poDataa = [],
