@@ -82,7 +82,7 @@ export default function InternalStock() {
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
-					<Cell>{dSSUp.nama}</Cell>
+					<Cell>{dSSUp?.nama}</Cell>
 					<Cell>{oItem?.kode ?? kode}</Cell>
 					<Cell>{oItem?.nama ?? nama}</Cell>
 					<Cell>{oItem?.harga ?? harga}</Cell>

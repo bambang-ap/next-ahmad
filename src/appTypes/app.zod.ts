@@ -488,6 +488,7 @@ export const tDashboardInput = z.object({
 export type TDashboard = z.infer<typeof tDashboard>;
 export const tDashboard = tDashboardInput.extend({count: z.number()});
 
+// NOTE: Internal Type Start here
 export type TSupItemRelation = z.infer<typeof tSupItemRelation>;
 export const tSupItemRelation = zId.extend({
 	item_id: z.string(),
@@ -538,7 +539,7 @@ export const tSupplierPOItem = zId.extend({
 	id_supplier_item: z.string(),
 	harga: zDecimal,
 	qty: zDecimal,
-	unit: tItemUnit,
+	unit: tItemUnitInternal,
 });
 
 export type TSupplierPOUpsert = z.infer<typeof tSupplierPOUpsert>;
@@ -592,7 +593,7 @@ export const sItem = zId.extend({
 const sItemReqForm = zId.extend({
 	name: z.string(),
 	qty: zDecimal,
-	unit: tItemUnit,
+	unit: tItemUnitInternal,
 	code: z.string().optional(),
 	keterangan: z.string().optional(),
 });
@@ -619,7 +620,7 @@ export const oPoItem = zId.extend({
 	id_po: z.string(),
 	id_item: z.string(),
 	qty: zDecimal,
-	unit: tItemUnit,
+	unit: tItemUnitInternal,
 	discount: zDecimal.optional(),
 });
 
@@ -651,7 +652,7 @@ export const sInItem = zId.extend({
 	nama: z.string().nullish(),
 	harga: z.string().nullish(),
 	kode: z.string().nullish(),
-	unit: tItemUnit.nullish(),
+	unit: tItemUnitInternal.nullish(),
 });
 
 export type SInUpsertManual = z.infer<typeof sInUpsertManual>;
@@ -690,7 +691,7 @@ export const sStock = sItem
 
 		id_item_in: z.string().nullish(),
 		id_item: z.string().nullish(),
-		unit: tItemUnit,
+		unit: tItemUnitInternal,
 		qty: zDecimal,
 	});
 

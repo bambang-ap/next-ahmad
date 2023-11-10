@@ -7,6 +7,7 @@ import {Icon} from '@baseComps/Icon';
 
 import {FieldPath, FieldValues} from 'react-hook-form';
 
+import {Text} from '@components';
 import {defaultTextFieldProps} from '@constants';
 import {
 	ControlledComponentProps,
@@ -109,9 +110,11 @@ function SelectComponent<F extends FieldValues>({
 	const tick = useTicker(isLoading, 5);
 
 	const {
+		fieldState,
 		field: {value, onChange, name},
 	} = controller;
 
+	const errMsg = fieldState.error?.message;
 	const label = !noLabel && (labelProps || name);
 
 	const isDisabled = formContext?.disabled || disabled;
@@ -126,6 +129,13 @@ function SelectComponent<F extends FieldValues>({
 		: `Harap Tunggu${Array.from({length: tick})
 				.map(() => '.')
 				.join('')}`;
+
+	const errorMessage = !!errMsg && (
+		<Text className="text-red-700 flex items-center">
+			<Icon name="faWarning" className="mr-2 text-red-700" />
+			{fieldState.error?.message}
+		</Text>
+	);
 
 	if (isDisabled) {
 		return (
@@ -178,17 +188,21 @@ function SelectComponent<F extends FieldValues>({
 					);
 				}}
 				renderInput={params => (
-					<TextField
-						{...params}
-						{...defaultTextFieldProps}
-						label={label}
-						placeholder={firstOption}
-						sx={{
-							'& .MuiInputBase-input.Mui-disabled': {
-								WebkitTextFillColor: '#000000',
-							},
-						}}
-					/>
+					<>
+						<TextField
+							{...params}
+							{...defaultTextFieldProps}
+							label={label}
+							error={!!errMsg}
+							placeholder={firstOption}
+							sx={{
+								'& .MuiInputBase-input.Mui-disabled': {
+									WebkitTextFillColor: '#000000',
+								},
+							}}
+						/>
+						{errorMessage}
+					</>
 				)}
 			/>
 		</div>
