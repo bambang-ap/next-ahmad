@@ -130,7 +130,7 @@ export async function processMapper(
 	});
 
 	const instruksi = processes
-		.map(e => e.dataProcess.map(r => r.process.name).join(' | '))
+		.map(e => e.dataProcess.map(r => r.process?.name).join(' | '))
 		.join(' - ');
 
 	return instruksi;

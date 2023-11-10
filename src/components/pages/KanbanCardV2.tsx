@@ -81,7 +81,7 @@ export function RenderKanbanCardV2(props: AProps) {
 			const e = mesin?.dataProcess?.reduce<I>(
 				(r, p) => {
 					const dM = p.material.map(pp => pp.name);
-					const iu = [...process, p.process.name];
+					const iu = [...process, p.process?.name];
 					return {
 						...r,
 						process: iu,
