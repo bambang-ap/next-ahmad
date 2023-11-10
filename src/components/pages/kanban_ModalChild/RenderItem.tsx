@@ -63,7 +63,9 @@ export function RenderItem({
 				...prevValue,
 				items,
 				list_mesin,
-				callbacks: [...callbacks, () => mutateItem(id)],
+				callbacks: [...callbacks, !!id && (() => mutateItem({id}))].filter(
+					Boolean,
+				),
 			};
 		});
 	}
