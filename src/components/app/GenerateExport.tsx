@@ -85,7 +85,7 @@ export function useGenExport<T, W extends UseTRPCQueryResult<T[], unknown>>(
 		const element = document.getElementById(tagId);
 
 		const wb = XLSX.utils.book_new();
-		const ws = XLSX.utils.table_to_sheet(element);
+		const ws = XLSX.utils.table_to_sheet(element, {raw: true});
 
 		XLSX.utils.book_append_sheet(wb, ws, sheetName);
 		XLSX.writeFile(wb, `${filename}.xlsx`);

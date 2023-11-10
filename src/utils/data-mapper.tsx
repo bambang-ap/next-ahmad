@@ -66,7 +66,8 @@ export function exportPoMapper(): MapperReturn<
 
 					return (
 						<>
-							<td>{qty}</td>
+							{/* @ts-ignore */}
+							<td data-t="n">{qty}</td>
 							<td>{units[unitKey]}</td>
 						</>
 					);
@@ -98,7 +99,8 @@ export function exportPoMapper(): MapperReturn<
 
 					return (
 						<>
-							<td>{calculated}</td>
+							{/* @ts-ignore */}
+							<td data-t="n">{calculated}</td>
 							<td>{units[unitKey]}</td>
 						</>
 					);

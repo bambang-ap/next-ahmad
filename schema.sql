@@ -1572,6 +1572,14 @@ ALTER TABLE ONLY public.internal_stock
 
 
 --
+-- Name: internal_stock internal_stock_sup_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_stock
+    ADD CONSTRAINT internal_stock_sup_id_fkey FOREIGN KEY (sup_id) REFERENCES public.internal_supplier(id);
+
+
+--
 -- Name: inv_supplier_po_item inv_supplier_po_item_id_po_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 

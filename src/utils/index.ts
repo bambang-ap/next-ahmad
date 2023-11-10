@@ -11,6 +11,7 @@ import * as XLSX from 'xlsx';
 import {Route, RouterOutput, UnitQty} from '@appTypes/app.type';
 import {ModalTypeSelect, TScanItem, TScanTarget} from '@appTypes/app.zod';
 import {
+	decimalSchema,
 	defaultErrorMutation,
 	formatDateStringView,
 	formatDateView,
@@ -57,6 +58,15 @@ export const classNames = classnames;
 export function typingCallback(callback: () => void, timeout = 500) {
 	clearTimeout(typingTimer);
 	typingTimer = setTimeout(callback, timeout);
+}
+
+export function decimalParser(value: number | string) {
+	const strValue = value
+		.toString()
+		.replace(/[^0-9.]/g, '')
+		.replace(/(?<=\..*)\./g, '');
+
+	return {parsed: decimalSchema.safeParse(strValue), strValue};
 }
 
 export function numberFormat(
@@ -421,7 +431,7 @@ export function importData<T extends object>(file?: File) {
 			Object.values(workbook.Sheets).forEach((sheet, i) => {
 				if (i > 0) return;
 
-				const rowObject = XLSX.utils.sheet_to_json(sheet);
+				const rowObject = XLSX.utils.sheet_to_json(sheet, {raw: true});
 				resolve(rowObject as T[]);
 			});
 		};

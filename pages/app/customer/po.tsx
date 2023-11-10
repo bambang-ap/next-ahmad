@@ -1,6 +1,7 @@
 import {FormEventHandler, useRef} from 'react';
 
 import {useForm} from 'react-hook-form';
+// import * as XLSX from 'xlsx';
 
 import {ModalTypePreview} from '@appTypes/app.type';
 import {Button, Form, Modal, ModalRef} from '@components';
@@ -71,7 +72,6 @@ export default function POCustomer() {
 					<Cell>{customer?.name}</Cell>
 					<Cell>{dateUtils.date(tgl_po)}</Cell>
 					<Cell>{dateUtils.date(due_date)}</Cell>
-					{/* FIXME: Status mismatch with new models */}
 					<Cell>{status}</Cell>
 					<Cell className="flex gap-x-2">
 						<Button onClick={() => showModal('preview', item)}>Preview</Button>
@@ -113,9 +113,52 @@ export default function POCustomer() {
 		reset({...initValue, type});
 		modalRef.current?.show();
 	}
+	// NOTE: contoh export dg type number
+
+	// async function jj(file?: File) {
+	// 	// const [filename = 'data', sheetName = 'Sheet 1'] = [];
+
+	// 	// const wb = XLSX.utils.book_new();
+	// 	// const ws = XLSX.utils.aoa_to_sheet([
+	// 	// 	['a', 'b', 'c'],
+	// 	// 	[1, 2, 3],
+	// 	// ]);
+
+	// 	// XLSX.utils.book_append_sheet(wb, ws, sheetName);
+	// 	// XLSX.writeFile(wb, `${filename}.xlsx`);
+
+	// 	/* Create worksheet from simple data */
+	// 	const ws = XLSX.utils.aoa_to_sheet([
+	// 		['General', 54337],
+	// 		['Currency', 3.5],
+	// 		['Thousands', 7262],
+	// 		['Percent', 0.0219],
+	// 	]);
+
+	// 	/* assign number formats */
+	// 	ws['B2'].z = '"$"#,##0.00_);\\("$"#,##0.00\\)';
+	// 	ws['B3'].z = '#,##0';
+	// 	ws['B4'].z = '0.00%';
+
+	// 	const wb = XLSX.utils.book_new();
+
+	// 	XLSX.utils.book_append_sheet(wb, ws, 'Formats');
+
+	// 	XLSX.writeFile(wb, 'SheetJSSimpleNF.xlsx');
+	// }
 
 	return (
 		<>
+			{/* <Button onClick={jj}>KKK</Button> */}
+			{/* <input
+				type="file"
+				accept=".xls,.xlsx"
+				onChange={e => {
+					const selectedFile = e.target.files?.[0];
+					if (!selectedFile) return;
+					jj(selectedFile);
+				}}
+			/> */}
 			<Modal
 				ref={modalRef}
 				title={modalTitle}

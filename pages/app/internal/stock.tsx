@@ -13,11 +13,11 @@ import {
 	selectMapper,
 	Table,
 } from '@components';
-import {selectUnitDataInternal} from '@constants';
+import {ppnMultiply, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import type {RetStock} from '@trpc/routers/internal/stockRouters';
-import {dateUtils, formParser, modalTypeParser} from '@utils';
+import {dateUtils, formParser, modalTypeParser, numberFormat} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -49,9 +49,9 @@ export default function InternalStock() {
 			'Kode Item',
 			'Nama Item',
 			'Harga',
+			'PPn',
 			'Qty',
 			'Qty Keluar',
-			'PPn',
 			'Action',
 		],
 		topComponent: (
@@ -77,18 +77,18 @@ export default function InternalStock() {
 				usedQty,
 			} = item;
 
-			const isPPn = typeof oItem?.ppn === 'boolean' ? oItem?.ppn : ppn;
-
 			return (
 				<>
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp?.nama}</Cell>
 					<Cell>{oItem?.kode ?? kode}</Cell>
 					<Cell>{oItem?.nama ?? nama}</Cell>
-					<Cell>{oItem?.harga ?? harga}</Cell>
+					<Cell>{numberFormat(oItem?.harga ?? harga)}</Cell>
+					<Cell>
+						{numberFormat(ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0)}
+					</Cell>
 					<Cell>{`${qty - usedQty} ${unit}`}</Cell>
 					<Cell>{`${usedQty} ${unit}`}</Cell>
-					<Cell>{isPPn ? 'Ya' : 'Tidak'}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"

@@ -9,7 +9,6 @@ import {FieldValues, useForm} from 'react-hook-form';
 import {FormContext, Icon, Modal, ModalRef, Spinner, Text} from '@components';
 import {
 	decimalRegex,
-	decimalSchema,
 	decimalValue as decimalValuee,
 	defaultTextFieldProps,
 	formatDate,
@@ -19,7 +18,7 @@ import {
 	ControlledComponentProps,
 	withReactFormController,
 } from '@formController';
-import {classNames, moment} from '@utils';
+import {classNames, decimalParser, moment} from '@utils';
 
 import {CheckBox} from './CheckBox';
 
@@ -199,12 +198,7 @@ export function InputComponent<F extends FieldValues>(
 					case 'number':
 						return onChange(parseInt(event.target.value));
 					case 'decimal':
-						const strValue = event.target.value
-							.toString()
-							.replace(/[^0-9.]/g, '')
-							.replace(/(?<=\..*)\./g, '');
-
-						const parsed = decimalSchema.safeParse(strValue);
+						const {parsed, strValue} = decimalParser(event.target.value);
 
 						if (parsed.success) return onChange(parsed.data);
 

@@ -16,6 +16,16 @@ export const zDecimal = z
 	.transform(str => parseFloat(str))
 	.or(z.number());
 
+// export const zDecimal = z.number().or(
+// 	z.string().transform(str => {
+// 		const val = parseFloat(str);
+
+// 		if (val % 1 !== 0) return val;
+
+// 		return parseFloat(val.toFixed(decimalValue));
+// 	}),
+// );
+
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
 	z.undefined(),
