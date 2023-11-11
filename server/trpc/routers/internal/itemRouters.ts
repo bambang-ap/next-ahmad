@@ -1,13 +1,15 @@
+import {Op} from 'sequelize';
+
 import {PagingResult} from '@appTypes/app.type';
 import {sItem, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {attrParserV2, oItem, oSup} from '@database';
+import {attrParserV2, oItem, oSup, wherePagesV3} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
 export const itemRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, id: sup_id} = input;
+		const {limit, page, id: sup_id, search} = input;
 
 		const item = attrParserV2(oItem);
 		const sup = attrParserV2(oSup);
@@ -17,9 +19,18 @@ export const itemRouters = router({
 		};
 
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<Ret>> => {
+			const searcher = {[Op.iLike]: `%${search}%`};
+
+			const where = !search
+				? undefined
+				: wherePagesV3<Ret>(
+						{nama: searcher, '$oSup.nama$': searcher, kode: searcher},
+						'or',
+				  );
+
 			const {count, rows} = await item.model.findAndCountAll({
 				include: [sup],
-				where: !sup_id ? {} : {sup_id},
+				where: !sup_id ? where : {sup_id},
 			});
 
 			return pagingResult(
