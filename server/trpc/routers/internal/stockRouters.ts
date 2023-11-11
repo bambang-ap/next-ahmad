@@ -1,7 +1,14 @@
+import {Op} from 'sequelize';
+
 import {PagingResult} from '@appTypes/app.type';
 import {sStock, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {internalStockAttributes, orderPages, oStock} from '@database';
+import {
+	internalStockAttributes,
+	orderPages,
+	oStock,
+	wherePagesV3,
+} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -9,14 +16,29 @@ export type RetStock = ReturnType<typeof internalStockAttributes>['Ret'];
 
 export const stockRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, id: sup_id} = input;
+		const {limit, page, id: sup_id, search} = input;
 
 		const {item, out, stock, sup} = internalStockAttributes();
 
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<RetStock>> => {
+			const searcher = {[Op.iLike]: `%${search}%`};
+
+			const where = !search
+				? undefined
+				: wherePagesV3<RetStock>(
+						{
+							nama: searcher,
+							kode: searcher,
+							'$oSup.nama$': searcher,
+							'$oItem.nama$': searcher,
+							'$oItem.kode$': searcher,
+						},
+						'or',
+				  );
+
 			const {count, rows} = await stock.model.findAndCountAll({
 				include: [out, sup, item],
-				where: !sup_id ? {} : {sup_id},
+				where: !sup_id ? where : {sup_id},
 				order: orderPages<RetStock>({'oOuts.createdAt': false}),
 			});
 
