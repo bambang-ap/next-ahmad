@@ -11,7 +11,14 @@ import {
 	zId,
 } from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {internalInAttributes, oInItem, ORM, oSjIn, oStock} from '@database';
+import {
+	internalInAttributes,
+	oInItem,
+	ORM,
+	oSjIn,
+	oStock,
+	wherePagesV3,
+} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
@@ -126,19 +133,28 @@ export const inRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type RetOutput = typeof Ret;
 
-		const {limit, page, id: id_po} = input;
+		const {limit, page, id: id_po, search} = input;
 		const {Ret, inItem, sjIn, item, po, poItem, sup} = internalInAttributes();
 
 		return checkCredentialV2(
 			ctx,
 			async (): Promise<PagingResult<RetOutput>> => {
+				const searcher = {[Op.iLike]: `%${search}%`};
+
+				const where = !search
+					? undefined
+					: wherePagesV3<RetOutput>(
+							{'$oSup.nama$': searcher, '$oPo.nomor_po$': searcher},
+							'or',
+					  );
+
 				const {count, rows} = await sjIn.model.findAndCountAll({
 					include: [
 						po,
 						sup,
 						{...inItem, include: [{...poItem, include: [item]}]},
 					],
-					where: !!id_po ? {id_po} : {},
+					where: !!id_po ? {id_po} : where,
 				});
 
 				return pagingResult(
