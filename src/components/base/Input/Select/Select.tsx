@@ -39,9 +39,9 @@ export const Select = withReactFormController(SelectComponent);
 export function selectMapperV2<T extends FieldValues, P extends FieldPath<T>>(
 	data: T[],
 	value: P,
-	opts?: {labels?: P[]; joiner?: string},
+	opts?: {labels?: P[]; joiner?: string; filter?: boolean},
 ) {
-	const {joiner = ' - ', labels} = opts ?? {};
+	const {joiner = ' - ', labels, filter = true} = opts ?? {};
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	return data.map<SelectPropsData>(_item => {
@@ -55,7 +55,13 @@ export function selectMapperV2<T extends FieldValues, P extends FieldPath<T>>(
 
 		return {
 			value: finder(value),
-			label: labels ? labelsMap?.join(joiner) : undefined,
+			get label() {
+				if (!labels) return undefined;
+
+				if (!filter) return labelsMap?.join(joiner);
+
+				return labelsMap?.filter(Boolean).join(joiner);
+			},
 		};
 	});
 }

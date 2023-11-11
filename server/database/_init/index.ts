@@ -33,7 +33,7 @@ export const ORM = new Sequelize(
 		port: isProd ? PROD_PGSQL_PORT : DEV_PGSQL_PORT,
 		host: isProd ? PROD_PGSQL_HOST : DEV_PGSQL_HOST,
 		logging: false,
-		// minifyAliases: true,
+		minifyAliases: true,
 		pool: {
 			max: 10,
 			min: 1,

@@ -16,7 +16,7 @@ import {
 } from '@components';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
-import {dateUtils, formParser, modalTypeParser} from '@utils';
+import {dateUtils, formParser, maxRules, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -42,7 +42,15 @@ export default function OutBarang() {
 		reset,
 		control,
 		useQuery: formdd => trpc.internal.out.get.useQuery(formdd),
-		header: ['No', 'Date', 'Qty', 'Keterangan', 'Action'],
+		header: [
+			'No',
+			'Date',
+			'Supplier',
+			'Nama Item',
+			'Qty',
+			'Keterangan',
+			'Action',
+		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {qty, createdAt, oStock, keterangan} = item;
@@ -52,6 +60,8 @@ export default function OutBarang() {
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{dateUtils.full(createdAt)}</Cell>
+					<Cell>{oStock.oSup?.nama}</Cell>
+					<Cell>{oStock.oItem?.nama ?? oStock.nama}</Cell>
 					<Cell>
 						{qty} {oStock.unit}
 					</Cell>
@@ -123,32 +133,33 @@ function RenderModal({control}: FormProps<FormType, 'control' | 'reset'>) {
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 
 	const itemSelected = data?.rows.find(e => e.id === form?.id_stock);
+	const qtyKey = `${!!data}-${form?.id_stock}-${itemSelected?.qty}`;
 
 	return (
 		<div className="flex flex-col gap-2">
 			<Select
+				label="Item"
 				key={`${!!data}`}
 				control={control}
 				fieldName="form.id_stock"
-				label="Item"
 				data={selectMapperV2(
 					data?.rows.filter(e => e.id === form?.id_stock || !e.isClosed) ?? [],
 					'id',
-					{
-						labels: ['oItem.nama', 'oSup.nama'],
-					},
+					{labels: ['oItem.nama', 'nama', 'oSup.nama']},
 				)}
 			/>
 
 			{!!itemSelected && (
 				<Input
 					label="Qty"
+					key={qtyKey}
 					type="decimal"
+					shouldUnregister
 					control={control}
 					fieldName="form.qty"
-					key={`${!!data}${itemSelected.id}`}
 					rightAcc={<Text>{itemSelected?.unit}</Text>}
 					defaultValue={itemSelected.qty - itemSelected.usedQty}
+					rules={maxRules(itemSelected.qty - itemSelected.usedQty)}
 				/>
 			)}
 

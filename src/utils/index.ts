@@ -69,6 +69,10 @@ export function decimalParser(value: number | string) {
 	return {parsed: decimalSchema.safeParse(strValue), strValue};
 }
 
+export function maxRules(val: number) {
+	return {max: {value: val, message: `max is ${val}`}};
+}
+
 export function numberFormat(
 	qty: number,
 	currency = true,
