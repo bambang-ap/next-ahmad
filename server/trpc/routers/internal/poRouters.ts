@@ -22,12 +22,8 @@ async function agd(input: TableFormValue, where?: any) {
 
 	const {count, rows: data} = await po.model.findAndCountAll({
 		limit,
+		include: [sup],
 		offset: (page - 1) * limit,
-
-		// NOTE: it supposed to be like this
-		// for the items, it can be loaded at modal shown
-		// include: [sup, /* {...poItem, include: [item]} */],
-		include: [sup, {...poItem, include: [item]}],
 		where: !!supId ? {sup_id: supId, ...where} : where,
 	});
 
@@ -37,7 +33,12 @@ async function agd(input: TableFormValue, where?: any) {
 
 			const status = await getInternalPOStatus(val.id as string);
 
-			return {...val, status};
+			const poItems = await poItem.model.findAll({
+				include: [item],
+				where: {id_po: val.id},
+			});
+
+			return {...val, oPoItems: poItems.map(f => f.toJSON()), status};
 		}),
 	);
 
@@ -68,12 +69,21 @@ export const poRouters = router({
 		});
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page} = input;
+		const {limit, page, search} = input;
 
 		return checkCredentialV2(
 			ctx,
 			async (): Promise<PagingResult<RetPoInternal>> => {
-				const {count, rows} = await agd(input);
+				const searcher = {[Op.iLike]: `%${search}%`};
+
+				const where = !search
+					? undefined
+					: wherePagesV3<RetPoInternal>(
+							{'$oSup.nama$': searcher, nomor_po: searcher},
+							'or',
+					  );
+
+				const {count, rows} = await agd(input, where);
 
 				return pagingResult(count, page, limit, rows);
 			},
