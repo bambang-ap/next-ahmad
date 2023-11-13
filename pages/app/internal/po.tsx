@@ -81,6 +81,9 @@ export default function InternalPo() {
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {oSup: dSSUp, date, due_date, status, nomor_po} = item;
+
+			// TODO: status partial mismatch if item only 1
+
 			return (
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />

@@ -14,7 +14,6 @@ import {
 	oPoItem,
 } from '@database';
 import {INTERNAL_PO_STATUS, PO_STATUS} from '@enum';
-import {moment} from '@utils';
 
 export async function getCurrentPOStatus(id: string): Promise<PO_STATUS> {
 	interface RootObject {
@@ -113,11 +112,12 @@ export async function getInternalPOStatus(
 	});
 
 	if (!!po) {
-		const {due_date, oPoItems} = po.toJSON() as unknown as Ret;
+		const {/* due_date, */ oPoItems} = po.toJSON() as unknown as Ret;
 
-		const now = moment(),
-			mDue = moment(due_date);
-		if (mDue.diff(now, 'minute') < 0) return INTERNAL_PO_STATUS.D;
+		// const now = moment(),
+		// 	mDue = moment(due_date);
+		// if (mDue.diff(now, 'minute') < 0) return INTERNAL_PO_STATUS.D;
+		// TODO: Hapus dulu comparing due date
 
 		const y = oPoItems.map(f => {
 			const j = f.oInItems.reduce((total, {qty}) => total + qty, 0);

@@ -50,6 +50,7 @@ export default function InternalStock() {
 			'Nama Item',
 			'Harga',
 			'PPn',
+			'Qty Masuk',
 			'Qty',
 			'Qty Keluar',
 			'Action',
@@ -87,6 +88,7 @@ export default function InternalStock() {
 					<Cell>
 						{numberFormat(ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0)}
 					</Cell>
+					<Cell>{`${qty} ${unit}`}</Cell>
 					<Cell>{`${qty - usedQty} ${unit}`}</Cell>
 					<Cell>{`${usedQty} ${unit}`}</Cell>
 					<Cell className="gap-2">

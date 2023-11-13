@@ -143,6 +143,8 @@ export default function SPPBOUT() {
 		modalRef.current?.show();
 	}
 
+	// TODO: Tambah tombol delete item pada list item sj masuk
+
 	return (
 		<>
 			{component}

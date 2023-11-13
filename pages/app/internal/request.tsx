@@ -38,6 +38,10 @@ export default function InternalRequestForm() {
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {date, due_date, status} = item;
+
+			// TODO: ada tombol untuk mengubah status
+			// TODO: ada tombol untuk munculkan popup update keterangan
+
 			return (
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />

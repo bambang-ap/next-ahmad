@@ -4,6 +4,8 @@ import {classNames, twColors} from '@utils';
 
 export enum REQ_FORM_STATUS {
 	req = 'request',
+	proc = 'process',
+	close = 'close',
 }
 
 export enum CATEGORY_REJECT {
