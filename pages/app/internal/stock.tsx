@@ -100,10 +100,10 @@ export default function InternalStock() {
 							icon="faHistory"
 							onClick={() => showModal({type: 'other', form: item})}
 						/>
-						<Button
+						{/* <Button
 							icon="faEdit"
 							onClick={() => showModal({type: 'edit', form: item})}
-						/>
+						/> */}
 						<Button
 							icon="faTrash"
 							onClick={() => showModal({type: 'delete', form: item})}
