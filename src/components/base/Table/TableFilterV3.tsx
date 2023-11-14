@@ -132,9 +132,6 @@ function TableFilterV3Component<
 
 	return (
 		<>
-			{/**
-			 * TODO: Add Generate PDF
-			 */}
 			{loader.component}
 			{enabledPdf && !!genPdfOptions && (
 				<GeneratePdf ref={genPdfRef} {...genPdfOptions} />

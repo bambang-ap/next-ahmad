@@ -27,7 +27,6 @@ export function attrParser<
 	K extends ObjKeyof<T>,
 	Mask extends noUnrecognized<objectKeyMask<T>, T>,
 >(schema: ZodObject<T>, attributes?: K[]) {
-	// TODO: Add omit options
 	let obj = schema;
 	if (attributes) {
 		const reducer = attributes.reduce(
@@ -46,7 +45,6 @@ export function attrParserZod<
 	K extends ObjKeyof<T>,
 	Mask extends noUnrecognized<objectKeyMask<T>, T>,
 >(schema: ZodObject<T>, model: ModelStatic<Model<any>>, attributes?: K[]) {
-	// TODO: Add omit options
 	let obj = schema;
 	if (attributes) {
 		const reducer = attributes.reduce(
@@ -70,7 +68,7 @@ export function attrParserV2<T extends {}, K extends keyof T>(
 	attributes?: K[],
 ) {
 	type ObjType = Pick<T, K>;
-	// TODO: orm->model keys->attributes (spread op can be done)
+
 	return {model, obj: {} as ObjType, attributes};
 }
 export function attrParserExclude<T extends {}, K extends keyof T>(
