@@ -280,9 +280,18 @@ export const tUpsertSppbIn = tCustomerSPPBIn.extend({
 	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
 });
 
+const outItemUpsertExclude = zId
+	.extend({exclude: z.literal(true)})
+	.partial({id: true});
+const outItemUpsert = tKanbanUpsertItem
+	.extend({exclude: z.literal(false).optional()})
+	.omit({
+		id_item: true,
+		OrmMasterItem: true,
+	});
 export type TCustomerSPPBOutPoItems = z.infer<typeof tCustomerSPPBOutPoItems>;
 export const tCustomerSPPBOutPoItems = z.record(
-	tKanbanUpsertItem.omit({id_item: true, OrmMasterItem: true}),
+	outItemUpsert.or(outItemUpsertExclude),
 );
 
 export type TCustomerSPPBOutSppbIn = z.infer<typeof tCustomerSPPBOutSppbIn>;

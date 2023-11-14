@@ -239,14 +239,16 @@ const sppbOutRouters = router({
 							);
 
 							for (const [id_item, item] of Object.entries(bin.items)) {
-								await OrmCustomerSPPBOutItem.upsert({
-									id_item,
-									qty1: item.qty1,
-									qty2: item.qty2,
-									qty3: item.qty3,
-									id: item.id ?? generateId('SJOI-'),
-									id_sppb_out: dataSppbOut.dataValues.id,
-								});
+								if (!item.exclude) {
+									await OrmCustomerSPPBOutItem.upsert({
+										id_item,
+										qty1: item.qty1,
+										qty2: item.qty2,
+										qty3: item.qty3,
+										id: item.id ?? generateId('SJOI-'),
+										id_sppb_out: dataSppbOut.dataValues.id,
+									});
+								}
 							}
 						}
 					}

@@ -26,7 +26,8 @@ export function SppbOutModalChild({
 	);
 
 	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut();
-	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(modalType);
+	const {isDelete, isEdit, isPreview, isPreviewEdit} =
+		modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
 	if (isDelete) return <Button type="submit">Ya</Button>;
@@ -182,6 +183,7 @@ export function SppbOutModalChild({
 													'Nomor Lot',
 													'Nomor Lot IMI',
 													'Jumlah',
+													'Exclude',
 												]}
 												renderItem={({Cell, item}) => {
 													const {
@@ -196,8 +198,6 @@ export function SppbOutModalChild({
 														dOutItems,
 													} = item ?? {};
 
-													// console.log(dOutItems);
-
 													const items = sppb.items?.[id_item];
 
 													const lot_no_imi = sppbInSelected?.dKanbans
@@ -207,83 +207,108 @@ export function SppbOutModalChild({
 
 													const hj = dOutItems.find(e => e.id === items?.id);
 
+													const hasItem = isEdit && !!items?.id;
+
+													const isExcludedItem = items?.exclude;
+
+													const excludeComponent = (
+														<Input
+															type="checkbox"
+															label="exclude"
+															control={control}
+															defaultValue={hasItem ? true : undefined}
+															fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.exclude`}
+														/>
+													);
+
+													if (isPreview && !hasItem) return <></>;
 													if (isClosed && !isPreviewEdit) return <></>;
 
 													return (
 														<>
-															<Input
-																hidden
-																control={control}
-																shouldUnregister
-																defaultValue={dItem?.id}
-																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
-															/>
-															<Input
-																hidden
-																control={control}
-																shouldUnregister
-																defaultValue={dPoItem.id}
-																fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
-															/>
+															{!isExcludedItem && (
+																<>
+																	<Input
+																		hidden
+																		control={control}
+																		shouldUnregister
+																		defaultValue={dItem?.id}
+																		fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
+																	/>
+																	<Input
+																		hidden
+																		control={control}
+																		shouldUnregister
+																		defaultValue={dPoItem.id}
+																		fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
+																	/>
+																</>
+															)}
 															<Cell>{dItem?.name}</Cell>
 															<Cell>{dItem?.kode_item}</Cell>
 															<Cell>{lot_no}</Cell>
 															<Cell>{lot_no_imi}</Cell>
-															<Cell className="flex gap-2">
-																{qtyMap(({qtyKey, unitKey, num}) => {
-																	const qtyLeft =
-																		itemInScan?.[qtyKey]! - currentQty[qtyKey]!;
-																	const cur = hj?.[qtyKey];
-																	const jumlah = cur ?? qtyLeft;
+															{isExcludedItem ? (
+																<Cell />
+															) : (
+																<Cell className="flex gap-2">
+																	{qtyMap(({qtyKey, unitKey, num}) => {
+																		const qtyLeft =
+																			itemInScan?.[qtyKey]! -
+																			currentQty[qtyKey]!;
+																		const cur = hj?.[qtyKey];
+																		const jumlah = cur ?? qtyLeft;
 
-																	const max = isEdit ? qtyLeft + cur! : jumlah;
-																	const unit = dPoItem?.[unitKey];
+																		const max = isEdit
+																			? qtyLeft + cur!
+																			: jumlah;
+																		const unit = dPoItem?.[unitKey];
 
-																	const qtyRejectRP =
-																		rejectedItems.RP?.[qtyKey];
-																	const qtyRejectTP =
-																		rejectedItems.TP?.[qtyKey];
-																	// const qtyRejectSC =
-																	// 	rejectedItems.SC?.[qtyKey];
+																		const qtyRejectRP =
+																			rejectedItems.RP?.[qtyKey];
+																		const qtyRejectTP =
+																			rejectedItems.TP?.[qtyKey];
+																		// const qtyRejectSC =
+																		// 	rejectedItems.SC?.[qtyKey];
 
-																	if (!unit) return null;
+																		if (!unit) return null;
 
-																	return (
-																		<div className="flex-1">
-																			<Input
-																				key={jumlah}
-																				type="decimal"
-																				shouldUnregister
-																				control={control}
-																				label={`Qty ${num}`}
-																				className="flex-1 bg-white"
-																				rightAcc={<Text>{unit}</Text>}
-																				defaultValue={jumlah.toString()}
-																				fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
-																				rules={{
-																					max: {
-																						value: max,
-																						message: `max is ${max}`,
-																					},
-																				}}
-																			/>
-																			{!!qtyRejectTP && (
-																				<Wrapper
-																					noColon
-																					sizes={['flex-1']}
-																					title={REJECT_REASON_VIEW.TP}>
-																					{`${qtyRejectTP?.toString()} ${unit}`}
-																				</Wrapper>
-																			)}
-																			{!!qtyRejectRP && (
-																				<Wrapper
-																					noColon
-																					sizes={['flex-1']}
-																					title={REJECT_REASON_VIEW.RP}>
-																					{`${qtyRejectRP?.toString()} ${unit}`}
-																				</Wrapper>
-																			)}
-																			{/* {!!qtyRejectSC && (
+																		return (
+																			<div className="flex-1">
+																				<Input
+																					key={jumlah}
+																					type="decimal"
+																					shouldUnregister
+																					control={control}
+																					label={`Qty ${num}`}
+																					className="flex-1 bg-white"
+																					rightAcc={<Text>{unit}</Text>}
+																					defaultValue={jumlah.toString()}
+																					fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
+																					rules={{
+																						max: {
+																							value: max,
+																							message: `max is ${max}`,
+																						},
+																					}}
+																				/>
+																				{!!qtyRejectTP && (
+																					<Wrapper
+																						noColon
+																						sizes={['flex-1']}
+																						title={REJECT_REASON_VIEW.TP}>
+																						{`${qtyRejectTP?.toString()} ${unit}`}
+																					</Wrapper>
+																				)}
+																				{!!qtyRejectRP && (
+																					<Wrapper
+																						noColon
+																						sizes={['flex-1']}
+																						title={REJECT_REASON_VIEW.RP}>
+																						{`${qtyRejectRP?.toString()} ${unit}`}
+																					</Wrapper>
+																				)}
+																				{/* {!!qtyRejectSC && (
 																				<Wrapper
 																					noColon
 																					sizes={["flex-1"]}
@@ -291,20 +316,12 @@ export function SppbOutModalChild({
 																					{`${qtyRejectSC?.toString()} ${unit}`}
 																				</Wrapper>
 																			)} */}
-																		</div>
-																	);
-																})}
-															</Cell>
-															{/* <Cell>
-																<Button
-																	icon="faTrash"
-																	onClick={() => {
-																		unregister(
-																			`po.${i}.sppb_in.${ii}.items.${id_item}`,
+																			</div>
 																		);
-																	}}
-																/>
-															</Cell> */}
+																	})}
+																</Cell>
+															)}
+															<Cell>{excludeComponent}</Cell>
 														</>
 													);
 												}}
