@@ -185,14 +185,19 @@ export default function PoModalChild({
 									/>
 								</Cell>
 								{qtyMap(({num, qtyKey, unitKey}) => {
-									const isTwo = num === 2;
 									const theVal = item[qtyKey];
+									const isThird = num === 3,
+										isSecond = num === 2;
+									const isTwoOrThree = isSecond || isThird;
 
-									const presetUnit: undefined | TItemUnit =
-										num === 1 ? 'pcs' : isTwo ? 'kg' : undefined;
+									const presetUnit: undefined | TItemUnit = isSecond
+										? 'pcs'
+										: isThird
+										? 'kg'
+										: undefined;
 
-									const shouldUnregister = isTwo && !!theVal;
-									const presetUnitValue = isTwo
+									const shouldUnregister = isTwoOrThree && !!theVal;
+									const presetUnitValue = isTwoOrThree
 										? !!theVal
 											? presetUnit
 											: undefined
