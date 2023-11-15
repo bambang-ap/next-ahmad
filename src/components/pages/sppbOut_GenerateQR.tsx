@@ -55,9 +55,11 @@ function Section({
 }: PropsWithChildren<{title: string; mid?: string}>) {
 	return (
 		<div className="flex gap-2 flex-1">
-			<TxtBold className="w-1/6">{title}</TxtBold>
+			<TxtBold className={classNames('w-1/6 font-calibri')}>{title}</TxtBold>
 			<TxtBold>{mid}</TxtBold>
-			<TxtBold className="flex-1">{children}</TxtBold>
+			<TxtBold className={classNames('flex-1 font-calibri')}>
+				{children}
+			</TxtBold>
 		</div>
 	);
 }

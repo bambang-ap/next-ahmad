@@ -20,7 +20,7 @@ export type FormValue = {
 	idSppbOuts?: MyObject<boolean>;
 } & TCustomerSPPBOutUpsert;
 
-const widthSize = 1250;
+const widthSize = 1100;
 
 export default function SPPBOUT() {
 	const {control, reset, unregister, watch, clearErrors, handleSubmit} =
