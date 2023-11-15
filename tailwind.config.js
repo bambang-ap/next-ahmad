@@ -2,21 +2,25 @@
  * @type {import('@types/tailwindcss/tailwind-config').TailwindConfig}
  */
 
+const defaultTheme = require('tailwindcss/defaultTheme');
+
 module.exports = {
-	mode: "jit",
+	mode: 'jit',
 	content: [
-		"./public/**/*.html",
-		"./pages/app/**/*.{ts,tsx}",
-		"./pages/**/*.{js,ts,jsx,tsx}",
-		"./src/**/*.{js,ts,jsx,tsx}",
+		'./public/**/*.html',
+		'./pages/app/**/*.{ts,tsx}',
+		'./pages/**/*.{js,ts,jsx,tsx}',
+		'./src/**/*.{js,ts,jsx,tsx}',
 	],
 	theme: {
 		extend: {
 			fontFamily: {
-				"noto-sans": ["Noto Sans", "Noto Sans_bold"],
+				calibri: ['Calibri', 'sans-serif'],
+				'noto-sans': ['Noto Sans', 'Noto Sans_bold'],
+				sans: ['Poppins', ...defaultTheme.fontFamily.sans],
 			},
 			outlineWidth: {
-				5: "5px",
+				5: '5px',
 			},
 		},
 	},

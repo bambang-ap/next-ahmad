@@ -25,6 +25,8 @@ export const gap = 'gap-px';
 export const padding = 'p-px';
 
 export const IMIConst = {
+	title: 'Inventory PT. IMI',
+
 	shortName: 'IMI',
 	name: 'PT. INDOHEAT METAL INTI',
 	address1: 'Jl. Desa Anggadita, Kec. Klari',
