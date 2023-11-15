@@ -18,6 +18,7 @@ import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import type {RetStock} from '@trpc/routers/internal/stockRouters';
 import {dateUtils, formParser, modalTypeParser, numberFormat} from '@utils';
+import {exportStockInternalMapper} from '@utils/data-mapper';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -35,26 +36,22 @@ export default function InternalStock() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isOther, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'Stock',
-	});
+	const {modalTitle, isOther, isPreview, isDelete, property, selectedIds} =
+		formParser(dataForm, {pageName: 'Stock', property: 'selectedIds'});
+
+	const {headers, renderItem} = exportStockInternalMapper();
 
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
+		property,
+		exportOptions: {
+			headers,
+			renderItem,
+			useQuery: () => trpc.export.internal.po.useQuery({ids: selectedIds}),
+		},
+		header: [...((headers?.[0]?.slice(0, -1)! ?? []) as string[]), 'Action'],
 		useQuery: form => trpc.internal.stock.get.useQuery(form),
-		header: [
-			'No',
-			'Nama Supplier',
-			'Kode Item',
-			'Nama Item',
-			'Harga',
-			'PPn',
-			'Qty Masuk',
-			'Qty',
-			'Qty Keluar',
-			'Action',
-		],
 		topComponent: (
 			<>
 				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
@@ -65,7 +62,7 @@ export default function InternalStock() {
 				</Button>
 			</>
 		),
-		renderItem: ({Cell, item}, index) => {
+		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {
 				oSup: dSSUp,
 				kode,
@@ -80,6 +77,7 @@ export default function InternalStock() {
 
 			return (
 				<>
+					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp?.nama}</Cell>
 					<Cell>{oItem?.kode ?? kode}</Cell>

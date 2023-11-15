@@ -16,7 +16,7 @@ export type RetStock = ReturnType<typeof internalStockAttributes>['Ret'];
 
 export const stockRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, id: sup_id, search} = input;
+		const {limit, page, id: sup_id, ids, search} = input;
 
 		const {item, out, stock, sup} = internalStockAttributes();
 
@@ -38,7 +38,7 @@ export const stockRouters = router({
 
 			const {count, rows} = await stock.model.findAndCountAll({
 				include: [out, sup, item],
-				where: !sup_id ? where : {sup_id},
+				where: ids ? {id: ids} : !sup_id ? where : {sup_id},
 				order: orderPages<RetStock>({'oOuts.createdAt': false}),
 			});
 

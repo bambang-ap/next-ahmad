@@ -1,6 +1,7 @@
 import {Headers} from '@appComponent/GenerateExport';
 import {UnitQty, UnitUnit} from '@appTypes/app.type';
 import {getPrintPoAttributes} from '@database';
+import type {RetExportStock} from '@trpc/routers/export';
 import {qtyMap} from '@utils';
 
 type MapperReturn<T> = {
@@ -147,6 +148,57 @@ export function exportPoMapper(): MapperReturn<
 					{renderOTQty(dPoItems, dInItems, outItem)}
 					{renderOTQty(dPoItems, dPoItems, dInItems)}
 					{renderOTQty(dPoItems, dKnbItems, scanFG)}
+				</tr>
+			);
+		},
+	};
+}
+
+export function exportStockInternalMapper(): MapperReturn<RetExportStock> {
+	let i = 0;
+
+	return {
+		headers: [
+			[
+				'No',
+				'Suplier',
+				'Kode Item',
+				'Nama Item',
+				'Harga',
+				'PPn',
+				'Qty Masuk',
+				'Qty Stock',
+				'Qty Keluar',
+				'Unit',
+			],
+		],
+		renderItem(data) {
+			const {
+				supplier,
+				kode_item,
+				name_item,
+				harga,
+				ppn,
+				qty_masuk,
+				qty_stock,
+				qty_keluar,
+				unit,
+			} = data;
+
+			i++;
+
+			return (
+				<tr>
+					<td>{i}</td>
+					<td>{supplier}</td>
+					<td>{kode_item}</td>
+					<td>{name_item}</td>
+					<td>{harga}</td>
+					<td>{ppn}</td>
+					<td>{qty_masuk}</td>
+					<td>{qty_stock}</td>
+					<td>{qty_keluar}</td>
+					<td>{unit}</td>
 				</tr>
 			);
 		},

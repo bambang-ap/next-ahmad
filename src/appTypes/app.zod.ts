@@ -46,6 +46,7 @@ export const uModalTypeSelect = z.union([
 export type TableFormValue = z.infer<typeof tableFormValue>;
 export const tableFormValue = z.object({
 	id: z.string().optional(),
+	ids: z.string().array().optional(),
 	search: z.string().optional(),
 	pageTotal: z.number().optional(),
 	page: z.number().optional().default(1),
