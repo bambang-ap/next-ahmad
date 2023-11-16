@@ -719,6 +719,7 @@ export type SOutBarang = z.infer<typeof sOutBarang>;
 export const sOutBarang = zId.extend({
 	qty: zDecimal,
 	id_stock: z.string(),
+	user: z.string().nullish(),
 	keterangan: z.string().nullish(),
 	createdAt: z.string().optional(),
 });

@@ -182,6 +182,7 @@ export function initOOut(sequelize: Sequelize) {
 	oOut.init(
 		{
 			id: {type: STRING, primaryKey: true},
+			user: STRING,
 			id_stock: STRING,
 			keterangan: STRING,
 			qty: ormDecimalType('qty'),

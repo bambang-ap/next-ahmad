@@ -46,6 +46,7 @@ export default function OutBarang() {
 			'No',
 			'Date',
 			'Supplier',
+			'User',
 			'Nama Item',
 			'Qty',
 			'Keterangan',
@@ -53,7 +54,7 @@ export default function OutBarang() {
 		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
-			const {qty, createdAt, oStock, keterangan} = item;
+			const {qty, createdAt, oStock, user, keterangan} = item;
 
 			return (
 				<>
@@ -61,6 +62,7 @@ export default function OutBarang() {
 					<Cell>{index + 1}</Cell>
 					<Cell>{dateUtils.full(createdAt)}</Cell>
 					<Cell>{oStock.oSup?.nama}</Cell>
+					<Cell>{user ?? '-'}</Cell>
 					<Cell>{oStock.oItem?.nama ?? oStock.nama}</Cell>
 					<Cell>
 						{qty} {oStock.unit}
@@ -148,6 +150,8 @@ function RenderModal({control}: FormProps<FormType, 'control' | 'reset'>) {
 					{labels: ['oItem.nama', 'nama', 'oSup.nama']},
 				)}
 			/>
+
+			<Input control={control} fieldName="form.user" label="User" />
 
 			{!!itemSelected && (
 				<Input
