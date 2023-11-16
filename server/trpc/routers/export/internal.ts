@@ -1,6 +1,6 @@
 import {TItemUnitInternal, zIds} from '@appTypes/app.zod';
 import {ppnMultiply} from '@constants';
-import {oSup} from '@database';
+import {internalPoAttributes, oSup} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -67,6 +67,33 @@ const exportInternalRouters = router({
 					'No Telp': telp,
 					Alamat: alamat,
 					NPWP: npwp,
+				};
+			});
+		});
+	}),
+
+	item: procedure.input(zIds).query(({ctx, input}) => {
+		const {item, sup} = internalPoAttributes();
+
+		type Ret = typeof item.obj & {oSup?: typeof sup.obj};
+
+		return checkCredentialV2(ctx, async () => {
+			const data = await item.model.findAll({
+				include: [sup],
+				where: {id: input.ids},
+				attributes: item.attributes,
+			});
+
+			return data.map((e, i) => {
+				const {nama, oSup, harga, kode, ppn} = e.toJSON() as unknown as Ret;
+
+				return {
+					No: i + 1,
+					Supplier: oSup?.nama,
+					'Kode Item': kode,
+					'Nama Item': nama,
+					Harga: harga,
+					PPn: ppn ? harga * ppnMultiply : 0,
 				};
 			});
 		});

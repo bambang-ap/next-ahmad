@@ -15,8 +15,13 @@ import {
 } from '@components';
 import {ppnMultiply, ppnPercentage} from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponentV2} from '@hooks';
-import {formParser, modalTypeParser, numberFormat} from '@utils';
+import {useTableFilterComponent} from '@hooks';
+import {
+	formParser,
+	modalTypeParser,
+	numberFormat,
+	renderItemAsIs,
+} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -33,14 +38,24 @@ export default function InternalItem() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'Item',
-	});
+	const {modalTitle, isPreview, property, selectedIds, isDelete} = formParser(
+		dataForm,
+		{
+			pageName: 'Item',
+			property: 'selectedIds',
+		},
+	);
 
-	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
+	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
 		useQuery: form => trpc.internal.item.get.useQuery(form),
+		property,
+		enabledExport: true,
+		exportRenderItem: renderItemAsIs,
+		exportUseQuery: () =>
+			trpc.export.internal.item.useQuery({ids: selectedIds}),
+		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		header: [
 			'No',
 			'Nama Supplier',
@@ -50,11 +65,11 @@ export default function InternalItem() {
 			'PPn',
 			'Action',
 		],
-		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
-		renderItem: ({Cell, item}, index) => {
+		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {oSup: dSSUp, kode, nama, harga, ppn} = item;
 			return (
 				<>
+					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp.nama}</Cell>
 					<Cell>{kode}</Cell>

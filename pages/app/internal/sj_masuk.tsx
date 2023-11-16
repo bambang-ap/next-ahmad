@@ -18,8 +18,8 @@ import {
 } from '@components';
 import {selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponentV2} from '@hooks';
-import {formParser, modalTypeParser} from '@utils';
+import {useTableFilterComponent} from '@hooks';
+import {formParser, modalTypeParser, renderItemAsIs} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -37,13 +37,22 @@ export default function InternalSiIn() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'Surat Jalan Masuk',
-	});
+	const {modalTitle, isPreview, isDelete, selectedIds, property} = formParser(
+		dataForm,
+		{
+			pageName: 'Surat Jalan Masuk',
+			property: 'selectedIds',
+		},
+	);
 
-	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
+	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
+		property,
+		enabledExport: true,
+		exportRenderItem: renderItemAsIs,
+		exportUseQuery: () =>
+			trpc.export.internal.item.useQuery({ids: selectedIds}),
 		useQuery: form => trpc.internal.in.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Action'],
 		topComponent: (
@@ -56,10 +65,11 @@ export default function InternalSiIn() {
 				</Button>
 			</>
 		),
-		renderItem: ({Cell, item}, index) => {
+		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {date, oPo} = item;
 			return (
 				<>
+					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{item.oSup?.nama}</Cell>
 					<Cell>{oPo?.nomor_po}</Cell>
