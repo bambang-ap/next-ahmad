@@ -56,7 +56,7 @@ export type TableProps<T = any, Cell = {}> = {
 	renderItem?: TRenderItem<T, JSX.Element | JSX.Element[] | false, Cell>;
 	renderItemEach?: TRenderItem<T, JSX.Element | false, Cell>;
 	reverseEachItem?: boolean;
-	topComponent?: JSX.Element | null;
+	topComponent?: JSX.Element | null | false;
 	bottomComponent?: JSX.Element;
 };
 

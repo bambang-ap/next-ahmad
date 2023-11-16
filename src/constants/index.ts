@@ -12,6 +12,7 @@ import {
 } from '@appTypes/app.type';
 import {TItemUnitInternal} from '@appTypes/app.zod';
 import {SelectPropsData} from '@components';
+import {REQ_FORM_STATUS} from '@enum';
 import {TRPCClientError} from '@trpc/client';
 
 export * from './colors';
@@ -48,6 +49,12 @@ export const unitData: TItemUnit[] = [
 export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
 	value => ({value}),
 );
+
+export const selectReqStatus: SelectPropsData<REQ_FORM_STATUS>[] = [
+	{value: REQ_FORM_STATUS.req},
+	{value: REQ_FORM_STATUS.proc},
+	{value: REQ_FORM_STATUS.close},
+];
 
 export const unitDataInternal: TItemUnitInternal[] = [
 	...unitData,

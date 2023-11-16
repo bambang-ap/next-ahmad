@@ -624,6 +624,7 @@ export const sReqForm = zId.extend({
 	due_date: z.string(),
 	items: sItemReqForm.array().min(1),
 	status: z.nativeEnum(REQ_FORM_STATUS).default(REQ_FORM_STATUS.req),
+	keterangan: z.string().nullish(),
 });
 
 export type SPo = z.infer<typeof sPo>;

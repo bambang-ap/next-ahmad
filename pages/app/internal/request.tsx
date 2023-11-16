@@ -5,7 +5,7 @@ import {useForm, useWatch} from 'react-hook-form';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SReqForm} from '@appTypes/app.zod';
 import {Button, Form, Input, Modal, ModalRef, Select, Table} from '@components';
-import {selectUnitDataInternal} from '@constants';
+import {selectReqStatus, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
 import {formParser, generateId, modalTypeParser} from '@utils';
@@ -14,6 +14,7 @@ import {trpc} from '@utils/trpc';
 type FormType = {
 	form: SReqForm;
 	type: ModalTypeSelect;
+	isEditing?: boolean;
 	selectedIds: MyObject<boolean>;
 };
 
@@ -25,6 +26,7 @@ export default function InternalRequestForm() {
 		useForm<FormType>();
 	const dataForm = watch();
 
+	const {isEditing} = dataForm;
 	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
 		pageName: 'Form Permintaan',
 		property: 'selectedIds',
@@ -38,9 +40,6 @@ export default function InternalRequestForm() {
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {date, due_date, status} = item;
-
-			// TODO: ada tombol untuk mengubah status
-			// TODO: ada tombol untuk munculkan popup update keterangan
 
 			return (
 				<>
@@ -57,6 +56,12 @@ export default function InternalRequestForm() {
 						<Button
 							icon="faEdit"
 							onClick={() => showModal({type: 'edit', form: item})}
+						/>
+						<Button
+							icon="faList"
+							onClick={() =>
+								showModal({type: 'edit', isEditing: true, form: item})
+							}
 						/>
 						<Button
 							icon="faTrash"
@@ -97,8 +102,8 @@ export default function InternalRequestForm() {
 			{component}
 			<Modal size="lg" title={modalTitle} ref={modalRef}>
 				<Form
-					context={{hideButton: isPreview, disabled: isPreview}}
-					onSubmit={submit}>
+					onSubmit={submit}
+					context={{hideButton: isPreview, disabled: isPreview || isEditing}}>
 					<RenderModal control={control} reset={reset} />
 				</Form>
 			</Modal>
@@ -110,7 +115,7 @@ function RenderModal({
 	control,
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
-	const {type, form} = useWatch({control});
+	const {type, isEditing, form} = useWatch({control});
 	const {isDelete} = modalTypeParser(type);
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
@@ -143,11 +148,32 @@ function RenderModal({
 				label="Due Date"
 			/>
 
+			{isEditing && (
+				<>
+					<Select
+						forceEditable
+						label="Status"
+						control={control}
+						fieldName="form.status"
+						data={selectReqStatus}
+					/>
+					<Input
+						multiline
+						forceEditable
+						control={control}
+						label="Keterangan"
+						fieldName="form.keterangan"
+					/>
+				</>
+			)}
+
 			<Table
 				topComponent={
-					<Button className="w-full" onClick={addItem}>
-						Tambah Item
-					</Button>
+					!isEditing && (
+						<Button className="w-full" onClick={addItem}>
+							Tambah Item
+						</Button>
+					)
 				}
 				data={form?.items}
 				renderItem={({Cell, item}, i) => {
@@ -197,9 +223,11 @@ function RenderModal({
 								/>
 							</Cell>
 
-							<Cell>
-								<Button icon="faTrash" onClick={() => removeItem(idItem!)} />
-							</Cell>
+							{!isEditing && (
+								<Cell>
+									<Button icon="faTrash" onClick={() => removeItem(idItem!)} />
+								</Cell>
+							)}
 						</Fragment>
 					);
 				}}

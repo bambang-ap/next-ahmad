@@ -32,6 +32,7 @@ export type SelectProps = {
 	disableClear?: boolean;
 	isLoading?: boolean;
 	topSelected?: boolean;
+	forceEditable?: boolean;
 };
 
 export const Select = withReactFormController(SelectComponent);
@@ -110,6 +111,7 @@ function SelectComponent<F extends FieldValues>({
 	isLoading = false,
 	topSelected = true,
 	noLabel,
+	forceEditable,
 	label: labelProps,
 }: ControlledComponentProps<F, SelectProps>) {
 	const formContext = useContext(FormContext);
@@ -123,7 +125,7 @@ function SelectComponent<F extends FieldValues>({
 	const errMsg = fieldState.error?.message;
 	const label = !noLabel && (labelProps || name);
 
-	const isDisabled = formContext?.disabled || disabled;
+	const isDisabled = forceEditable ? false : formContext?.disabled || disabled;
 	const selectedValue = data.find(e => e.value === value);
 	const filteredData =
 		topSelected && selectedValue?.value
