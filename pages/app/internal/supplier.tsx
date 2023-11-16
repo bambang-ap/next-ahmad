@@ -7,12 +7,7 @@ import {SSupplier} from '@appTypes/app.zod';
 import {Button, Form, Input, Modal, ModalRef} from '@components';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
-import {
-	formParser,
-	modalTypeParser,
-	nullUseQuery,
-	renderItemAsIs,
-} from '@utils';
+import {formParser, modalTypeParser, renderItemAsIs} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -29,22 +24,30 @@ export default function InternalSupplier() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'Supplier',
-	});
+	const {modalTitle, isPreview, isDelete, property, selectedIds} = formParser(
+		dataForm,
+		{
+			pageName: 'Supplier',
+			property: 'selectedIds',
+		},
+	);
 
 	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
-		exportUseQuery: nullUseQuery,
+		property,
+		enabledExport: true,
 		exportRenderItem: renderItemAsIs,
+		exportUseQuery: () =>
+			trpc.export.internal.supplier.useQuery({ids: selectedIds}),
 		useQuery: form => trpc.internal.supplier.get.useQuery(form),
 		header: ['No', 'Nama', 'Telp', 'Alamat', 'NPWP', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
-		renderItem: ({Cell, item}, index) => {
+		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {alamat, nama, telp, npwp} = item;
 			return (
 				<>
+					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{nama}</Cell>
 					<Cell>{telp}</Cell>

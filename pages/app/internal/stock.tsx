@@ -63,7 +63,8 @@ export default function InternalStock() {
 			'Action',
 		],
 		useQuery: form => trpc.internal.stock.get.useQuery(form),
-		exportUseQuery: () => trpc.export.internal.po.useQuery({ids: selectedIds}),
+		exportUseQuery: () =>
+			trpc.export.internal.stock.useQuery({ids: selectedIds}),
 		topComponent: (
 			<>
 				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
