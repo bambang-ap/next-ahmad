@@ -24,14 +24,14 @@ import {qtyList} from './ModalChild_po';
 
 const {Tr} = Table;
 
-const font = 'font-bold';
+const font = '';
 
 function Td({className, ...props}: BorderTdProps) {
 	return (
 		<BorderTd
 			{...props}
 			rootClassName="!border"
-			className={classNames(font, className)}
+			className={classNames('font-light', font, className)}
 		/>
 	);
 }
@@ -114,7 +114,7 @@ export function SPPBOutGenerateQR({
 				<div className="flex flex-col gap-2 p-4 border border-black">
 					<div className="flex justify-between">
 						<div className="flex flex-1 flex-col">
-							<TxtBold className="font-extrabold">{IMIConst.name}</TxtBold>
+							<TxtBold className="font-semibold">{IMIConst.name}</TxtBold>
 							<TxtBold>{IMIConst.address1}</TxtBold>
 							<TxtBold>{IMIConst.address2}</TxtBold>
 							<div>
