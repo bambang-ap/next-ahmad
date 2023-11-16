@@ -105,7 +105,6 @@ export async function getInternalPOStatus(
 	const aInItem = attrParserV2(oInItem, ['qty']);
 
 	const po = await aPo.model.findOne({
-		// logging: true,
 		where: {id},
 		attributes: aPo.attributes,
 		include: [{...aPoItem, include: [aInItem]}],
@@ -121,15 +120,16 @@ export async function getInternalPOStatus(
 
 		const y = oPoItems.map(f => {
 			const j = f.oInItems.reduce((total, {qty}) => total + qty, 0);
+
+			if (j < f.qty) return null;
+
 			return f.qty === j;
 		});
 
-		if (y.length > 1 && y.includes(false) && y.includes(true))
+		if (y.length > 0 && (y.includes(false) || y.includes(null)))
 			return INTERNAL_PO_STATUS.B;
 		if (y.length > 0 && !y.includes(false)) return INTERNAL_PO_STATUS.C;
 
-		// return INTERNAL_PO_STATUS.C;
-		// return INTERNAL_PO_STATUS.B;
 		return INTERNAL_PO_STATUS.A;
 	}
 

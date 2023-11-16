@@ -82,8 +82,6 @@ export default function InternalPo() {
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {oSup: dSSUp, date, due_date, status, nomor_po} = item;
 
-			// TODO: status partial mismatch if item only 1
-
 			return (
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
@@ -365,7 +363,7 @@ function RenderPdf(props: RetPoInternal) {
 				<div>{oSup?.nama}</div>
 				<div>{oSup?.alamat}</div>
 			</Wrapper>
-			<Wrapper title="Telp">{oSup?.telp}</Wrapper>
+			<Wrapper title="Telp">{oSup?.telp!}</Wrapper>
 
 			<table className="w-full">
 				<tr>

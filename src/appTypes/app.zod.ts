@@ -597,7 +597,7 @@ export type SSupplier = z.infer<typeof sSupplier>;
 export const sSupplier = zId.extend({
 	nama: z.string(),
 	alamat: z.string(),
-	telp: z.string(),
+	telp: z.string().nullish(),
 	npwp: z.string(),
 });
 
@@ -689,7 +689,7 @@ export const sInUpsertManual = sSjIn.partial({id: true, id_po: true}).extend({
 export type SInUpsert = z.infer<typeof sInUpsert>;
 export const sInUpsert = sSjIn.partial({id: true}).extend({
 	oPo: sPo.optional(),
-	oSup: sSupplier.optional(),
+	oSup: sSupplier.nullish(),
 	oInItems: sInItem
 		.extend({
 			temp_id: z.string(),
