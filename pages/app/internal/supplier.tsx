@@ -6,8 +6,13 @@ import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SSupplier} from '@appTypes/app.zod';
 import {Button, Form, Input, Modal, ModalRef} from '@components';
 import {getLayout} from '@hoc';
-import {useTableFilterComponentV2} from '@hooks';
-import {formParser, modalTypeParser} from '@utils';
+import {useTableFilterComponent} from '@hooks';
+import {
+	formParser,
+	modalTypeParser,
+	nullUseQuery,
+	renderItemAsIs,
+} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -28,9 +33,11 @@ export default function InternalSupplier() {
 		pageName: 'Supplier',
 	});
 
-	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
+	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
+		exportUseQuery: nullUseQuery,
+		exportRenderItem: renderItemAsIs,
 		useQuery: form => trpc.internal.supplier.get.useQuery(form),
 		header: ['No', 'Nama', 'Telp', 'Alamat', 'NPWP', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,

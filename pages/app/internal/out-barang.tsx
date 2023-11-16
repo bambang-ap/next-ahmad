@@ -41,7 +41,7 @@ export default function OutBarang() {
 	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
 		reset,
 		control,
-		useQuery: formdd => trpc.internal.out.get.useQuery(formdd),
+		useQuery: form => trpc.internal.out.get.useQuery(form),
 		header: [
 			'No',
 			'Date',

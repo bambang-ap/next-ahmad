@@ -11,15 +11,16 @@ import exportScanRouters from './scan';
 import exportSppbRouters from './sppb';
 
 export type RetExportStock = {
-	unit: TItemUnitInternal;
-	qty_masuk: number;
-	qty_keluar: number;
-	qty_stock: number;
-	harga: number;
-	ppn: number;
-	supplier: string;
-	kode_item: string;
-	name_item: string;
+	Unit: TItemUnitInternal;
+	'Qty Masuk': number;
+	'Qty Keluar': number;
+	'Qty Stock': number;
+	'Kode Item': string;
+	'Nama Item': string;
+	Supplier: string;
+	Harga: number;
+	PPn: number;
+	No: number;
 };
 
 const exportRouters = router({
@@ -33,7 +34,7 @@ const exportRouters = router({
 				const caller = appRouter.createCaller(ctx);
 				const {rows} = await caller.internal.stock.get({...input, limit: 9999});
 
-				const dd = rows.map(item => {
+				return rows.map((item, i) => {
 					const {
 						oSup: dSSUp,
 						kode,
@@ -47,19 +48,18 @@ const exportRouters = router({
 					} = item;
 
 					return {
-						unit,
-						qty_masuk: qty,
-						qty_keluar: usedQty,
-						qty_stock: qty - usedQty,
-						supplier: dSSUp?.nama,
-						harga: oItem?.harga ?? harga,
-						kode_item: oItem?.kode ?? kode,
-						name_item: oItem?.nama ?? nama,
-						ppn: ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0,
+						No: i + 1,
+						Supplier: dSSUp?.nama,
+						'Kode Item': oItem?.kode ?? kode,
+						'Nama Item': oItem?.nama ?? nama,
+						Harga: oItem?.harga ?? harga,
+						PPn: ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0,
+						'Qty Masuk': qty,
+						'Qty Stock': qty - usedQty,
+						'Qty Keluar': usedQty,
+						Unit: unit,
 					};
 				});
-
-				return dd;
 			});
 		}),
 	}),
