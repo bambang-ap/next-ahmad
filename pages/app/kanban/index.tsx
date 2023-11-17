@@ -84,6 +84,7 @@ export default function Kanban() {
 				{enabled: selectedIds.length > 0},
 			),
 		genPdfOptions: {
+			debug: true,
 			width: 1850,
 			splitPagePer: 4,
 			orientation: 'l',

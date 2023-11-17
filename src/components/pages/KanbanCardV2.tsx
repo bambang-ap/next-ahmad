@@ -206,7 +206,7 @@ export function RenderKanbanCardV2(props: AProps) {
 				<tr>
 					<BorderTd className="text-base">Mesin</BorderTd>
 					<BorderTd colSpan={2}>{rest?.nomorMesin?.join(', ')}</BorderTd>
-					<BorderTd rowSpan={3} top>
+					<BorderTd className="flex-col" rowSpan={3} top>
 						<Text>Keterangan :</Text>
 						<Text>{keterangan}</Text>
 					</BorderTd>
