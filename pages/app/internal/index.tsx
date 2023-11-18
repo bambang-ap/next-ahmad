@@ -1,5 +1,6 @@
 import {BorderTd, RootTable} from '@components';
 import {getLayout} from '@hoc';
+import {numberFormat} from '@utils';
 import {trpc} from '@utils/trpc';
 
 Internal.getLayout = getLayout;
@@ -23,16 +24,16 @@ export default function Internal() {
 							return (
 								<tr key={item.item.id}>
 									<BorderTd>
-										{totalPo} {unit}
+										{numberFormat(totalPo, false)} {unit}
 									</BorderTd>
 									<BorderTd>
-										{totalIn} {unit}
+										{numberFormat(totalIn, false)} {unit}
 									</BorderTd>
 									<BorderTd>
-										{totalOut} {unit}
+										{numberFormat(totalOut, false)} {unit}
 									</BorderTd>
 									<BorderTd>
-										{totalStock} {unit}
+										{numberFormat(totalStock, false)} {unit}
 									</BorderTd>
 								</tr>
 							);
