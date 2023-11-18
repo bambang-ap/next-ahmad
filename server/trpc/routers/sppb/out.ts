@@ -230,13 +230,10 @@ const sppbOutRouters = router({
 								where: bridgeWhere,
 							});
 
-							await dSppbBridge.upsert(
-								{
-									...bridgeWhere,
-									id: isExist?.dataValues.id ?? generateId('SJB-'),
-								},
-								{logging: true},
-							);
+							await dSppbBridge.upsert({
+								...bridgeWhere,
+								id: isExist?.dataValues.id ?? generateId('SJB-'),
+							});
 
 							for (const [id_item, item] of Object.entries(bin.items)) {
 								if (!item.exclude) {
