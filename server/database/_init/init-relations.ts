@@ -149,6 +149,7 @@ export function initRelations() {
 	oneToMany(oSjIn, oInItem, 'in_id');
 	oneToMany(oPoItem, oInItem, 'id_item');
 	oneToMany(oStock, oOut, 'id_stock');
+	oneToMany(oInItem, oStock, 'id_item_in');
 
 	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);

@@ -88,7 +88,7 @@ export function initOPo(sequelize: Sequelize) {
 			nomor_po: STRING,
 		},
 		{
-			...defaultScope(sequelize),
+			...defaultScope(sequelize, false),
 			tableName: INTERNAL_TABLES.PO,
 		},
 	);
@@ -106,9 +106,10 @@ export function initOPoItem(sequelize: Sequelize) {
 			id_item: STRING,
 			id_po: STRING,
 			unit: STRING,
+			updatedAt: STRING,
 		},
 		{
-			...defaultScope(sequelize),
+			...defaultScope(sequelize, false),
 			tableName: INTERNAL_TABLES.PO_ITEM,
 		},
 	);

@@ -68,7 +68,6 @@ export default function InternalPo() {
 			renderItem: item => <RenderPdf {...item} />,
 			useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
 		},
-		useQuery: form => trpc.internal.po.get.useQuery(form),
 		header: [
 			'No',
 			'Nama Supplier',
@@ -79,6 +78,7 @@ export default function InternalPo() {
 			'Action',
 		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
+		useQuery: form => trpc.internal.po.get.useQuery(form),
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {oSup: dSSUp, date, due_date, status, nomor_po} = item;
 

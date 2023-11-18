@@ -643,6 +643,7 @@ export const oPoItem = zId.extend({
 	qty: zDecimal,
 	unit: tItemUnitInternal,
 	discount: zDecimal.optional(),
+	updatedAt: z.string().optional(),
 });
 
 export type SPoUpsert = z.infer<typeof sPoUpsert>;
