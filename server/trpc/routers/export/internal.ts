@@ -164,29 +164,27 @@ const exportInternalRouters = router({
 				attributes: po.attributes,
 			});
 
-			return data;
+			data.forEach(e => {
+				const {oPo, no_sj, oInItems, oSup: supp} = e.toJSON() as unknown as Ret;
 
-			// data.forEach(e => {
-			// 	const {oPo, no_sj, oInItems, oSup: supp} = e.toJSON() as unknown as Ret;
+				oInItems.forEach(itemIn => {
+					const {qty, kode, nama, unit, oPoItem} = itemIn;
+					const {oItem} = oPoItem ?? {};
 
-			// 	oInItems.forEach(itemIn => {
-			// 		const {qty, kode, nama, unit, oPoItem} = itemIn;
-			// 		const {oItem} = oPoItem ?? {};
+					i++;
 
-			// 		i++;
-
-			// 		ret.push({
-			// 			No: i,
-			// 			Suplier: supp?.nama,
-			// 			'No SJ': no_sj,
-			// 			'No PO': oPo.nomor_po,
-			// 			'Kode Item': oItem?.kode ?? kode,
-			// 			'Nama Item': oItem?.nama ?? nama,
-			// 			qty,
-			// 			unit: oPoItem?.unit ?? unit,
-			// 		});
-			// 	});
-			// });
+					ret.push({
+						No: i,
+						Suplier: supp?.nama,
+						'No SJ': no_sj,
+						'No PO': oPo.nomor_po,
+						'Kode Item': oItem?.kode ?? kode,
+						'Nama Item': oItem?.nama ?? nama,
+						qty,
+						unit: oPoItem?.unit ?? unit,
+					});
+				});
+			});
 
 			return ret;
 		});
