@@ -201,7 +201,8 @@ CREATE TABLE public.internal_out_barang (
     qty character varying(47),
     keterangan character varying(255),
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    "user" character varying(100)
 );
 
 
@@ -255,7 +256,8 @@ CREATE TABLE public.internal_request (
     items json DEFAULT '[]'::json,
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    status character varying(100)
+    status character varying(100),
+    keterangan character varying(100)
 );
 
 
@@ -271,7 +273,8 @@ CREATE TABLE public.internal_sj_in (
     sup_id character varying(47),
     date character varying(30),
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    no_sj character varying(47)
 );
 
 
