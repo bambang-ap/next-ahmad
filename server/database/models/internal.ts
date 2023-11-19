@@ -126,6 +126,7 @@ export function initOSjIn(sequelize: Sequelize) {
 			date: STRING,
 			id_po: STRING,
 			sup_id: STRING,
+			no_sj: STRING,
 		},
 		{
 			...defaultScope(sequelize),

@@ -661,6 +661,7 @@ export type SSjIn = z.infer<typeof sSjIn>;
 export const sSjIn = zId.extend({
 	sup_id: z.string(),
 	id_po: z.string().nullish(),
+	no_sj: z.string(),
 	date: zDecimal,
 });
 

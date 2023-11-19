@@ -49,10 +49,9 @@ export default function InternalSiIn() {
 		reset,
 		control,
 		property,
-		enabledExport: true,
 		exportRenderItem: renderItemAsIs,
 		exportUseQuery: () =>
-			trpc.export.internal.item.useQuery({ids: selectedIds}),
+			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		useQuery: form => trpc.internal.in.get.useQuery(form),
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Action'],
 		topComponent: (

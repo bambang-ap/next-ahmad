@@ -141,6 +141,53 @@ const exportInternalRouters = router({
 			});
 		});
 	}),
+
+	sj_in: procedure.input(zIds).query(({ctx, input}) => {
+		const {sjIn, po, sup, inItem, item, poItem} = internalInAttributes();
+
+		type Ret = typeof sjIn.obj & {
+			oPo: typeof po.obj;
+			oSup: typeof sup.obj;
+			oInItems: (typeof inItem.obj & {
+				oPoItem?: typeof poItem.obj & {oItem: typeof item.obj};
+			})[];
+		};
+
+		return checkCredentialV2(ctx, async () => {
+			let i = 0;
+			const ret: object[] = [];
+
+			const data = await sjIn.model.findAll({
+				include: [po, sup, {...inItem, include: [{...poItem}]}],
+				where: {id: input.ids},
+				attributes: sjIn.attributes,
+			});
+
+			data.forEach(e => {
+				const {oPo, no_sj, oInItems, oSup: supp} = e.toJSON() as unknown as Ret;
+
+				oInItems.forEach(itemIn => {
+					const {qty, kode, nama, unit, oPoItem} = itemIn;
+					const {oItem} = oPoItem ?? {};
+
+					i++;
+
+					ret.push({
+						No: i,
+						Suplier: supp?.nama,
+						'No SJ': no_sj,
+						'No PO': oPo.nomor_po,
+						'Kode Item': oItem?.kode ?? kode,
+						'Nama Item': oItem?.nama ?? nama,
+						qty,
+						unit: oPoItem?.unit ?? unit,
+					});
+				});
+			});
+
+			return ret;
+		});
+	}),
 });
 
 export default exportInternalRouters;
