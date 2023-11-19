@@ -24,7 +24,7 @@ import {
 	selectUnitDataInternal,
 } from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponentV2} from '@hooks';
+import {useTableFilterComponent} from '@hooks';
 import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
 import {
 	dateUtils,
@@ -32,6 +32,7 @@ import {
 	modalTypeParser,
 	moment,
 	numberFormat,
+	renderItemAsIs,
 } from '@utils';
 import {trpc} from '@utils/trpc';
 
@@ -49,24 +50,26 @@ export default function InternalPo() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete, selectedIds, property} = formParser(
-		dataForm,
-		{
+	const {modalTitle, isPreview, isDelete, selectedIds, property, enabled} =
+		formParser(dataForm, {
 			pageName: 'PO',
 			property: 'selectedIds',
-		},
-	);
+		});
 
-	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
+	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
 		property,
+		exportRenderItem: renderItemAsIs,
+		exportUseQuery: () =>
+			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
 			tagId: 'internal-po',
 			splitPagePer: 1,
 			width: 750,
 			renderItem: item => <RenderPdf {...item} />,
-			useQuery: () => trpc.internal.po.export.useQuery({ids: selectedIds}),
+			useQuery: () =>
+				trpc.internal.po.pdf.useQuery({ids: selectedIds}, {enabled}),
 		},
 		header: [
 			'No',

@@ -1,6 +1,7 @@
 import {TItemUnitInternal, zIds} from '@appTypes/app.zod';
 import {ppnMultiply} from '@constants';
 import {
+	getInternalPOStatus,
 	internalInAttributes,
 	internalPoAttributes,
 	internalStockAttributes,
@@ -8,7 +9,7 @@ import {
 } from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
-import {dateUtils} from '@utils';
+import {dateUtils, ppnParser} from '@utils';
 
 import {appRouter} from '..';
 
@@ -157,33 +158,86 @@ const exportInternalRouters = router({
 			let i = 0;
 			const ret: object[] = [];
 
-			const data = await sjIn.model.findAll({
-				include: [po, sup, {...inItem, include: [{...poItem}]}],
+			const data = await po.model.findAll({
+				include: [{...poItem, include: [inItem]}],
 				where: {id: input.ids},
-				attributes: sjIn.attributes,
+				attributes: po.attributes,
 			});
 
-			data.forEach(e => {
-				const {oPo, no_sj, oInItems, oSup: supp} = e.toJSON() as unknown as Ret;
+			return data;
 
-				oInItems.forEach(itemIn => {
-					const {qty, kode, nama, unit, oPoItem} = itemIn;
-					const {oItem} = oPoItem ?? {};
+			// data.forEach(e => {
+			// 	const {oPo, no_sj, oInItems, oSup: supp} = e.toJSON() as unknown as Ret;
+
+			// 	oInItems.forEach(itemIn => {
+			// 		const {qty, kode, nama, unit, oPoItem} = itemIn;
+			// 		const {oItem} = oPoItem ?? {};
+
+			// 		i++;
+
+			// 		ret.push({
+			// 			No: i,
+			// 			Suplier: supp?.nama,
+			// 			'No SJ': no_sj,
+			// 			'No PO': oPo.nomor_po,
+			// 			'Kode Item': oItem?.kode ?? kode,
+			// 			'Nama Item': oItem?.nama ?? nama,
+			// 			qty,
+			// 			unit: oPoItem?.unit ?? unit,
+			// 		});
+			// 	});
+			// });
+
+			return ret;
+		});
+	}),
+
+	po: procedure.input(zIds).query(({ctx, input}) => {
+		const {item, sup, po, poItem} = internalInAttributes();
+
+		type Ret = typeof po.obj & {
+			oSup?: typeof sup.obj;
+			oPoItems: (typeof poItem.obj & {oItem: typeof item.obj})[];
+		};
+
+		return checkCredentialV2(ctx, async () => {
+			let i = 0;
+			const ret: object[] = [];
+
+			const data = await po.model.findAll({
+				include: [sup, {...poItem, include: [item]}],
+				where: {id: input.ids},
+				attributes: po.attributes,
+			});
+
+			for (const e of data) {
+				const {id, nomor_po, date, due_date, oSup, oPoItems} =
+					e.toJSON() as unknown as Ret;
+
+				const status = await getInternalPOStatus(id);
+
+				for (const itemPo of oPoItems) {
+					const {qty, unit, oItem} = itemPo;
+					const {harga, ppn, kode, nama} = oItem;
 
 					i++;
-
 					ret.push({
 						No: i,
-						Suplier: supp?.nama,
-						'No SJ': no_sj,
-						'No PO': oPo.nomor_po,
-						'Kode Item': oItem?.kode ?? kode,
-						'Nama Item': oItem?.nama ?? nama,
+						'Nomor PO': nomor_po,
+						date: dateUtils.dateS(date),
+						'Due Date': dateUtils.dateS(due_date),
+						suplier: oSup?.nama,
+						'Kode Item': kode,
+						'Nama Item': nama,
 						qty,
-						unit: oPoItem?.unit ?? unit,
+						unit,
+						harga,
+						ppn: ppnParser(ppn, harga),
+						jumlah: harga * qty,
+						status,
 					});
-				});
-			});
+				}
+			}
 
 			return ret;
 		});

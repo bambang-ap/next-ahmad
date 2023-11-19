@@ -18,6 +18,7 @@ import {
 	formatFullView,
 	formatHour,
 	paperA4,
+	ppnMultiply,
 	qtyList,
 } from '@constants';
 import {getPOSppbOutAttributes} from '@database';
@@ -86,6 +87,10 @@ export function numberFormat(
 	}).format(qty);
 
 	return formated;
+}
+
+export function ppnParser(ppn: boolean, price: number, qty = 1) {
+	return ppn ? price * qty * ppnMultiply : 0;
 }
 
 export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
@@ -495,7 +500,7 @@ export function getIds<
 	P extends keyof KK,
 >(dataForm: KK, property?: P) {
 	const selectedIds = !!property ? transformIds(dataForm[property]) : [];
-	return {selectedIds, property};
+	return {selectedIds, property, enabled: selectedIds.length > 0};
 }
 
 export function formParser<

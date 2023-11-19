@@ -58,7 +58,7 @@ export const poRouters = router({
 			'nomor_po',
 		);
 	}),
-	export: procedure.input(zIds).query(({ctx, input}) => {
+	pdf: procedure.input(zIds).query(({ctx, input}) => {
 		return checkCredentialV2(ctx, async (): Promise<RetPoInternal[]> => {
 			const {rows} = await agd(
 				{limit: 9999, page: 1},
