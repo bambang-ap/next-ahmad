@@ -122,7 +122,7 @@ export function useTableFilterComponent<
 
 	const topComponent = isSelect ? (
 		<>
-			{enabledExport && (
+			{(enabledExport || !!exportUseQuery) && (
 				<Button onClick={onExport || exportData}>Export</Button>
 			)}
 			{enabledPdf && <Button onClick={() => printData(true)}>Print</Button>}

@@ -1,8 +1,14 @@
 import {TItemUnitInternal, zIds} from '@appTypes/app.zod';
 import {ppnMultiply} from '@constants';
-import {internalPoAttributes, oSup} from '@database';
+import {
+	internalInAttributes,
+	internalPoAttributes,
+	internalStockAttributes,
+	oSup,
+} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
+import {dateUtils} from '@utils';
 
 import {appRouter} from '..';
 
@@ -94,6 +100,43 @@ const exportInternalRouters = router({
 					'Nama Item': nama,
 					Harga: harga,
 					PPn: ppn ? harga * ppnMultiply : 0,
+				};
+			});
+		});
+	}),
+
+	out: procedure.input(zIds).query(({ctx, input}) => {
+		const {inItem, poItem} = internalInAttributes();
+		const {item, stock, out} = internalStockAttributes();
+
+		type Ret = typeof out.obj & {
+			oStock?: typeof stock.obj & {
+				oItem: typeof item.obj;
+				oInItem: typeof inItem.obj & {oPoItem: typeof poItem.obj};
+			};
+		};
+
+		return checkCredentialV2(ctx, async () => {
+			const data = await out.model.findAll({
+				include: [{...stock, include: [{...inItem, include: [poItem]}, item]}],
+				where: {id: input.ids},
+				attributes: out.attributes,
+			});
+
+			return data.map((e, i) => {
+				const {oStock, qty, user, createdAt} = e.toJSON() as unknown as Ret;
+				const {oInItem, oItem} = oStock ?? {};
+				const {oPoItem} = oInItem ?? {};
+				const {unit} = oPoItem ?? {};
+
+				return {
+					No: i + 1,
+					Date: dateUtils.full(createdAt),
+					'Kode Item': oItem?.kode,
+					'Nama Item': oItem?.nama,
+					qty,
+					unit,
+					user,
 				};
 			});
 		});

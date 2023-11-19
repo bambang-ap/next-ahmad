@@ -711,6 +711,7 @@ export const sStock = sItem
 		nama: z.string().nullish(),
 		kode: z.string().nullish(),
 
+		createdAt: z.string().optional(),
 		id_item_in: z.string().nullish(),
 		id_item: z.string().nullish(),
 		unit: tItemUnitInternal,

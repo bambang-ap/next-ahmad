@@ -15,8 +15,14 @@ import {
 	Text,
 } from '@components';
 import {getLayout} from '@hoc';
-import {useTableFilterComponentV2} from '@hooks';
-import {dateUtils, formParser, maxRules, modalTypeParser} from '@utils';
+import {useTableFilterComponent} from '@hooks';
+import {
+	dateUtils,
+	formParser,
+	maxRules,
+	modalTypeParser,
+	renderItemAsIs,
+} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -33,14 +39,20 @@ export default function OutBarang() {
 		useForm<FormType>();
 	const dataForm = watch();
 
-	const {modalTitle, isPreview, isDelete} = formParser(dataForm, {
-		pageName: 'Form Barang Keluar',
-		property: 'selectedIds',
-	});
+	const {modalTitle, isPreview, isDelete, selectedIds, property} = formParser(
+		dataForm,
+		{
+			pageName: 'Form Barang Keluar',
+			property: 'selectedIds',
+		},
+	);
 
-	const {component, refetch, mutateOpts} = useTableFilterComponentV2({
+	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
+		property,
+		exportRenderItem: renderItemAsIs,
+		exportUseQuery: () => trpc.export.internal.out.useQuery({ids: selectedIds}),
 		useQuery: form => trpc.internal.out.get.useQuery(form),
 		header: [
 			'No',
@@ -128,7 +140,7 @@ export default function OutBarang() {
 
 function RenderModal({control}: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
-	const {isDelete} = modalTypeParser(type);
+	const {isDelete, isEdit} = modalTypeParser(type);
 
 	const {data} = trpc.internal.stock.get.useQuery({limit: 9999});
 
@@ -136,6 +148,10 @@ function RenderModal({control}: FormProps<FormType, 'control' | 'reset'>) {
 
 	const itemSelected = data?.rows.find(e => e.id === form?.id_stock);
 	const qtyKey = `${!!data}-${form?.id_stock}-${itemSelected?.qty}`;
+
+	const qty = !!itemSelected
+		? itemSelected.qty - (isEdit ? 0 : itemSelected.usedQty)
+		: 0;
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -162,8 +178,8 @@ function RenderModal({control}: FormProps<FormType, 'control' | 'reset'>) {
 					control={control}
 					fieldName="form.qty"
 					rightAcc={<Text>{itemSelected?.unit}</Text>}
-					defaultValue={itemSelected.qty - itemSelected.usedQty}
-					rules={maxRules(itemSelected.qty - itemSelected.usedQty)}
+					defaultValue={qty}
+					rules={maxRules(qty)}
 				/>
 			)}
 

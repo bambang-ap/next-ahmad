@@ -26,6 +26,7 @@ export function initOStock(sequelize: Sequelize) {
 			ppn: BOOLEAN,
 			unit: STRING,
 			id_item_in: STRING,
+			createdAt: STRING,
 			qty: ormDecimalType('qty'),
 			harga: ormDecimalType('harga'),
 		},

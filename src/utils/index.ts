@@ -536,6 +536,10 @@ export function nullRenderItem() {
 	return {};
 }
 
-export function renderItemAsIs(item: any) {
-	return item;
+export function renderItemAsIs<T extends {}>(item: T) {
+	const obj = Object.entries(item);
+
+	return obj.reduce<MyObject<unknown>>((ret, [key, value]) => {
+		return {...ret, [key.ucwords()]: value};
+	}, {});
 }
