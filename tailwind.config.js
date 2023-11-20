@@ -6,6 +6,12 @@ const defaultTheme = require('tailwindcss/defaultTheme');
 
 module.exports = {
 	mode: 'jit',
+	plugins: [
+		function ({addVariant}) {
+			addVariant('child', '& > *');
+			addVariant('child-hover', '& > *:hover');
+		},
+	],
 	content: [
 		'./public/**/*.html',
 		'./pages/app/**/*.{ts,tsx}',

@@ -28,6 +28,7 @@ import {
 	UseTRPCMutationOptions,
 	UseTRPCQueryResult,
 } from '@trpc/react-query/shared';
+import {calibri_normal} from '@utils/js-fonts';
 
 type Qty = typeof qtyList[number];
 
@@ -368,6 +369,12 @@ export async function generatePDF(
 	orientation: jsPDFOptions['orientation'] = 'p',
 ) {
 	let doc = new jsPDF({unit: 'mm', orientation, format: 'a4'});
+	doc.addFileToVFS(calibri_normal.filename, calibri_normal.font);
+	doc.addFont(
+		calibri_normal.filename,
+		calibri_normal.id,
+		calibri_normal.fontStyle,
+	);
 
 	const pageHeight = doc.internal.pageSize.getHeight();
 	const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
@@ -385,8 +392,18 @@ export async function generatePDF(
 	function htmlPage(pdf: jsPDF, element: HTMLElement, i: number) {
 		const width = element.clientWidth;
 
+		pdf.setFont(calibri_normal.id);
 		return new Promise<jsPDF>(resolve => {
-			pdf.html(element, {
+			const newElement = `
+				<style>
+					* {
+						font-family: Calibri, sans-serif !important;
+					}
+				</style>
+				${element.outerHTML}
+			`;
+
+			pdf.html(newElement, {
 				x: 0,
 				margin: 0,
 				y: i * pageHeight,

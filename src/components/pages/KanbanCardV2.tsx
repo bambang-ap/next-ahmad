@@ -107,12 +107,16 @@ export function RenderKanbanCardV2(props: AProps) {
 
 	return (
 		<>
-			<table className="w-full table-fixed">
+			<table className="w-full table-fixed child:font-calibri">
 				<tr className="border-0">
 					<BorderTd className="text-2xl" rowSpan={2} center>
 						IMI
 					</BorderTd>
-					<BorderTd className="text-2xl" rowSpan={2} colSpan={3} center>
+					<BorderTd
+						className="text-2xl font-noto-sans"
+						rowSpan={2}
+						colSpan={3}
+						center>
 						PROCESSING CARD
 					</BorderTd>
 					<BorderTd center colSpan={2}>
