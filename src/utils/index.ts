@@ -367,12 +367,7 @@ export async function generatePDF(
 	filename = 'a4',
 	orientation: jsPDFOptions['orientation'] = 'p',
 ) {
-	let doc = new jsPDF({
-		unit: 'mm',
-		orientation,
-		format: 'a4',
-		hotfixes: ['px_scaling'],
-	});
+	let doc = new jsPDF({unit: 'mm', orientation, format: 'a4'});
 
 	const pageHeight = doc.internal.pageSize.getHeight();
 	const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
@@ -390,14 +385,12 @@ export async function generatePDF(
 	function htmlPage(pdf: jsPDF, element: HTMLElement, i: number) {
 		const width = element.clientWidth;
 
-		element.style.fontFamily = 'Calibri, sans-serif';
-
 		return new Promise<jsPDF>(resolve => {
 			pdf.html(element, {
 				x: 0,
 				margin: 0,
 				y: i * pageHeight,
-				html2canvas: {width, scale: scaleWidth / width, svgRendering: true},
+				html2canvas: {width, scale: scaleWidth / width},
 				callback(pdfCallback) {
 					resolve(pdfCallback);
 				},
