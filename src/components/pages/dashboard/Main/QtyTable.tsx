@@ -11,7 +11,7 @@ import {FormValue} from './';
 
 const {TBody, THead, Tr} = Table;
 
-function Td({className, rootClassName, ...props}: BorderTdProps) {
+export function Td({className, rootClassName, ...props}: BorderTdProps) {
 	return (
 		<BorderTd
 			{...props}

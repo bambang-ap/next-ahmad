@@ -2,7 +2,9 @@ import {FormType} from 'pages/app/internal';
 import {useWatch} from 'react-hook-form';
 
 import {FormProps} from '@appTypes/app.type';
-import {BorderTd, RootTable} from '@components';
+import {RootTable} from '@components';
+import {MenuColorClass} from '@enum';
+import {Td} from '@pageComponent/dashboard/Main/QtyTable';
 import {numberFormat} from '@utils';
 import {trpc} from '@utils/trpc';
 
@@ -20,10 +22,18 @@ export function InternalDashboard({control, calculated}: K) {
 	return (
 		<RootTable>
 			<tr>
-				<BorderTd>Jumlah PO</BorderTd>
-				<BorderTd>SJ Masuk</BorderTd>
-				<BorderTd>Barang Keluar</BorderTd>
-				<BorderTd>Stock</BorderTd>
+				<Td className="text-white" rootClassName="bg-gray-600">
+					Jumlah PO
+				</Td>
+				<Td className="text-white" rootClassName="bg-gray-600">
+					SJ Masuk
+				</Td>
+				<Td className="text-white" rootClassName="bg-gray-600">
+					Barang Keluar
+				</Td>
+				<Td className="text-white" rootClassName="bg-gray-600">
+					Stock
+				</Td>
 			</tr>
 			{data.map(po => {
 				return (
@@ -33,10 +43,22 @@ export function InternalDashboard({control, calculated}: K) {
 								item;
 							return (
 								<tr key={item.item.id}>
-									<BorderTd>{calculateValue(totalPo, harga, unit)}</BorderTd>
-									<BorderTd>{calculateValue(totalIn, harga, unit)}</BorderTd>
-									<BorderTd>{calculateValue(totalOut, harga, unit)}</BorderTd>
-									<BorderTd>{calculateValue(totalStock, harga, unit)}</BorderTd>
+									<Td className="text-white" rootClassName={MenuColorClass.PO}>
+										{calculateValue(totalPo, harga, unit)}
+									</Td>
+									<Td
+										className="text-white"
+										rootClassName={MenuColorClass.SJIn}>
+										{calculateValue(totalIn, harga, unit)}
+									</Td>
+									<Td
+										className="text-white"
+										rootClassName={MenuColorClass.SJOut}>
+										{calculateValue(totalOut, harga, unit)}
+									</Td>
+									<Td className="text-white" rootClassName={MenuColorClass.QC}>
+										{calculateValue(totalStock, harga, unit)}
+									</Td>
 								</tr>
 							);
 						})}
