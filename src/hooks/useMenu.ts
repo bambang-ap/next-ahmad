@@ -20,9 +20,15 @@ export type FormMenu = Record<
 >;
 
 export function useMenu() {
+	const {data: all} = trpc.menu.all.useQuery(undefined, nonRequiredRefetch);
+	const {data: allSub} = trpc.menu.allWithSub.useQuery(
+		undefined,
+		nonRequiredRefetch,
+	);
+
 	const {mutate: mutateMenu} =
 		trpc.menu.mutate.useMutation(defaultErrorMutation);
-	const {data: unMappedMenu, refetch: reftechUnMapped} = trpc.menu.get.useQuery(
+	const {data: unMappedMenu, refetch: refetchUnMapped} = trpc.menu.get.useQuery(
 		{type: 'menu'},
 		nonRequiredRefetch,
 	);
@@ -62,11 +68,13 @@ export function useMenu() {
 	}, [m]);
 
 	return {
+		all,
+		allSub,
 		dataRole,
 		menuForm,
 		mappedMenu: m,
 		unMappedMenu: unMappedMenu as TMenu[] | undefined,
-		reftechUnMapped: reftechUnMapped as NoopVoid,
+		refetchUnMapped: refetchUnMapped as NoopVoid,
 		refetchMapped: refetchMapped as NoopVoid,
 		mutateMenu,
 		reOrderMappedMenu,

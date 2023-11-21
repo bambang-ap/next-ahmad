@@ -1,6 +1,7 @@
 import {FieldValues, UseFormReturn} from 'react-hook-form';
 
 import {qtyList} from '@constants';
+import type {menuAttributes} from '@database';
 import type {RouterOutput} from '@trpc/routers';
 export type {
 	AppRouter,
@@ -92,6 +93,11 @@ import type {
 	TScan,
 	TUser,
 } from './app.zod';
+
+type D = ReturnType<typeof menuAttributes>;
+
+export type MenuT = D['Ret'];
+export type MenuSubT = D['RetSub'];
 
 export type FormProps<
 	T extends FieldValues,

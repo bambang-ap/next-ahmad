@@ -1,23 +1,19 @@
 import bufferToDataUrl from 'buffer-to-data-url';
 import qr, {image_type} from 'qr-image';
-import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {tCustomer} from '@appTypes/app.zod';
 import {isProd} from '@constants';
 import {
-	attrParserV2,
 	ORM,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerSPPBIn,
 	OrmKanban,
 	OrmKanbanItem,
-	OrmMenu,
 	OrmPOItemSppbIn,
-	wherePagesV4,
 } from '@database';
-import {checkCredentialV2, generateId, getNow} from '@server';
+import {generateId, getNow} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
@@ -46,43 +42,7 @@ const miscRouter = {
 			],
 		});
 	}),
-	menuu: procedure.query(({ctx}) => {
-		// TODO: refactor useMenu using this method
-		const menu = attrParserV2(OrmMenu, ['title', 'parent_id', 'accepted_role']);
-		const menuChild = attrParserV2(OrmMenu, ['title', 'accepted_role']);
 
-		type Ret = typeof menu.obj & {
-			OrmMenus: (typeof menuChild.obj & {
-				OrmMenus: typeof menuChild.obj[];
-			})[];
-		};
-
-		return checkCredentialV2(ctx, async session => {
-			const {count, rows} = await menu.model.findAndCountAll({
-				attributes: menu.attributes,
-				include: [{...menuChild, include: [menuChild]}],
-				where: wherePagesV4<Ret>(
-					{
-						parent_id: {[Op.is]: null},
-					},
-					[
-						'or',
-						{
-							accepted_role: {[Op.substring]: session?.user?.role},
-							'$OrmMenus.accepted_role$': {
-								[Op.substring]: session?.user?.role,
-							},
-							'$OrmMenus.OrmMenus.accepted_role$': {
-								[Op.substring]: session?.user?.role,
-							},
-						},
-					],
-				),
-			});
-
-			return {count, data: rows.map(e => e.toJSON() as unknown as Ret)};
-		});
-	}),
 	statsActivity: procedure.query(async () => {
 		if (isProd) throw new TRPCError({code: 'NOT_FOUND'});
 		const [queries] = await ORM.query(

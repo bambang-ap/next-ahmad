@@ -13,12 +13,12 @@ import {useRouter} from 'next/router';
 import {useRecoilValue} from 'recoil';
 
 import {SidebarContext} from '@app/contexts/SidebarContext';
-import {TMenu} from '@appTypes/app.zod';
+import {MenuSubT} from '@appTypes/app.type';
 import {Icon} from '@components';
+import {useMenu} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
-import {trpc} from '@utils/trpc';
 
-function SubMenu({title, path, icon, subMenu}: TMenu) {
+function SubMenu({title, path, icon, OrmMenus: subMenu}: MenuSubT) {
 	const {push} = useRouter();
 	const [open, setOpen] = React.useState(false);
 
@@ -45,13 +45,13 @@ function SubMenu({title, path, icon, subMenu}: TMenu) {
 	);
 }
 
-function Menu(menu: TMenu) {
+function Menu(menu: MenuSubT) {
 	const isMobile = useRecoilValue(atomIsMobile);
 
 	const {push} = useRouter();
 	const {closeSidebar} = useContext(SidebarContext);
 
-	const {id, path, title, icon, subMenu} = menu;
+	const {id, path, title, icon, OrmMenus: subMenu} = menu;
 
 	const hasSubMenu = !!subMenu && subMenu.length > 0;
 
@@ -72,7 +72,7 @@ function Menu(menu: TMenu) {
 	);
 }
 
-function RenderMenuList({data}: {data?: TMenu[]}) {
+function RenderMenuList({data}: {data?: MenuSubT[]}) {
 	return (
 		<>
 			{data?.map(menu => {
@@ -83,7 +83,9 @@ function RenderMenuList({data}: {data?: TMenu[]}) {
 }
 
 function SidebarMenu() {
-	const {data: listMenu} = trpc.menu.get.useQuery({type: 'menu', sorted: true});
+	// const {data: listMenu} = trpc.menu.get.useQuery({type: 'menu', sorted: true});
+
+	const {allSub: listMenu} = useMenu();
 
 	return (
 		<List component="div">

@@ -46,6 +46,7 @@ import {
 	oPo,
 	oPoItem,
 	OrmKanban,
+	OrmMenu,
 	oSjIn,
 	oStock,
 	oSup,
@@ -804,4 +805,24 @@ export function internalStockAttributes() {
 	};
 
 	return {stock, item, sup, out, Ret: {} as Ret};
+}
+
+export function menuAttributes() {
+	const menu = attrParserV2(OrmMenu, [
+		'id',
+		'title',
+		'path',
+		'parent_id',
+		'accepted_role',
+		'icon',
+		'index',
+	]);
+
+	type Ret = typeof menu.obj & {
+		OrmMenus?: (typeof menu.obj & {
+			OrmMenus?: typeof menu.obj[];
+		})[];
+	};
+
+	return {menu, RetSub: {} as Ret, Ret: {} as Omit<Ret, 'OrmMenus'>};
 }

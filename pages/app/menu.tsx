@@ -10,6 +10,8 @@ import {getLayout} from '@hoc';
 import {FormMenu, useLoader, useMenu} from '@hooks';
 import {atomMenuChangeOrder, atomMenuIconKey} from '@recoil/atoms';
 
+// TODO: Change menu renderer data to useMenu().all method
+
 Menu.getLayout = getLayout;
 
 export default function Menu() {
@@ -23,7 +25,7 @@ export default function Menu() {
 		menuForm,
 		mutateMenu,
 		refetchMapped,
-		reftechUnMapped,
+		refetchUnMapped: reftechUnMapped,
 	} = useMenu();
 
 	const [changeOrderEnabled, changeOrder] = useRecoilState(atomMenuChangeOrder);
