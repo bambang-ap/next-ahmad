@@ -22,7 +22,7 @@ export function BorderTd({
 		<td
 			{...props}
 			className={classNames(
-				'border-black border-2',
+				'border-black border',
 				'flex-1 px-2 py-1',
 				'font-semibold',
 				'pb-2',
