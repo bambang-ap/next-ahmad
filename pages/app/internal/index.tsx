@@ -1,46 +1,52 @@
-import {BorderTd, RootTable} from '@components';
+import {useForm} from 'react-hook-form';
+
+import {TDashboardInternal} from '@appTypes/app.zod';
+import {ButtonGroup, Input, SelectPropsData} from '@components';
 import {getLayout} from '@hoc';
-import {numberFormat} from '@utils';
-import {trpc} from '@utils/trpc';
+import {InternalDashboard} from '@pageComponent/internal-dashboard';
+import {dateUtils, moment} from '@utils';
 
 Internal.getLayout = getLayout;
 
+export type FormType = {view: TDashboardInternal; from: string; to: string};
+
+const data: SelectPropsData<TDashboardInternal>[] = [
+	{value: 'qty', label: 'Qty'},
+	{value: 'transaksi', label: 'Nilai Transaksi'},
+];
+
 export default function Internal() {
-	const {data = []} = trpc.internal.dashboard.useQuery();
+	const today = moment();
+	const to = dateUtils.readable(today.endOf('month').unix() * 1000)!;
+	const from = dateUtils.readable(today.startOf('month').unix() * 1000)!;
+
+	const {control, watch} = useForm<FormType>({
+		defaultValues: {view: 'qty', from, to},
+	});
+	const {view} = watch();
+
+	const isCalculated = view === 'transaksi';
 
 	return (
-		<RootTable>
-			<tr>
-				<BorderTd>Jumlah PO</BorderTd>
-				<BorderTd>SJ Masuk</BorderTd>
-				<BorderTd>Barang Keluar</BorderTd>
-				<BorderTd>Stock</BorderTd>
-			</tr>
-			{data.map(po => {
-				return (
-					<>
-						{po.result.map(item => {
-							const {totalIn, totalOut, totalStock, totalPo, unit} = item;
-							return (
-								<tr key={item.item.id}>
-									<BorderTd>
-										{numberFormat(totalPo, false)} {unit}
-									</BorderTd>
-									<BorderTd>
-										{numberFormat(totalIn, false)} {unit}
-									</BorderTd>
-									<BorderTd>
-										{numberFormat(totalOut, false)} {unit}
-									</BorderTd>
-									<BorderTd>
-										{numberFormat(totalStock, false)} {unit}
-									</BorderTd>
-								</tr>
-							);
-						})}
-					</>
-				);
-			})}
-		</RootTable>
+		<div className="flex flex-col gap-2">
+			<div className="flex justify-between gap-2">
+				<ButtonGroup control={control} fieldName="view" data={data} />
+				<div className="flex gap-2">
+					<Input
+						type="date"
+						fieldName="from"
+						label="Dari Tanggal"
+						control={control}
+					/>
+					<Input
+						type="date"
+						fieldName="to"
+						control={control}
+						label="Sampai Tanggal"
+					/>
+				</div>
+			</div>
+			<InternalDashboard control={control} calculated={isCalculated} />
+		</div>
 	);
 }

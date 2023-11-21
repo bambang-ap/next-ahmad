@@ -32,7 +32,6 @@ const menuRouters = router({
 
 		return checkCredentialV2(ctx, async session => {
 			const rows = await menu.model.findAll({
-				logging: true,
 				attributes: menu.attributes,
 				include: [{...menu, include: [menu]}],
 				order: orderPages<RetType>({

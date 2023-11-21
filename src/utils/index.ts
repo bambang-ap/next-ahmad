@@ -13,6 +13,7 @@ import {ModalTypeSelect, TScanItem, TScanTarget} from '@appTypes/app.zod';
 import {
 	decimalSchema,
 	defaultErrorMutation,
+	formatDate,
 	formatDateStringView,
 	formatDateView,
 	formatFullView,
@@ -36,7 +37,7 @@ let typingTimer: NodeJS.Timeout;
 
 momentTz.tz.setDefault('Asia/Jakarta');
 
-function convertDate(format: string, date?: LiteralUnion<'now'>) {
+function convertDate(format: string, date?: LiteralUnion<'now'> | number) {
 	const isNow = date === 'now';
 
 	if (!isNow && !date) return null;
@@ -45,11 +46,15 @@ function convertDate(format: string, date?: LiteralUnion<'now'>) {
 }
 
 export const dateUtils = {
-	date: (date?: LiteralUnion<'now'>) => convertDate(formatDateView, date),
-	hour: (date?: LiteralUnion<'now'>) => convertDate(formatHour, date),
-	dateS: (date?: LiteralUnion<'now'>) =>
+	date: (date?: LiteralUnion<'now'> | number) =>
+		convertDate(formatDateView, date),
+	readable: (date?: LiteralUnion<'now'> | number) =>
+		convertDate(formatDate, date),
+	hour: (date?: LiteralUnion<'now'> | number) => convertDate(formatHour, date),
+	dateS: (date?: LiteralUnion<'now'> | number) =>
 		convertDate(formatDateStringView, date),
-	full: (date?: LiteralUnion<'now'>) => convertDate(formatFullView, date),
+	full: (date?: LiteralUnion<'now'> | number) =>
+		convertDate(formatFullView, date),
 };
 
 export {default as twColors} from 'tailwindcss/colors';
