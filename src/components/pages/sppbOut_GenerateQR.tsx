@@ -9,7 +9,7 @@ import {
 	Text as Txt,
 	TextProps,
 } from '@components';
-import {IMIConst} from '@constants';
+import {IMIConst, paperCont} from '@constants';
 import {CRUD_ENABLED, REJECT_REASON} from '@enum';
 import {
 	classNames,
@@ -30,7 +30,7 @@ function Td({className, ...props}: BorderTdProps) {
 	return (
 		<BorderTd
 			{...props}
-			rootClassName="!border"
+			style={{borderWidth: '0.5 !important'}}
 			className={classNames('font-light', font, className)}
 		/>
 	);
@@ -100,7 +100,10 @@ export function SPPBOutGenerateQR({
 	detail?: Partial<RouterOutput['print']['sppb']['out'][number]>;
 	width: number;
 }) {
-	const [width, height] = paperSizeCalculator(widthSize, {minus: 45});
+	const [width, height] = paperSizeCalculator(widthSize, {
+		minus: 45,
+		paperSize: paperCont,
+	});
 
 	const tagId = `data-${detail?.id}`;
 	const doc = detail?.dOutItems?.[0]?.dInItem?.dSJIn?.dKanbans?.[0]?.dDoc;

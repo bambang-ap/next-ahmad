@@ -6,6 +6,7 @@ import {useForm} from 'react-hook-form';
 
 import {ModalTypeSelect, TCustomerSPPBOutUpsert} from '@appTypes/app.type';
 import {Button, Form, Modal, ModalRef} from '@components';
+import {paperCont} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import {SppbOutModalChild} from '@pageComponent/ModalChildSppbOut';
@@ -20,7 +21,7 @@ export type FormValue = {
 	idSppbOuts?: MyObject<boolean>;
 } & TCustomerSPPBOutUpsert;
 
-const widthSize = 1250;
+const widthSize = 1100;
 
 export default function SPPBOUT() {
 	const {control, reset, unregister, watch, clearErrors, handleSubmit} =
@@ -59,9 +60,12 @@ export default function SPPBOUT() {
 			!isSelect && 'Action',
 		],
 		genPdfOptions: {
-			width: widthSize,
-			tagId: 'sppb-out-data-print',
+			debug: true,
 			splitPagePer: 1,
+			width: widthSize,
+			paperSize: paperCont,
+			tagId: 'sppb-out-data-print',
+			filename: 'surat-jalan-keluar',
 			useQuery: () =>
 				trpc.print.sppb.out.useQuery(
 					{ids: selectedIds},
