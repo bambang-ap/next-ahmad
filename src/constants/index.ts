@@ -23,8 +23,8 @@ export * from './sizes';
 export const ppnPercentage = 11;
 export const ppnMultiply = ppnPercentage * 0.01;
 
-export const gap = 'gap-px';
-export const padding = 'p-px';
+export const gap = 'gap-2';
+export const padding = 'p-2';
 
 export const IMIConst = {
 	title: 'Inventory PT. IMI',

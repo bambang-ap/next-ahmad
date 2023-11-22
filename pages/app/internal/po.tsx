@@ -32,6 +32,7 @@ import {
 	modalTypeParser,
 	moment,
 	numberFormat,
+	paperSizeCalculator,
 	renderItemAsIs,
 } from '@utils';
 import {trpc} from '@utils/trpc';
@@ -43,6 +44,8 @@ type FormType = {
 };
 
 InternalPo.getLayout = getLayout;
+
+const paperWidth = 750;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
@@ -64,9 +67,10 @@ export default function InternalPo() {
 		exportUseQuery: () =>
 			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
+			debug: true,
 			tagId: 'internal-po',
 			splitPagePer: 1,
-			width: 750,
+			width: paperWidth,
 			renderItem: item => <RenderPdf {...item} />,
 			useQuery: () =>
 				trpc.internal.po.pdf.useQuery({ids: selectedIds}, {enabled}),
@@ -326,6 +330,7 @@ function RenderModal({
 }
 
 function RenderPdf(props: RetPoInternal) {
+	const [width, height] = paperSizeCalculator(paperWidth, {minus: 45});
 	const {date, nomor_po, oPoItems, oSup, keterangan} = props;
 
 	const {jumlah, ppn, total} = oPoItems.reduce(
@@ -344,72 +349,91 @@ function RenderPdf(props: RetPoInternal) {
 	);
 
 	return (
-		<div className="w-full bg-white p-2 flex flex-col gap-2">
-			<table className="w-full">
-				<tr>
-					<BorderTd col>
-						<div>{IMIConst.shortName}</div>
-						<div>{IMIConst.name}</div>
-					</BorderTd>
-					<BorderTd>Purchase Order</BorderTd>
-					<BorderTd col>
-						<div>Tanggal Efektif</div>
-						<div>01/01/2011</div>
-					</BorderTd>
-				</tr>
-			</table>
+		<div style={{width, height}} className="bg-white p-4 flex flex-col gap-2">
+			<div className="flex flex-col flex-1 gap-2">
+				<table className="w-full">
+					<tr>
+						<BorderTd col>
+							<div className="text-red-500">{IMIConst.shortName}</div>
+							<div>{IMIConst.name}</div>
+						</BorderTd>
+						<BorderTd className="uppercase" center colSpan={2}>
+							Purchase Order
+						</BorderTd>
+						<BorderTd col>
+							<div>Tanggal Efektif</div>
+							<div>01/01/2011</div>
+						</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd center>IMI-FORM-PURC-01-04</BorderTd>
+						<BorderTd center>Revisi : 0</BorderTd>
+						<BorderTd center>Terbit : A</BorderTd>
+						<BorderTd center>Halaman 1 dari 1</BorderTd>
+					</tr>
+				</table>
 
-			<div>Tanggal {dateUtils.dateS(date)}</div>
+				<div>Tanggal {dateUtils.dateS(date)}</div>
 
-			<Wrapper title="No. P.O">{nomor_po}</Wrapper>
-			<Wrapper title="Kepada">
-				<div>{oSup?.nama}</div>
-				<div>{oSup?.alamat}</div>
-			</Wrapper>
-			<Wrapper title="Telp">{oSup?.telp!}</Wrapper>
+				<div className="flex flex-col gap-1 mb-2">
+					<Wrapper noPadding title="No. P.O">
+						{nomor_po}
+					</Wrapper>
+					<Wrapper noPadding title="Kepada">
+						<div>{oSup?.nama}</div>
+						<div>{oSup?.alamat}</div>
+					</Wrapper>
+					<Wrapper noPadding title="Telp">
+						{oSup?.telp!}
+					</Wrapper>
+				</div>
 
-			<table className="w-full">
-				<tr>
-					<BorderTd>NO.</BorderTd>
-					<BorderTd>Nama Barang</BorderTd>
-					<BorderTd>Qty</BorderTd>
-					<BorderTd>Satuan</BorderTd>
-					<BorderTd>Harga /Satuan</BorderTd>
-					<BorderTd>Jumlah</BorderTd>
-				</tr>
-				{oPoItems.map((item, index) => {
-					const {qty, unit, oItem} = item;
-					const sum = oItem?.harga! * qty;
+				<table className="w-full">
+					<tr>
+						<BorderTd>NO.</BorderTd>
+						<BorderTd>Nama Barang</BorderTd>
+						<BorderTd>Qty</BorderTd>
+						<BorderTd>Satuan</BorderTd>
+						<BorderTd>Harga /Satuan</BorderTd>
+						<BorderTd>Jumlah</BorderTd>
+					</tr>
+					{oPoItems.map((item, index) => {
+						const {qty, unit, oItem} = item;
+						const sum = oItem?.harga! * qty;
 
-					return (
-						<tr key={item.id}>
-							<BorderTd>{index + 1}</BorderTd>
-							<BorderTd>{oItem?.nama}</BorderTd>
-							<BorderTd>{qty}</BorderTd>
-							<BorderTd>{unit}</BorderTd>
-							<BorderTd>{numberFormat(oItem?.harga!)}</BorderTd>
-							<BorderTd>{numberFormat(sum)}</BorderTd>
-						</tr>
-					);
-				})}
-				<tr>
-					<BorderTd colSpan={5}>Jumlah</BorderTd>
-					<BorderTd>{numberFormat(jumlah)}</BorderTd>
-				</tr>
-				<tr>
-					<BorderTd colSpan={5}>PPn {ppnPercentage}%</BorderTd>
-					<BorderTd>{numberFormat(ppn)}</BorderTd>
-				</tr>
-				<tr>
-					<BorderTd colSpan={5}>Total</BorderTd>
-					<BorderTd>{numberFormat(total)}</BorderTd>
-				</tr>
-			</table>
+						return (
+							<tr key={item.id}>
+								<BorderTd>{index + 1}</BorderTd>
+								<BorderTd>{oItem?.nama}</BorderTd>
+								<BorderTd>{qty}</BorderTd>
+								<BorderTd>{unit}</BorderTd>
+								<BorderTd>{numberFormat(oItem?.harga!)}</BorderTd>
+								<BorderTd>{numberFormat(sum)}</BorderTd>
+							</tr>
+						);
+					})}
+					<tr>
+						<BorderTd colSpan={5}>Jumlah</BorderTd>
+						<BorderTd>{numberFormat(jumlah)}</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd colSpan={5}>PPn {ppnPercentage}%</BorderTd>
+						<BorderTd>{numberFormat(ppn)}</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd colSpan={5}>Total</BorderTd>
+						<BorderTd>{numberFormat(total)}</BorderTd>
+					</tr>
+				</table>
+			</div>
 
-			<Wrapper noColon title="Ket:">
+			<Wrapper noColon noPadding title="Ket:">
 				{keterangan!}
 			</Wrapper>
-			<div>Atas Perhatian dan Kerjasamanya kami ucapkan terima kasih.</div>
+
+			<div className="mb-2">
+				Atas Perhatian dan Kerjasamanya kami ucapkan terima kasih.
+			</div>
 
 			<div className="w-full flex justify-end">
 				<table className="w-2/3">
