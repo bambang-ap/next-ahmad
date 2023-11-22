@@ -65,7 +65,6 @@ export default function InternalSiIn() {
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		genPdfOptions: {
-			debug: true,
 			width: 750,
 			splitPagePer: 1,
 			tagId: 'internal-po',
