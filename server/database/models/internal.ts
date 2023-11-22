@@ -127,6 +127,7 @@ export function initOSjIn(sequelize: Sequelize) {
 			id_po: STRING,
 			sup_id: STRING,
 			no_sj: STRING,
+			no_lpb: STRING,
 		},
 		{
 			...defaultScope(sequelize),
@@ -144,6 +145,7 @@ export function initOInItem(sequelize: Sequelize) {
 			id: {type: STRING, primaryKey: true},
 			qty: ormDecimalType('qty'),
 			in_id: STRING,
+			keterangan: STRING,
 
 			id_item: STRING,
 

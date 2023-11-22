@@ -12,7 +12,7 @@ export type GenPdfProps<T, W extends UseTRPCQueryResult<T[], unknown>> = {
 	tagId: string;
 	width?: number;
 	splitPagePer?: number;
-	useQuery: () => W;
+	useQuery: () => W | T[];
 	renderItem: (item: NonNullable<W['data']>[number]) => JSX.Element;
 } & GenPdfOpts;
 
@@ -34,9 +34,16 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 	} = props;
 
 	const loader = useLoader();
-	const {data: datas, isFetched} = useQueries();
+	const query = useQueries();
 	const [isPrinting, setIsPrinting] = useState(false);
 	const [timeoutCount, setTimeoutCount] = useState(2500);
+
+	let queryOrData: W;
+
+	if (!Array.isArray(query)) queryOrData = query;
+	else queryOrData = {data: query, isFetched: true} as W;
+
+	const {data: datas, isFetched} = queryOrData;
 
 	const className = debug ? '' : 'h-0 overflow-hidden -z-10 fixed';
 

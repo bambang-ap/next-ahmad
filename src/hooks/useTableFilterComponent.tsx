@@ -1,4 +1,4 @@
-import {useRef} from 'react';
+import {Dispatch, SetStateAction, useEffect, useRef} from 'react';
 
 import {DeepPartialSkipArrayKey, FieldValues, useWatch} from 'react-hook-form';
 
@@ -58,6 +58,7 @@ type Props<
 	PT,
 	PQ extends UseTRPCQueryResult<PT[], unknown>,
 > = {
+	onDataChanged?: Dispatch<SetStateAction<T[]>>;
 	property?: P;
 	selector?: ObjKeyof<T>;
 	enabledExport?: boolean;
@@ -100,11 +101,12 @@ export function useTableFilterComponent<
 		genPdfOptions,
 		onExport,
 		afterPrint,
+		onDataChanged,
 		...tableProps
 	} = props;
 
 	const {formValue, hookForm} = useTableFilter();
-	const {data, refetch, isFetching} = useQuery(formValue);
+	const {data, refetch, isFetching, status} = useQuery(formValue);
 	const genPdfRef = useRef<GenPdfRef>(null);
 	const hasProp = !!property;
 
@@ -205,6 +207,10 @@ export function useTableFilterComponent<
 			/>
 		</>
 	);
+
+	useEffect(() => {
+		if (status === 'success') onDataChanged?.(data.rows);
+	}, [status, data]);
 
 	return {component, mutateOpts, loader, refetch};
 }

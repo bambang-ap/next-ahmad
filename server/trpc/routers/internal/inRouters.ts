@@ -23,6 +23,8 @@ import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
+export type InRetOutput = ReturnType<typeof internalInAttributes>['Ret'];
+
 async function itemUpdate(
 	transaction: Transaction,
 	sjIn: SSjIn,
@@ -131,19 +133,17 @@ export const inRouters = router({
 		});
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		type RetOutput = typeof Ret;
-
 		const {limit, page, id: id_po, search} = input;
-		const {Ret, inItem, sjIn, item, po, poItem, sup} = internalInAttributes();
+		const {inItem, sjIn, item, po, poItem, sup} = internalInAttributes();
 
 		return checkCredentialV2(
 			ctx,
-			async (): Promise<PagingResult<RetOutput>> => {
+			async (): Promise<PagingResult<InRetOutput>> => {
 				const searcher = {[Op.iLike]: `%${search}%`};
 
 				const where = !search
 					? undefined
-					: wherePagesV3<RetOutput>(
+					: wherePagesV3<InRetOutput>(
 							{'$oSup.nama$': searcher, '$oPo.nomor_po$': searcher},
 							'or',
 					  );
@@ -161,7 +161,7 @@ export const inRouters = router({
 					count,
 					page,
 					limit,
-					rows.map(e => e.toJSON() as unknown as RetOutput),
+					rows.map(e => e.toJSON() as unknown as InRetOutput),
 				);
 			},
 		);

@@ -666,6 +666,7 @@ export const sSjIn = zId.extend({
 	id_po: z.string().nullish(),
 	no_sj: z.string(),
 	date: zDecimal,
+	no_lpb: z.string().nullish(),
 });
 
 export type SInItem = z.infer<typeof sInItem>;
@@ -679,6 +680,7 @@ export const sInItem = zId.extend({
 	harga: z.string().nullish(),
 	kode: z.string().nullish(),
 	unit: tItemUnitInternal.nullish(),
+	keterangan: z.string().nullish(),
 });
 
 export type SInUpsertManual = z.infer<typeof sInUpsertManual>;

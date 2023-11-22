@@ -20,7 +20,7 @@ export * from './colors';
 export * from './pages';
 export * from './sizes';
 
-export const ppnPercentage = 11;
+export const ppnPercentage = 11 as const;
 export const ppnMultiply = ppnPercentage * 0.01;
 
 export const gap = 'gap-2';

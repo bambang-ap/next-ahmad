@@ -1,10 +1,12 @@
-import {FormEventHandler, Fragment, useRef} from 'react';
+import {FormEventHandler, Fragment, useRef, useState} from 'react';
 
 import {useForm, useWatch} from 'react-hook-form';
 
+import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SInUpsert} from '@appTypes/app.zod';
 import {
+	BorderTd,
 	Button,
 	Form,
 	Input,
@@ -16,10 +18,18 @@ import {
 	Table,
 	Text,
 } from '@components';
-import {selectUnitDataInternal} from '@constants';
+import {IMIConst, ppnPercentage, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
-import {formParser, modalTypeParser, renderItemAsIs} from '@utils';
+import type {InRetOutput} from '@trpc/routers/internal/inRouters';
+import {
+	dateUtils,
+	formParser,
+	modalTypeParser,
+	numberFormat,
+	ppnParser,
+	renderItemAsIs,
+} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -33,6 +43,7 @@ InternalSiIn.getLayout = getLayout;
 
 export default function InternalSiIn() {
 	const modalRef = useRef<ModalRef>(null);
+	const [dta, onDataChanged] = useState<InRetOutput[]>([]);
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
 	const dataForm = watch();
@@ -49,11 +60,20 @@ export default function InternalSiIn() {
 		reset,
 		control,
 		property,
+		onDataChanged,
 		exportRenderItem: renderItemAsIs,
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
-		useQuery: form => trpc.internal.in.get.useQuery(form),
+		genPdfOptions: {
+			debug: true,
+			width: 750,
+			splitPagePer: 1,
+			tagId: 'internal-po',
+			renderItem: item => <RenderPdf {...item} />,
+			useQuery: () => dta.filter(e => selectedIds.includes(e.id!)),
+		},
 		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Action'],
+		useQuery: form => trpc.internal.in.get.useQuery(form),
 		topComponent: (
 			<>
 				<Button onClick={() => showModal({type: 'add', isSelection: true})}>
@@ -355,6 +375,15 @@ function RenderModal({
 							</Cell>
 
 							<Cell>
+								<Input
+									control={control}
+									className="flex-1"
+									label="Keterangan"
+									fieldName={`form.oInItems.${i}.keterangan`}
+								/>
+							</Cell>
+
+							<Cell>
 								<Button icon="faTrash" onClick={() => removeItem(idItem)} />
 							</Cell>
 						</Fragment>
@@ -363,6 +392,151 @@ function RenderModal({
 			/>
 
 			<Button type="submit">Submit</Button>
+		</div>
+	);
+}
+
+function RenderPdf(props: InRetOutput) {
+	let jumlahValue = 0,
+		ppnValue = 0;
+
+	const {date, oInItems, oPo, no_lpb, oSup} = props;
+
+	const maxTableRow = 7;
+	const headers = [
+		'Kode',
+		'Jumlah',
+		'Satuan',
+		'Nama Barang & Spesifikasi',
+		'Hrg. / Stn.',
+		'Total',
+		'Keterangan',
+	];
+
+	return (
+		<div className="w-full bg-white p-4 flex flex-col gap-2">
+			<table className="w-full">
+				<tr>
+					<BorderTd col>
+						<div className="text-red-500">{IMIConst.shortName}</div>
+						<div>{IMIConst.name}</div>
+					</BorderTd>
+					<BorderTd className="uppercase" center colSpan={2}>
+						Purchase Order
+					</BorderTd>
+					<BorderTd col />
+				</tr>
+				<tr>
+					<BorderTd center>IMI-FORM-PURC-01-08</BorderTd>
+					<BorderTd className="justify-between" center>
+						<div>Revisi : 0</div>
+						<div>Terbit : A</div>
+					</BorderTd>
+					<BorderTd center>Hal 1 dari 1</BorderTd>
+					<BorderTd center>Tgl. Eff. 01/01/2011</BorderTd>
+				</tr>
+			</table>
+
+			<div className="flex">
+				<div className="flex-1">
+					<Wrapper smallPadding title="Tanggal">
+						{dateUtils.dateS(date)!}
+					</Wrapper>
+					<Wrapper smallPadding title="Supplier">
+						{oSup?.nama}
+					</Wrapper>
+				</div>
+				<div className="flex-1">
+					<Wrapper smallPadding title="No. LPB">
+						{no_lpb!}
+					</Wrapper>
+					<Wrapper smallPadding title="No. PO">
+						{oPo?.nomor_po}
+					</Wrapper>
+				</div>
+			</div>
+
+			<table>
+				<tr>
+					{headers.map(header => (
+						<BorderTd key={header} center>
+							{header}
+						</BorderTd>
+					))}
+				</tr>
+				{oInItems.map(item => {
+					const {id, qty, harga, unit, kode, nama, oPoItem, keterangan} = item;
+					const {oItem} = oPoItem ?? {};
+
+					const nameItem = oItem?.nama ?? nama;
+					const unitItem = oPoItem?.unit ?? unit;
+					const kodeItem = oItem?.kode ?? kode;
+					const hargaItem = parseFloat((oItem?.harga ?? harga)?.toString()!);
+					const jumlah = hargaItem * qty;
+
+					jumlahValue += jumlah;
+					ppnValue += ppnParser(!!oItem?.ppn, hargaItem, qty);
+
+					return (
+						<tr key={id}>
+							<BorderTd center>{kodeItem}</BorderTd>
+							<BorderTd center>{qty}</BorderTd>
+							<BorderTd center>{unitItem}</BorderTd>
+							<BorderTd>{nameItem}</BorderTd>
+							<BorderTd>{numberFormat(hargaItem, false)}</BorderTd>
+							<BorderTd>{numberFormat(jumlah, false)}</BorderTd>
+							<BorderTd>{keterangan}</BorderTd>
+						</tr>
+					);
+				})}
+				{Array.from({length: maxTableRow - oInItems.length}).map(() => (
+					<>
+						<tr>
+							{headers.map(header => (
+								<BorderTd key={header} className="text-transparent">
+									{header}
+								</BorderTd>
+							))}
+						</tr>
+					</>
+				))}
+				<tr>
+					<BorderTd colSpan={4} />
+					<BorderTd>Jumlah</BorderTd>
+					<BorderTd>{numberFormat(jumlahValue, false)}</BorderTd>
+					<BorderTd />
+				</tr>
+				<tr>
+					<BorderTd colSpan={4} />
+					<BorderTd>{`PPn ${ppnPercentage}%`}</BorderTd>
+					<BorderTd>{numberFormat(ppnValue, false)}</BorderTd>
+					<BorderTd />
+				</tr>
+				<tr>
+					<BorderTd colSpan={4} />
+					<BorderTd>Total</BorderTd>
+					<BorderTd>{numberFormat(jumlahValue + ppnValue, false)}</BorderTd>
+					<BorderTd />
+				</tr>
+			</table>
+
+			<div className="w-full mt-4 flex">
+				<div className="flex flex-col flex-1 items-center">
+					<div>Diperiksa</div>
+					<div className="h-16"></div>
+					<div>( ............................ )</div>
+				</div>
+				<div className="flex flex-col flex-1 items-center">
+					<div>Yang Menyerahkan</div>
+					<div className="h-16"></div>
+					<div>( ............................ )</div>
+				</div>
+				<div className="flex flex-col flex-1 items-center">
+					<div>Dibuat</div>
+					<div className="h-16"></div>
+					<div>( Bag. Gudang )</div>
+				</div>
+			</div>
 		</div>
 	);
 }
