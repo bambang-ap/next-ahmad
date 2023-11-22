@@ -1,8 +1,6 @@
 import {forwardRef, useEffect, useImperativeHandle, useState} from 'react';
 
-import {jsPDFOptions} from 'jspdf';
-
-import {ZId} from '@appTypes/app.type';
+import {GenPdfOpts, ZId} from '@appTypes/app.type';
 import {CheckBox} from '@components';
 import {useLoader} from '@hooks';
 import {UseTRPCQueryResult} from '@trpc/react-query/shared';
@@ -13,12 +11,10 @@ export type GenPdfProps<T, W extends UseTRPCQueryResult<T[], unknown>> = {
 	debug?: boolean;
 	tagId: string;
 	width?: number;
-	filename?: string;
 	splitPagePer?: number;
 	useQuery: () => W;
 	renderItem: (item: NonNullable<W['data']>[number]) => JSX.Element;
-	orientation?: jsPDFOptions['orientation'];
-};
+} & GenPdfOpts;
 
 export const GeneratePdfV2 = forwardRef(function GGenPdf<
 	T,
@@ -27,12 +23,14 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 	const {
 		tagId,
 		debug,
-		orientation,
-		filename = 'file',
 		width = 1600,
 		useQuery: useQueries,
 		splitPagePer,
 		renderItem,
+
+		paperSize,
+		orientation,
+		filename = 'file',
 	} = props;
 
 	const loader = useLoader();
@@ -58,7 +56,7 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 
 	async function generatePrint(timeout: number) {
 		await sleep(timeout);
-		await generatePDF(elementsId!, filename, orientation);
+		await generatePDF(elementsId!, {filename, orientation, paperSize});
 	}
 
 	async function generate(timeout = 2500) {

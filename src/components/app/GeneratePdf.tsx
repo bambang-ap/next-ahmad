@@ -1,8 +1,6 @@
 import {forwardRef, useImperativeHandle} from 'react';
 
-import {jsPDFOptions} from 'jspdf';
-
-import {ZId} from '@appTypes/app.type';
+import {GenPdfOpts, ZId} from '@appTypes/app.type';
 import {CheckBox} from '@components';
 import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 import {classNames, generatePDF, sleep} from '@utils';
@@ -12,12 +10,10 @@ export type GenPdfProps<T, W extends UseTRPCQueryResult<T, unknown>> = {
 	debug?: boolean;
 	tagId: string;
 	width?: string;
-	filename?: string;
 	splitPagePer?: number;
 	useQueries: () => W[];
 	renderItem: (item: W) => JSX.Element;
-	orientation?: jsPDFOptions['orientation'];
-};
+} & GenPdfOpts;
 
 export const GeneratePdf = forwardRef(function GGenPdf<
 	T,
@@ -26,12 +22,14 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 	const {
 		tagId,
 		debug,
-		orientation,
-		filename = 'file',
 		width = 'w-[1600px]',
 		useQueries,
 		splitPagePer,
 		renderItem,
+
+		paperSize,
+		orientation,
+		filename = 'file',
 	} = props;
 
 	const datas = useQueries();
@@ -54,7 +52,7 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 
 	async function generatePrint(timeout = 2500) {
 		await sleep(timeout);
-		generatePDF(elementsId, filename, orientation);
+		generatePDF(elementsId, {filename, orientation, paperSize});
 	}
 
 	useImperativeHandle(ref, () => {

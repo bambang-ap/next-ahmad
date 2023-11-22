@@ -94,6 +94,8 @@ import type {
 	TUser,
 } from './app.zod';
 
+import {jsPDFOptions} from 'jspdf';
+
 type D = ReturnType<typeof menuAttributes>;
 
 export type MenuT = D['Ret'];
@@ -108,6 +110,11 @@ export type TDataScan = {dataKanban: RouterOutput['kanban']['get']} & TScan;
 export type UQty = typeof qtyList[number];
 export type UQtyList = `qty${UQty}`;
 
+/**
+ * In millimeter
+ */
+export type PaperSize = [width: number, height: number];
+
 export type PagingResult<T> = {
 	rows: T[];
 	count: number;
@@ -115,6 +122,12 @@ export type PagingResult<T> = {
 	totalPage: number;
 	limit: number;
 	debug?: unknown;
+};
+
+export type GenPdfOpts = {
+	filename?: string;
+	paperSize?: PaperSize;
+	orientation?: jsPDFOptions['orientation'];
 };
 
 export type KanbanGetRow = TKanban & {

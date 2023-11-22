@@ -1,14 +1,14 @@
 import {ReactNode} from 'react';
 
 import classnames from 'clsx';
-import jsPDF, {jsPDFOptions} from 'jspdf';
+import jsPDF from 'jspdf';
 import clone from 'just-clone';
 import * as momentTz from 'moment-timezone';
 import objectPath from 'object-path';
 import {DeepPartialSkipArrayKey, FieldPath, FieldValues} from 'react-hook-form';
 import * as XLSX from 'xlsx';
 
-import {Route, RouterOutput, UnitQty} from '@appTypes/app.type';
+import {GenPdfOpts, Route, RouterOutput, UnitQty} from '@appTypes/app.type';
 import {ModalTypeSelect, TScanItem, TScanTarget} from '@appTypes/app.zod';
 import {
 	decimalSchema,
@@ -368,12 +368,17 @@ export function toBase64(
 	};
 }
 
-export async function generatePDF(
-	ids: string[],
-	filename = 'a4',
-	orientation: jsPDFOptions['orientation'] = 'p',
-) {
-	let doc = new jsPDF({unit: 'mm', orientation, format: 'a4'});
+export async function generatePDF(ids: string[], options?: GenPdfOpts) {
+	const {
+		filename = 'a4',
+		orientation = 'p',
+		paperSize = paperA4,
+	} = options ?? {};
+
+	const isPortrait = orientation === 'p' || orientation === 'portrait';
+
+	let doc = new jsPDF({unit: 'mm', orientation, format: paperSize});
+
 	doc.addFileToVFS(calibri_normal.filename, calibri_normal.font);
 	doc.addFont(
 		calibri_normal.filename,
@@ -383,8 +388,7 @@ export async function generatePDF(
 
 	const pageHeight = doc.internal.pageSize.getHeight();
 	const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
-	const scaleWidth =
-		orientation === 'p' || orientation === 'portrait' ? paperA4[0] : paperA4[1];
+	const scaleWidth = isPortrait ? paperSize[0] : paperSize[1];
 
 	for (let index = 0; index < elements.length; index++) {
 		const element = elements[index];
@@ -423,10 +427,10 @@ export async function generatePDF(
 
 export function paperSizeCalculator(
 	width: number,
-	options?: {orientation?: jsPDFOptions['orientation']; minus?: number},
+	options?: Omit<GenPdfOpts, 'filename'> & {minus?: number},
 ): [width: number, height: number] {
-	const {orientation = 'p', minus = 0} = options ?? {};
-	const [a, b] = paperA4;
+	const {orientation = 'p', minus = 0, paperSize = paperA4} = options ?? {};
+	const [a, b] = paperSize;
 	const isPortrait = orientation === 'p' || orientation === 'portrait';
 	const scale = isPortrait ? a / b : b / a;
 	const height = width / scale;

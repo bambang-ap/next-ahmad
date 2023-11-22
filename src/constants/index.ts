@@ -5,6 +5,7 @@ import {z} from 'zod';
 
 import {
 	AppRouter,
+	PaperSize,
 	TDashboardView,
 	TItemUnit,
 	TMasterItem,
@@ -84,7 +85,8 @@ export const SidebarCollapseOn: Breakpoint = 'sm';
 
 export const ScanTarget: TScanTarget[] = ['produksi', 'qc', 'finish_good'];
 
-export const paperA4: [width: number, height: number] = [210, 297];
+export const paperA4: PaperSize = [210, 297];
+export const paperCont: PaperSize = [241.3, 279.4];
 
 export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'total', label: 'Total Records'},
