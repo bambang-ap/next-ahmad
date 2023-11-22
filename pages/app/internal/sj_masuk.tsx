@@ -422,7 +422,7 @@ function RenderPdf(props: InRetOutput) {
 						<div>{IMIConst.name}</div>
 					</BorderTd>
 					<BorderTd className="uppercase" center colSpan={2}>
-						Purchase Order
+						Laporan Penerimaan Barang
 					</BorderTd>
 					<BorderTd col />
 				</tr>
@@ -522,7 +522,7 @@ function RenderPdf(props: InRetOutput) {
 
 			<div className="w-full mt-4 flex">
 				<div className="flex flex-col flex-1 items-center">
-					<div>Diperiksa</div>
+					<div>Di periksa</div>
 					<div className="h-16"></div>
 					<div>( ............................ )</div>
 				</div>
@@ -532,7 +532,7 @@ function RenderPdf(props: InRetOutput) {
 					<div>( ............................ )</div>
 				</div>
 				<div className="flex flex-col flex-1 items-center">
-					<div>Dibuat</div>
+					<div>Di buat</div>
 					<div className="h-16"></div>
 					<div>( Bag. Gudang )</div>
 				</div>

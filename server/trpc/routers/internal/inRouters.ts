@@ -19,7 +19,7 @@ import {
 	oStock,
 	wherePagesV3,
 } from '@database';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
@@ -168,14 +168,25 @@ export const inRouters = router({
 	}),
 
 	upsert_manual: procedure.input(sInUpsertManual).mutation(({ctx, input}) => {
-		const {oInItems, id: id_sj_in, ...sjIn} = input ?? {};
+		const {oInItems, id: id_sj_in, no_lpb, ...sjIn} = input ?? {};
 
 		return checkCredentialV2(ctx, async () => {
 			const transaction = await ORM.transaction();
 
 			try {
+				const lpb_no = await genInvoice(
+					oSjIn,
+					'',
+					value => value?.no_lpb ?? '0001',
+					'no_lpb',
+				);
+
 				const [generatedSjIn] = await oSjIn.upsert(
-					{...sjIn, id: id_sj_in ?? generateId('ISIN-')},
+					{
+						...sjIn,
+						no_lpb: no_lpb ?? lpb_no,
+						id: id_sj_in ?? generateId('ISIN-'),
+					},
 					{transaction},
 				);
 
@@ -205,14 +216,24 @@ export const inRouters = router({
 	}),
 
 	upsert: procedure.input(sInUpsert).mutation(({ctx, input}) => {
-		const {oInItems, id: id_sj_in, ...sjIn} = input ?? {};
+		const {oInItems, id: id_sj_in, no_lpb, ...sjIn} = input ?? {};
 
 		return checkCredentialV2(ctx, async () => {
 			const transaction = await ORM.transaction();
 
 			try {
+				const lpb_no = await genInvoice(
+					oSjIn,
+					'',
+					value => value?.no_lpb ?? '0001',
+					'no_lpb',
+				);
 				const [generatedSjIn] = await oSjIn.upsert(
-					{...sjIn, id: id_sj_in ?? generateId('ISIN-')},
+					{
+						...sjIn,
+						no_lpb: no_lpb ?? lpb_no,
+						id: id_sj_in ?? generateId('ISIN-'),
+					},
 					{transaction},
 				);
 
@@ -232,6 +253,7 @@ export const inRouters = router({
 			}
 		});
 	}),
+
 	delete: procedure.input(zId).mutation(({ctx, input}) => {
 		const {inItem, poItem} = internalInAttributes();
 
