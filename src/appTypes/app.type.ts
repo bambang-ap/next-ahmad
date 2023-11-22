@@ -1,3 +1,4 @@
+import {jsPDFOptions} from 'jspdf';
 import {FieldValues, UseFormReturn} from 'react-hook-form';
 
 import {qtyList} from '@constants';
@@ -93,8 +94,6 @@ import type {
 	TScan,
 	TUser,
 } from './app.zod';
-
-import {jsPDFOptions} from 'jspdf';
 
 type D = ReturnType<typeof menuAttributes>;
 

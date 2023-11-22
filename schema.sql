@@ -274,7 +274,8 @@ CREATE TABLE public.internal_sj_in (
     date character varying(30),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    no_sj character varying(47)
+    no_sj character varying(47),
+    no_lpb character varying(100)
 );
 
 
@@ -294,7 +295,8 @@ CREATE TABLE public.internal_sj_in_item (
     unit character varying(20),
     harga numeric,
     kode character varying(100),
-    nama character varying(100)
+    nama character varying(100),
+    keterangan character varying(100)
 );
 
 
