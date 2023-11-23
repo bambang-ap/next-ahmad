@@ -60,7 +60,6 @@ export default function SPPBOUT() {
 			!isSelect && 'Action',
 		],
 		genPdfOptions: {
-			debug: true,
 			splitPagePer: 1,
 			width: widthSize,
 			paperSize: paperCont,
