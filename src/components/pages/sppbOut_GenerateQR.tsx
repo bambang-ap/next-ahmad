@@ -29,13 +29,15 @@ const {Tr} = Table;
 
 const font = '';
 
-function TableBorder({
+export function TableBorder({
 	children,
+	className,
 	width = 0.1,
-}: PropsWithChildren<{width?: number}>) {
+	width2,
+}: PropsWithChildren<{className?: string; width?: number; width2?: number}>) {
 	const id = useMemo(() => generateId('table-'), []);
 
-	const width2 = width * 10;
+	const secondWidth = width2 !== undefined ? width2 : width * 10;
 
 	const style = `
 		#${id} td {
@@ -43,19 +45,19 @@ function TableBorder({
 		}
 
 		#${id} tr td:first-child {
-			border-left-width: ${width2}px;
+			border-left-width: ${secondWidth}px;
 		}
 		
 		#${id} tr td:last-child {
-			border-right-width: ${width2}px;
+			border-right-width: ${secondWidth}px;
 		}
 		
 		#${id} tr:first-child td {
-			border-top-width: ${width2}px;
+			border-top-width: ${secondWidth}px;
 		}
 		
 		#${id} tr:last-child td {
-			border-bottom-width: ${width2}px;
+			border-bottom-width: ${secondWidth}px;
 		}		
 	`;
 
@@ -64,7 +66,9 @@ function TableBorder({
 			<Head>
 				<style type="text/css">{style}</style>
 			</Head>
-			<table id={id}>{children}</table>
+			<table className={className} id={id}>
+				{children}
+			</table>
 		</>
 	);
 }

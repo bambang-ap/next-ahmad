@@ -5,7 +5,7 @@ import {DataProcess} from '@trpc/routers/kanban/get';
 import {classNames, dateUtils, moment} from '@utils';
 import {trpc} from '@utils/trpc';
 
-import {TxtBold} from './sppbOut_GenerateQR';
+import {TableBorder, TxtBold} from './sppbOut_GenerateQR';
 
 function Text(props: TextProps) {
 	return <Txt {...props} color="black" />;
@@ -188,19 +188,18 @@ export function RenderKanbanCardV2(props: AProps) {
 				<tr>
 					<BorderTd className="text-base">Part No</BorderTd>
 					<BorderTd colSpan={2}>{OrmMasterItem?.kode_item}</BorderTd>
-					<BorderTd colSpan={2} center className="text-base">
+					<BorderTd center className="text-base">
 						PROCESS
 					</BorderTd>
 					<BorderTd center className="text-base">
 						MATERIAL
 					</BorderTd>
+					<BorderTd rowSpan={3}>{image && <img alt="" src={image} />}</BorderTd>
 				</tr>
 				<tr>
 					<BorderTd className="text-base">Part Name</BorderTd>
 					<BorderTd colSpan={2}>{OrmMasterItem?.name}</BorderTd>
-					<BorderTd rowSpan={2} colSpan={2}>
-						{rest?.process.join(' & ')}
-					</BorderTd>
+					<BorderTd rowSpan={2}>{rest?.process.join(' & ')}</BorderTd>
 					<BorderTd rowSpan={2}>{rest?.material.join(' & ')}</BorderTd>
 				</tr>
 				<tr>
@@ -210,11 +209,10 @@ export function RenderKanbanCardV2(props: AProps) {
 				<tr>
 					<BorderTd className="text-base">Mesin</BorderTd>
 					<BorderTd colSpan={2}>{rest?.nomorMesin?.join(', ')}</BorderTd>
-					<BorderTd className="flex-col" rowSpan={3} top>
-						<Text>Keterangan :</Text>
+					<BorderTd className="flex-col" colSpan={2} top>
+						<Text>Note :</Text>
 						<Text>{keterangan}</Text>
 					</BorderTd>
-					<BorderTd rowSpan={3}>{image && <img alt="" src={image} />}</BorderTd>
 					<BorderTd rowSpan={3}>
 						{!!qrImage && <img src={qrImage as string} alt="" />}
 					</BorderTd>
@@ -225,6 +223,33 @@ export function RenderKanbanCardV2(props: AProps) {
 					</BorderTd>
 					<BorderTd className={class1}>{`${qty1} ${unit1}`}</BorderTd>
 					<BorderTd className={class2}>{`${qty2} ${unit2}`}</BorderTd>
+					<BorderTd colSpan={2} rowSpan={2} rootClassName="!p-0">
+						<TableBorder width={1} width2={0} className="w-full h-full">
+							<tr>
+								<BorderTd rowSpan={2}>Item Check ( Visual)</BorderTd>
+								<BorderTd colSpan={2}>Incoming</BorderTd>
+							</tr>
+							<tr>
+								<BorderTd>Yes</BorderTd>
+								<BorderTd>No</BorderTd>
+							</tr>
+							<tr>
+								<BorderTd>Rust</BorderTd>
+								<BorderTd></BorderTd>
+								<BorderTd></BorderTd>
+							</tr>
+							<tr>
+								<BorderTd>Scale</BorderTd>
+								<BorderTd></BorderTd>
+								<BorderTd></BorderTd>
+							</tr>
+							<tr>
+								<BorderTd>Mixed</BorderTd>
+								<BorderTd></BorderTd>
+								<BorderTd></BorderTd>
+							</tr>
+						</TableBorder>
+					</BorderTd>
 				</tr>
 				<tr>
 					<BorderTd className={class3}>{`${qty3} ${unit3}`}</BorderTd>
