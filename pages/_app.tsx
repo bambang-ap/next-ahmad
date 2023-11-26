@@ -65,10 +65,6 @@ function App(props: AppProps) {
 			<CacheProvider value={emotionCache}>
 				<Head>
 					<title>IMI Inventory</title>
-					<link
-						rel="stylesheet"
-						href="https://fonts.cdnfonts.com/css/calibri-light"
-					/>
 					<meta
 						name="viewport"
 						content="width=device-width, initial-scale=1, shrink-to-fit=no"

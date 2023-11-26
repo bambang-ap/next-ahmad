@@ -14,6 +14,10 @@ export default class MyDocument extends Document {
 					<link rel="preconnect" href="https://fonts.gstatic.com" />
 					<link
 						rel="stylesheet"
+						href="https://fonts.cdnfonts.com/css/calibri-light"
+					/>
+					<link
+						rel="stylesheet"
 						href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400&display=swap"
 					/>
 				</Head>

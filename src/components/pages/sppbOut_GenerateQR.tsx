@@ -1,4 +1,6 @@
-import {PropsWithChildren} from 'react';
+import {PropsWithChildren, useMemo} from 'react';
+
+import Head from 'next/head';
 
 import {Wrapper, WrapperProps} from '@appComponent/Wrapper';
 import {RouterOutput, TInstruksiKanban} from '@appTypes/app.type';
@@ -14,6 +16,7 @@ import {CRUD_ENABLED, REJECT_REASON} from '@enum';
 import {
 	classNames,
 	dateUtils,
+	generateId,
 	itemInScanParser,
 	paperSizeCalculator,
 	qtyMap,
@@ -26,11 +29,50 @@ const {Tr} = Table;
 
 const font = '';
 
+function TableBorder({
+	children,
+	width = 0.1,
+}: PropsWithChildren<{width?: number}>) {
+	const id = useMemo(() => generateId('table-'), []);
+
+	const width2 = width * 10;
+
+	const style = `
+		#${id} td {
+			border-width: ${width}px;
+		}
+
+		#${id} tr td:first-child {
+			border-left-width: ${width2}px;
+		}
+		
+		#${id} tr td:last-child {
+			border-right-width: ${width2}px;
+		}
+		
+		#${id} tr:first-child td {
+			border-top-width: ${width2}px;
+		}
+		
+		#${id} tr:last-child td {
+			border-bottom-width: ${width2}px;
+		}		
+	`;
+
+	return (
+		<>
+			<Head>
+				<style type="text/css">{style}</style>
+			</Head>
+			<table id={id}>{children}</table>
+		</>
+	);
+}
+
 function Td({className, ...props}: BorderTdProps) {
 	return (
 		<BorderTd
 			{...props}
-			style={{borderWidth: '0.5 !important'}}
 			className={classNames('font-light', font, className)}
 		/>
 	);
@@ -165,7 +207,7 @@ export function SPPBOutGenerateQR({
 						</div>
 					</div>
 				</div>
-				<table>
+				<TableBorder>
 					<Tr>
 						<Td center>No</Td>
 						<Td center>Nama Barang</Td>
@@ -253,7 +295,7 @@ export function SPPBOutGenerateQR({
 							</>
 						);
 					})}
-				</table>
+				</TableBorder>
 			</div>
 			<div className="flex justify-between gap-2 p-4 border border-black">
 				<Sign>Penerima,</Sign>
