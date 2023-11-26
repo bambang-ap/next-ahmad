@@ -17,7 +17,7 @@ export function RenderPdfData({
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
-		<div className={classNames('p-2', className, cuttingLineClassName)}>
+		<div className={classNames('p-4', className, cuttingLineClassName)}>
 			<div className={classNames(gap, padding, 'flex flex-col bg-black')}>
 				<div className={classNames('flex', gap)}>
 					<div className="bg-white flex justify-center flex-1 p-1">

@@ -72,7 +72,6 @@ export default function InternalSiIn() {
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		genPdfOptions: {
-			debug: true,
 			width: 750,
 			paperSize: paperLpb,
 			splitPagePer: 2,
