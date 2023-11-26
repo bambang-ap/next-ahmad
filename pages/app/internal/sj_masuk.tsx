@@ -46,8 +46,6 @@ type FormType = {
 
 InternalSiIn.getLayout = getLayout;
 
-const ww = 750;
-
 export default function InternalSiIn() {
 	const modalRef = useRef<ModalRef>(null);
 	const [dta, onDataChanged] = useState<InRetOutput[]>([]);
