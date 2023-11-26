@@ -429,7 +429,7 @@ export function paperSizeCalculator(
 	width: number,
 	options?: Omit<GenPdfOpts, 'filename'> & {minus?: number},
 ): [width: number, height: number] {
-	const {orientation = 'p', minus = 0, paperSize = paperA4} = options ?? {};
+	const {orientation = 'p', minus = 45, paperSize = paperA4} = options ?? {};
 	const [a, b] = paperSize;
 	const isPortrait = orientation === 'p' || orientation === 'portrait';
 	const scale = isPortrait ? a / b : b / a;

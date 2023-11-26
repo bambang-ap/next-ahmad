@@ -92,7 +92,8 @@ function stockUpdate(
 					{transaction},
 				);
 			} else {
-				const val = stock.toJSON();
+				// eslint-disable-next-line @typescript-eslint/no-unused-vars
+				const {createdAt: _, ...val} = stock.toJSON();
 				await oStock.upsert({...val, qty: val.qty + qty}, {transaction});
 			}
 		}

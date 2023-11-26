@@ -83,7 +83,8 @@ export async function genInvoice<T extends object, P extends string>(
 	const countString = (parseInt(counterResult ?? '0') + 1)
 		.toString()
 		.padStart(length, '0');
-	return `${prefix}/${countString}`;
+	// @ts-ignore
+	return `${!!prefix ? `${prefix}/` : ''}${countString}`;
 }
 
 export function pagingResult<T extends unknown>(

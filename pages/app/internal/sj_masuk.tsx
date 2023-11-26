@@ -18,9 +18,14 @@ import {
 	Table,
 	Text,
 } from '@components';
-import {IMIConst, ppnPercentage, selectUnitDataInternal} from '@constants';
+import {
+	IMIConst,
+	paperLpb,
+	ppnPercentage,
+	selectUnitDataInternal,
+} from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponent} from '@hooks';
+import {useSession, useTableFilterComponent} from '@hooks';
 import type {InRetOutput} from '@trpc/routers/internal/inRouters';
 import {
 	dateUtils,
@@ -40,6 +45,8 @@ type FormType = {
 };
 
 InternalSiIn.getLayout = getLayout;
+
+const ww = 750;
 
 export default function InternalSiIn() {
 	const modalRef = useRef<ModalRef>(null);
@@ -65,8 +72,11 @@ export default function InternalSiIn() {
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		genPdfOptions: {
+			debug: true,
 			width: 750,
-			splitPagePer: 1,
+			paperSize: paperLpb,
+			splitPagePer: 2,
+			orientation: 'l',
 			tagId: 'internal-po',
 			renderItem: item => <RenderPdf {...item} />,
 			useQuery: () => dta.filter(e => selectedIds.includes(e.id!)),
@@ -242,6 +252,7 @@ function RenderModal({
 				/>
 			)}
 
+			<Input control={control} fieldName="form.no_sj" label="NO SJ" />
 			<Input type="date" control={control} fieldName="form.date" label="Date" />
 
 			<Table
@@ -398,7 +409,7 @@ function RenderModal({
 function RenderPdf(props: InRetOutput) {
 	let jumlahValue = 0,
 		ppnValue = 0;
-
+	const session = useSession();
 	const {date, oInItems, oPo, no_lpb, oSup} = props;
 
 	const maxTableRow = 7;
@@ -406,14 +417,14 @@ function RenderPdf(props: InRetOutput) {
 		'Kode',
 		'Jumlah',
 		'Satuan',
-		'Nama Barang & Spesifikasi',
+		'Nama Barang',
 		'Hrg. / Stn.',
 		'Total',
 		'Keterangan',
 	];
 
 	return (
-		<div className="w-full bg-white p-4 flex flex-col gap-2">
+		<div className="bg-white p-4 flex flex-col gap-2">
 			<table className="w-full">
 				<tr>
 					<BorderTd col>
@@ -523,16 +534,19 @@ function RenderPdf(props: InRetOutput) {
 				<div className="flex flex-col flex-1 items-center">
 					<div>Di periksa</div>
 					<div className="h-16"></div>
+					<div className="text-transparent">{session?.data.user?.name}</div>
 					<div>( ............................ )</div>
 				</div>
 				<div className="flex flex-col flex-1 items-center">
 					<div>Yang Menyerahkan</div>
 					<div className="h-16"></div>
+					<div className="text-transparent">{session?.data.user?.name}</div>
 					<div>( ............................ )</div>
 				</div>
 				<div className="flex flex-col flex-1 items-center">
 					<div>Di buat</div>
 					<div className="h-16"></div>
+					<div>{session?.data.user?.name}</div>
 					<div>( Bag. Gudang )</div>
 				</div>
 			</div>
