@@ -18,7 +18,9 @@ import {
 	Table,
 } from '@components';
 import {
+	cuttingLineClassName,
 	IMIConst,
+	paperF4,
 	ppnMultiply,
 	ppnPercentage,
 	selectUnitDataInternal,
@@ -27,12 +29,12 @@ import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
 import {
+	classNames,
 	dateUtils,
 	formParser,
 	modalTypeParser,
 	moment,
 	numberFormat,
-	paperSizeCalculator,
 	renderItemAsIs,
 } from '@utils';
 import {trpc} from '@utils/trpc';
@@ -45,7 +47,7 @@ type FormType = {
 
 InternalPo.getLayout = getLayout;
 
-const paperWidth = 750;
+const paperWidth = 1106;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
@@ -69,9 +71,15 @@ export default function InternalPo() {
 		genPdfOptions: {
 			debug: true,
 			tagId: 'internal-po',
-			splitPagePer: 1,
+			splitPagePer: 2,
 			width: paperWidth,
-			renderItem: item => <RenderPdf {...item} />,
+			orientation: 'l',
+			paperSize: paperF4,
+			renderItem: item => (
+				<div className={classNames('w-1/2', cuttingLineClassName)}>
+					<RenderPdf {...item} />
+				</div>
+			),
 			useQuery: () =>
 				trpc.internal.po.pdf.useQuery({ids: selectedIds}, {enabled}),
 		},
@@ -330,7 +338,7 @@ function RenderModal({
 }
 
 function RenderPdf(props: RetPoInternal) {
-	const [width, height] = paperSizeCalculator(paperWidth, {minus: 45});
+	// const [width, height] = paperSizeCalculator(paperWidth, {minus: 45});
 	const {date, nomor_po, oPoItems, oSup, keterangan} = props;
 
 	const {jumlah, ppn, total} = oPoItems.reduce(
@@ -349,7 +357,8 @@ function RenderPdf(props: RetPoInternal) {
 	);
 
 	return (
-		<div style={{width, height}} className="bg-white p-4 flex flex-col gap-2">
+		<div
+			/* style={{width, height}} */ className="w-full h-full bg-white p-4 flex flex-col gap-2">
 			<div className="flex flex-col flex-1 gap-2">
 				<table className="w-full">
 					<tr>

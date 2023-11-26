@@ -8,10 +8,12 @@ import {
 	internalPoAttributes,
 	oPo,
 	oPoItem,
+	ORM,
 	wherePagesV3,
 } from '@database';
 import {checkCredentialV2, genInvoice, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 import {generateId, moment} from '@utils';
 
 export type RetPoInternal = ReturnType<typeof internalPoAttributes>['Ret'];
@@ -94,26 +96,48 @@ export const poRouters = router({
 		const {oPoItems: dSPoItems, oSup: dSSUp, id: id_po, ...po} = input ?? {};
 
 		return checkCredentialV2(ctx, async () => {
-			const [generatedPo] = await oPo.upsert({
-				...po,
-				id: id_po ?? generateId('IPO-'),
-			});
+			const transaction = await ORM.transaction();
 
-			const includedId = dSPoItems.map(e => e.id).filter(Boolean);
-			const items = dSPoItems.map(async item => {
-				// eslint-disable-next-line @typescript-eslint/no-unused-vars
-				const {id, oItem: dSItem, ...poItem} = item;
-				await oPoItem.upsert({
-					...poItem,
-					id: id ?? generateId('IPOI-'),
-					id_po: generatedPo.dataValues.id,
+			try {
+				const [generatedPo] = await oPo.upsert(
+					{...po, id: id_po ?? generateId('IPO-')},
+					{transaction},
+				);
+
+				const existingPoItems = await oPoItem.findAll({
+					logging: true,
+					where: {id_po, id: {[Op.notIn]: dSPoItems.map(e => e.id!)}},
 				});
-			});
 
-			await oPoItem.destroy({where: {id: {[Op.notIn]: includedId}}});
-			await Promise.all(items);
+				const excludedId = existingPoItems.map(e => e.toJSON().id);
+				const items = dSPoItems.map(async item => {
+					// eslint-disable-next-line @typescript-eslint/no-unused-vars
+					const {id, oItem: dSItem, ...poItem} = item;
+					await oPoItem.upsert(
+						{
+							...poItem,
+							id: id ?? generateId('IPOI-'),
+							id_po: generatedPo.dataValues.id,
+						},
+						{transaction},
+					);
+				});
 
-			return Success;
+				if (excludedId.length > 0) {
+					await oPoItem.destroy({
+						transaction,
+						where: {id: excludedId},
+					});
+				}
+
+				await Promise.all(items);
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				throw new TRPCError({code: 'BAD_REQUEST'});
+			}
 		});
 	}),
 	delete: procedure.input(zId).mutation(({ctx, input}) => {
