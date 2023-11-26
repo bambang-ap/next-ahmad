@@ -392,7 +392,7 @@ export async function generatePDF(ids: string[], options?: GenPdfOpts) {
 
 	for (let index = 0; index < elements.length; index++) {
 		const element = elements[index];
-		if (index + 1 < elements.length) doc.addPage('a4', orientation);
+		if (index + 1 < elements.length) doc.addPage(paperSize, orientation);
 		doc = await htmlPage(doc, element!, index);
 	}
 
