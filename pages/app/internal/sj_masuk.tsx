@@ -78,7 +78,7 @@ export default function InternalSiIn() {
 			renderItem: item => <RenderPdf {...item} />,
 			useQuery: () => dta.filter(e => selectedIds.includes(e.id!)),
 		},
-		header: ['No', 'Nama Supplier', 'Nomor PO', 'Date', 'Action'],
+		header: ['No', 'Nama Supplier', 'Nomor PO', 'Nomor SJ', 'Date', 'Action'],
 		useQuery: form => trpc.internal.in.get.useQuery(form),
 		topComponent: (
 			<>
@@ -91,13 +91,14 @@ export default function InternalSiIn() {
 			</>
 		),
 		renderItem: ({Cell, CellSelect, item}, index) => {
-			const {date, oPo} = item;
+			const {date, no_sj, oPo} = item;
 			return (
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{item.oSup?.nama}</Cell>
 					<Cell>{oPo?.nomor_po}</Cell>
+					<Cell>{no_sj}</Cell>
 					<Cell>{date}</Cell>
 					<Cell className="gap-2">
 						<Button

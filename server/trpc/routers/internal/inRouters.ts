@@ -145,7 +145,11 @@ export const inRouters = router({
 				const where = !search
 					? undefined
 					: wherePagesV3<InRetOutput>(
-							{'$oSup.nama$': searcher, '$oPo.nomor_po$': searcher},
+							{
+								'$oSup.nama$': searcher,
+								'$oPo.nomor_po$': searcher,
+								no_sj: searcher,
+							},
 							'or',
 					  );
 
