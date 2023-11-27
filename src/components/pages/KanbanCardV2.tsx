@@ -224,7 +224,16 @@ export function RenderKanbanCardV2(props: AProps) {
 					<BorderTd className={class1}>{`${qty1} ${unit1}`}</BorderTd>
 					<BorderTd className={class2}>{`${qty2} ${unit2}`}</BorderTd>
 					<BorderTd colSpan={2} rowSpan={2} rootClassName="!p-0">
-						<TableBorder width={1} width2={0} className="w-full h-full">
+						<TableBorder
+							unit="px"
+							width={0.1}
+							className="w-full h-full"
+							anotherCss={id => `
+								${id} tr:last-child td{border-bottom-width:0;}
+								${id} tr td:first-child{border-left-width:0;}
+								${id} tr td:last-child{border-right-width:0;}
+								${id} tr:first-child td{border-top-width:0}
+							`}>
 							<tr>
 								<BorderTd rowSpan={2}>Item Check ( Visual)</BorderTd>
 								<BorderTd colSpan={2}>Incoming</BorderTd>

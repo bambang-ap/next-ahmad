@@ -32,33 +32,36 @@ const font = '';
 export function TableBorder({
 	children,
 	className,
-	width = 0.1,
+	width = 0.01,
 	width2,
-}: PropsWithChildren<{className?: string; width?: number; width2?: number}>) {
+	anotherCss,
+	unit = 'em',
+}: PropsWithChildren<{
+	unit?: 'px' | 'em';
+	className?: string;
+	width?: number;
+	width2?: number;
+	anotherCss?: (id: string) => string;
+}>) {
 	const id = useMemo(() => generateId('table-'), []);
+	const idTag = `#${id}`;
 
-	const secondWidth = width2 !== undefined ? width2 : width * 10;
+	const secondWidth = width2 !== undefined ? width2 : width * 2;
 
 	const style = `
-		#${id} td {
-			border-width: ${width}px;
+		${idTag} td {
+			border-width: ${width}${unit} ${width}${unit} 0 0;
 		}
 
-		#${id} tr td:first-child {
-			border-left-width: ${secondWidth}px;
+		${idTag} tr td:first-child {
+			border-left-width: ${secondWidth}${unit};
 		}
-		
-		#${id} tr td:last-child {
-			border-right-width: ${secondWidth}px;
+
+		${idTag} tr:last-child td {
+			border-bottom-width: ${secondWidth}${unit};
 		}
-		
-		#${id} tr:first-child td {
-			border-top-width: ${secondWidth}px;
-		}
-		
-		#${id} tr:last-child td {
-			border-bottom-width: ${secondWidth}px;
-		}		
+
+		${!!anotherCss ? anotherCss(idTag) : ''}
 	`;
 
 	return (
