@@ -104,10 +104,11 @@ export const poRouters = router({
 					{transaction},
 				);
 
-				const existingPoItems = await oPoItem.findAll({
-					logging: true,
-					where: {id_po, id: {[Op.notIn]: dSPoItems.map(e => e.id!)}},
-				});
+				const existingPoItems = id_po
+					? await oPoItem.findAll({
+							where: {id_po, id: {[Op.notIn]: dSPoItems.map(e => e.id!)}},
+					  })
+					: [];
 
 				const excludedId = existingPoItems.map(e => e.toJSON().id);
 				const items = dSPoItems.map(async item => {

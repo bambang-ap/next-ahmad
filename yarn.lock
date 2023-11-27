@@ -3077,9 +3077,9 @@ glob@^8.0.3:
     minimatch "^5.0.1"
     once "^1.3.0"
 
-global-methods@bambang-ap/global-methods#2.2.4:
-  version "2.2.4"
-  resolved "https://codeload.github.com/bambang-ap/global-methods/tar.gz/dd0a14fa800864e91f7d210b8729388d1eb9c27c"
+global-methods@bambang-ap/global-methods#2.3.1:
+  version "2.3.1"
+  resolved "https://codeload.github.com/bambang-ap/global-methods/tar.gz/c2e6253899da9f0bcd2491c2d0c3afe3d53bcb25"
 
 globals@^13.15.0, globals@^13.19.0:
   version "13.20.0"
