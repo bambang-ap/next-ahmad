@@ -8,6 +8,7 @@ import {useSetRecoilState} from 'recoil';
 import {Wrapper as Wrp, WrapperProps} from '@appComponent/Wrapper';
 import {Route} from '@appTypes/app.type';
 import {Form, Modal, ModalRef} from '@components';
+import {cuttingLineClassName} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
@@ -15,7 +16,7 @@ import {RenderData} from '@pageComponent/scan/list/RenderData';
 import {RenderPdfData} from '@pageComponent/scan/list/RenderPdfData';
 import {TxtBold} from '@pageComponent/sppbOut_GenerateQR';
 import {atomHeaderTitle} from '@recoil/atoms';
-import {getIds, modalTypeParser, scanRouterParser} from '@utils';
+import {classNames, getIds, modalTypeParser, scanRouterParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 ScanListData.getLayout = getLayout;
@@ -82,7 +83,11 @@ function RenderScanList() {
 					width: 2050,
 					tagId: `${route}-generated`,
 					renderItem: data => (
-						<RenderPdfData className="w-1/2" data={data!} route={route} />
+						<div
+							key={data.id_kanban}
+							className={classNames('w-1/2 p-6', cuttingLineClassName)}>
+							<RenderPdfData data={data!} route={route} />
+						</div>
 					),
 					useQuery: () =>
 						trpc.print.scan.useQuery(

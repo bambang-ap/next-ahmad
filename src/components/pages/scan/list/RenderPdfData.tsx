@@ -1,7 +1,7 @@
 import {Route} from 'pages/app/scan/[route]';
 import {Text, Wrapper} from 'pages/app/scan/[route]/list';
 
-import {cuttingLineClassName, gap, padding} from '@constants';
+import {gap, padding} from '@constants';
 import {printScanAttributes} from '@database';
 import {classNames, moment, scanMapperByStatus} from '@utils';
 
@@ -9,15 +9,11 @@ import {RenderItems} from './RenderItem';
 
 export type D = ReturnType<typeof printScanAttributes>['Ret'];
 
-export function RenderPdfData({
-	data,
-	route,
-	className,
-}: Route & {data: D; className?: string}) {
+export function RenderPdfData({data, route}: Route & {data: D}) {
 	const [, , , , /* formName */ cardName] = scanMapperByStatus(route);
 
 	return (
-		<div className={classNames('p-4', className, cuttingLineClassName)}>
+		<>
 			<div className={classNames(gap, padding, 'flex flex-col bg-black')}>
 				<div className={classNames('flex', gap)}>
 					<div className="bg-white flex justify-center flex-1 p-1">
@@ -50,6 +46,6 @@ export function RenderPdfData({
 				<Wrapper title="Nomor Lot IMI">{data?.lot_no_imi}</Wrapper>
 				<RenderItems data={data} />
 			</div>
-		</div>
+		</>
 	);
 }

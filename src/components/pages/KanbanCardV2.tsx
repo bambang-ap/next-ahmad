@@ -239,7 +239,7 @@ export function RenderKanbanCardV2(props: AProps) {
 								<BorderTd></BorderTd>
 							</tr>
 							<tr>
-								<BorderTd>Scale</BorderTd>
+								<BorderTd>Deformation</BorderTd>
 								<BorderTd></BorderTd>
 								<BorderTd></BorderTd>
 							</tr>
