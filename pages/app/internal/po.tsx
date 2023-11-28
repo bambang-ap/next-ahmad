@@ -243,12 +243,7 @@ function RenderModal({
 				)}
 			</div>
 
-			<Input
-				control={control}
-				defaultValue={invoice}
-				fieldName="form.keterangan"
-				label="Keterangan"
-			/>
+			<Input control={control} fieldName="form.keterangan" label="Keterangan" />
 
 			<Table
 				topComponent={
