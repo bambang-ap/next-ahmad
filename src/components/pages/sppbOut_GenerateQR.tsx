@@ -13,6 +13,7 @@ import {
 } from '@components';
 import {IMIConst, paperCont} from '@constants';
 import {CRUD_ENABLED, REJECT_REASON} from '@enum';
+import {useSession} from '@hooks';
 import {
 	classNames,
 	dateUtils,
@@ -113,14 +114,14 @@ function Section({
 	);
 }
 
-function Sign({children}: PropsWithChildren) {
+function Sign({children, name}: PropsWithChildren<{name?: string}>) {
 	return (
 		<div className="flex flex-col w-full items-center">
 			<TxtBold className={font}>{children}</TxtBold>
 			<div className="h-16" />
 			<div className="flex w-full justify-center">
 				<TxtBold>(</TxtBold>
-				<div className="w-1/2" />
+				<div className="w-1/2 text-center">{name}</div>
 				<TxtBold>)</TxtBold>
 			</div>
 		</div>
@@ -149,6 +150,7 @@ export function SPPBOutGenerateQR({
 	detail?: Partial<RouterOutput['print']['sppb']['out'][number]>;
 	width: number;
 }) {
+	const session = useSession();
 	const [width, height] = paperSizeCalculator(widthSize, {
 		minus: 45,
 		paperSize: paperCont,
@@ -161,7 +163,7 @@ export function SPPBOutGenerateQR({
 		<div
 			id={tagId}
 			style={{width, height}}
-			className={classNames('flex flex-col gap-2 p-4', 'justify-between')}>
+			className={classNames('flex flex-col gap-2 p-4 pr-8', 'justify-between')}>
 			<div className="flex flex-col gap-2 flex-1">
 				<div className="flex flex-col gap-2 p-4 border border-black">
 					<div className="flex justify-between">
@@ -308,7 +310,7 @@ export function SPPBOutGenerateQR({
 				<Sign>Penerima,</Sign>
 				<Sign>Keamanan,</Sign>
 				<Sign>Mengetahui,</Sign>
-				<Sign>Pembuat,</Sign>
+				<Sign name={session.data.user?.name}>Pembuat,</Sign>
 			</div>
 			<div className="flex gap-2">
 				<TxtBold>Putih : Accounting</TxtBold>
