@@ -154,7 +154,7 @@ export function initOInItem(sequelize: Sequelize) {
 			unit: STRING,
 		},
 		{
-			...defaultScope(sequelize),
+			...defaultScope(sequelize, false),
 			tableName: INTERNAL_TABLES.SJ_IN_ITEM,
 		},
 	);
@@ -192,7 +192,7 @@ export function initOOut(sequelize: Sequelize) {
 			qty: ormDecimalType('qty'),
 		},
 		{
-			...defaultScope(sequelize),
+			...defaultScope(sequelize, false),
 			tableName: INTERNAL_TABLES.OUT,
 		},
 	);

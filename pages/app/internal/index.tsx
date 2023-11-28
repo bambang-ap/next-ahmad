@@ -1,4 +1,4 @@
-import {FieldValues, useForm} from 'react-hook-form';
+import {useForm} from 'react-hook-form';
 
 import {TDashboardInternal} from '@appTypes/app.zod';
 import {ButtonGroup, Input, SelectPropsData} from '@components';
@@ -15,35 +15,7 @@ const data: SelectPropsData<TDashboardInternal>[] = [
 	{value: 'transaksi', label: 'Nilai Transaksi'},
 ];
 
-type J<F extends FieldValues> = F & {
-	filter: {
-		from: string;
-		to: string;
-	};
-};
-
-function useDateFilter<F extends FieldValues, K extends J<F>>() {
-	const form = useForm<K>();
-
-	const component = (
-		<>
-			<Input
-				type="date"
-				fieldName=""
-				label="Dari Tanggal"
-				control={form.control}
-			/>
-			<Input
-				type="date"
-				fieldName="filter.to"
-				control={form.control}
-				label="Sampai Tanggal"
-			/>
-		</>
-	);
-
-	return {form, component};
-}
+// TODO: create useDateFilter hooks
 
 export default function Internal() {
 	const today = moment();

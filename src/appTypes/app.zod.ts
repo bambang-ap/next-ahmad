@@ -732,3 +732,6 @@ export const sOutBarang = zId.extend({
 	keterangan: z.string().nullish(),
 	createdAt: z.string().optional(),
 });
+
+export type TDateFilter = z.infer<typeof tDateFilter>;
+export const tDateFilter = z.object({from: z.string(), to: z.string()});
