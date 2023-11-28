@@ -26,7 +26,8 @@ import {
 	selectUnitDataInternal,
 } from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponent} from '@hooks';
+import {useSession, useTableFilterComponent} from '@hooks';
+import {TableBorder} from '@pageComponent/sppbOut_GenerateQR';
 import type {RetPoInternal} from '@trpc/routers/internal/poRouters';
 import {
 	classNames,
@@ -47,7 +48,7 @@ type FormType = {
 
 InternalPo.getLayout = getLayout;
 
-const paperWidth = 1106;
+const paperWidth = 1525;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
@@ -69,6 +70,7 @@ export default function InternalPo() {
 		exportUseQuery: () =>
 			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
+			debug: true,
 			tagId: 'internal-po',
 			splitPagePer: 2,
 			width: paperWidth,
@@ -248,7 +250,7 @@ function RenderModal({
 			<Table
 				topComponent={
 					<Button className="w-full" onClick={addItem}>
-						Tambah Item
+						{`Tambah Item (Max ${maxItem} Items / page)`}
 					</Button>
 				}
 				data={form?.oPoItems}
@@ -273,6 +275,9 @@ function RenderModal({
 								control={control}
 								fieldName={`form.oPoItems.${i}.qty`}
 							/>
+							<Cell width="5%">
+								<InputDummy byPassValue={i + 1} label="No" />
+							</Cell>
 							<Cell width="30%">
 								<Select
 									key={keyItem}
@@ -331,8 +336,13 @@ function RenderModal({
 	);
 }
 
+const maxItem = 10;
+
 function RenderPdf(props: RetPoInternal) {
 	// const [width, height] = paperSizeCalculator(paperWidth, {minus: 45});
+	const {
+		data: {user},
+	} = useSession();
 	const {date, nomor_po, oPoItems, oSup, keterangan} = props;
 
 	const {jumlah, ppn, total} = oPoItems.reduce(
@@ -350,11 +360,16 @@ function RenderPdf(props: RetPoInternal) {
 		{jumlah: 0, ppn: 0, total: 0},
 	);
 
+	const itemRender = oPoItems.concat(
+		// @ts-ignore
+		Array.from({length: maxItem - oPoItems.length}).fill(null),
+	);
+
 	return (
 		<div
 			/* style={{width, height}} */ className="w-full h-full bg-white p-4 flex flex-col gap-2">
 			<div className="flex flex-col flex-1 gap-2">
-				<table className="w-full">
+				<TableBorder className="w-full">
 					<tr>
 						<BorderTd col>
 							<div className="text-red-500">{IMIConst.shortName}</div>
@@ -374,24 +389,26 @@ function RenderPdf(props: RetPoInternal) {
 						<BorderTd center>Terbit : A</BorderTd>
 						<BorderTd center>Halaman 1 dari 1</BorderTd>
 					</tr>
-				</table>
+				</TableBorder>
 
-				<div>Tanggal {dateUtils.dateS(date)}</div>
+				<div className="flex justify-between">
+					<div className="flex flex-1 flex-col gap-1 mb-2">
+						<Wrapper noPadding title="No. P.O">
+							{nomor_po}
+						</Wrapper>
+						<Wrapper noPadding title="Kepada">
+							<div>{oSup?.nama}</div>
+							<div>{oSup?.alamat}</div>
+						</Wrapper>
+						<Wrapper noPadding title="Telp">
+							{oSup?.telp!}
+						</Wrapper>
+					</div>
 
-				<div className="flex flex-col gap-1 mb-2">
-					<Wrapper noPadding title="No. P.O">
-						{nomor_po}
-					</Wrapper>
-					<Wrapper noPadding title="Kepada">
-						<div>{oSup?.nama}</div>
-						<div>{oSup?.alamat}</div>
-					</Wrapper>
-					<Wrapper noPadding title="Telp">
-						{oSup?.telp!}
-					</Wrapper>
+					<div>Tanggal {dateUtils.dateS(date)}</div>
 				</div>
 
-				<table className="w-full">
+				<TableBorder className="w-full">
 					<tr>
 						<BorderTd>NO.</BorderTd>
 						<BorderTd>Nama Barang</BorderTd>
@@ -400,7 +417,20 @@ function RenderPdf(props: RetPoInternal) {
 						<BorderTd>Harga /Satuan</BorderTd>
 						<BorderTd>Jumlah</BorderTd>
 					</tr>
-					{oPoItems.map((item, index) => {
+					{itemRender.map((item, index) => {
+						if (!item) {
+							return (
+								<tr key={uuid()}>
+									<BorderTd className="text-transparent">null</BorderTd>
+									<BorderTd />
+									<BorderTd />
+									<BorderTd />
+									<BorderTd />
+									<BorderTd />
+								</tr>
+							);
+						}
+
 						const {qty, unit, oItem} = item;
 						const sum = oItem?.harga! * qty;
 
@@ -427,7 +457,7 @@ function RenderPdf(props: RetPoInternal) {
 						<BorderTd colSpan={5}>Total</BorderTd>
 						<BorderTd>{numberFormat(total)}</BorderTd>
 					</tr>
-				</table>
+				</TableBorder>
 			</div>
 
 			<Wrapper noColon noPadding title="Ket:">
@@ -439,7 +469,7 @@ function RenderPdf(props: RetPoInternal) {
 			</div>
 
 			<div className="w-full flex justify-end">
-				<table className="w-2/3">
+				<TableBorder className="w-2/3">
 					<tr>
 						<BorderTd center>Prepared</BorderTd>
 						<BorderTd center>Checked</BorderTd>
@@ -451,15 +481,15 @@ function RenderPdf(props: RetPoInternal) {
 						<BorderTd height={75}></BorderTd>
 					</tr>
 					<tr>
-						<BorderTd className="text-transparent">.</BorderTd>
+						<BorderTd center>{user?.name}</BorderTd>
 						<BorderTd className="text-transparent">.</BorderTd>
 						<BorderTd className="text-transparent">.</BorderTd>
 					</tr>
-				</table>
+				</TableBorder>
 			</div>
 
-			<div className="text-center">{`${IMIConst.address1}, ${IMIConst.address2}`}</div>
-			<div className="text-center">{`Telp : ${IMIConst.phone} Fax : ${IMIConst.fax} e-mail : ${IMIConst.email}`}</div>
+			<div className="text-center text-sm">{`${IMIConst.address1}, ${IMIConst.address2}`}</div>
+			<div className="text-center text-sm">{`Telp : ${IMIConst.phone} Fax : ${IMIConst.fax} e-mail : ${IMIConst.email}`}</div>
 		</div>
 	);
 }
