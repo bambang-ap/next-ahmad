@@ -163,7 +163,10 @@ export function SPPBOutGenerateQR({
 		<div
 			id={tagId}
 			style={{width, height}}
-			className={classNames('flex flex-col gap-2 p-4 pr-8', 'justify-between')}>
+			className={classNames(
+				'flex flex-col gap-2 p-4 pr-24',
+				'justify-between',
+			)}>
 			<div className="flex flex-col gap-2 flex-1">
 				<div className="flex flex-col gap-2 p-4 border border-black">
 					<div className="flex justify-between">
@@ -218,18 +221,32 @@ export function SPPBOutGenerateQR({
 				</div>
 				<TableBorder>
 					<Tr>
-						<Td center>No</Td>
-						<Td center>Nama Barang</Td>
+						<Td width="3%" center>
+							No
+						</Td>
+						<Td width="24%" center>
+							Nama Barang
+						</Td>
 						{qtyList.map(num => (
-							<Td center key={num}>
+							<Td width="7%" center key={num}>
 								Qty {num}
 							</Td>
 						))}
-						<Td center>Lot No</Td>
-						<Td center>Lot No IMI</Td>
-						<Td center>No PO</Td>
-						<Td center>SJ Masuk</Td>
-						<Td center>Proses</Td>
+						<Td width="10%" center>
+							Lot No
+						</Td>
+						<Td width="10%" center>
+							Lot No IMI
+						</Td>
+						<Td width="10%" center>
+							No PO
+						</Td>
+						<Td width="10%" center>
+							SJ Masuk
+						</Td>
+						<Td width="17%" center>
+							Proses
+						</Td>
 					</Tr>
 
 					{detail?.dOutItems?.map((itemm, index) => {
