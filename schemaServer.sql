@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.3
+-- Dumped from database version 15.3 (Debian 15.3-1.pgdg110+1)
 -- Dumped by pg_dump version 15.3
 
 SET statement_timeout = 0;
@@ -198,11 +198,11 @@ ALTER TABLE public.internal_item OWNER TO postgres;
 CREATE TABLE public.internal_out_barang (
     id character varying(47) NOT NULL,
     id_stock character varying(47),
-    qty character varying(47),
     keterangan character varying(255),
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
-    "user" character varying(100)
+    "user" character varying(100),
+    qty numeric
 );
 
 
