@@ -1,4 +1,4 @@
-import {Dispatch, SetStateAction, useEffect, useRef} from 'react';
+import {Dispatch, SetStateAction, useEffect, useMemo, useRef} from 'react';
 
 import {DeepPartialSkipArrayKey, FieldValues, useWatch} from 'react-hook-form';
 
@@ -112,6 +112,8 @@ export function useTableFilterComponent<
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	const {mutateOpts, ...loader} = useLoader();
+
+	const genPdfKey = useMemo(uuid, []);
 	const dataForm = useWatch({control});
 	const exportData = useExport(
 		{loader, renderItem: exportRenderItem},
@@ -175,7 +177,9 @@ export function useTableFilterComponent<
 	const component = (
 		<>
 			{loader.component}
-			{enabledPdf && <GeneratePdfV2 ref={genPdfRef} {...genPdfOptions} />}
+			{enabledPdf && (
+				<GeneratePdfV2 key={genPdfKey} ref={genPdfRef} {...genPdfOptions} />
+			)}
 			<TableFilter
 				{...tableProps}
 				form={hookForm}

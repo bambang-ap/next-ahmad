@@ -112,7 +112,7 @@ export type UQtyList = `qty${UQty}`;
 /**
  * In millimeter
  */
-export type PaperSize = [width: number, height: number];
+export type PaperSize = [height: number, width: number];
 
 export type PagingResult<T> = {
 	rows: T[];

@@ -70,11 +70,11 @@ export default function InternalSiIn() {
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		genPdfOptions: {
-			width: 750,
+			width: 965,
 			paperSize: paperLpb,
-			splitPagePer: 2,
+			splitPagePer: 1,
 			orientation: 'l',
-			tagId: 'internal-po',
+			tagId: 'internal-sj-in',
 			renderItem: item => <RenderPdf {...item} />,
 			useQuery: () => dta.filter(e => selectedIds.includes(e.id!)),
 		},
@@ -410,7 +410,7 @@ function RenderPdf(props: InRetOutput) {
 	const session = useSession();
 	const {date, oInItems, oPo, no_lpb, oSup} = props;
 
-	const maxTableRow = 7;
+	const maxTableRow = 6;
 	const headers = [
 		'Kode',
 		'Jumlah',
@@ -422,7 +422,7 @@ function RenderPdf(props: InRetOutput) {
 	];
 
 	return (
-		<div className="bg-white p-4 flex flex-col gap-2">
+		<div className="w-full bg-white p-8 flex flex-col gap-2">
 			<table className="w-full">
 				<tr>
 					<BorderTd col>
