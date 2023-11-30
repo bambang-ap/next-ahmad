@@ -163,12 +163,9 @@ export function SPPBOutGenerateQR({
 		<div
 			id={tagId}
 			style={{width, height}}
-			className={classNames(
-				'flex flex-col gap-2 p-4 pr-24',
-				'justify-between',
-			)}>
+			className={classNames('flex flex-col gap-2 p-8', 'justify-between')}>
 			<div className="flex flex-col gap-2 flex-1">
-				<div className="flex flex-col gap-2 p-4 border border-black">
+				<div className="flex flex-col gap-2 p-2 py-4 border border-black">
 					<div className="flex justify-between">
 						<div className="flex flex-1 flex-col">
 							<TxtBold className="font-semibold">{IMIConst.name}</TxtBold>
