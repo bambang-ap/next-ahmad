@@ -4,14 +4,12 @@ import {
 	literal,
 	Model,
 	ModelStatic,
-	Op,
 	Order,
 	Sequelize,
 } from 'sequelize';
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from 'zod';
 
 import {Context, TMasterItem} from '@appTypes/app.type';
-import {TDateFilter} from '@appTypes/app.zod';
 import {
 	defaultExcludeColumn,
 	defaultExcludeColumns,
@@ -144,11 +142,4 @@ export function NumberOrderAttribute<T extends {}>(
 	order: LiteralUnion<ObjKeyof<T>>,
 ) {
 	return [literal(`ROW_NUMBER() OVER (ORDER BY ${order})`), 'number'] as const;
-}
-
-export function whereDateFilter(
-	field: string,
-	{filterFrom, filterTo}: Partial<TDateFilter>,
-): any {
-	return {[field]: {[Op.and]: [{[Op.gte]: filterFrom}, {[Op.lte]: filterTo}]}};
 }

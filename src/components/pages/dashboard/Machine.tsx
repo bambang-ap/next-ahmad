@@ -1,13 +1,21 @@
+import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
+import {FormProps} from '@appTypes/app.type';
 import {Gallery} from '@baseComps/Gallery';
 import {useTickerText} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 import {qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
-export default function MachineDashboard() {
-	const {data, isFetching} = trpc.dashboard.machine.list.useQuery();
+import {J} from '.';
+
+export default function MachineDashboard({control}: FormProps<J>) {
+	const {filterFrom, filterTo} = useWatch({control});
+	const {data, isFetching} = trpc.dashboard.machine.list.useQuery({
+		filterFrom,
+		filterTo,
+	});
 	const {isLoadingText} = useTickerText(isFetching);
 
 	const isMobile = useRecoilValue(atomIsMobile);
@@ -40,12 +48,14 @@ export default function MachineDashboard() {
 							<div className="border border-black" />
 							{qtyMap(({num, qtyKey, unitKey}) => {
 								const {planning, produksi, unit} = item.data;
-								const qtyPlanning = planning[qtyKey];
-								const qtyProduksi = produksi[qtyKey];
+								const qtyPlanning = planning[qtyKey] ?? 0;
+								const qtyProduksi = produksi[qtyKey] ?? 0;
+
+								const plan1 = planning.qty1;
 
 								if (num === 1) return null;
 
-								if (!qtyPlanning || qtyPlanning == 0) return null;
+								if (!plan1 && (!qtyPlanning || qtyPlanning == 0)) return null;
 
 								return (
 									<div className="flex flex-1 justify-center py-2">

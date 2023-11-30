@@ -2,14 +2,14 @@ import {Path} from 'react-hook-form';
 import {col, Op, WhereAttributeHashValue} from 'sequelize';
 import {Primitive} from 'zod';
 
-export function groupPages<T extends {}>(
-	searchKey: Path<ObjectNonArray<T>>,
-): any {
+import {TDateFilter} from '@appTypes/app.zod';
+
+export function groupPages<T extends {}>(searchKey: L1<T>): any {
 	return searchKey;
 }
 
 export function orderPages<T extends {}>(
-	searchKey: Partial<Record<Path<ObjectNonArray<T>>, boolean>>,
+	searchKey: Partial<Record<L1<T>, boolean>>,
 ): any {
 	return entries(searchKey).map(([key, value]) => {
 		return [col(key), value ? 'asc' : 'desc'];
@@ -42,7 +42,7 @@ export function wherePages(
 }
 
 export function wherePagesV2<T extends {}>(
-	searchKey: (Path<ObjectNonArray<T>> | `$${Path<ObjectNonArray<T>>}$`)[],
+	searchKey: L2<T>[],
 	search?: string | WhereAttributeHashValue<any>,
 	like = true,
 ): any {
@@ -67,12 +67,12 @@ export function wherePagesV3<T extends {}>(
 	};
 }
 
+type L1<T extends {}> = Path<ObjectNonArray<T>>;
+type L2<T extends {}> = `$${Path<ObjectNonArray<T>>}$`;
+type L<T extends {}> = L1<T> | L2<T>;
 type U<T extends {}> = ['or' | 'and', O<T>];
 type O<T extends {}> = Partial<
-	Record<
-		Path<ObjectNonArray<T>> | `$${Path<ObjectNonArray<T>>}$`,
-		Primitive | WhereAttributeHashValue<any>
-	>
+	Record<L<T>, Primitive | WhereAttributeHashValue<any>>
 >;
 
 export function wherePagesV4<T extends {}>(
@@ -89,4 +89,16 @@ export function wherePagesV4<T extends {}>(
 			}),
 		};
 	}, {});
+}
+
+export function whereDateFilter<T extends {}>(
+	field: LiteralUnion<L<T>>,
+	{filterFrom, filterTo}: Partial<TDateFilter>,
+): any {
+	uuid;
+	return {
+		[field as string]: {
+			[Op.and]: [{[Op.gte]: filterFrom}, {[Op.lte]: filterTo}],
+		},
+	};
 }

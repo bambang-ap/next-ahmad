@@ -1,15 +1,21 @@
 import {Op} from 'sequelize';
 
-import {dashboardMesinAttributes, wherePagesV3} from '@database';
+import {tDateFilter} from '@appTypes/app.zod';
+import {
+	dashboardMesinAttributes,
+	whereDateFilter,
+	wherePagesV3,
+} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 import {qtyMap} from '@utils';
 
 const machineDashboardRouters = router({
-	list: procedure.query(({ctx}) => {
+	list: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		const {
 			Ret: ARet,
 			Rett: ARett,
+			rootRet,
 			katMesin,
 			knbItem,
 			inItem,
@@ -23,12 +29,23 @@ const machineDashboardRouters = router({
 		type Rett = typeof ARett;
 
 		return checkCredentialV2(ctx, async () => {
+			const {filterFrom, filterTo} = input;
+
+			const dateFilter =
+				!!filterFrom && !!filterTo
+					? whereDateFilter<Ret>(`$${rootRet}.createdAt$`, input)
+					: {};
+
 			const scnItemData = await scnItem.model.findAll({
+				logging: true,
 				attributes: scnItem.attributes,
-				where: wherePagesV3<Ret>({
-					'$dScan.status$': 'produksi',
-					'$dKnbItem.id_mesin$': {[Op.not]: null},
-				}),
+				where: {
+					...dateFilter,
+					...wherePagesV3<Ret>({
+						'$dScan.status$': 'produksi',
+						'$dKnbItem.id_mesin$': {[Op.not]: null},
+					}),
+				},
 				include: [
 					{
 						...knbItem,
@@ -43,6 +60,7 @@ const machineDashboardRouters = router({
 
 			return scnItemData.reduce<Rett>((ret, e) => {
 				const val = e.toJSON() as unknown as Ret;
+
 				const mesinId = val.dKnbItem.dMesin?.id || 'tempId';
 				const {
 					item_from_kanban,
