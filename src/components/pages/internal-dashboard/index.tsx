@@ -9,9 +9,12 @@ import {trpc} from '@utils/trpc';
 type K = {calculated?: boolean} & FormProps<FormType, 'control'>;
 
 export function InternalDashboard({control, calculated}: K) {
-	const {from, to} = useWatch({control});
+	const {filterFrom, filterTo} = useWatch({control});
 
-	const {data: dashboardData} = trpc.internal.dashboard.useQuery({from, to});
+	const {data: dashboardData} = trpc.internal.dashboard.useQuery({
+		filterFrom,
+		filterTo,
+	});
 
 	const dataEntries = entries(dashboardData);
 

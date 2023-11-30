@@ -734,4 +734,7 @@ export const sOutBarang = zId.extend({
 });
 
 export type TDateFilter = z.infer<typeof tDateFilter>;
-export const tDateFilter = z.object({from: z.string(), to: z.string()});
+export const tDateFilter = z.object({
+	filterFrom: z.string(),
+	filterTo: z.string(),
+});

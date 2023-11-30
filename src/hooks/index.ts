@@ -1,4 +1,5 @@
 export * from './useAuth';
+export * from './useDateFilter';
 export * from './useExport';
 export * from './useKanban';
 export * from './useLoader';

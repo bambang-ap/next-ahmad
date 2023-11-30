@@ -148,7 +148,7 @@ export function NumberOrderAttribute<T extends {}>(
 
 export function whereDateFilter(
 	field: string,
-	{from, to}: Partial<TDateFilter>,
+	{filterFrom, filterTo}: Partial<TDateFilter>,
 ): any {
-	return {[field]: {[Op.and]: [{[Op.gte]: from}, {[Op.lte]: to}]}};
+	return {[field]: {[Op.and]: [{[Op.gte]: filterFrom}, {[Op.lte]: filterTo}]}};
 }
