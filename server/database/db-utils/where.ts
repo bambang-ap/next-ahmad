@@ -42,7 +42,7 @@ export function wherePages(
 }
 
 export function wherePagesV2<T extends {}>(
-	searchKey: L2<T>[],
+	searchKey: L<T>[],
 	search?: string | WhereAttributeHashValue<any>,
 	like = true,
 ): any {
