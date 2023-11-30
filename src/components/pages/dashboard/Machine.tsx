@@ -38,10 +38,12 @@ export default function MachineDashboard() {
 								<div className="text-xl font-bold">Produksi</div>
 							</div>
 							<div className="border border-black" />
-							{qtyMap(({qtyKey, unitKey}) => {
+							{qtyMap(({num, qtyKey, unitKey}) => {
 								const {planning, produksi, unit} = item.data;
 								const qtyPlanning = planning[qtyKey];
 								const qtyProduksi = produksi[qtyKey];
+
+								if (num === 1) return null;
 
 								if (!qtyPlanning || qtyPlanning == 0) return null;
 

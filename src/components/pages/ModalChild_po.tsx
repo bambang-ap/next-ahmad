@@ -219,6 +219,7 @@ export default function PoModalChild({
 													label="Unit"
 													control={control}
 													className="flex-1"
+													placeholder={presetUnit}
 													defaultValue={presetUnitValue}
 													shouldUnregister={shouldUnregister}
 													fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
