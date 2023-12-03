@@ -152,7 +152,7 @@ export function SPPBOutGenerateQR({
 }) {
 	const session = useSession();
 	const [width, height] = paperSizeCalculator(widthSize, {
-		minus: 45,
+		minus: 25,
 		paperSize: paperCont,
 	});
 
@@ -163,7 +163,7 @@ export function SPPBOutGenerateQR({
 		<div
 			id={tagId}
 			style={{width, height}}
-			className={classNames('flex flex-col gap-2 p-8', 'justify-between')}>
+			className={classNames('flex flex-col gap-2 p-4', 'justify-between')}>
 			<div className="flex flex-col gap-2 flex-1">
 				<div className="flex flex-col gap-2 p-2 py-4 border border-black">
 					<div className="flex justify-between">
@@ -221,7 +221,7 @@ export function SPPBOutGenerateQR({
 						<Td width="3%" center>
 							No
 						</Td>
-						<Td width="24%" center>
+						<Td width="21%" center>
 							Nama Barang
 						</Td>
 						{qtyList.map(num => (
@@ -241,7 +241,7 @@ export function SPPBOutGenerateQR({
 						<Td width="10%" center>
 							SJ Masuk
 						</Td>
-						<Td width="17%" center>
+						<Td width="20%" center>
 							Proses
 						</Td>
 					</Tr>
