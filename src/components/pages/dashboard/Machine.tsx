@@ -5,13 +5,22 @@ import {FormProps} from '@appTypes/app.type';
 import {Gallery} from '@baseComps/Gallery';
 import {useTickerText} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
-import {qtyMap} from '@utils';
+import {classNames, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {J} from '.';
 
 export default function MachineDashboard({control}: FormProps<J>) {
-	const {filterFrom, filterTo} = useWatch({control});
+	const {
+		filterFrom,
+		filterTo,
+		qtyKey: qtyKeySelected = [],
+	} = useWatch({control});
+
+	const {data: summaryData} = trpc.dashboard.machine.summary.useQuery({
+		filterFrom,
+		filterTo,
+	});
 	const {data, isFetching} = trpc.dashboard.machine.list.useQuery({
 		filterFrom,
 		filterTo,
@@ -30,21 +39,59 @@ export default function MachineDashboard({control}: FormProps<J>) {
 
 	return (
 		<>
-			<Gallery
-				columns={isMobile ? 1 : 5}
-				data={machineData}
-				renderItem={({item: [, item]}) => {
-					const {nomor_mesin, dKatMesin} = item.mesin ?? {};
+			<div className={classNames('flex gap-2', {'flex-col': isMobile})}>
+				{qtyMap(({num, qtyKey}) => {
+					const unitList = entries(summaryData?.[qtyKey]);
+
+					if (!qtyKeySelected.includes(num)) return null;
 
 					return (
-						<div className="flex flex-col border-2 border-black">
-							<div className="px-4 py-2 text-center flex-1 font-bold text-md">
-								{dKatMesin?.name} - {nomor_mesin}
+						<div className="border-2 border-black flex-1">
+							<div className="p-2 border-b-2 border-b-black font-bold text-xl text-center">
+								Total Qty {num}
 							</div>
-							<div className="flex justify-between px-4 py-2">
+							{unitList.map(ee => {
+								const [unit, qty] = ee ?? [];
+
+								// @ts-ignore
+								if (unit === 'null') return null;
+
+								return (
+									<>
+										<div className="p-2 flex justify-between">
+											<div className="font-bold text-xl">{unit}</div>
+											<div className="font-bold text-xl">{qty?.[0]}</div>
+										</div>
+									</>
+								);
+							})}
+						</div>
+					);
+				})}
+			</div>
+
+			<div className="border-b-gray-300 border-b-2 w-full my-4" />
+
+			<Gallery
+				columns={isMobile ? 1 : 5}
+				spacing={isMobile ? 0 : 1}
+				data={machineData}
+				renderItem={({item: [, item]}) => {
+					const {nomor_mesin /* dKatMesin */} = item.mesin ?? {};
+
+					return (
+						<div
+							className={classNames('flex flex-col border-2 border-black', {
+								'mb-2': isMobile,
+							})}>
+							<div className="px-4 py-2 text-center flex-1 font-bold text-xs">
+								{/* {dKatMesin?.name} -  */}
+								{nomor_mesin}
+							</div>
+							{/* <div className="flex justify-between px-4 py-2">
 								<div className="text-xl font-bold">Planning</div>
 								<div className="text-xl font-bold">Produksi</div>
-							</div>
+							</div> */}
 							<div className="border border-black" />
 							{qtyMap(({num, qtyKey, unitKey}) => {
 								const {planning, produksi, unit} = item.data;
@@ -53,17 +100,17 @@ export default function MachineDashboard({control}: FormProps<J>) {
 
 								const plan1 = planning.qty1;
 
-								if (num === 1) return null;
+								if (!qtyKeySelected.includes(num)) return null;
 
 								if (!plan1 && (!qtyPlanning || qtyPlanning == 0)) return null;
 
 								return (
 									<div className="flex flex-1 justify-center py-2">
 										<div className="w-full px-4">
-											<div className="text-left font-bold text-xl">
+											{/* <div className="text-left font-bold text-xl">
 												{qtyPlanning?.toFixed(2)} {unit[unitKey]}
-											</div>
-											<div className="text-right font-bold text-xl">
+											</div> */}
+											<div className="w-full text-center font-bold text-base">
 												{qtyProduksi?.toFixed(2)} {unit[unitKey]}
 											</div>
 										</div>

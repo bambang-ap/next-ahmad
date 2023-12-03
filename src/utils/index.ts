@@ -182,7 +182,7 @@ export function itemSppbOut(
 	});
 }
 
-type V = {
+export type V = {
 	qtyKey: `qty${Qty}`;
 	unitKey: `unit${Qty}`;
 	num: Qty;

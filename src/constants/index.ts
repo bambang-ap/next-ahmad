@@ -10,6 +10,7 @@ import {
 	TItemUnit,
 	TMasterItem,
 	TScanTarget,
+	UQty,
 } from '@appTypes/app.type';
 import {TItemUnitInternal} from '@appTypes/app.zod';
 import {SelectPropsData} from '@components';
@@ -93,9 +94,15 @@ export const paperCont: PaperSize = [220, 270];
 
 export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'total', label: 'Total Records'},
-	{value: 'main', label: 'Dashboard Utama'},
+	{value: 'main', label: 'Utama'},
 	{value: 'bar', label: 'Business Process'},
-	{value: 'machine', label: 'Dashboard Mesin Produksi'},
+	{value: 'machine', label: 'Mesin Produksi'},
+];
+
+export const BtnGroupQty: SelectPropsData<UQty>[] = [
+	{value: 1, label: 'Qty 1'},
+	{value: 2, label: 'Qty 2'},
+	{value: 3, label: 'Qty 3'},
 ];
 
 export const cuttingLineClassName =
