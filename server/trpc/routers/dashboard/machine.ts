@@ -13,7 +13,6 @@ import {qtyMap, V} from '@utils';
 async function s(input: Partial<TDateFilter>) {
 	const {
 		Ret: ARet,
-		Rett: ARett,
 		rootRet,
 		katMesin,
 		knbItem,
@@ -60,9 +59,8 @@ async function s(input: Partial<TDateFilter>) {
 const machineDashboardRouters = router({
 	summary: procedure.input(tDateFilter.partial()).query(({ctx, input}) => {
 		type Ret = typeof ARet;
-		type Rett = typeof ARett;
 
-		const {Ret: ARet, Rett: ARett} = dashboardMesinAttributes();
+		const {Ret: ARet} = dashboardMesinAttributes();
 
 		return checkCredentialV2(ctx, async () => {
 			const scnItemData = await s(input);
