@@ -1,13 +1,19 @@
+import {ReactNode} from 'react';
+
 import {Masonry} from '@mui/lab';
 
 import {classNames} from '@utils';
 
 type GalleryProps<T> = {
 	data: T[];
-	renderItem: MMapCallback<T, JSX.Element>;
+	renderItem: (
+		value: MMapValue<T> & {
+			Col: (props: {className?: string; children: ReactNode}) => JSX.Element;
+		},
+		index: number,
+	) => JSX.Element;
 	columns: number;
 	spacing?: number;
-	className?: string;
 };
 
 export function Gallery<T>({
@@ -15,15 +21,23 @@ export function Gallery<T>({
 	columns,
 	renderItem,
 	spacing = 1,
-	className,
 }: GalleryProps<T>) {
 	return (
 		<Masonry columns={columns} spacing={spacing}>
-			{data.mmap((item, index) => (
-				<div className={classNames('flex flex-col rounded border', className)}>
-					{renderItem(item, index)}
-				</div>
-			))}
+			{data.mmap((item, index) =>
+				renderItem(
+					{
+						...item,
+						Col: ({className, ...props}) => (
+							<div
+								className={classNames('flex flex-col', className)}
+								{...props}
+							/>
+						),
+					},
+					index,
+				),
+			)}
 		</Masonry>
 	);
 }

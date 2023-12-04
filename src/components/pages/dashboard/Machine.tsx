@@ -47,7 +47,7 @@ export default function MachineDashboard({control}: FormProps<J>) {
 
 					return (
 						<div className="border-2 border-black flex-1">
-							<div className="p-2 border-b-2 border-b-black font-bold text-xl text-center">
+							<div className="pb-2 px-4 border-b-2 border-b-black font-bold text-xl text-center">
 								Total Qty {num}
 							</div>
 							{unitList.map(ee => {
@@ -58,7 +58,7 @@ export default function MachineDashboard({control}: FormProps<J>) {
 
 								return (
 									<>
-										<div className="p-2 flex justify-between">
+										<div className="pb-2 px-4 flex justify-between">
 											<div className="font-bold text-xl">{unit}</div>
 											<div className="font-bold text-xl">{qty?.[0]}</div>
 										</div>
@@ -73,51 +73,51 @@ export default function MachineDashboard({control}: FormProps<J>) {
 			<div className="border-b-gray-300 border-b-2 w-full my-4" />
 
 			<Gallery
-				columns={isMobile ? 1 : 5}
-				spacing={isMobile ? 0 : 1}
+				columns={isMobile ? 1 : 6}
+				spacing={isMobile ? 0 : 0}
 				data={machineData}
-				renderItem={({item: [, item]}) => {
+				renderItem={({item: [, item], Col}, i) => {
 					const {nomor_mesin /* dKatMesin */} = item.mesin ?? {};
 
 					return (
-						<div
-							className={classNames('flex flex-col border-2 border-black', {
-								'mb-2': isMobile,
-							})}>
-							<div className="px-4 py-2 text-center flex-1 font-bold text-xs">
-								{/* {dKatMesin?.name} -  */}
-								{nomor_mesin}
-							</div>
-							{/* <div className="flex justify-between px-4 py-2">
+						<Col className={classNames('p-1', {'mb-2': isMobile})}>
+							<div
+								className={classNames('flex flex-col border-2 border-black')}>
+								<div className="px-4 py-2 text-center flex-1 font-bold text-xs border-b-2 border-black">
+									{/* {dKatMesin?.name} -  */}
+									{nomor_mesin}
+								</div>
+								{/* <div className="flex justify-between px-4 py-2">
 								<div className="text-xl font-bold">Planning</div>
 								<div className="text-xl font-bold">Produksi</div>
 							</div> */}
-							<div className="border border-black" />
-							{qtyMap(({num, qtyKey, unitKey}) => {
-								const {planning, produksi, unit} = item.data;
-								const qtyPlanning = planning[qtyKey] ?? 0;
-								const qtyProduksi = produksi[qtyKey] ?? 0;
 
-								const plan1 = planning.qty1;
+								{qtyMap(({num, qtyKey, unitKey}) => {
+									const {planning, produksi, unit} = item.data;
+									const qtyPlanning = planning[qtyKey] ?? 0;
+									const qtyProduksi = produksi[qtyKey] ?? 0;
 
-								if (!qtyKeySelected.includes(num)) return null;
+									const plan1 = planning.qty1;
 
-								if (!plan1 && (!qtyPlanning || qtyPlanning == 0)) return null;
+									if (!qtyKeySelected.includes(num)) return null;
 
-								return (
-									<div className="flex flex-1 justify-center py-2">
-										<div className="w-full px-4">
-											{/* <div className="text-left font-bold text-xl">
+									if (!plan1 && (!qtyPlanning || qtyPlanning == 0)) return null;
+
+									return (
+										<div className="flex flex-1 justify-center px-2 py-1">
+											<div className="w-full px-4">
+												{/* <div className="text-left font-bold text-xl">
 												{qtyPlanning?.toFixed(2)} {unit[unitKey]}
 											</div> */}
-											<div className="w-full text-center font-bold text-base">
-												{qtyProduksi?.toFixed(2)} {unit[unitKey]}
+												<div className="w-full text-center font-bold text-base">
+													{qtyProduksi?.toFixed(2)} {unit[unitKey]}
+												</div>
 											</div>
 										</div>
-									</div>
-								);
-							})}
-						</div>
+									);
+								})}
+							</div>
+						</Col>
 					);
 				}}
 			/>
