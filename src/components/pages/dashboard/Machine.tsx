@@ -1,8 +1,12 @@
+import {ReactNode, useMemo} from 'react';
+
 import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
-import {FormProps} from '@appTypes/app.type';
+import {FormProps, TItemUnit} from '@appTypes/app.type';
 import {Gallery} from '@baseComps/Gallery';
+import {decimalValue} from '@constants';
+import {MenuColorClass} from '@enum';
 import {useTickerText} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 import {classNames, qtyMap} from '@utils';
@@ -28,8 +32,30 @@ export default function MachineDashboard({control}: FormProps<J>) {
 	const {isLoadingText} = useTickerText(isFetching);
 
 	const isMobile = useRecoilValue(atomIsMobile);
+	const colorClass = entries(MenuColorClass);
 
 	const machineData = entries(data);
+	const totalSummary = useMemo(() => {
+		const total = {} as Record<TItemUnit, [number, number]>;
+
+		qtyMap(({num, qtyKey}) => {
+			const unitList = entries(summaryData?.[qtyKey]);
+
+			for (const kk of unitList) {
+				const [unit, qty] = kk!;
+
+				if (!total[unit]) total[unit] = [0, 0];
+				if (qtyKeySelected.includes(num)) {
+					total[unit][0] += qty?.[0] ?? 0;
+					total[unit][1] += qty?.[1] ?? 0;
+				}
+			}
+		});
+
+		return total;
+	}, [qtyKeySelected, summaryData]);
+
+	const total = entries(totalSummary).filter(([, b]) => !!b[0] && !!b[1]);
 
 	if (isFetching) return <div>{isLoadingText}</div>;
 
@@ -45,29 +71,42 @@ export default function MachineDashboard({control}: FormProps<J>) {
 
 					if (!qtyKeySelected.includes(num)) return null;
 
+					const [, bgColor] = colorClass[num]!;
+
 					return (
-						<div className="border-2 border-black flex-1">
-							<div className="pb-2 px-4 border-b-2 border-b-black font-bold text-xl text-center">
-								Total Qty {num}
-							</div>
-							{unitList.map(ee => {
-								const [unit, qty] = ee ?? [];
+						<TotalQty
+							className={bgColor}
+							title={`Total Qty ${num}`}
+							renderItem={Item => {
+								return unitList.map(ee => {
+									const [unit, qty] = ee ?? [];
 
-								// @ts-ignore
-								if (unit === 'null') return null;
+									// @ts-ignore
+									if (unit === 'null') return null;
 
-								return (
-									<>
-										<div className="pb-2 px-4 flex justify-between">
-											<div className="font-bold text-xl">{unit}</div>
-											<div className="font-bold text-xl">{qty?.[0]}</div>
-										</div>
-									</>
-								);
-							})}
-						</div>
+									return <Item key={unit} unit={unit} qty={qty?.[0]} />;
+								});
+							}}
+						/>
 					);
 				})}
+
+				{total.length > 0 && (
+					<TotalQty
+						className={MenuColorClass.FG}
+						title="Total Qty"
+						renderItem={Item => {
+							return total.map(ee => {
+								const [unit, qtys] = ee ?? [];
+								const qty = qtys?.[0];
+								// @ts-ignore
+								if (unit === 'null' || qty == 0) return null;
+
+								return <Item key={unit} unit={unit} qty={qty} />;
+							});
+						}}
+					/>
+				)}
 			</div>
 
 			<div className="border-b-gray-300 border-b-2 w-full my-4" />
@@ -77,50 +116,73 @@ export default function MachineDashboard({control}: FormProps<J>) {
 				spacing={isMobile ? 0 : 0}
 				data={machineData}
 				renderItem={({item: [, item], Col}) => {
-					const {nomor_mesin /* dKatMesin */} = item.mesin ?? {};
+					const {nomor_mesin} = item.mesin ?? {};
+					const [, bgColor] =
+						colorClass[Math.randomInt(0, colorClass.length - 1)]!;
 
 					return (
-						<Col className={classNames('p-1', {'mb-2': isMobile})}>
-							<div
-								className={classNames('flex flex-col border-2 border-black')}>
-								<div className="px-4 py-2 text-center flex-1 font-bold text-xs border-b-2 border-black">
-									{/* {dKatMesin?.name} -  */}
-									{nomor_mesin}
-								</div>
-								{/* <div className="flex justify-between px-4 py-2">
-								<div className="text-xl font-bold">Planning</div>
-								<div className="text-xl font-bold">Produksi</div>
-							</div> */}
+						<Col className={classNames('p-1 ', {'mb-2': isMobile})}>
+							<TotalQty
+								small
+								className={bgColor}
+								title={nomor_mesin!}
+								renderItem={Item => {
+									return qtyMap(({num, qtyKey, unitKey}) => {
+										const {planning, produksi, unit} = item.data;
+										const qtyPlanning = planning[qtyKey] ?? 0;
+										const qtyProduksi = produksi[qtyKey] ?? 0;
 
-								{qtyMap(({num, qtyKey, unitKey}) => {
-									const {planning, produksi, unit} = item.data;
-									const qtyPlanning = planning[qtyKey] ?? 0;
-									const qtyProduksi = produksi[qtyKey] ?? 0;
+										const plan1 = planning.qty1;
+										const prod1 = produksi.qty1;
 
-									const plan1 = planning.qty1;
+										if (!qtyKeySelected.includes(num)) return null;
 
-									if (!qtyKeySelected.includes(num)) return null;
+										if (!plan1 && (!qtyPlanning || qtyPlanning == 0))
+											return null;
+										if (!prod1 && (!qtyProduksi || qtyProduksi == 0))
+											return null;
 
-									if (!plan1 && (!qtyPlanning || qtyPlanning == 0)) return null;
-
-									return (
-										<div className="flex flex-1 justify-center px-2 py-1">
-											<div className="w-full px-4">
-												{/* <div className="text-left font-bold text-xl">
-												{qtyPlanning?.toFixed(2)} {unit[unitKey]}
-											</div> */}
-												<div className="w-full text-center font-bold text-base">
-													{qtyProduksi?.toFixed(2)} {unit[unitKey]}
-												</div>
-											</div>
-										</div>
-									);
-								})}
-							</div>
+										return <Item unit={unit[unitKey]!} qty={qtyProduksi} />;
+									});
+								}}
+							/>
 						</Col>
 					);
 				}}
 			/>
 		</>
+	);
+}
+
+type TotalQtyProps = {
+	className?: string;
+	title: string;
+	small?: boolean;
+	renderItem: (
+		callback: (Item: {unit: TItemUnit; qty?: number}) => JSX.Element,
+	) => ReactNode;
+};
+
+function TotalQty({title, className, renderItem, small}: TotalQtyProps) {
+	const asd = classNames('font-bold text-xl text-white', {'text-base': small});
+
+	return (
+		<div className={classNames('border-2 border-black flex-1', className)}>
+			<div
+				className={classNames(
+					'py-2 px-4 mb-2',
+					'border-b-2 border-b-black',
+					'font-bold text-white text-xl text-center',
+					{'!text-sm': small},
+				)}>
+				{title}
+			</div>
+			{renderItem(({unit, qty}) => (
+				<div className="pb-2 px-4 flex justify-between">
+					<div className={asd}>{unit}</div>
+					<div className={asd}>{qty?.toFixed(decimalValue)}</div>
+				</div>
+			))}
+		</div>
 	);
 }
