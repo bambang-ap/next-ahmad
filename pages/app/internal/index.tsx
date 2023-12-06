@@ -1,7 +1,7 @@
 import {TDashboardInternal} from '@appTypes/app.zod';
 import {ButtonGroup, SelectPropsData} from '@components';
 import {getLayout} from '@hoc';
-import {useDateFilter, UseDateFilterProps} from '@hooks';
+import {UseDateFilterProps, useFormFilter} from '@hooks';
 import {InternalDashboard} from '@pageComponent/internal-dashboard';
 
 Internal.getLayout = getLayout;
@@ -17,7 +17,7 @@ export default function Internal() {
 	const {
 		dateComponent,
 		form: {control, watch},
-	} = useDateFilter<UseDateFilterProps<FormType>>(true, {
+	} = useFormFilter<UseDateFilterProps<FormType>>(true, {
 		defaultValues: {view: 'qty'},
 	});
 

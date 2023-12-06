@@ -4,7 +4,7 @@ import {useRecoilValue} from 'recoil';
 import {TDashboardView, UQty} from '@appTypes/app.type';
 import {ButtonGroup, MultipleButtonGroup} from '@components';
 import {BtnGroupQty, DashboardSelectView} from '@constants';
-import {useDateFilter, UseDateFilterProps} from '@hooks';
+import {UseDateFilterProps, useFormFilter} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 import {classNames} from '@utils';
 
@@ -19,7 +19,7 @@ export default function Dashboard() {
 	const {
 		form: {control, watch},
 		dateComponent,
-	} = useDateFilter<J>(true, {defaultValues: {qtyKey: [2, 3]}});
+	} = useFormFilter<J>(true, {defaultValues: {qtyKey: [2, 3]}});
 	const {view} = watch();
 
 	const isMobile = useRecoilValue(atomIsMobile);

@@ -76,7 +76,7 @@ export default function MachineDashboard({control}: FormProps<J>) {
 				columns={isMobile ? 1 : 6}
 				spacing={isMobile ? 0 : 0}
 				data={machineData}
-				renderItem={({item: [, item], Col}, i) => {
+				renderItem={({item: [, item], Col}) => {
 					const {nomor_mesin /* dKatMesin */} = item.mesin ?? {};
 
 					return (

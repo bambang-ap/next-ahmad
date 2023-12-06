@@ -12,7 +12,7 @@ import {dateUtils, moment} from '@utils';
 
 export type UseDateFilterProps<F extends FieldValues> = F & TDateFilter;
 
-export function useDateFilter<T extends TDateFilter & {}>(
+export function useFormFilter<T extends TDateFilter & {}>(
 	isSameMonth?: boolean,
 	options?: UseFormProps<T | TDateFilter>,
 ) {

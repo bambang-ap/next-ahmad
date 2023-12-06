@@ -28,7 +28,7 @@ import {RecoilRoot} from 'recoil';
 
 import {SidebarProvider} from '@app/contexts/SidebarContext';
 import ThemeProvider from '@app/theme/ThemeProvider';
-import {isProd, queryClientConfig} from '@constants';
+import {IMIConst, isProd, queryClientConfig} from '@constants';
 import {createEmotionCache} from '@hoc';
 import {trpc} from '@utils/trpc';
 
@@ -64,7 +64,7 @@ function App(props: AppProps) {
 		<StrictMode>
 			<CacheProvider value={emotionCache}>
 				<Head>
-					<title>IMI Inventory</title>
+					<title>{IMIConst.title}</title>
 					<meta
 						name="viewport"
 						content="width=device-width, initial-scale=1, shrink-to-fit=no"
