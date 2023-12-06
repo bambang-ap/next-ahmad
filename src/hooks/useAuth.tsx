@@ -1,6 +1,9 @@
 import {useEffect} from 'react';
 
-import {useSession as useSessionNext} from 'next-auth/react';
+import {
+	getSession as getSessionNext,
+	useSession as useSessionNext,
+} from 'next-auth/react';
 import {useRouter} from 'next/router';
 
 import {TSession} from '@appTypes/app.type';
@@ -16,8 +19,18 @@ export const useAuth = () => {
 	}, [status, pathname, data]);
 };
 
-export const useSession = () => {
+export function useSession() {
 	const {status, data} = useSessionNext() ?? {};
 
-	return {status, data: data as TSession} as const;
-};
+	return {status, data: data as TSession};
+}
+
+export async function getSession() {
+	type Status = Exclude<ReturnType<typeof useSessionNext>['status'], 'loading'>;
+	const data = await getSessionNext();
+
+	return {
+		status: (!!data ? 'authenticated' : 'unauthenticated') as Status,
+		data: data as TSession | null,
+	};
+}

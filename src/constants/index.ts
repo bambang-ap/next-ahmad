@@ -89,8 +89,9 @@ export const ScanTarget: TScanTarget[] = ['produksi', 'qc', 'finish_good'];
 export const paperA4: PaperSize = [210, 297];
 export const paperLpb: PaperSize = [161, 212];
 export const paperF4: PaperSize = [214.884, 329.946];
-export const paperCont: PaperSize = [220, 270];
+export const paperCont: PaperSize = [216, 279.4];
 // export const paperCont: PaperSize = [241.3, 279.4];
+// export const paperCont: PaperSize = [220, 270];
 
 export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'total', label: 'Total Records'},

@@ -22,6 +22,7 @@ module.exports = {
 		extend: {
 			fontFamily: {
 				calibri: ['Calibri', 'sans-serif'],
+				bachshrift: ['Bahnschrift'],
 				'noto-sans': ['Noto Sans', 'Noto Sans_bold'],
 				sans: ['Poppins', ...defaultTheme.fontFamily.sans],
 			},

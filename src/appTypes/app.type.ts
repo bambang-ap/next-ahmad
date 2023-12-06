@@ -1,4 +1,4 @@
-import {jsPDFOptions} from 'jspdf';
+import {DocumentProperties, jsPDFOptions} from 'jspdf';
 import {FieldValues, UseFormReturn} from 'react-hook-form';
 
 import {qtyList} from '@constants';
@@ -127,6 +127,7 @@ export type GenPdfOpts = {
 	filename?: string;
 	paperSize?: PaperSize;
 	orientation?: jsPDFOptions['orientation'];
+	properties?: DocumentProperties;
 };
 
 export type KanbanGetRow = TKanban & {

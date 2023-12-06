@@ -18,6 +18,10 @@ export default class MyDocument extends Document {
 					/>
 					<link
 						rel="stylesheet"
+						href="https://db.onlinewebfonts.com/c/0a6ee448d1bd65c56f6cf256a7c6f20a?family=Bahnschrift"
+					/>
+					<link
+						rel="stylesheet"
 						href="https://fonts.googleapis.com/css2?family=Inter:ital,wght@0,400&display=swap"
 					/>
 				</Head>
