@@ -29,7 +29,7 @@ import {
 	UseTRPCMutationOptions,
 	UseTRPCQueryResult,
 } from '@trpc/react-query/shared';
-import {calibri_normal} from '@utils/js-fonts';
+import {bachshrift_normal, calibri_normal} from '@utils/js-fonts';
 
 type Qty = typeof qtyList[number];
 
@@ -379,11 +379,11 @@ export async function generatePDF(ids: string[], options?: GenPdfOpts) {
 
 	let doc = new jsPDF({unit: 'mm', orientation, format: paperSize});
 
-	doc.addFileToVFS(calibri_normal.filename, calibri_normal.font);
+	doc.addFileToVFS(bachshrift_normal.filename, bachshrift_normal.font);
 	doc.addFont(
-		calibri_normal.filename,
-		calibri_normal.id,
-		calibri_normal.fontStyle,
+		bachshrift_normal.filename,
+		bachshrift_normal.id,
+		bachshrift_normal.fontStyle,
 	);
 
 	const pageHeight = doc.internal.pageSize.getHeight();
