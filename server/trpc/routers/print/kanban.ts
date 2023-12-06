@@ -28,14 +28,13 @@ import {
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
 
-import {appRouter, RouterOutput} from '..';
+import {appRouter} from '..';
 
 export const printKanbanRouter = {
 	kanban: procedure
 		.input(z.object({id: z.string().array()}))
 		.query(({ctx, input}) => {
 			type UU = typeof A.obj & {
-				qr?: RouterOutput['qr'];
 				OrmMasterItem: typeof F.obj;
 				OrmPOItemSppbIn: typeof G.obj & {
 					OrmCustomerPOItem: typeof I.obj;
@@ -57,6 +56,7 @@ export const printKanbanRouter = {
 				'qty3',
 			]);
 			const B = attrParser(tKanban, [
+				'id',
 				'image',
 				'createdAt',
 				'keterangan',
@@ -128,12 +128,7 @@ export const printKanbanRouter = {
 							input.id.indexOf(aa.id_kanban) - input.id.indexOf(bb.id_kanban)
 						);
 					})
-					.map(async e => {
-						// @ts-ignore
-						const val = e.dataValues as UU;
-						const qr = await routerCaller.qr({input: val.id_kanban});
-						return {...val, qr};
-					});
+					.map(async e => e.toJSON() as unknown as UU);
 
 				return Promise.all(promisedData);
 			});

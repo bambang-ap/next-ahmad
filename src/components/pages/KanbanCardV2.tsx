@@ -14,16 +14,8 @@ function Text(props: TextProps) {
 type AProps = RouterOutput['print']['kanban'][number];
 
 export function RenderKanbanCardV2(props: AProps) {
-	const {
-		id_item,
-		qty1,
-		qty2,
-		qty3,
-		OrmKanban,
-		OrmPOItemSppbIn,
-		OrmMasterItem,
-		qr: qrImage,
-	} = props;
+	const {id_item, qty1, qty2, qty3, OrmKanban, OrmPOItemSppbIn, OrmMasterItem} =
+		props;
 	const {OrmCustomerSPPBIn: dataSppbIn} = OrmPOItemSppbIn;
 	const {unit1, unit2, unit3} = OrmPOItemSppbIn.OrmCustomerPOItem;
 	const {
@@ -34,12 +26,14 @@ export function RenderKanbanCardV2(props: AProps) {
 		OrmDocument: docDetail,
 		OrmCustomerPO,
 		dataCreatedBy,
+		id: idKanban,
 		image,
 	} = OrmKanban;
 
 	const processes = OrmMasterItem?.instruksi;
 	const selectedMesin = list_mesin?.[id_item];
 
+	const {data: qrImage} = trpc.qr.useQuery(idKanban, {enabled: !!idKanban});
 	const {data: dataMesinProcess} = trpc.kanban.mesinProcess.useQuery(
 		{
 			process: processes,
@@ -213,8 +207,9 @@ export function RenderKanbanCardV2(props: AProps) {
 						<Text>Note :</Text>
 						<Text>{keterangan}</Text>
 					</BorderTd>
-					<BorderTd rowSpan={3}>
+					<BorderTd className="flex-col items-center gap-2" rowSpan={3}>
 						{!!qrImage && <img src={qrImage as string} alt="" />}
+						{idKanban}
 					</BorderTd>
 				</tr>
 				<tr>
