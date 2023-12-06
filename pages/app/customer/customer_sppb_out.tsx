@@ -12,6 +12,7 @@ import {useTableFilterComponent} from '@hooks';
 import {SppbOutModalChild} from '@pageComponent/ModalChildSppbOut';
 import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
 import {modalTypeParser, renderItemAsIs, transformIds} from '@utils';
+import {bachshrift_normal} from '@utils/js-fonts';
 import {trpc} from '@utils/trpc';
 
 SPPBOUT.getLayout = getLayout;
@@ -65,6 +66,7 @@ export default function SPPBOUT() {
 			paperSize: paperCont,
 			tagId: 'sppb-out-data-print',
 			filename: 'surat-jalan-keluar',
+			font: bachshrift_normal,
 			useQuery: () =>
 				trpc.print.sppb.out.useQuery(
 					{ids: selectedIds},

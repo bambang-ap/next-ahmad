@@ -31,6 +31,8 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 		paperSize,
 		orientation,
 		filename = 'file',
+		font,
+		properties,
 	} = props;
 
 	const loader = useLoader();
@@ -63,7 +65,13 @@ export const GeneratePdfV2 = forwardRef(function GGenPdf<
 
 	async function generatePrint(timeout: number) {
 		await sleep(timeout);
-		await generatePDF(elementsId!, {filename, orientation, paperSize});
+		await generatePDF(elementsId!, {
+			filename,
+			orientation,
+			paperSize,
+			font,
+			properties,
+		});
 	}
 
 	async function generate(timeout = 2500) {

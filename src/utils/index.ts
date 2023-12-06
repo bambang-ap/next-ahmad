@@ -29,7 +29,7 @@ import {
 	UseTRPCMutationOptions,
 	UseTRPCQueryResult,
 } from '@trpc/react-query/shared';
-import {bachshrift_normal} from '@utils/js-fonts';
+import {calibri_normal} from '@utils/js-fonts';
 
 type Qty = typeof qtyList[number];
 
@@ -374,21 +374,17 @@ export async function generatePDF(ids: string[], options?: GenPdfOpts) {
 		orientation = 'p',
 		paperSize = paperA4,
 		properties,
+		font = calibri_normal,
 	} = options ?? {};
 
 	const isPortrait = orientation === 'p' || orientation === 'portrait';
 
 	let doc = new jsPDF({unit: 'mm', orientation, format: paperSize});
 
-	// TODO: This is not implemented on pages
 	if (!!properties) doc.setProperties(properties);
 
-	doc.addFileToVFS(bachshrift_normal.filename, bachshrift_normal.font);
-	doc.addFont(
-		bachshrift_normal.filename,
-		bachshrift_normal.id,
-		bachshrift_normal.fontStyle,
-	);
+	doc.addFileToVFS(font.filename, font.font);
+	doc.addFont(font.filename, font.id, font.fontStyle);
 
 	const pageHeight = doc.internal.pageSize.getHeight();
 	const elements = ids.map(id => document.getElementById(id)).filter(Boolean);
@@ -405,12 +401,12 @@ export async function generatePDF(ids: string[], options?: GenPdfOpts) {
 	function htmlPage(pdf: jsPDF, element: HTMLElement, i: number) {
 		const width = element.clientWidth;
 
-		pdf.setFont(bachshrift_normal.id);
+		pdf.setFont(font.id);
 		return new Promise<jsPDF>(resolve => {
 			const newElement = `
 				<style>
 					* {
-						font-family: ${bachshrift_normal.id}, sans-serif !important;
+						font-family: ${font.id}, sans-serif !important;
 					}
 				</style>
 				${element.outerHTML}

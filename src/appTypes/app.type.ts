@@ -128,6 +128,12 @@ export type GenPdfOpts = {
 	paperSize?: PaperSize;
 	orientation?: jsPDFOptions['orientation'];
 	properties?: DocumentProperties;
+	font?: {
+		filename: string;
+		id: string;
+		fontStyle: string;
+		font: string;
+	};
 };
 
 export type KanbanGetRow = TKanban & {

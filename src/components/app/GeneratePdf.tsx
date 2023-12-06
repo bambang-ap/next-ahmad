@@ -30,6 +30,8 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 		paperSize,
 		orientation,
 		filename = 'file',
+		font,
+		properties,
 	} = props;
 
 	const datas = useQueries();
@@ -52,7 +54,13 @@ export const GeneratePdf = forwardRef(function GGenPdf<
 
 	async function generatePrint(timeout = 2500) {
 		await sleep(timeout);
-		generatePDF(elementsId, {filename, orientation, paperSize});
+		generatePDF(elementsId, {
+			filename,
+			orientation,
+			paperSize,
+			font,
+			properties,
+		});
 	}
 
 	useImperativeHandle(ref, () => {
