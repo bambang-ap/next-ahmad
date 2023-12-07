@@ -28,8 +28,6 @@ import {
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
 
-import {appRouter} from '..';
-
 export const printKanbanRouter = {
 	kanban: procedure
 		.input(z.object({id: z.string().array()}))
@@ -73,7 +71,6 @@ export const printKanbanRouter = {
 			const J = attrParser(tCustomerSPPBIn, ['nomor_surat', 'tgl']);
 
 			return checkCredentialV2(ctx, async (): Promise<UU[]> => {
-				const routerCaller = appRouter.createCaller(ctx);
 				const data = await OrmKanbanItem.findAll({
 					where: {id_kanban: input.id},
 					attributes: A.keys,

@@ -98,6 +98,8 @@ export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'main', label: 'Utama'},
 	{value: 'bar', label: 'Business Process'},
 	{value: 'machine', label: 'Mesin Produksi'},
+	// TODO: uncoment this
+	// {value: 'machine_chart', label: 'Chart Mesin'},
 ];
 
 export const BtnGroupQty: SelectPropsData<UQty>[] = [

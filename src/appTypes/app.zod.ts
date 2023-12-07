@@ -580,6 +580,7 @@ export const tDashboardView = z
 	.or(z.literal('main'))
 	.or(z.literal('bar'))
 	.or(z.literal('line'))
+	.or(z.literal('machine_chart'))
 	.or(z.literal('machine'));
 
 export type TDashboardInternal = z.infer<typeof tDashboardInternal>;

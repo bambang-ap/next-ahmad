@@ -10,6 +10,7 @@ import {classNames} from '@utils';
 
 import BarChart from './BarChart';
 import MachineDashboard from './Machine';
+import MachineChart from './MachineChart';
 import MainDashboard from './Main';
 import TotalCount from './TotalCount';
 
@@ -19,17 +20,20 @@ export default function Dashboard() {
 	const {
 		form: {control, watch},
 		dateComponent,
-	} = useFormFilter<J>(true, {defaultValues: {qtyKey: [2, 3]}});
+	} = useFormFilter<J>(true, {
+		defaultValues: {qtyKey: [2, 3], view: 'machine_chart'},
+	});
 	const {view} = watch();
 
 	const isMobile = useRecoilValue(atomIsMobile);
 
-	const dateShown = view === 'machine';
+	const isMachine = view === 'machine';
+	const isMachineChart = view === 'machine_chart';
 
 	return (
 		<div className="flex flex-col">
 			<div
-				className={classNames('flex gap-2 items-center mb-4', {
+				className={classNames('flex gap-2 items-center justify-between mb-4', {
 					'flex-col': isMobile,
 					'h-20': !isMobile,
 				})}>
@@ -42,15 +46,15 @@ export default function Dashboard() {
 						defaultValue={DashboardSelectView?.[0]?.value}
 					/>
 				</div>
-				{dateShown && (
+				{(isMachine || isMachineChart) && (
 					<MultipleButtonGroup
 						control={control}
 						fieldName="qtyKey"
 						data={BtnGroupQty}
 					/>
 				)}
-				{dateShown && (
-					<div className="flex gap-2 flex-1 justify-end">{dateComponent}</div>
+				{isMachine && (
+					<div className="flex gap-2 justify-end">{dateComponent}</div>
 				)}
 			</div>
 			<RenderView control={control} />
@@ -70,6 +74,8 @@ function RenderView({control}: {control: Control<J>}) {
 			return <BarChart type="line" />;
 		case 'machine':
 			return <MachineDashboard control={control} />;
+		case 'machine_chart':
+			return <MachineChart control={control} />;
 		default:
 			return <TotalCount />;
 	}
