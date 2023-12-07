@@ -1,5 +1,6 @@
 import {Breakpoint, TextFieldProps} from '@mui/material';
 import {QueryObserverOptions} from '@tanstack/react-query';
+import {ApexOptions} from 'apexcharts';
 import type {OrderItem} from 'sequelize';
 import {z} from 'zod';
 
@@ -98,8 +99,7 @@ export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'main', label: 'Utama'},
 	{value: 'bar', label: 'Business Process'},
 	{value: 'machine', label: 'Mesin Produksi'},
-	// TODO: uncoment this
-	// {value: 'machine_chart', label: 'Chart Mesin'},
+	{value: 'machine_chart', label: 'Chart Mesin'},
 ];
 
 export const BtnGroupQty: SelectPropsData<UQty>[] = [
@@ -177,3 +177,31 @@ export const nonRequiredRefetch: any = {
 } as QueryObserverOptions;
 
 export const through = {attributes: []};
+
+export function chartOpts(categories: ApexXAxis['categories']) {
+	const fontFamily = 'Bahnschrift';
+	const fontSize = '16px';
+	const colors = ['black'];
+
+	return {
+		fontFamily,
+		fontSize,
+		colors,
+		opt: {
+			legend: {fontFamily, fontSize},
+			yaxis: {labels: {style: {fontFamily, fontSize}}},
+			xaxis: {categories, labels: {style: {colors, fontFamily, fontSize}}},
+			dataLabels: {
+				style: {colors, fontFamily, fontSize},
+				dropShadow: {
+					enabled: true,
+					top: 1,
+					left: 1,
+					blur: 1,
+					color: 'white',
+					opacity: 1,
+				},
+			},
+		} as ApexOptions,
+	};
+}

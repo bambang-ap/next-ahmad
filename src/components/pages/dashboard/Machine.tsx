@@ -3,12 +3,13 @@ import {ReactNode, useMemo} from 'react';
 import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
-import {FormProps, TItemUnit} from '@appTypes/app.type';
+import {FormProps, TItemUnit, UQty} from '@appTypes/app.type';
 import {Gallery} from '@baseComps/Gallery';
 import {decimalValue} from '@constants';
 import {MenuColorClass} from '@enum';
 import {useTickerText} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
+import type {MachineSummary} from '@trpc/routers/dashboard/machine';
 import {classNames, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
@@ -29,33 +30,18 @@ export default function MachineDashboard({control}: FormProps<J>) {
 		filterFrom,
 		filterTo,
 	});
+
 	const {isLoadingText} = useTickerText(isFetching);
 
 	const isMobile = useRecoilValue(atomIsMobile);
+	const totalSummary = useMemo(
+		() => getTotalQty(qtyKeySelected, summaryData),
+		[qtyKeySelected, summaryData],
+	);
+
 	const colorClass = entries(MenuColorClass);
-
 	const machineData = entries(data);
-	const totalSummary = useMemo(() => {
-		const total = {} as Record<TItemUnit, [number, number]>;
-
-		qtyMap(({num, qtyKey}) => {
-			const unitList = entries(summaryData?.[qtyKey]);
-
-			for (const kk of unitList) {
-				const [unit, qty] = kk!;
-
-				if (!total[unit]) total[unit] = [0, 0];
-				if (qtyKeySelected.includes(num)) {
-					total[unit][0] += qty?.[0] ?? 0;
-					total[unit][1] += qty?.[1] ?? 0;
-				}
-			}
-		});
-
-		return total;
-	}, [qtyKeySelected, summaryData]);
-
-	const total = entries(totalSummary).filter(([, b]) => !!b[0] && !!b[1]);
+	const total = entries(totalSummary);
 
 	if (isFetching) return <div>{isLoadingText}</div>;
 
@@ -185,4 +171,38 @@ function TotalQty({title, className, renderItem, small}: TotalQtyProps) {
 			))}
 		</div>
 	);
+}
+
+export function getTotalQty(
+	qtyKeySelected: UQty[],
+	summary?: MachineSummary,
+	filter = true,
+) {
+	type Y = Record<TItemUnit, [number, number]>;
+
+	const total = {} as Y;
+
+	qtyMap(({num, qtyKey}) => {
+		const unitList = entries(summary?.[qtyKey]);
+
+		for (const kk of unitList) {
+			const [unit, qty] = kk!;
+
+			if (!total[unit]) total[unit] = [0, 0];
+			if (qtyKeySelected.includes(num)) {
+				total[unit][0] += qty?.[0] ?? 0;
+				total[unit][1] += qty?.[1] ?? 0;
+			}
+		}
+	});
+
+	if (filter) {
+		return entries(total).reduce((ret, [k, c]) => {
+			const [a, b] = c;
+			if (a != 0 || b != 0) ret[k] = c;
+			return ret;
+		}, {} as Y);
+	}
+
+	return total;
 }

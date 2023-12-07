@@ -1,3 +1,4 @@
+import {chartOpts} from '@constants';
 import {Chart} from '@prevComp/Chart';
 import {trpc} from '@utils/trpc';
 
@@ -19,7 +20,7 @@ export default function BarChart({type = 'bar'}: {type?: 'bar' | 'line'}) {
 			key={type}
 			height={500}
 			type={type}
-			options={{xaxis: {categories}}}
+			options={chartOpts(categories).opt}
 			series={[{name: 'series-1', data: dataChart}]}
 		/>
 	);

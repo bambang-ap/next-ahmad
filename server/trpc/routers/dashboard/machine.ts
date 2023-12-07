@@ -3,6 +3,7 @@ import {Op} from 'sequelize';
 import {TDateFilter, tDateFilter, TItemUnit} from '@appTypes/app.zod';
 import {
 	dashboardMesinAttributes,
+	orderPages,
 	whereDateFilter,
 	wherePagesV3,
 } from '@database';
@@ -34,6 +35,11 @@ async function s(input: Partial<TDateFilter>) {
 
 	const scnItemData = await scnItem.model.findAll({
 		attributes: scnItem.attributes,
+		order: orderPages<Ret>({
+			'dKnbItem.dInItem.dPoItem.unit1': true,
+			'dKnbItem.dInItem.dPoItem.unit2': true,
+			'dKnbItem.dInItem.dPoItem.unit3': true,
+		}),
 		where: {
 			...dateFilter,
 			...wherePagesV3<Ret>({
@@ -56,6 +62,13 @@ async function s(input: Partial<TDateFilter>) {
 	return scnItemData;
 }
 
+export type MachineSummary = Partial<
+	Record<
+		V['qtyKey'],
+		Partial<Record<TItemUnit, [planning: number, produksi: number]>>
+	>
+>;
+
 const machineDashboardRouters = router({
 	summary: procedure.input(tDateFilter.partial()).query(({ctx, input}) => {
 		type Ret = typeof ARet;
@@ -65,14 +78,7 @@ const machineDashboardRouters = router({
 		return checkCredentialV2(ctx, async () => {
 			const scnItemData = await s(input);
 
-			type O = Partial<
-				Record<
-					V['qtyKey'],
-					Partial<Record<TItemUnit, [planning: number, produksi: number]>>
-				>
-			>;
-
-			return scnItemData.reduce<O>((ret, e) => {
+			return scnItemData.reduce<MachineSummary>((ret, e) => {
 				const val = e.toJSON() as unknown as Ret;
 
 				const {
