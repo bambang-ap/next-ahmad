@@ -21,7 +21,7 @@ export default function Dashboard() {
 		form: {control, watch},
 		dateComponent,
 	} = useFormFilter<J>(true, {
-		defaultValues: {qtyKey: [2, 3], view: 'machine_chart'},
+		defaultValues: {qtyKey: [2, 3]},
 	});
 	const {view} = watch();
 
