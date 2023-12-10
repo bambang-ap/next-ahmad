@@ -635,6 +635,7 @@ const sItemReqForm = zId.extend({
 
 export type SReqForm = z.infer<typeof sReqForm>;
 export const sReqForm = zId.extend({
+	...zIndex.shape,
 	date: z.string(),
 	due_date: z.string(),
 	items: sItemReqForm.array().min(1),

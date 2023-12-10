@@ -210,4 +210,5 @@ export const eOp = z.record(eOpKeys, z.symbol());
 
 export enum IndexNumber {
 	Kanban = 'Kanban',
+	Req = 'Form Permintaan',
 }

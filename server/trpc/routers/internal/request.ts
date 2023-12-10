@@ -1,17 +1,25 @@
 import {sReqForm, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {oForm} from '@database';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {dIndex, oForm, whereIndex} from '@database';
+import {IndexNumber} from '@enum';
+import {
+	checkCredentialV2,
+	generateId,
+	genNumberIndexUpsert,
+	pagingResult,
+} from '@server';
 import {procedure, router} from '@trpc';
 
 export const requestRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page} = input;
+		const {limit, page, search} = input;
 
 		return checkCredentialV2(ctx, async () => {
 			const {count, rows} = await oForm.findAndCountAll({
 				limit,
 				offset: (page - 1) * limit,
+				include: [dIndex],
+				where: [whereIndex(search)],
 			});
 
 			return pagingResult(
@@ -23,15 +31,17 @@ export const requestRouters = router({
 		});
 	}),
 	upsert: procedure
-		.input(sReqForm.partial({id: true}))
+		.input(sReqForm.partial({id: true, index_id: true, index_number: true}))
 		.mutation(({ctx, input}) => {
-			const {id: idForm, ...po} = input;
+			const {id = generateId('IRF-'), ...po} = input;
 
 			return checkCredentialV2(ctx, async () => {
-				await oForm.upsert({
+				const upsertBody = await genNumberIndexUpsert(oForm, IndexNumber.Req, {
 					...po,
-					id: idForm ?? generateId('IRF-'),
+					id,
 				});
+
+				await oForm.upsert(upsertBody);
 
 				return Success;
 			});

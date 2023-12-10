@@ -8,7 +8,7 @@ import {Button, Form, Input, Modal, ModalRef, Select, Table} from '@components';
 import {selectReqStatus, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
-import {formParser, generateId, modalTypeParser} from '@utils';
+import {formParser, generateId, modalTypeParser, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type FormType = {
@@ -36,7 +36,7 @@ export default function InternalRequestForm() {
 		reset,
 		control,
 		useQuery: form => trpc.internal.request.get.useQuery(form),
-		header: ['No', 'Date', 'Due Date', 'Status', 'Action'],
+		header: ['No', 'Nomor Form', 'Date', 'Due Date', 'Status', 'Action'],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		renderItem: ({Cell, CellSelect, item}, index) => {
 			const {date, due_date, status} = item;
@@ -45,6 +45,7 @@ export default function InternalRequestForm() {
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
+					<Cell>{renderIndex(item)}</Cell>
 					<Cell>{date}</Cell>
 					<Cell>{due_date}</Cell>
 					<Cell>{status}</Cell>

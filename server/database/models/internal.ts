@@ -1,4 +1,4 @@
-import {BOOLEAN, JSONB, Model, Sequelize, STRING} from 'sequelize';
+import {BOOLEAN, JSONB, Model, NUMBER, Sequelize, STRING} from 'sequelize';
 
 import {
 	SInItem,
@@ -171,6 +171,9 @@ export function initOForm(sequelize: Sequelize) {
 			due_date: STRING,
 			items: JSONB,
 			status: STRING,
+			index_id: STRING,
+			index_number: NUMBER,
+			keterangan: STRING,
 		},
 		{
 			...defaultScope(sequelize),

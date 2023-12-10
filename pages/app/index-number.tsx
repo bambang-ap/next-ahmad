@@ -89,16 +89,14 @@ export default function NumberIndex() {
 					context={{disabled: isPreview, hideButton: isPreview}}
 					onSubmit={submit}
 					className="flex flex-col gap-2">
-					<ModalChildMasterItem reset={reset} control={control} />
+					<ModalChild reset={reset} control={control} />
 				</Form>
 			</Modal>
 		</>
 	);
 }
 
-function ModalChildMasterItem({
-	control,
-}: FormProps<FormType, 'control' | 'reset'>) {
+function ModalChild({control}: FormProps<FormType, 'control' | 'reset'>) {
 	const {type} = useWatch({control});
 	const {isDelete} = modalTypeParser(type);
 
@@ -109,7 +107,7 @@ function ModalChildMasterItem({
 			<Input
 				control={control}
 				fieldName="prefix"
-				placeholderBottom="Contoh: KNB/IMI/{prefix} -> KNB/IMI/0001 atau {prefix}/KNB/IMI -> 0001/KNB/IMI"
+				placeholderBottom="Contoh: KNB/IMI/{prefix} -> KNB/IMI/0001 atau {prefix}/REQ/IMI -> 0001/REQ/IMI"
 			/>
 			<Select control={control} fieldName="target" data={selectionIndex} />
 			<Input control={control} fieldName="keterangan" />

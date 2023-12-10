@@ -1,8 +1,8 @@
 import {Path} from 'react-hook-form';
-import {col, Op, WhereAttributeHashValue} from 'sequelize';
+import {col, literal, Op, where, WhereAttributeHashValue} from 'sequelize';
 import {Primitive} from 'zod';
 
-import {TDateFilter} from '@appTypes/app.zod';
+import {TDateFilter, ZIndex} from '@appTypes/app.zod';
 
 export function groupPages<T extends {}>(searchKey: L1<T>): any {
 	return searchKey;
@@ -101,4 +101,13 @@ export function whereDateFilter<T extends {}>(
 			[Op.and]: [{[Op.gte]: filterFrom}, {[Op.lte]: filterTo}],
 		},
 	};
+}
+
+export function whereIndex<T extends ZIndex & {} = ZIndex>(
+	search?: string,
+): any;
+export function whereIndex(search?: string): any {
+	return !!search && !Number.isNaN(parseInt(search))
+		? where(literal('index_number::TEXT'), Op.iLike, `%${search}%`)
+		: {};
 }

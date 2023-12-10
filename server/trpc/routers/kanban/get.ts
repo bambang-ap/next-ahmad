@@ -1,4 +1,4 @@
-import {literal, Op, where} from 'sequelize';
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {
@@ -47,6 +47,7 @@ import {
 	OrmParameterKategori,
 	OrmScan,
 	OrmUser,
+	whereIndex,
 	wherePagesV2,
 } from '@database';
 import {checkCredentialV2, pagingResult} from '@server';
@@ -162,10 +163,7 @@ export const kanbanGet = {
 				search,
 			);
 
-			const where2 =
-				!!search && !Number.isNaN(parseInt(search))
-					? where(literal('index_number::TEXT'), Op.iLike, `%${search}%`)
-					: {};
+			const where2 = whereIndex(search);
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,

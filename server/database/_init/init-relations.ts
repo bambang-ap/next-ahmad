@@ -20,6 +20,7 @@ import {
 	dUser,
 	dVehicle,
 	manyToMany,
+	oForm,
 	oInItem,
 	oItem,
 	oneToMany,
@@ -152,10 +153,12 @@ export function initRelations() {
 	oneToMany(oStock, oOut, 'id_stock');
 	oneToMany(oInItem, oStock, 'id_item_in');
 
+	oneToMany(OrmMenu, OrmMenu, 'parent_id');
+
 	oneToMany(dIndex, dKanban, 'index_id');
 	oneToMany(dIndex, OrmKanban, 'index_id');
+	oneToMany(dIndex, oForm, 'index_id');
 
-	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 
 	manyToMany([dSJIn, 'id'], [dSjOut, 'id'], [dSppbBridge, ['in_id', 'out_id']]);
