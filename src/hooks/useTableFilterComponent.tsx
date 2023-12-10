@@ -35,7 +35,9 @@ import {
 
 type PrintData = (id: string) => void;
 type G<F extends FieldValues> = Pick<CellSelectProps<F>, 'fieldName'>;
-export type Fields = {type: ModalTypeSelect} & FieldValues;
+export type Fields<F extends FieldValues = FieldValues> = {
+	type: ModalTypeSelect;
+} & F;
 export type TableFilterProps<T, F extends Fields> = Omit<
 	TableProps<
 		T,

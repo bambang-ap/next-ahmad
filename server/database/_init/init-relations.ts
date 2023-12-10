@@ -1,6 +1,7 @@
 import {
 	dCust,
 	dDoc,
+	dIndex,
 	dInItem,
 	dItem,
 	dKanban,
@@ -150,6 +151,8 @@ export function initRelations() {
 	oneToMany(oPoItem, oInItem, 'id_item');
 	oneToMany(oStock, oOut, 'id_stock');
 	oneToMany(oInItem, oStock, 'id_item_in');
+
+	oneToMany(dIndex, dKanban, 'index_id');
 
 	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);

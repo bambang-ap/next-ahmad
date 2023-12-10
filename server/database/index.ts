@@ -9,6 +9,7 @@ export * from './models/customer_sppb_relation';
 export * from './models/document';
 export * from './models/hardness';
 export * from './models/hardness_kategori';
+export * from './models/index_number';
 export * from './models/internal';
 export * from './models/item';
 export * from './models/kanban';

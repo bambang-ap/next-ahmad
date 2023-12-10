@@ -26,6 +26,7 @@ export type InputProps = {
 	byPassValue?: string | number | boolean;
 	hidden?: boolean;
 	placeholder?: string;
+	placeholderBottom?: string;
 	label?: string;
 	noLabel?: boolean;
 	disabled?: boolean;
@@ -66,6 +67,7 @@ export function InputComponent<F extends FieldValues>(
 		noLabel,
 		defaultValue,
 		rightAcc: endAdornment,
+		placeholderBottom,
 		leftAcc: startAdornment,
 		appliedRules,
 		multiline,
@@ -249,6 +251,9 @@ export function InputComponent<F extends FieldValues>(
 						{...restProps}
 						{...field}
 					/>
+					{placeholderBottom && (
+						<Text className="pt-2">{placeholderBottom}</Text>
+					)}
 					{errorMessage}
 				</div>
 			);

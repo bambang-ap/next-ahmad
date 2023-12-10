@@ -4,6 +4,7 @@ import {SelectPropsData} from '@components';
 import {defaultLimit} from '@constants';
 import {
 	CATEGORY_REJECT_DB,
+	IndexNumber,
 	INTERNAL_PO_STATUS,
 	REJECT_REASON,
 	REJECT_REASON_VIEW,
@@ -220,6 +221,7 @@ export const tKanban = zId.extend({
 	image: z.string().optional().nullish(),
 	doc_id: z.string(),
 	list_mesin: z.record(z.string().min(1).array().min(1)),
+	index_id: z.string().nullish(),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;
@@ -739,4 +741,11 @@ export type TDateFilter = z.infer<typeof tDateFilter>;
 export const tDateFilter = z.object({
 	filterFrom: z.string(),
 	filterTo: z.string(),
+});
+
+export type TIndex = z.infer<typeof tIndex>;
+export const tIndex = zId.extend({
+	prefix: z.string().regex(/.*\{prefix\}.*/),
+	target: z.nativeEnum(IndexNumber),
+	keterangan: z.string().nullish(),
 });

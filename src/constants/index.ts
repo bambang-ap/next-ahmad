@@ -15,7 +15,7 @@ import {
 } from '@appTypes/app.type';
 import {TItemUnitInternal} from '@appTypes/app.zod';
 import {SelectPropsData} from '@components';
-import {REQ_FORM_STATUS} from '@enum';
+import {IndexNumber, REQ_FORM_STATUS} from '@enum';
 import {TRPCClientError} from '@trpc/client';
 
 export * from './colors';
@@ -63,6 +63,10 @@ export const allowedUnit: TItemUnit[] = [
 	'carton',
 	'pallet',
 ];
+
+export const selectionIndex: SelectPropsData<IndexNumber>[] = Object.values(
+	IndexNumber,
+).map(value => ({value}));
 
 export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
 	value => ({value}),

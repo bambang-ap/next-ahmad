@@ -123,7 +123,7 @@ function SelectComponent<F extends FieldValues>({
 	} = controller;
 
 	const errMsg = fieldState.error?.message;
-	const label = !noLabel && (labelProps || name);
+	const label = !noLabel && (labelProps || name).ucwords();
 
 	const isDisabled = forceEditable ? false : formContext?.disabled || disabled;
 	const selectedValue = data.find(e => e.value === value);

@@ -98,6 +98,7 @@ export enum TABLES {
 	NEW_SCAN = 'scan_new',
 	NEW_SCAN_ITEM = 'scan_new_item',
 	NEW_SCAN_ITEM_REJECT = 'scan_new_item_reject',
+	INDEX_NUMBER = 'index_number',
 }
 
 export enum CRUD_ENABLED {
@@ -206,3 +207,7 @@ export const eOpKeys = z.enum(OpKeys);
 
 export type EOp = z.infer<typeof eOp>;
 export const eOp = z.record(eOpKeys, z.symbol());
+
+export enum IndexNumber {
+	Kanban = 'Kanban',
+}

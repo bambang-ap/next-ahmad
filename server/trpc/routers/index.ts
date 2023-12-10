@@ -5,6 +5,7 @@ import basicRouters from './basic';
 import customer_poRouters from './customer_po';
 import dashboardRouters from './dashboard';
 import exportRouters from './export';
+import indexRouters from './index_number';
 import internalRouters from './internal';
 import itemRouters from './item';
 import kanbanRouters from './kanban';
@@ -33,6 +34,7 @@ export const appRouter = router({
 	print: printRouters,
 	reject: rejectRouters,
 	internal: internalRouters,
+	index: indexRouters,
 });
 
 export type AppRouter = typeof appRouter;

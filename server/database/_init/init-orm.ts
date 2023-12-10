@@ -27,6 +27,7 @@ import initSppbBridge from '../models/customer_sppb_relation';
 import initOrmDocument, {initdDoc} from '../models/document';
 import initOrmHardness from '../models/hardness';
 import initOrmHardnessKategori from '../models/hardness_kategori';
+import {initDIndex} from '../models/index_number';
 import initOrmMasterItem, {initDItem} from '../models/item';
 import initOrmKanban, {initDKanban} from '../models/kanban';
 import initOrmKanbanInstruksi from '../models/kanban_instruksi';
@@ -103,6 +104,8 @@ export function initOrm(ORM: Sequelize) {
 	initMesin(ORM);
 	initKatMesin(ORM);
 	initSppbBridge(ORM);
+
+	initDIndex(ORM);
 
 	initOItem(ORM);
 	initOSup(ORM);
