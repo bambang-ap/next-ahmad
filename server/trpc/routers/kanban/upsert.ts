@@ -1,7 +1,8 @@
 import {tKanbanUpsert} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {OrmDocument, OrmKanban, OrmKanbanItem} from '@database';
-import {checkCredentialV2, generateId} from '@server';
+import {IndexNumber} from '@enum';
+import {checkCredentialV2, generateId, genNumberIndexUpsert} from '@server';
 import {procedure} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
@@ -22,17 +23,28 @@ export const kanbanUpsert = {
 					});
 				}
 
-				const {id, doc_id, items: kanban_items, createdBy, ...rest} = input;
+				const {
+					items: kanban_items,
+					id = generateId('KNB_'),
+					createdBy = session.user?.id,
+					doc_id = docData.dataValues.id,
+					...rest
+				} = input;
 				const no_kanban = await routerCaller.kanban.getInvoice();
 				const hasKanban = id ? await OrmKanban.findOne({where: {id}}) : null;
-				const [createdKanban] = await OrmKanban.upsert({
-					...rest,
-					nomor_kanban: hasKanban?.dataValues?.nomor_kanban ?? no_kanban,
-					createdBy: createdBy ?? session.user?.id!,
-					updatedBy: session.user?.id!,
-					id: id || generateId('KNB_'),
-					doc_id: doc_id || docData.dataValues.id,
-				});
+				const kanbanUpsertValue = await genNumberIndexUpsert(
+					OrmKanban,
+					IndexNumber.Kanban,
+					{
+						...rest,
+						id,
+						doc_id,
+						createdBy,
+						updatedBy: session.user?.id!,
+						nomor_kanban: hasKanban?.dataValues?.nomor_kanban ?? no_kanban,
+					},
+				);
+				const [createdKanban] = await OrmKanban.upsert(kanbanUpsertValue);
 
 				const itemPromises = Object.entries(kanban_items)?.map(
 					([id_item, {id: idItemKanban, id_sppb_in, ...restItemKanban}]) => {
@@ -47,28 +59,8 @@ export const kanbanUpsert = {
 						});
 					},
 				);
-				// const dataScan = await OrmScan.findOne({
-				// 	where: {id_kanban: createdKanban.dataValues.id},
-				// });
-				// const itemKanbanResult =
-				await Promise.all(itemPromises);
-				// const item_from_kanban = itemKanbanResult.reduce((ret, item) => {
-				// 	const dataItem = item?.[0].dataValues as TKanbanItem;
-				// 	const data = qtyMap(({qtyKey}) => {
-				// 		if (!dataItem?.[qtyKey]) return false;
-				// 		return {[qtyKey]: dataItem?.[qtyKey]};
-				// 	}, true).reduce((a, b) => ({...a, ...b}), {});
-				// 	const result = {[dataItem.id]: data} as TScan['item_from_kanban'];
-				// 	return {...ret, ...result};
-				// }, dataScan?.dataValues.item_from_kanban);
 
-				// await OrmScan.upsert({
-				// 	...dataScan?.dataValues!,
-				// 	id: dataScan?.dataValues.id || generateId('SCAN_'),
-				// 	id_customer: input.id_customer,
-				// 	id_kanban: createdKanban.dataValues.id,
-				// 	item_from_kanban,
-				// });
+				await Promise.all(itemPromises);
 
 				return Success;
 			});

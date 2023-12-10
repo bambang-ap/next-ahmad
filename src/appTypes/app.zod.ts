@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 import {SelectPropsData} from '@components';
-import {defaultLimit} from '@constants';
+import {defaultLimit, regIndexPrefix} from '@constants';
 import {
 	CATEGORY_REJECT_DB,
 	IndexNumber,
@@ -56,6 +56,12 @@ export const tableFormValue = z.object({
 
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
+
+export type ZIndex = z.infer<typeof zIndex>;
+export const zIndex = z.object({
+	index_id: z.string(),
+	index_number: z.number(),
+});
 
 export type ZIds = z.infer<typeof zIds>;
 export const zIds = z.object({ids: z.string().array()});
@@ -209,6 +215,7 @@ export const tInstruksiKanban = zId.extend({
 
 export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
+	...zIndex.shape,
 	printed: z.number().optional(),
 	id_po: z.string(),
 	nomor_kanban: z.string(),
@@ -221,7 +228,6 @@ export const tKanban = zId.extend({
 	image: z.string().optional().nullish(),
 	doc_id: z.string(),
 	list_mesin: z.record(z.string().min(1).array().min(1)),
-	index_id: z.string().nullish(),
 });
 
 export type TKanbanItem = z.infer<typeof tKanbanItem>;
@@ -251,6 +257,8 @@ export const tKanbanUpsert = tKanban
 		createdBy: true,
 		updatedBy: true,
 		nomor_kanban: true,
+		index_id: true,
+		index_number: true,
 	})
 	.extend({
 		id_customer: z.string(),
@@ -745,7 +753,8 @@ export const tDateFilter = z.object({
 
 export type TIndex = z.infer<typeof tIndex>;
 export const tIndex = zId.extend({
-	prefix: z.string().regex(/.*\{prefix\}.*/),
+	prefix: z.string().regex(regIndexPrefix),
 	target: z.nativeEnum(IndexNumber),
 	keterangan: z.string().nullish(),
+	createdAt: z.string().optional(),
 });

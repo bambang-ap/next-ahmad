@@ -9,7 +9,13 @@ import {DeepPartialSkipArrayKey, FieldPath, FieldValues} from 'react-hook-form';
 import * as XLSX from 'xlsx';
 
 import {GenPdfOpts, Route, RouterOutput, UnitQty} from '@appTypes/app.type';
-import {ModalTypeSelect, TScanItem, TScanTarget} from '@appTypes/app.zod';
+import {
+	ModalTypeSelect,
+	TIndex,
+	TScanItem,
+	TScanTarget,
+	ZIndex,
+} from '@appTypes/app.zod';
 import {
 	decimalSchema,
 	defaultErrorMutation,
@@ -21,6 +27,7 @@ import {
 	paperA4,
 	ppnMultiply,
 	qtyList,
+	regPrefix,
 } from '@constants';
 import {getPOSppbOutAttributes} from '@database';
 import {REJECT_REASON} from '@enum';
@@ -580,4 +587,18 @@ export function renderItemAsIs<T extends {}>(item: T) {
 	return obj.reduce<MyObject<unknown>>((ret, [key, value]) => {
 		return {...ret, [key.ucwords()]: value};
 	}, {});
+}
+
+export function renderIndex<T extends ZIndex & {dIndex?: TIndex} & {}>(
+	item: T,
+	defaultValue?: string,
+) {
+	const {index_number, dIndex} = item;
+
+	const prefix = dIndex?.prefix.replace(
+		regPrefix,
+		index_number.toString().padStart(5, '0'),
+	);
+
+	return prefix ?? defaultValue;
 }

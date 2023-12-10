@@ -20,6 +20,7 @@ import {TRPCClientError} from '@trpc/client';
 
 export * from './colors';
 export * from './pages';
+export * from './regexes';
 export * from './sizes';
 
 export const ppnPercentage = 11 as const;

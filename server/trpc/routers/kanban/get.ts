@@ -1,3 +1,4 @@
+import {literal, Op, where} from 'sequelize';
 import {z} from 'zod';
 
 import {
@@ -21,11 +22,13 @@ import {
 	tableFormValue,
 	TCustomerPO,
 	TCustomerSPPBIn,
+	TIndex,
 	tKanban,
 	tMasterItem,
 } from '@appTypes/app.zod';
 import {ItemDetail} from '@appTypes/props.type';
 import {
+	dIndex,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerSPPBIn,
@@ -142,27 +145,37 @@ export const kanbanGet = {
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type UUU = TKanban & {
+			dIndex?: TIndex;
 			OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
 			OrmCustomerSPPBIn: TCustomerSPPBIn;
 		};
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<UUU>> => {
 			const {limit, page, search} = input;
 
+			const where1 = wherePagesV2<UUU>(
+				[
+					'nomor_kanban',
+					'$OrmCustomerPO.nomor_po$',
+					'$OrmCustomerSPPBIn.nomor_surat$',
+					'$OrmCustomerPO.OrmCustomer.name$',
+				],
+				search,
+			);
+
+			const where2 =
+				!!search && !Number.isNaN(parseInt(search))
+					? where(literal('index_number::TEXT'), Op.iLike, `%${search}%`)
+					: {};
+
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,
+				logging: true,
 				order: [['nomor_kanban', 'desc']],
 				offset: (page - 1) * limit,
-				where: wherePagesV2<UUU>(
-					[
-						'nomor_kanban',
-						'$OrmCustomerPO.nomor_po$',
-						'$OrmCustomerSPPBIn.nomor_surat$',
-						'$OrmCustomerPO.OrmCustomer.name$',
-					],
-					search,
-				),
+				where: search ? {[Op.or]: [where1, where2]} : {},
 				include: [
 					OrmCustomerSPPBIn,
+					dIndex,
 					{
 						model: OrmCustomerPO,
 						include: [OrmCustomer],

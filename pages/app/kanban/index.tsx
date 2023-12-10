@@ -21,6 +21,7 @@ import {
 	dateUtils,
 	getIds,
 	modalTypeParser,
+	renderIndex,
 	renderItemAsIs,
 } from '@utils';
 import {trpc} from '@utils/trpc';
@@ -112,7 +113,7 @@ export default function Kanban() {
 					{!isProd && <Cell>{item.id}</Cell>}
 					<Cell>{dateUtils.date(item.createdAt)}</Cell>
 					<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
-					<Cell>{item.nomor_kanban}</Cell>
+					<Cell>{renderIndex(item, item.nomor_kanban)}</Cell>
 					<Cell>{item?.OrmCustomerSPPBIn?.nomor_surat}</Cell>
 					<Cell>{item.OrmCustomerPO?.OrmCustomer?.name}</Cell>
 					<Cell>

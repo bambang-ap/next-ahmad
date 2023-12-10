@@ -4,8 +4,13 @@ import {authOptions} from 'pages/api/auth/[...nextauth]';
 import {Model, ModelStatic} from 'sequelize';
 
 import {PagingResult, TSession} from '@appTypes/app.type';
+import {TIndex, ZIndex} from '@appTypes/app.zod';
+import {IndexNumber} from '@enum';
 import {TRPCError} from '@trpc/server';
 import {moment} from '@utils';
+
+import {orderPages} from './database/db-utils';
+import {dIndex} from './database/models/index_number';
 
 export {generateId} from '@utils';
 
@@ -51,7 +56,9 @@ export const checkCredential = async (
 
 export async function checkCredentialV2<T>(
 	ctx: {req: NextApiRequest; res: NextApiResponse},
-	callback: ((session: TSession) => Promise<T>) | ((session: TSession) => T),
+	callback:
+		| ((session: Required<TSession>) => Promise<T>)
+		| ((session: Required<TSession>) => T),
 	// allowedRole?: string,
 ) {
 	const {hasSession, session} = await getSession(ctx.req, ctx.res);
@@ -63,7 +70,7 @@ export async function checkCredentialV2<T>(
 		});
 	}
 
-	return callback(session);
+	return callback(session as Required<TSession>);
 }
 
 export async function genInvoice<T extends object, P extends string>(
@@ -85,6 +92,48 @@ export async function genInvoice<T extends object, P extends string>(
 		.padStart(length, '0');
 	// @ts-ignore
 	return `${!!prefix ? `${prefix}/` : ''}${countString}`;
+}
+
+export async function genNumberIndex<T extends ZIndex & {}>(
+	orm: ModelStatic<Model<T>>,
+	target: IndexNumber,
+) {
+	const indexNumber = await dIndex.findOne({
+		where: {target},
+		logging: true,
+		order: orderPages<TIndex>({createdAt: true}),
+	});
+
+	if (!indexNumber) throw new TRPCError({code: 'BAD_REQUEST'});
+
+	const index_id = indexNumber.toJSON().id;
+
+	// @ts-ignore
+	const count = await orm.findOne({where: {index_id}});
+
+	return {
+		index_id,
+		prev_index_id: count?.toJSON().index_number ?? 0,
+		get index_number() {
+			return this.prev_index_id + 1;
+		},
+	};
+}
+
+export async function genNumberIndexUpsert<
+	T extends ZIndex & {},
+	F extends Partial<ZIndex> & {},
+>(orm: ModelStatic<Model<T>>, target: IndexNumber, value: F) {
+	// @ts-ignore
+	const numIndex = await genNumberIndex(orm, target);
+
+	const {
+		index_id = numIndex.index_id,
+		index_number = numIndex.index_number,
+		...rest
+	} = value;
+
+	return {...rest, index_id, index_number} as unknown as T;
 }
 
 export function pagingResult<T extends unknown>(

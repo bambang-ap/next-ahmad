@@ -153,6 +153,7 @@ export function initRelations() {
 	oneToMany(oInItem, oStock, 'id_item_in');
 
 	oneToMany(dIndex, dKanban, 'index_id');
+	oneToMany(dIndex, OrmKanban, 'index_id');
 
 	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
