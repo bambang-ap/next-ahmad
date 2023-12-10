@@ -23,7 +23,6 @@ export const dashboardRouters = procedure
 		const order = 'DESC';
 		return checkCredentialV2(ctx, async () => {
 			const poQty = await oPoItem.findAll({
-				logging: true,
 				where: whereDateFilter('$oPoItem.createdAt$', input),
 				order: [[col('oPoItem.unit'), order]],
 				group: [col('oPoItem.unit'), col('oItem.harga')],

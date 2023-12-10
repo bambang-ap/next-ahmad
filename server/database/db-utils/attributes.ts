@@ -8,6 +8,7 @@ import {
 	tCustomerPO,
 	tCustomerSPPBIn,
 	tCustomerSPPBOutItem,
+	TIndex,
 	tKanban,
 	tKanbanItem,
 	tMasterItem,
@@ -23,6 +24,7 @@ import {
 	attrParserV2,
 	dCust,
 	dDoc,
+	dIndex,
 	dInItem,
 	dItem,
 	dKanban,
@@ -65,11 +67,16 @@ export function getPrintPoAttributes() {
 	const OutItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
 	const KnbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);
 	const ScanItem = attrParserV2(dScanItem, ['qty1', 'qty2', 'qty3']);
-	const Kanban = attrParserV2(dKanban, ['nomor_kanban']);
+	const Kanban = attrParserV2(dKanban, [
+		'nomor_kanban',
+		'index_id',
+		'index_number',
+	]);
 	const Scan = attrParserV2(dScan, ['status']);
 	const SJIn = attrParserV2(dSJIn, ['nomor_surat']);
 	const Item = attrParserV2(dItem, ['name', 'kode_item']);
 	const Cust = attrParserV2(dCust, ['name']);
+	const tIndex = attrParserV2(dIndex);
 
 	const poIncludeAble: Includeable[] = [
 		Cust,
@@ -104,7 +111,9 @@ export function getPrintPoAttributes() {
 				dSJIn?: typeof SJIn.obj;
 				dOutItems: typeof OutItem.obj & {};
 				dKnbItems?: typeof KnbItem.obj & {
-					dKanban: typeof Kanban.obj;
+					dKanban: typeof Kanban.obj & {
+						dIndex?: typeof tIndex.obj;
+					};
 					dScanItems?: RetScnItem[];
 				};
 			};
@@ -112,6 +121,7 @@ export function getPrintPoAttributes() {
 	};
 
 	return {
+		tIndex,
 		Po,
 		PoItem,
 		InItem,
@@ -146,7 +156,13 @@ export function sppbInGetPage() {
 }
 
 export function exportKanbanAttributes() {
-	const A = attrParser(tKanban, ['nomor_kanban', 'keterangan']);
+	const A = attrParser(tKanban, [
+		'nomor_kanban',
+		'keterangan',
+		'index_id',
+		'index_number',
+	]);
+	const tIndex = attrParserV2(dIndex);
 	const B = attrParser(tCustomerSPPBIn, ['nomor_surat']);
 	const C = attrParser(tPOItemSppbIn, ['id_item', 'id']);
 	const D = attrParser(tCustomerPO, ['nomor_po']);
@@ -161,6 +177,7 @@ export function exportKanbanAttributes() {
 	]);
 
 	type Ret = typeof A.obj & {
+		dIndex?: TIndex;
 		OrmCustomerSPPBIn: typeof B.obj & {
 			OrmPOItemSppbIns: typeof C.obj[];
 		};
@@ -183,7 +200,7 @@ export function exportKanbanAttributes() {
 		string
 	>;
 
-	return {A, B, C, D, E, F, G, H, Ret: {} as Ret, Output: {} as Output};
+	return {tIndex, A, B, C, D, E, F, G, H, Ret: {} as Ret, Output: {} as Output};
 }
 export function exportScanAttributes(route: Route['route']) {
 	type Output = Record<
@@ -243,18 +260,22 @@ export function scanListAttributes() {
 	const scan = attrParserV2(dScan, ['id', 'id_kanban', 'status', 'updatedAt']);
 	const kanban = attrParserV2(dKanban, [
 		'nomor_kanban',
+		'index_id',
+		'index_number',
 		'createdAt',
 		'keterangan',
 	]);
 	const sjIn = attrParserV2(dSJIn, ['nomor_surat']);
 	const po = attrParserV2(dPo, ['nomor_po']);
 	const cust = attrParserV2(dCust, ['name']);
+	const tIndex = attrParserV2(dIndex);
 
 	const num = NumberOrderAttribute<TScan>('"dScan"."id"');
 
 	type Ret = typeof scan.obj & {
 		number?: number;
 		dKanban: typeof kanban.obj & {
+			dIndex?: typeof tIndex.obj;
 			dPo: typeof po.obj & {dCust: typeof cust.obj};
 			dSJIn: typeof sjIn.obj;
 		};
@@ -264,6 +285,7 @@ export function scanListAttributes() {
 }
 
 export function printScanAttributes() {
+	const tIndex = attrParserV2(dIndex);
 	const scan = attrParserV2(dScan, [
 		'id_kanban',
 		'notes',
@@ -275,6 +297,8 @@ export function printScanAttributes() {
 		'id',
 		'keterangan',
 		'nomor_kanban',
+		'index_id',
+		'index_number',
 		'list_mesin',
 	]);
 	const po = attrParserV2(dPo, ['id']);
@@ -294,6 +318,7 @@ export function printScanAttributes() {
 		dScanItems: (typeof scnItem.obj & {
 			dKnbItem?: typeof knbItem.obj & {
 				dKanban: typeof kanban.obj & {
+					dIndex?: typeof tIndex.obj;
 					dPo: typeof po.obj & {dCust: typeof cust.obj};
 				};
 				dItem: typeof item.obj;
@@ -311,6 +336,7 @@ export function printScanAttributes() {
 		kanban,
 		po,
 		cust,
+		tIndex,
 		knbItem,
 		item,
 		inItem,

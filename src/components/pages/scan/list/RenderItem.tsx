@@ -3,7 +3,7 @@ import {Text, Wrapper} from 'pages/app/scan/[route]/list';
 import {THardness, TInstruksiKanban, TParameter} from '@appTypes/app.type';
 import {gap} from '@constants';
 import {CRUD_ENABLED} from '@enum';
-import {classNames, qtyMap} from '@utils';
+import {classNames, qtyMap, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {D} from './RenderPdfData';
@@ -70,7 +70,10 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 			<Wrapper title="Nomor Lot">{selectedSppbInItem?.lot_no}</Wrapper>
 			<Wrapper title="SPPB In">{selectedSppbIn?.nomor_surat}</Wrapper>
 			<Wrapper title="Nomor Kanban">
-				{dataItem?.dKnbItem?.dKanban.nomor_kanban}
+				{renderIndex(
+					dataItem?.dKnbItem?.dKanban!,
+					dataItem?.dKnbItem?.dKanban.nomor_kanban,
+				)}
 			</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name!}</Wrapper>
 			<Wrapper title="Part No.">{masterItem?.kode_item!}</Wrapper>

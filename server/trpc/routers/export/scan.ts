@@ -3,7 +3,7 @@ import {formatDateStringView, formatHour} from '@constants';
 import {OrmKategoriMesin, OrmMesin, processMapper} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
-import {moment, qtyReduce} from '@utils';
+import {moment, qtyReduce, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
@@ -71,7 +71,7 @@ const exportScanRouters = {
 						'NO LOT CUSTOMER': dInItem?.lot_no!,
 						'NO LOT IMI': val.lot_no_imi,
 						PROSES: instruksi,
-						'NOMOR KANBAN': dKanban?.nomor_kanban!,
+						'NOMOR KANBAN': renderIndex(dKanban!, dKanban?.nomor_kanban)!,
 						'NAMA MESIN': mesinnnn.map(e => e.toJSON().name).join(' | '),
 						'NOMOR MESIN': mesinnnn
 							.map(e => e.toJSON().nomor_mesin)

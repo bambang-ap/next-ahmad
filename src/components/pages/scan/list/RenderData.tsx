@@ -6,7 +6,7 @@ import {Control, useWatch} from 'react-hook-form';
 
 import {TableFilterProps} from '@hooks';
 import type {ScanList} from '@trpc/routers/scan';
-import {dateUtils, modalTypeParser} from '@utils';
+import {dateUtils, modalTypeParser, renderIndex} from '@utils';
 
 type Props = {
 	index: number;
@@ -36,7 +36,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 			<Cell>{data.dPo.dCust.name}</Cell>
 			<Cell>{data.dPo.nomor_po}</Cell>
 			<Cell>{data.dSJIn.nomor_surat}</Cell>
-			<Cell>{data?.nomor_kanban}</Cell>
+			<Cell>{renderIndex(data, data.nomor_kanban)}</Cell>
 			<Cell>{data?.keterangan}</Cell>
 			<Cell>{theDate}</Cell>
 			{!isSelect && (

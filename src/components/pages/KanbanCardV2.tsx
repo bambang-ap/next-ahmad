@@ -2,7 +2,7 @@ import {RouterOutput} from '@appTypes/app.type';
 import {BorderTd, Text as Txt, TextProps} from '@components';
 import {nonRequiredRefetch} from '@constants';
 import {DataProcess} from '@trpc/routers/kanban/get';
-import {classNames, dateUtils, moment} from '@utils';
+import {classNames, dateUtils, moment, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {TableBorder, TxtBold} from './sppbOut_GenerateQR';
@@ -177,7 +177,9 @@ export function RenderKanbanCardV2(props: AProps) {
 				</tr>
 				<tr>
 					<BorderTd className="text-base">Nomor Kanban</BorderTd>
-					<BorderTd colSpan={2}>{nomor_kanban}</BorderTd>
+					<BorderTd colSpan={2}>
+						{renderIndex(OrmKanban!, nomor_kanban)}
+					</BorderTd>
 				</tr>
 				<tr>
 					<BorderTd className="text-base">Part No</BorderTd>

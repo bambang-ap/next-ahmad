@@ -14,14 +14,15 @@ import {
 } from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
-import {qtyMap} from '@utils';
+import {qtyMap, renderIndex} from '@utils';
 
 const exportKanbanRouters = {
 	kanban: procedure
 		.input(z.object({idKanbans: z.string().array()}))
 		.query(({ctx, input}) => {
 			const {idKanbans} = input;
-			const {A, B, C, D, E, F, G, H, Ret, Output} = exportKanbanAttributes();
+			const {A, B, C, D, E, F, G, H, tIndex, Ret, Output} =
+				exportKanbanAttributes();
 
 			type JJJ = typeof Output;
 
@@ -30,6 +31,7 @@ const exportKanbanRouters = {
 					where: {id: idKanbans},
 					attributes: A.keys,
 					include: [
+						tIndex,
 						{
 							model: OrmCustomerSPPBIn,
 							attributes: B.keys,
@@ -81,7 +83,7 @@ const exportKanbanRouters = {
 						CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
 						'NOMOR PO': val.OrmCustomerPO.nomor_po,
 						'NOMOR SJ': val.OrmCustomerSPPBIn.nomor_surat,
-						'NOMOR KANBAN': val.nomor_kanban,
+						'NOMOR KANBAN': renderIndex(val, val.nomor_kanban)!,
 						'PART NAME': name!,
 						'PART NO': kode_item!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),

@@ -84,6 +84,7 @@ export function NewKanbanModalChild({
 					label="Keterangan"
 				/>
 				<Input
+					hidden /* NOTE: prev is shown */
 					disabled
 					className="flex-1"
 					control={control}

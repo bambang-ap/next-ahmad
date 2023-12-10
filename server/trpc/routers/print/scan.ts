@@ -18,6 +18,7 @@ export const printScanRouter = {
 			inItem,
 			poItem,
 			sjIn,
+			tIndex,
 			Ret,
 		} = printScanAttributes();
 
@@ -34,7 +35,7 @@ export const printScanRouter = {
 								include: [
 									item,
 									{...inItem, include: [poItem, sjIn]},
-									{...kanban, include: [{...po, include: [cust]}]},
+									{...kanban, include: [tIndex, {...po, include: [cust]}]},
 								],
 							},
 						],

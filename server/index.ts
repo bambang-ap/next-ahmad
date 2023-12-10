@@ -100,7 +100,6 @@ export async function genNumberIndex<T extends ZIndex & {}>(
 ) {
 	const indexNumber = await dIndex.findOne({
 		where: {target},
-		logging: true,
 		order: orderPages<TIndex>({createdAt: true}),
 	});
 

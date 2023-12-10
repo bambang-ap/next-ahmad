@@ -14,6 +14,8 @@ import {
 } from '@appTypes/app.zod';
 import {
 	attrParser,
+	attrParserV2,
+	dIndex,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -39,12 +41,14 @@ export const printKanbanRouter = {
 					OrmCustomerSPPBIn: typeof J.obj;
 				};
 				OrmKanban: typeof B.obj & {
+					dIndex?: typeof tIndex.obj;
 					OrmDocument: typeof C.obj;
 					OrmCustomerPO: typeof D.obj & {OrmCustomer: typeof E.obj};
 					[OrmKanban._aliasCreatedBy]: typeof H.obj;
 				};
 			};
 
+			const tIndex = attrParserV2(dIndex);
 			const A = attrParser(tKanbanItem, [
 				'id',
 				'id_kanban',
@@ -59,6 +63,8 @@ export const printKanbanRouter = {
 				'createdAt',
 				'keterangan',
 				'nomor_kanban',
+				'index_id',
+				'index_number',
 				'list_mesin',
 			]);
 			const C = attrParser(tDocument, ['doc_no', 'revisi', 'tgl_efektif']);
@@ -80,6 +86,7 @@ export const printKanbanRouter = {
 							model: OrmKanban,
 							attributes: B.keys,
 							include: [
+								tIndex,
 								{
 									model: OrmDocument,
 									attributes: C.keys,

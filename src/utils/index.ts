@@ -99,6 +99,12 @@ export function numberFormat<C extends false>(
 	minFractionDigits?: number,
 	maxFractionDigits?: number,
 ): number;
+export function numberFormat<C extends boolean>(
+	qty: number,
+	currency?: C,
+	minFractionDigits?: number,
+	maxFractionDigits?: number,
+): string | number;
 export function numberFormat(
 	qty: number,
 	currency = true,
@@ -593,7 +599,7 @@ export function renderIndex<T extends ZIndex & {dIndex?: TIndex} & {}>(
 	item: T,
 	defaultValue?: string,
 ) {
-	const {index_number, dIndex} = item;
+	const {index_number, dIndex} = item ?? {};
 
 	const prefix = dIndex?.prefix.replace(
 		regPrefix,

@@ -22,9 +22,9 @@ export function InternalDashboard({control, calculated}: K) {
 		value: number,
 		harga: number,
 		unit: string,
-		jj = !!calculated,
+		isCalculated = !!calculated,
 	) {
-		const val = numberFormat(value * (calculated ? harga : 1), jj);
+		const val = numberFormat(value * (calculated ? harga : 1), isCalculated);
 		return `${val} ${calculated ? '' : unit}`;
 	}
 

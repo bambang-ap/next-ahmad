@@ -1,7 +1,7 @@
 import {Headers} from '@appComponent/GenerateExport';
 import {UnitQty, UnitUnit} from '@appTypes/app.type';
 import {getPrintPoAttributes} from '@database';
-import {qtyMap} from '@utils';
+import {qtyMap, renderIndex} from '@utils';
 
 type MapperReturn<T> = {
 	headers: Headers;
@@ -137,7 +137,7 @@ export function exportPoMapper(): MapperReturn<
 					{renderQty(dPoItems, dPoItems)}
 					<td>{dSJIn?.nomor_surat}</td>
 					{renderQty(dPoItems, dInItems)}
-					<td>{dKanban?.nomor_kanban}</td>
+					<td>{renderIndex(dKanban!, dKanban?.nomor_kanban)}</td>
 					{renderQty(dPoItems, dKnbItems)}
 					{renderQty(dPoItems, scanProd)}
 					{renderQty(dPoItems, scanQc)}
