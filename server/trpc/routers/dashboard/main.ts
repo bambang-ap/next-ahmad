@@ -2,6 +2,7 @@ import {col, FindOptions, fn} from 'sequelize';
 
 import {TDecimal, TItemUnit, UQty} from '@appTypes/app.type';
 import {tScanItemReject, tScanNew} from '@appTypes/app.zod';
+import {allowedUnit} from '@constants';
 import {
 	attrParserV2,
 	dInItem,
@@ -48,14 +49,19 @@ async function parseQueries(queries: Promise<any>[]) {
 const mainDashboardRouter = router({
 	po: procedure.query(({ctx}) => {
 		function selector(num: UQty): FindOptions {
+			const uu = `unit${num}`;
+
 			return {
-				group: [`unit${num}`],
+				logging: true,
+				group: [uu],
+				where: {[uu]: allowedUnit},
 				attributes: [
-					[`unit${num}`, 'unit'],
+					[uu, 'unit'],
 					[fn('sum', col(`qty${num}`)), 'qty'],
 				],
 			};
 		}
+
 		return checkCredentialV2(ctx, async (): Promise<J> => {
 			const queries = [
 				OrmCustomerPOItem.findAll(selector(1)),
@@ -73,6 +79,7 @@ const mainDashboardRouter = router({
 				group,
 				raw: true,
 				include: [{model: OrmCustomerPOItem, attributes: []}],
+				where: {[`$${group}$`]: allowedUnit},
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`OrmPOItemSppbIn.qty${num}`)), 'qty'],
@@ -95,6 +102,7 @@ const mainDashboardRouter = router({
 			return {
 				group,
 				raw: true,
+				where: {[`$${group}$`]: allowedUnit},
 				include: [
 					{
 						attributes: [],
@@ -137,7 +145,10 @@ const mainDashboardRouter = router({
 			const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
 			const data = scnItem.model.findAll({
 				group,
-				where: wherePagesV3<Ret>({'$dScan.status$': target}),
+				where: {
+					...wherePagesV3<Ret>({'$dScan.status$': target}),
+					[`$${group}$`]: allowedUnit,
+				},
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
@@ -167,6 +178,7 @@ const mainDashboardRouter = router({
 			return parseQueries(queries);
 		});
 	}),
+
 	reject: procedure
 		.input(tScanItemReject.pick({reason: true}))
 		.query(({ctx, input}) => {
@@ -190,7 +202,10 @@ const mainDashboardRouter = router({
 				);
 				const data = rejItem.model.findAll({
 					group,
-					where: wherePagesV3<Ret>({reason: target}),
+					where: {
+						...wherePagesV3<Ret>({reason: target}),
+						[`$${group}$`]: allowedUnit,
+					},
 					attributes: [
 						[col(group), 'unit'],
 						[fn('sum', col(`dRejItem.qty${num}`)), 'qty'],
@@ -232,6 +247,7 @@ const mainDashboardRouter = router({
 			return {
 				group,
 				raw: true,
+				where: {[`$${group}$`]: allowedUnit},
 				include: [
 					{
 						attributes: [],

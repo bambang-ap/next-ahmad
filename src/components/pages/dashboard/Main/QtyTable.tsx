@@ -3,7 +3,7 @@ import {useWatch} from 'react-hook-form';
 import {FormProps} from '@appTypes/app.type';
 import {Icon} from '@baseComps/Icon';
 import {BorderTd, BorderTdProps, RootTable as Table} from '@baseComps/Table';
-import {unitData} from '@constants';
+import {decimalValue, unitData} from '@constants';
 import {useQtyData} from '@hooks';
 import {classNames, numberFormat} from '@utils';
 
@@ -81,7 +81,9 @@ export default function QtyTable({
 										key={`${unit}${index}`}
 										rootClassName={className}
 										className="justify-end w-32">
-										{!!qty ? numberFormat(qty, false, 3, 3) : '-'}
+										{!!qty
+											? numberFormat(qty, false, decimalValue, decimalValue)
+											: '-'}
 									</Td>
 								))}
 							</Tr>

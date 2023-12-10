@@ -2,8 +2,10 @@ import {useWatch} from 'react-hook-form';
 import twColors from 'tailwindcss/colors';
 
 import {FormProps} from '@appTypes/app.type';
+import {decimalValue} from '@constants';
 import {useQtyData} from '@hooks';
 import {Chart} from '@prevComp/Chart';
+import {numberFormat} from '@utils';
 
 import {FormValue} from './';
 
@@ -20,7 +22,9 @@ export default function DonutChart({control}: FormProps<FormValue>) {
 				key={type}
 				type="pie"
 				height={500}
-				series={qtys.map(([, qty]) => qty)}
+				series={qtys.map(([, qty]) =>
+					numberFormat(qty, false, decimalValue, decimalValue),
+				)}
 				options={{
 					colors: qtys.map(([, , color]) => {
 						type A = typeof twColors;

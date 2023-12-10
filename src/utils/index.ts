@@ -80,19 +80,33 @@ export function maxRules(val: number) {
 	return {max: {value: val, message: `max is ${val}`}};
 }
 
+export function numberFormat<C extends true>(
+	qty: number,
+	currency?: C,
+	minFractionDigits?: number,
+	maxFractionDigits?: number,
+): string;
+export function numberFormat<C extends false>(
+	qty: number,
+	currency?: C,
+	minFractionDigits?: number,
+	maxFractionDigits?: number,
+): number;
 export function numberFormat(
 	qty: number,
 	currency = true,
 	minimumFractionDigits = 0,
 	maximumFractionDigits = 0,
 ) {
-	const formated = new Intl.NumberFormat('id-ID', {
+	const formatted = new Intl.NumberFormat('id-ID', {
 		minimumFractionDigits,
 		maximumFractionDigits,
 		...(currency ? {style: 'currency', currency: 'IDR'} : {}),
 	}).format(qty);
 
-	return formated;
+	if (!currency) return parseFloat(formatted);
+
+	return formatted;
 }
 
 export function ppnParser(ppn: boolean, price: number, qty = 1) {
