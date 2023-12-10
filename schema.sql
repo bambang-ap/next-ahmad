@@ -160,6 +160,22 @@ CREATE TABLE public.hardness_kategori (
 ALTER TABLE public.hardness_kategori OWNER TO postgres;
 
 --
+-- Name: index_number; Type: TABLE; Schema: public; Owner: postgres
+--
+
+CREATE TABLE public.index_number (
+    id character varying(47) NOT NULL,
+    prefix character varying(100) NOT NULL,
+    target character varying(100) NOT NULL,
+    "createdAt" timestamp without time zone,
+    "updatedAt" timestamp without time zone,
+    keterangan character varying(100)
+);
+
+
+ALTER TABLE public.index_number OWNER TO postgres;
+
+--
 -- Name: instruksi_kanban; Type: TABLE; Schema: public; Owner: postgres
 --
 
@@ -257,7 +273,9 @@ CREATE TABLE public.internal_request (
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     status character varying(100),
-    keterangan character varying(100)
+    keterangan character varying(100),
+    index_id character varying(47),
+    index_number integer
 );
 
 
@@ -443,7 +461,9 @@ CREATE TABLE public.kanban (
     doc_id character varying(47),
     nomor_kanban character varying(47),
     list_mesin json DEFAULT '[]'::json,
-    printed integer DEFAULT 0
+    printed integer DEFAULT 0,
+    index_number integer,
+    index_id character varying(47)
 );
 
 
@@ -888,6 +908,14 @@ ALTER TABLE ONLY public.hardness
 
 ALTER TABLE ONLY public.user_pengguna
     ADD CONSTRAINT id_pkey PRIMARY KEY (id) INCLUDE (id);
+
+
+--
+-- Name: index_number index_number_pkey; Type: CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.index_number
+    ADD CONSTRAINT index_number_pkey PRIMARY KEY (id);
 
 
 --
@@ -1537,6 +1565,14 @@ ALTER TABLE ONLY public.internal_po
 
 
 --
+-- Name: internal_request internal_request_index_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_request
+    ADD CONSTRAINT internal_request_index_id_fkey FOREIGN KEY (index_id) REFERENCES public.index_number(id);
+
+
+--
 -- Name: internal_sj_in internal_sj_in_id_po_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1574,14 +1610,6 @@ ALTER TABLE ONLY public.internal_sj_in
 
 ALTER TABLE ONLY public.internal_stock
     ADD CONSTRAINT internal_stock_id_item_fkey FOREIGN KEY (id_item) REFERENCES public.internal_item(id);
-
-
---
--- Name: internal_stock internal_stock_id_item_in_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
---
-
-ALTER TABLE ONLY public.internal_stock
-    ADD CONSTRAINT internal_stock_id_item_in_fkey FOREIGN KEY (id_item_in) REFERENCES public.internal_sj_in_item(id);
 
 
 --
