@@ -52,7 +52,6 @@ const mainDashboardRouter = router({
 			const uu = `unit${num}`;
 
 			return {
-				logging: true,
 				group: [uu],
 				where: {[uu]: unitData},
 				attributes: [
