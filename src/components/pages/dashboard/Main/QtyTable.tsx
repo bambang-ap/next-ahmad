@@ -3,7 +3,7 @@ import {useWatch} from 'react-hook-form';
 import {FormProps} from '@appTypes/app.type';
 import {Icon} from '@baseComps/Icon';
 import {BorderTd, BorderTdProps, RootTable as Table} from '@baseComps/Table';
-import {decimalValue, unitData} from '@constants';
+import {allowedUnit as unitData, decimalValue} from '@constants';
 import {useQtyData} from '@hooks';
 import {classNames, numberFormat} from '@utils';
 

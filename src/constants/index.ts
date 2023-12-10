@@ -42,15 +42,27 @@ export const IMIConst = {
 
 export const unitData: TItemUnit[] = [
 	'pcs',
-	// 'drum',
 	'kg',
-	// 'box',
-	// 'set',
-	// 'carton',
-	// 'pallet',
+	'drum',
+	'box',
+	'set',
+	'carton',
+	'pallet',
 ];
 
-export const allowedUnit: TItemUnit[] = ['pcs', 'kg'];
+export const allowedUnit: TItemUnit[] = [
+	'pcs',
+	'kg',
+
+	/**
+	 * NOTE: Kemungkinan value dibawah di hidden
+	 */
+	'drum',
+	'box',
+	'set',
+	'carton',
+	'pallet',
+];
 
 export const selectUnitData: SelectPropsData<TItemUnit>[] = unitData.map(
 	value => ({value}),

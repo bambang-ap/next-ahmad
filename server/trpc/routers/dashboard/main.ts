@@ -2,7 +2,7 @@ import {col, FindOptions, fn} from 'sequelize';
 
 import {TDecimal, TItemUnit, UQty} from '@appTypes/app.type';
 import {tScanItemReject, tScanNew} from '@appTypes/app.zod';
-import {allowedUnit} from '@constants';
+import {allowedUnit as unitData} from '@constants';
 import {
 	attrParserV2,
 	dInItem,
@@ -54,7 +54,7 @@ const mainDashboardRouter = router({
 			return {
 				logging: true,
 				group: [uu],
-				where: {[uu]: allowedUnit},
+				where: {[uu]: unitData},
 				attributes: [
 					[uu, 'unit'],
 					[fn('sum', col(`qty${num}`)), 'qty'],
@@ -79,7 +79,7 @@ const mainDashboardRouter = router({
 				group,
 				raw: true,
 				include: [{model: OrmCustomerPOItem, attributes: []}],
-				where: {[`$${group}$`]: allowedUnit},
+				where: {[`$${group}$`]: unitData},
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`OrmPOItemSppbIn.qty${num}`)), 'qty'],
@@ -102,7 +102,7 @@ const mainDashboardRouter = router({
 			return {
 				group,
 				raw: true,
-				where: {[`$${group}$`]: allowedUnit},
+				where: {[`$${group}$`]: unitData},
 				include: [
 					{
 						attributes: [],
@@ -147,7 +147,7 @@ const mainDashboardRouter = router({
 				group,
 				where: {
 					...wherePagesV3<Ret>({'$dScan.status$': target}),
-					[`$${group}$`]: allowedUnit,
+					[`$${group}$`]: unitData,
 				},
 				attributes: [
 					[col(group), 'unit'],
@@ -204,7 +204,7 @@ const mainDashboardRouter = router({
 					group,
 					where: {
 						...wherePagesV3<Ret>({reason: target}),
-						[`$${group}$`]: allowedUnit,
+						[`$${group}$`]: unitData,
 					},
 					attributes: [
 						[col(group), 'unit'],
@@ -247,7 +247,7 @@ const mainDashboardRouter = router({
 			return {
 				group,
 				raw: true,
-				where: {[`$${group}$`]: allowedUnit},
+				where: {[`$${group}$`]: unitData},
 				include: [
 					{
 						attributes: [],
