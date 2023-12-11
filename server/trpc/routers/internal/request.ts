@@ -1,6 +1,12 @@
-import {sReqForm, tableFormValue, zId} from '@appTypes/app.zod';
+import {
+	SReqForm,
+	sReqForm,
+	tableFormValue,
+	TIndex,
+	zId,
+} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {dIndex, oForm, whereIndex} from '@database';
+import {dIndex, indexWhereAttributes, oForm} from '@database';
 import {IndexNumber} from '@enum';
 import {
 	checkCredentialV2,
@@ -15,11 +21,20 @@ export const requestRouters = router({
 		const {limit, page, search} = input;
 
 		return checkCredentialV2(ctx, async () => {
+			type UUU = SReqForm & {dIndex?: TIndex};
+
+			const indexAttr = indexWhereAttributes<UUU>(
+				'dIndex.prefix',
+				'index_number',
+				search,
+			);
+
 			const {count, rows} = await oForm.findAndCountAll({
 				limit,
 				offset: (page - 1) * limit,
 				include: [dIndex],
-				where: [whereIndex(search)],
+				attributes: {include: [indexAttr?.attributes]},
+				where: !!indexAttr?.where ? [indexAttr.where] : undefined,
 			});
 
 			return pagingResult(

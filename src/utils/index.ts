@@ -595,16 +595,16 @@ export function renderItemAsIs<T extends {}>(item: T) {
 	}, {});
 }
 
-export function renderIndex<T extends ZIndex & {dIndex?: TIndex} & {}>(
+export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 	item: T,
 	defaultValue?: string,
 ) {
-	const {index_number, dIndex} = item ?? {};
+	const {index_str, index_number, dIndex} = item ?? {};
 
 	const prefix = dIndex?.prefix.replace(
 		regPrefix,
-		index_number.toString().padStart(5, '0'),
+		index_number?.toString().padStart(1, '0') ?? '',
 	);
 
-	return prefix ?? defaultValue;
+	return index_str ?? prefix ?? defaultValue;
 }

@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
-import {Model, ModelStatic} from 'sequelize';
+import {Model, ModelStatic, WhereOptions} from 'sequelize';
 
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {TIndex, ZIndex} from '@appTypes/app.zod';
@@ -107,14 +107,16 @@ export async function genNumberIndex<T extends ZIndex & {}>(
 
 	const index_id = indexNumber.toJSON().id;
 
-	// @ts-ignore
-	const count = await orm.findOne({where: {index_id}});
+	const count = await orm.findOne({
+		where: {index_id} as WhereOptions<T>,
+		order: [['createdAt', 'desc']],
+	});
 
 	return {
 		index_id,
-		prev_index_id: count?.toJSON().index_number ?? 0,
+		prev_index_id: count?.toJSON().index_number ?? '0',
 		get index_number() {
-			return this.prev_index_id + 1;
+			return parseInt(this.prev_index_id) + 1;
 		},
 	};
 }
@@ -123,7 +125,6 @@ export async function genNumberIndexUpsert<
 	T extends ZIndex & {},
 	F extends Partial<ZIndex> & {},
 >(orm: ModelStatic<Model<T>>, target: IndexNumber, value: F) {
-	// @ts-ignore
 	const numIndex = await genNumberIndex(orm, target);
 
 	const {
@@ -147,14 +148,3 @@ export function pagingResult<T extends unknown>(
 
 	return {count, page, limit, totalPage, rows, debug};
 }
-
-// export function ormDecimalType(fieldName: string) {
-// 	return {
-// 		type: DECIMAL,
-// 		get(): number {
-// 			// @ts-ignore
-// 			const value = this?.getDataValue?.(fieldName);
-// 			return value ? parseFloat(value ?? 0) : 0;
-// 		},
-// 	};
-// }

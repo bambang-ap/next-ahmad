@@ -29,6 +29,7 @@ import {
 import {ItemDetail} from '@appTypes/props.type';
 import {
 	dIndex,
+	indexWhereAttributes,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerSPPBIn,
@@ -47,7 +48,6 @@ import {
 	OrmParameterKategori,
 	OrmScan,
 	OrmUser,
-	whereIndex,
 	wherePagesV2,
 } from '@database';
 import {checkCredentialV2, pagingResult} from '@server';
@@ -163,16 +163,22 @@ export const kanbanGet = {
 				search,
 			);
 
-			const where2 = whereIndex(search);
+			const indexAttr = indexWhereAttributes<UUU>(
+				'dIndex.prefix',
+				'index_number',
+				search,
+			);
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
+				logging: true,
 				limit,
 				order: [['nomor_kanban', 'desc']],
 				offset: (page - 1) * limit,
-				where: search ? {[Op.or]: [where1, where2]} : {},
+				where: search ? {[Op.or]: [where1, indexAttr?.where]} : {},
+				attributes: {include: [indexAttr.attributes]},
 				include: [
-					OrmCustomerSPPBIn,
 					dIndex,
+					OrmCustomerSPPBIn,
 					{
 						model: OrmCustomerPO,
 						include: [OrmCustomer],

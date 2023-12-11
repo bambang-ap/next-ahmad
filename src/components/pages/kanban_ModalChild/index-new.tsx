@@ -8,11 +8,12 @@ import {
 	Button,
 	ImageFormWithPreview,
 	Input,
+	InputDummy,
 	InputFile,
 	Select,
 	selectMapper,
 } from '@components';
-import {modalTypeParser} from '@utils';
+import {modalTypeParser, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {RenderItem} from './RenderItem';
@@ -37,7 +38,6 @@ export function NewKanbanModalChild({
 
 	const {data: dataCustomer, isLoading: isLoadingCustomer} =
 		trpc.kanban.po.get_customer.useQuery();
-	const {data: nomorKanban} = trpc.kanban.getInvoice.useQuery();
 	const {data: detailKanban} = trpc.kanban.detail.useQuery(idKanban!, {
 		enabled: !!idKanban,
 		onSuccess(r) {
@@ -83,15 +83,11 @@ export function NewKanbanModalChild({
 					fieldName="keterangan"
 					label="Keterangan"
 				/>
-				<Input
-					hidden /* NOTE: prev is shown */
+				<InputDummy
 					disabled
 					className="flex-1"
-					control={control}
-					key={nomorKanban}
-					defaultValue={nomorKanban}
-					fieldName="nomor_kanban"
 					label="Nomor Kanban"
+					byPassValue={renderIndex(detailKanban!, detailKanban?.nomor_kanban)}
 				/>
 
 				{isPreview ? (

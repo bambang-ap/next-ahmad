@@ -4,7 +4,16 @@ import {useForm, useWatch} from 'react-hook-form';
 
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SReqForm} from '@appTypes/app.zod';
-import {Button, Form, Input, Modal, ModalRef, Select, Table} from '@components';
+import {
+	Button,
+	Form,
+	Input,
+	InputDummy,
+	Modal,
+	ModalRef,
+	Select,
+	Table,
+} from '@components';
 import {selectReqStatus, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
 import {useTableFilterComponentV2} from '@hooks';
@@ -117,7 +126,7 @@ function RenderModal({
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, isEditing, form} = useWatch({control});
-	const {isDelete} = modalTypeParser(type);
+	const {isDelete, isPreviewEdit} = modalTypeParser(type);
 
 	if (isDelete) return <Button type="submit">Hapus</Button>;
 
@@ -141,6 +150,14 @@ function RenderModal({
 	return (
 		<div className="flex flex-col gap-2">
 			<Input hidden control={control} fieldName="form.status" />
+			{isPreviewEdit && (
+				<InputDummy
+					disabled
+					className="flex-1"
+					label="Nomor Form"
+					byPassValue={renderIndex(form!)}
+				/>
+			)}
 			<Input type="date" control={control} fieldName="form.date" label="Date" />
 			<Input
 				type="date"

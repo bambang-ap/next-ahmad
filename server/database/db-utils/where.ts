@@ -1,8 +1,16 @@
 import {Path} from 'react-hook-form';
-import {col, literal, Op, where, WhereAttributeHashValue} from 'sequelize';
+import {
+	col,
+	fn,
+	Op,
+	ProjectionAlias,
+	where,
+	WhereAttributeHashValue,
+} from 'sequelize';
 import {Primitive} from 'zod';
 
-import {TDateFilter, ZIndex} from '@appTypes/app.zod';
+import {indexAlias, TDateFilter, ZIndex} from '@appTypes/app.zod';
+import {regPrefix} from '@constants';
 
 export function groupPages<T extends {}>(searchKey: L1<T>): any {
 	return searchKey;
@@ -103,11 +111,29 @@ export function whereDateFilter<T extends {}>(
 	};
 }
 
-export function whereIndex<T extends ZIndex & {} = ZIndex>(
+export function indexWhereAttributes<T extends ZIndex & {} = ZIndex>(
+	prefixCol: L1<T>,
+	indexCol: L1<T>,
 	search?: string,
-): any;
-export function whereIndex(search?: string): any {
-	return !!search && !Number.isNaN(parseInt(search))
-		? where(literal('index_number::TEXT'), Op.iLike, `%${search}%`)
-		: {};
+) {
+	const attribute = fn(
+		'REGEXP_REPLACE',
+		col(prefixCol),
+		regPrefix,
+		col(indexCol),
+	);
+
+	const whereQuery = !!search
+		? where(col(indexCol), Op.iLike, `%${search}%`)
+		: undefined;
+
+	// FIXME: replace here with bottom
+	// const whereQuery = !!search
+	// 	? where(attribute, Op.iLike, `%${search}%`)
+	// 	: undefined;
+
+	return {
+		attributes: [attribute, indexAlias] as ProjectionAlias,
+		where: whereQuery,
+	};
 }

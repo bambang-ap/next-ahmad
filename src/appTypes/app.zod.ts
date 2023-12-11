@@ -57,10 +57,13 @@ export const tableFormValue = z.object({
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
+export const indexAlias = 'index_str' as const;
+
 export type ZIndex = z.infer<typeof zIndex>;
 export const zIndex = z.object({
 	index_id: z.string(),
-	index_number: z.number(),
+	index_number: z.string(),
+	[indexAlias]: z.string().optional(),
 });
 
 export type ZIds = z.infer<typeof zIds>;
