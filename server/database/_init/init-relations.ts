@@ -158,6 +158,7 @@ export function initRelations() {
 	oneToMany(dIndex, dKanban, 'index_id');
 	oneToMany(dIndex, OrmKanban, 'index_id');
 	oneToMany(dIndex, oForm, 'index_id');
+	oneToMany(dIndex, oPo, 'index_id');
 
 	oneToOne(dScan, dScan, 'id_qc', dScan._aliasReject);
 

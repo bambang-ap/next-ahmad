@@ -57,6 +57,9 @@ export const tableFormValue = z.object({
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
+export type ZIds = z.infer<typeof zIds>;
+export const zIds = z.object({ids: z.string().array()});
+
 export const indexAlias = 'index_str' as const;
 
 export type ZIndex = z.infer<typeof zIndex>;
@@ -66,8 +69,13 @@ export const zIndex = z.object({
 	[indexAlias]: z.string().optional(),
 });
 
-export type ZIds = z.infer<typeof zIds>;
-export const zIds = z.object({ids: z.string().array()});
+export type TIndex = z.infer<typeof tIndex>;
+export const tIndex = zId.extend({
+	prefix: z.string().regex(regIndexPrefix),
+	target: z.nativeEnum(IndexNumber),
+	keterangan: z.string().nullish(),
+	createdAt: z.string().optional(),
+});
 
 export type TUser = z.infer<typeof tUser>;
 export const tUser = zId.extend({
@@ -648,10 +656,10 @@ export const sReqForm = zId.extend({
 
 export type SPo = z.infer<typeof sPo>;
 export const sPo = zId.extend({
+	...zIndex.shape,
 	sup_id: z.string(),
 	date: z.string(),
 	due_date: z.string(),
-	nomor_po: z.string(),
 	keterangan: z.string().nullish(),
 });
 
@@ -666,15 +674,18 @@ export const oPoItem = zId.extend({
 });
 
 export type SPoUpsert = z.infer<typeof sPoUpsert>;
-export const sPoUpsert = sPo.partial({id: true}).extend({
-	status: z.nativeEnum(INTERNAL_PO_STATUS).optional(),
-	oSup: sSupplier.optional(),
-	oPoItems: oPoItem
-		.extend({oItem: sItem, temp_id: z.string()})
-		.partial({id: true, id_po: true, oItem: true, temp_id: true})
-		.array()
-		.min(1),
-});
+export const sPoUpsert = sPo
+	.partial({id: true, index_id: true, index_number: true})
+	.extend({
+		dIndex: tIndex.optional(),
+		status: z.nativeEnum(INTERNAL_PO_STATUS).optional(),
+		oSup: sSupplier.optional(),
+		oPoItems: oPoItem
+			.extend({oItem: sItem, temp_id: z.string()})
+			.partial({id: true, id_po: true, oItem: true, temp_id: true})
+			.array()
+			.min(1),
+	});
 
 export type SSjIn = z.infer<typeof sSjIn>;
 export const sSjIn = zId.extend({
@@ -753,12 +764,4 @@ export type TDateFilter = z.infer<typeof tDateFilter>;
 export const tDateFilter = z.object({
 	filterFrom: z.string(),
 	filterTo: z.string(),
-});
-
-export type TIndex = z.infer<typeof tIndex>;
-export const tIndex = zId.extend({
-	prefix: z.string().regex(regIndexPrefix),
-	target: z.nativeEnum(IndexNumber),
-	keterangan: z.string().nullish(),
-	createdAt: z.string().optional(),
 });

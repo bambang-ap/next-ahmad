@@ -85,7 +85,8 @@ export function initOPo(sequelize: Sequelize) {
 			date: STRING,
 			due_date: STRING,
 			sup_id: STRING,
-			nomor_po: STRING,
+			index_id: STRING,
+			index_number: STRING,
 		},
 		{
 			...defaultScope(sequelize, false),

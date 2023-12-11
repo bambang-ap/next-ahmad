@@ -5,28 +5,44 @@ import {sPoUpsert, tableFormValue, zId, zIds} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {
 	getInternalPOStatus,
+	indexWhereAttributes,
 	internalPoAttributes,
 	oPo,
 	oPoItem,
 	ORM,
 	wherePagesV3,
 } from '@database';
-import {checkCredentialV2, genInvoice, pagingResult} from '@server';
+import {IndexNumber} from '@enum';
+import {checkCredentialV2, genNumberIndexUpsert, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
-import {generateId, moment} from '@utils';
+import {generateId} from '@utils';
 
 export type RetPoInternal = ReturnType<typeof internalPoAttributes>['Ret'];
 
 async function agd(input: TableFormValue, where?: any) {
-	const {id: supId, page, limit} = input;
-	const {item, po, poItem, sup} = internalPoAttributes();
+	const {id: supId, page, limit, search} = input;
+	const {item, po, poItem, sup, tIndex} = internalPoAttributes();
+
+	const whereSearch = indexWhereAttributes(
+		'dIndex.prefix',
+		'index_number',
+		search,
+	);
+	const supIdWhere = !!supId ? {sup_id: supId} : undefined;
 
 	const {count, rows: data} = await po.model.findAndCountAll({
+		logging: true,
 		limit,
-		include: [sup],
+		include: [tIndex, sup],
 		offset: (page - 1) * limit,
-		where: !!supId ? {sup_id: supId, ...where} : where,
+		attributes: {include: [whereSearch.attributes]},
+		where: !whereSearch.where
+			? supIdWhere
+			: {
+					[Op.or]: [whereSearch.where, where],
+					...supIdWhere,
+			  },
 	});
 
 	const rows = await Promise.all(
@@ -48,18 +64,6 @@ async function agd(input: TableFormValue, where?: any) {
 }
 
 export const poRouters = router({
-	getInvoice: procedure.query(() => {
-		const now = moment();
-		const month = now.get('month');
-		const year = now.get('year');
-
-		return genInvoice(
-			oPo,
-			`IMI/P.O/${month.toRoman()}/${year}`,
-			value => value?.nomor_po,
-			'nomor_po',
-		);
-	}),
 	pdf: procedure.input(zIds).query(({ctx, input}) => {
 		return checkCredentialV2(ctx, async (): Promise<RetPoInternal[]> => {
 			const {rows} = await agd(
@@ -70,6 +74,7 @@ export const poRouters = router({
 			return rows;
 		});
 	}),
+
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, search} = input;
 
@@ -80,10 +85,7 @@ export const poRouters = router({
 
 				const where = !search
 					? undefined
-					: wherePagesV3<RetPoInternal>(
-							{'$oSup.nama$': searcher, nomor_po: searcher},
-							'or',
-					  );
+					: wherePagesV3<RetPoInternal>({'$oSup.nama$': searcher}, 'or');
 
 				const {count, rows} = await agd(input, where);
 
@@ -92,17 +94,23 @@ export const poRouters = router({
 		);
 	}),
 	upsert: procedure.input(sPoUpsert).mutation(({ctx, input}) => {
-		// eslint-disable-next-line @typescript-eslint/no-unused-vars
-		const {oPoItems: dSPoItems, oSup: dSSUp, id: id_po, ...po} = input ?? {};
+		const {
+			oPoItems: dSPoItems,
+			// eslint-disable-next-line @typescript-eslint/no-unused-vars
+			oSup: dSSUp,
+			id: id_po = generateId('IPO-'),
+			...po
+		} = input ?? {};
 
 		return checkCredentialV2(ctx, async () => {
 			const transaction = await ORM.transaction();
 
 			try {
-				const [generatedPo] = await oPo.upsert(
-					{...po, id: id_po ?? generateId('IPO-')},
-					{transaction},
-				);
+				const body = await genNumberIndexUpsert(oPo, IndexNumber.InternalPO, {
+					...po,
+					id: id_po,
+				});
+				const [generatedPo] = await oPo.upsert(body, {transaction});
 
 				const existingPoItems = id_po
 					? await oPoItem.findAll({
@@ -136,6 +144,7 @@ export const poRouters = router({
 				await transaction.commit();
 				return Success;
 			} catch (err) {
+				console.log(err);
 				await transaction.rollback();
 				throw new TRPCError({code: 'BAD_REQUEST'});
 			}

@@ -111,7 +111,7 @@ export function whereDateFilter<T extends {}>(
 	};
 }
 
-export function indexWhereAttributes<T extends ZIndex & {} = ZIndex>(
+export function indexWhereAttributes<T extends Partial<ZIndex> & {} = ZIndex>(
 	prefixCol: L1<T>,
 	indexCol: L1<T>,
 	search?: string,

@@ -36,6 +36,7 @@ import {
 	modalTypeParser,
 	moment,
 	numberFormat,
+	renderIndex,
 	renderItemAsIs,
 } from '@utils';
 import {trpc} from '@utils/trpc';
@@ -96,14 +97,14 @@ export default function InternalPo() {
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		useQuery: form => trpc.internal.po.get.useQuery(form),
 		renderItem: ({Cell, CellSelect, item}, index) => {
-			const {oSup: dSSUp, date, due_date, status, nomor_po} = item;
+			const {oSup: dSSUp, date, due_date, status} = item;
 
 			return (
 				<>
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{dSSUp?.nama}</Cell>
-					<Cell>{nomor_po}</Cell>
+					<Cell>{renderIndex(item)}</Cell>
 					<Cell>{date}</Cell>
 					<Cell>{due_date}</Cell>
 					<Cell>{status}</Cell>
@@ -170,11 +171,10 @@ function RenderModal({
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
 
-	const {isDelete, isEdit} = modalTypeParser(type);
+	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
 	});
-	const {data: invoice} = trpc.internal.po.getInvoice.useQuery();
 	const {data: dataItem} = trpc.internal.item.get.useQuery(
 		{limit: 9999, id: form?.sup_id},
 		{enabled: !!form?.sup_id},
@@ -216,13 +216,15 @@ function RenderModal({
 				fieldName="form.sup_id"
 				data={selectMapper(dataSup?.rows ?? [], 'id', 'nama')}
 			/>
-			<Input
-				disabled
-				control={control}
-				defaultValue={invoice}
-				fieldName="form.nomor_po"
-				label="Nomor PO"
-			/>
+
+			{isPreviewEdit && (
+				<InputDummy
+					disabled
+					className="flex-1"
+					label="Nomor PO"
+					byPassValue={renderIndex(form!)}
+				/>
+			)}
 
 			<div className="flex gap-2">
 				<Input
@@ -343,7 +345,7 @@ function RenderPdf(props: RetPoInternal) {
 	const {
 		data: {user},
 	} = useSession();
-	const {date, nomor_po, oPoItems, oSup, keterangan} = props;
+	const {date, oPoItems, oSup, keterangan} = props;
 
 	const {jumlah, ppn, total} = oPoItems.reduce(
 		(ret, item) => {
@@ -394,7 +396,7 @@ function RenderPdf(props: RetPoInternal) {
 				<div className="flex justify-between">
 					<div className="flex flex-1 flex-col gap-1 mb-2">
 						<Wrapper noPadding title="No. P.O">
-							{nomor_po}
+							{renderIndex(props)}
 						</Wrapper>
 						<Wrapper noPadding title="Kepada">
 							<div>{oSup?.nama}</div>

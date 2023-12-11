@@ -798,10 +798,11 @@ export function internalPoAttributes() {
 	const item = attrParserV2(oItem);
 	const poItem = attrParserV2(oPoItem);
 	const sup = attrParserV2(oSup);
+	const tIndex = attrParserV2(dIndex);
 
 	type Ret = SPoUpsert;
 
-	return {po, item, poItem, sup, Ret: {} as Ret};
+	return {po, item, poItem, sup, tIndex, Ret: {} as Ret};
 }
 
 export function internalInAttributes() {
