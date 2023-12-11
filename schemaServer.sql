@@ -69,7 +69,9 @@ CREATE TABLE public.customer_sppb_out (
     date character varying(30),
     invoice_no character varying(47),
     id_kendaraan character varying(47),
-    keterangan character varying(255)
+    keterangan character varying(255),
+    index_id character varying(47),
+    index_number character varying(10)
 );
 
 
@@ -236,7 +238,9 @@ CREATE TABLE public.internal_po (
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     nomor_po character varying(100),
-    keterangan character varying(100)
+    keterangan character varying(100),
+    index_id character varying(47),
+    index_number character varying(10)
 );
 
 
@@ -275,7 +279,7 @@ CREATE TABLE public.internal_request (
     status character varying(100),
     keterangan character varying(100),
     index_id character varying(47),
-    index_number integer
+    index_number character varying(10)
 );
 
 
@@ -462,7 +466,7 @@ CREATE TABLE public.kanban (
     nomor_kanban character varying(47),
     list_mesin json DEFAULT '[]'::json,
     printed integer DEFAULT 0,
-    index_number integer,
+    index_number character varying(10),
     index_id character varying(47)
 );
 
@@ -1501,6 +1505,14 @@ ALTER TABLE ONLY public.customer_sppb_in
 
 
 --
+-- Name: customer_sppb_out customer_sppb_out_index_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.customer_sppb_out
+    ADD CONSTRAINT customer_sppb_out_index_id_fkey FOREIGN KEY (index_id) REFERENCES public.index_number(id);
+
+
+--
 -- Name: hardness hardness_id_kategori_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
 --
 
@@ -1538,6 +1550,14 @@ ALTER TABLE ONLY public.internal_item
 
 ALTER TABLE ONLY public.internal_out_barang
     ADD CONSTRAINT internal_out_barang_id_stock_fkey FOREIGN KEY (id_stock) REFERENCES public.internal_stock(id);
+
+
+--
+-- Name: internal_po internal_po_index_id_fkey; Type: FK CONSTRAINT; Schema: public; Owner: postgres
+--
+
+ALTER TABLE ONLY public.internal_po
+    ADD CONSTRAINT internal_po_index_id_fkey FOREIGN KEY (index_id) REFERENCES public.index_number(id);
 
 
 --

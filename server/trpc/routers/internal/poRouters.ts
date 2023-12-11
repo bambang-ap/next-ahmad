@@ -32,7 +32,6 @@ async function agd(input: TableFormValue, where?: any) {
 	const supIdWhere = !!supId ? {sup_id: supId} : undefined;
 
 	const {count, rows: data} = await po.model.findAndCountAll({
-		logging: true,
 		limit,
 		include: [tIndex, sup],
 		offset: (page - 1) * limit,

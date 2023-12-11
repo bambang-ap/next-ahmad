@@ -134,7 +134,6 @@ const sppbOutRouters = router({
 				search,
 			);
 			const {count, rows: data} = await sjOut.model.findAndCountAll({
-				logging: true,
 				limit,
 				offset: (page - 1) * limit,
 				attributes: {include: [whereIndex.attributes]},
