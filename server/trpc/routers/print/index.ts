@@ -29,6 +29,7 @@ const printRouters = router({
 				po,
 				sjInInclude,
 				Ret,
+				tIndex,
 			} = printSppbOutAttributes();
 
 			return checkCredentialV2(ctx, async (): Promise<SppbOutGet[]> => {
@@ -40,6 +41,7 @@ const printRouters = router({
 					}),
 					attributes: sjOut.attributes,
 					include: [
+						tIndex,
 						vehicle,
 						customer,
 						{

@@ -470,6 +470,7 @@ export function poGetAttributes() {
 }
 
 export function sppbOutGetAttributes() {
+	const tIndex = attrParserV2(dIndex);
 	const outItem = attrParserV2(dOutItem, [
 		'id',
 		'id_item',
@@ -488,6 +489,7 @@ export function sppbOutGetAttributes() {
 	const vehicle = attrParserV2(dVehicle, ['name']);
 
 	type Ret = typeof sjOut.obj & {
+		dIndex?: typeof tIndex.obj;
 		dCust: typeof cust.obj;
 		dVehicle: typeof vehicle.obj;
 		dOutItems: (typeof outItem.obj & {
@@ -503,6 +505,7 @@ export function sppbOutGetAttributes() {
 		inItem,
 		sjIn,
 		cust,
+		tIndex,
 		vehicle,
 		Ret: {} as Ret,
 	};
@@ -614,6 +617,7 @@ export function printSppbOutAttributes() {
 		sjIn,
 		po,
 	} = getPOSppbOutAttributes();
+	const tIndex = attrParserV2(dIndex);
 	const sjOut = attrParserV2(dSjOut, [
 		'id',
 		'id_customer',
@@ -659,6 +663,7 @@ export function printSppbOutAttributes() {
 	};
 
 	type Ret = typeof sjOut.obj & {
+		dIndex?: typeof tIndex.obj;
 		dVehicle: typeof vehicle.obj;
 		dCust: typeof customer.obj;
 		dOutItems: (typeof outItem.obj & {
@@ -684,6 +689,7 @@ export function printSppbOutAttributes() {
 	};
 
 	return {
+		tIndex,
 		sjOut,
 		scnItem,
 		rejItem,

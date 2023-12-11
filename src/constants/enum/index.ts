@@ -212,4 +212,5 @@ export enum IndexNumber {
 	Kanban = 'Kanban',
 	Req = 'Form Permintaan',
 	InternalPO = 'PO Internal',
+	OutSJ = 'SJ Keluar',
 }

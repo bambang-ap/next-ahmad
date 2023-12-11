@@ -11,7 +11,12 @@ import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import {SppbOutModalChild} from '@pageComponent/ModalChildSppbOut';
 import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
-import {modalTypeParser, renderItemAsIs, transformIds} from '@utils';
+import {
+	modalTypeParser,
+	renderIndex,
+	renderItemAsIs,
+	transformIds,
+} from '@utils';
 import {bachshrift_normal} from '@utils/js-fonts';
 import {trpc} from '@utils/trpc';
 
@@ -85,7 +90,7 @@ export default function SPPBOUT() {
 				<>
 					<CellSelect fieldName={`idSppbOuts.${id}`} />
 					<Cell>{index + 1}</Cell>
-					<Cell>{item.invoice_no}</Cell>
+					<Cell>{renderIndex(item, item.invoice_no)}</Cell>
 					<Cell>{item.dVehicle?.name}</Cell>
 					<Cell>{item.dCust?.name}</Cell>
 					<Cell>{item.keterangan}</Cell>

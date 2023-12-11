@@ -17,6 +17,7 @@ import {
 	dSjOut,
 	dSppbBridge,
 	getPOSppbOutAttributes,
+	indexWhereAttributes,
 	orderPages,
 	ORM,
 	OrmCustomerSPPBOut,
@@ -26,10 +27,18 @@ import {
 	wherePagesV2,
 	wherePagesV3,
 } from '@database';
-import {checkCredentialV2, generateId, genInvoice, pagingResult} from '@server';
+import {IndexNumber} from '@enum';
+import {
+	checkCredentialV2,
+	generateId,
+	genInvoice,
+	genNumberIndexUpsert,
+	pagingResult,
+} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
+import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {appRouter} from '..';
@@ -81,7 +90,7 @@ const sppbOutRouters = router({
 		type RetType = typeof Ret;
 
 		const {limit, page, search} = input;
-		const {outItem, sjOut, inItem, sjIn, cust, vehicle, Ret} =
+		const {outItem, sjOut, tIndex, inItem, sjIn, cust, vehicle, Ret} =
 			sppbOutGetAttributes();
 
 		function remapData(data: RetType): TCustomerSPPBOutUpsert {
@@ -119,15 +128,34 @@ const sppbOutRouters = router({
 		}
 
 		return checkCredentialV2(ctx, async (): Promise<GetPage> => {
+			const whereIndex = indexWhereAttributes<RetType>(
+				'dIndex.prefix',
+				'index_number',
+				search,
+			);
 			const {count, rows: data} = await sjOut.model.findAndCountAll({
+				logging: true,
 				limit,
 				offset: (page - 1) * limit,
-				attributes: sjOut.attributes,
-				where: wherePagesV2<RetType>(
-					['invoice_no', 'keterangan', '$dCust.name$', '$dVehicle.name$'],
-					search,
-				),
+				attributes: {include: [whereIndex.attributes]},
+				where: !!search
+					? {
+							[Op.or]: [
+								whereIndex.where,
+								wherePagesV2<RetType>(
+									[
+										'invoice_no',
+										'keterangan',
+										'$dCust.name$',
+										'$dVehicle.name$',
+									],
+									search,
+								),
+							],
+					  }
+					: undefined,
 				include: [
+					tIndex,
 					vehicle,
 					cust,
 					{...outItem, separate: true, include: [{...inItem, include: [sjIn]}]},
@@ -214,11 +242,13 @@ const sppbOutRouters = router({
 				const transaction = await ORM.transaction();
 
 				try {
-					const {po, ...rest} = input;
-					const [dataSppbOut] = await OrmCustomerSPPBOut.upsert({
-						...rest,
-						id: input.id ?? generateId('SPPBO_'),
-					});
+					const {po, id = generateId('SPPBO_'), ...rest} = input;
+					const body = await genNumberIndexUpsert(
+						OrmCustomerSPPBOut,
+						IndexNumber.OutSJ,
+						{...rest, id},
+					);
+					const [dataSppbOut] = await OrmCustomerSPPBOut.upsert(body);
 
 					for (const cur of po) {
 						for (const bin of cur.sppb_in) {

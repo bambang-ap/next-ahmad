@@ -23,7 +23,7 @@ import {
 import {REJECT_REASON_VIEW} from '@enum';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
-import {itemInScanParser, qtyMap} from '@utils';
+import {itemInScanParser, qtyMap, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
@@ -124,7 +124,8 @@ const exportSppbRouters = router({
 			const dataSppbOut = await routerCaller.print.sppb.out(input);
 			const result: OutResult[] = [];
 
-			for (const {date, invoice_no, dCust, dOutItems} of dataSppbOut) {
+			for (const itemOut of dataSppbOut) {
+				const {date, invoice_no, dCust, dOutItems} = itemOut;
 				for (const {dInItem, ...outItem} of dOutItems) {
 					const {dPoItem, dSJIn, dItem} = dInItem;
 					const {dPo} = dPoItem;
@@ -168,7 +169,7 @@ const exportSppbRouters = router({
 						CUSTOMER: dCust.name,
 						'NO PO': dPo.nomor_po!,
 						'NO SURAT JALAN MASUK': dSJIn?.nomor_surat!,
-						'NO SURAT JALAN KELUAR': invoice_no,
+						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no)!,
 						'TANGGAL SJ KELUAR ': date,
 						'PART NAME / ITEM': dItem.name!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
