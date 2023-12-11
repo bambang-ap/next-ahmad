@@ -9,7 +9,7 @@ import {
 } from 'sequelize';
 import {Primitive} from 'zod';
 
-import {indexAlias, TDateFilter, ZIndex} from '@appTypes/app.zod';
+import {indexAlias, TDateFilter} from '@appTypes/app.zod';
 import {regPrefix} from '@constants';
 
 export function groupPages<T extends {}>(searchKey: L1<T>): any {
@@ -111,7 +111,7 @@ export function whereDateFilter<T extends {}>(
 	};
 }
 
-export function indexWhereAttributes<T extends Partial<ZIndex> & {} = ZIndex>(
+export function indexWhereAttributes<T extends {}>(
 	prefixCol: L1<T>,
 	indexCol: L1<T>,
 	search?: string,

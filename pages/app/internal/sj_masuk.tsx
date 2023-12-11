@@ -15,6 +15,7 @@ import {
 	ModalRef,
 	Select,
 	selectMapper,
+	selectMapperV3,
 	Table,
 	Text,
 } from '@components';
@@ -33,6 +34,7 @@ import {
 	modalTypeParser,
 	numberFormat,
 	ppnParser,
+	renderIndex,
 	renderItemAsIs,
 } from '@utils';
 import {trpc} from '@utils/trpc';
@@ -97,7 +99,7 @@ export default function InternalSiIn() {
 					<CellSelect fieldName={`selectedIds.${item.id}`} />
 					<Cell>{index + 1}</Cell>
 					<Cell>{item.oSup?.nama}</Cell>
-					<Cell>{oPo?.nomor_po}</Cell>
+					<Cell>{renderIndex(oPo!)}</Cell>
 					<Cell>{no_sj}</Cell>
 					<Cell>{date}</Cell>
 					<Cell className="gap-2">
@@ -246,7 +248,9 @@ function RenderModal({
 					label="PO"
 					control={control}
 					fieldName="form.id_po"
-					data={selectMapper(dataPo?.rows ?? [], 'id', 'nomor_po')}
+					data={selectMapperV3(dataPo?.rows ?? [], item => {
+						return {value: item.id!, label: renderIndex(item)};
+					})}
 				/>
 			)}
 
@@ -459,7 +463,7 @@ function RenderPdf(props: InRetOutput) {
 						{no_lpb!}
 					</Wrapper>
 					<Wrapper smallPadding title="No. PO">
-						{oPo?.nomor_po}
+						{renderIndex(oPo!)}
 					</Wrapper>
 				</div>
 			</div>

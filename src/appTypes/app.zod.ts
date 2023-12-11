@@ -724,7 +724,7 @@ export const sInUpsertManual = sSjIn.partial({id: true, id_po: true}).extend({
 
 export type SInUpsert = z.infer<typeof sInUpsert>;
 export const sInUpsert = sSjIn.partial({id: true}).extend({
-	oPo: sPo.optional(),
+	oPo: sPo.extend({dIndex: tIndex.optional()}).optional(),
 	oSup: sSupplier.nullish(),
 	oInItems: sInItem
 		.extend({

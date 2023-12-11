@@ -9,7 +9,7 @@ import {
 } from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
-import {dateUtils, ppnParser} from '@utils';
+import {dateUtils, ppnParser, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
@@ -177,7 +177,7 @@ const exportInternalRouters = router({
 						No: i,
 						Suplier: supp?.nama,
 						'No SJ': no_sj,
-						'No PO': oPo.nomor_po,
+						'No PO': renderIndex(oPo),
 						'Kode Item': oItem?.kode ?? kode,
 						'Nama Item': oItem?.nama ?? nama,
 						qty,
@@ -191,9 +191,10 @@ const exportInternalRouters = router({
 	}),
 
 	po: procedure.input(zIds).query(({ctx, input}) => {
-		const {item, sup, po, poItem} = internalInAttributes();
+		const {item, sup, po, tIndex, poItem} = internalInAttributes();
 
 		type Ret = typeof po.obj & {
+			dIndex?: typeof tIndex.obj;
 			oSup?: typeof sup.obj;
 			oPoItems: (typeof poItem.obj & {oItem: typeof item.obj})[];
 		};
@@ -203,14 +204,14 @@ const exportInternalRouters = router({
 			const ret: object[] = [];
 
 			const data = await po.model.findAll({
-				include: [sup, {...poItem, include: [item]}],
+				include: [tIndex, sup, {...poItem, include: [item]}],
 				where: {id: input.ids},
 				attributes: po.attributes,
 			});
 
 			for (const e of data) {
-				const {id, nomor_po, date, due_date, oSup, oPoItems} =
-					e.toJSON() as unknown as Ret;
+				const val = e.toJSON() as unknown as Ret;
+				const {id, date, due_date, oSup, oPoItems} = val;
 
 				const status = await getInternalPOStatus(id);
 
@@ -221,7 +222,7 @@ const exportInternalRouters = router({
 					i++;
 					ret.push({
 						No: i,
-						'Nomor PO': nomor_po,
+						'Nomor PO': renderIndex(val),
 						date: dateUtils.dateS(date),
 						'Due Date': dateUtils.dateS(due_date),
 						suplier: oSup?.nama,

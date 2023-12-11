@@ -818,10 +818,11 @@ export function internalInAttributes() {
 	const item = attrParserV2(oItem);
 	const poItem = attrParserV2(oPoItem);
 	const sup = attrParserV2(oSup);
+	const tIndex = attrParserV2(dIndex);
 
 	type Ret = SInUpsert;
 
-	return {po, sjIn, inItem, item, poItem, sup, Ret: {} as Ret};
+	return {po, sjIn, tIndex, inItem, item, poItem, sup, Ret: {} as Ret};
 }
 
 export function internalStockAttributes() {

@@ -12,6 +12,7 @@ import {
 } from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {
+	indexWhereAttributes,
 	internalInAttributes,
 	oInItem,
 	ORM,
@@ -135,31 +136,43 @@ export const inRouters = router({
 	}),
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, page, id: id_po, search} = input;
-		const {inItem, sjIn, item, po, poItem, sup} = internalInAttributes();
+		const {inItem, sjIn, item, po, poItem, sup, tIndex} =
+			internalInAttributes();
 
 		return checkCredentialV2(
 			ctx,
 			async (): Promise<PagingResult<InRetOutput>> => {
 				const searcher = {[Op.iLike]: `%${search}%`};
 
+				const hh = indexWhereAttributes<InRetOutput>(
+					'oPo.dIndex.prefix',
+					'oPo.index_number',
+					search,
+				);
+
 				const where = !search
 					? undefined
-					: wherePagesV3<InRetOutput>(
-							{
-								'$oSup.nama$': searcher,
-								'$oPo.nomor_po$': searcher,
-								no_sj: searcher,
-							},
-							'or',
-					  );
+					: {
+							[Op.or]: [
+								hh.where,
+								wherePagesV3<InRetOutput>(
+									{
+										'$oSup.nama$': searcher,
+										no_sj: searcher,
+									},
+									'or',
+								),
+							],
+					  };
 
 				const {count, rows} = await sjIn.model.findAndCountAll({
+					where: !!id_po ? {id_po} : where,
+					attributes: {include: [hh.attributes]},
 					include: [
-						po,
 						sup,
+						{...po, include: [tIndex]},
 						{...inItem, include: [{...poItem, include: [item]}]},
 					],
-					where: !!id_po ? {id_po} : where,
 				});
 
 				return pagingResult(

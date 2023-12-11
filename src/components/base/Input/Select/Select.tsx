@@ -37,6 +37,13 @@ export type SelectProps = {
 
 export const Select = withReactFormController(SelectComponent);
 
+export function selectMapperV3<T extends FieldValues>(
+	data: T[],
+	callback: (item: T) => SelectPropsData,
+): SelectPropsData[] {
+	return data.map(e => callback(e));
+}
+
 export function selectMapperV2<T extends FieldValues, P extends FieldPath<T>>(
 	data: T[],
 	value: P,

@@ -222,6 +222,7 @@ function RenderModal({
 					disabled
 					className="flex-1"
 					label="Nomor PO"
+					// @ts-ignore
 					byPassValue={renderIndex(form!)}
 				/>
 			)}
