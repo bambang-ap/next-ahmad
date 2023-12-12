@@ -8,15 +8,23 @@ import {useRouter} from 'next/router';
 
 import {TSession} from '@appTypes/app.type';
 
+import {useMenu} from './useMenu';
+
 export const useAuth = () => {
-	const {replace, pathname} = useRouter();
-	const {status, data} = useSession();
+	const {all: allSub = []} = useMenu();
+	const {status} = useSession();
+	const {replace, asPath} = useRouter();
+
+	const firstPath = allSub?.[0]?.path!;
+	const index = allSub.findIndex(e => e.path === asPath);
 
 	useEffect(() => {
 		if (status === 'unauthenticated') replace('/auth/signin');
-		if (status === 'authenticated' && !pathname.includes('/app'))
-			replace('/app');
-	}, [status, pathname, data]);
+		if (status === 'authenticated') {
+			if (!asPath.includes('/app')) replace('/app');
+			else if (index < 0) replace({pathname: firstPath});
+		}
+	}, [status, asPath, firstPath, index]);
 };
 
 export function useSession() {

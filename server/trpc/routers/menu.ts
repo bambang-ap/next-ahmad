@@ -31,7 +31,10 @@ const menuRouters = router({
 		type RetType = typeof RetSub;
 
 		return checkCredentialV2(ctx, async session => {
+			const useRole = {[Op.substring]: session?.user?.role};
+
 			const rows = await menu.model.findAll({
+				logging: true,
 				attributes: menu.attributes,
 				include: [{...menu, include: [menu]}],
 				order: orderPages<RetType>({
@@ -40,19 +43,13 @@ const menuRouters = router({
 					'OrmMenus.OrmMenus.index': true,
 				}),
 				where: wherePagesV4<RetType>(
-					{
-						parent_id: {[Op.is]: null},
-					},
+					{parent_id: {[Op.is]: null}, accepted_role: useRole},
 					[
 						'or',
 						{
-							accepted_role: {[Op.substring]: session?.user?.role},
-							'$OrmMenus.accepted_role$': {
-								[Op.substring]: session?.user?.role,
-							},
-							'$OrmMenus.OrmMenus.accepted_role$': {
-								[Op.substring]: session?.user?.role,
-							},
+							accepted_role: useRole,
+							'$OrmMenus.accepted_role$': useRole,
+							'$OrmMenus.OrmMenus.accepted_role$': useRole,
 						},
 					],
 				),

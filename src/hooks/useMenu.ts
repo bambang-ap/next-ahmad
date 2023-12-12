@@ -20,7 +20,7 @@ export type FormMenu = Record<
 >;
 
 export function useMenu() {
-	// const {data: all} = trpc.menu.all.useQuery(undefined, nonRequiredRefetch);
+	const {data: all} = trpc.menu.all.useQuery(undefined, nonRequiredRefetch);
 	const {data: allSub} = trpc.menu.allWithSub.useQuery(
 		undefined,
 		nonRequiredRefetch,
@@ -68,7 +68,7 @@ export function useMenu() {
 	}, [m]);
 
 	return {
-		// all,
+		all,
 		allSub,
 		dataRole,
 		menuForm,
