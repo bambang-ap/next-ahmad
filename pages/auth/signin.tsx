@@ -17,7 +17,17 @@ export default function SignIn() {
 	const [usingQr, setUsingQr] = useState(false);
 
 	const onSubmit = handleSubmit(async ({email, password, token}) => {
-		await signIn('credentials', {email, password, token, redirect: false});
+		try {
+			const d = await signIn('credentials', {
+				email,
+				password,
+				token,
+				redirect: false,
+			});
+			console.log(d);
+		} catch (err) {
+			console.log('err', err);
+		}
 	});
 
 	useEffect(() => {
