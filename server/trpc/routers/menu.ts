@@ -34,7 +34,6 @@ const menuRouters = router({
 			const useRole = {[Op.substring]: session?.user?.role};
 
 			const rows = await menu.model.findAll({
-				logging: true,
 				attributes: menu.attributes,
 				include: [{...menu, include: [menu]}],
 				order: orderPages<RetType>({
