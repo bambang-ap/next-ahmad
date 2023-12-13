@@ -1,4 +1,4 @@
-import {z} from 'zod';
+import {z, ZodError} from 'zod';
 
 import {SelectPropsData} from '@components';
 import {defaultLimit, regIndexPrefix} from '@constants';
@@ -10,6 +10,7 @@ import {
 	REJECT_REASON_VIEW,
 	REQ_FORM_STATUS,
 } from '@enum';
+import {atLeastOneDefined} from '@utils';
 
 export type TDecimal = z.infer<typeof zDecimal>;
 export const zDecimal = z
@@ -319,7 +320,20 @@ export const tCustomerSPPBOutPoItems = z.record(
 export type TCustomerSPPBOutSppbIn = z.infer<typeof tCustomerSPPBOutSppbIn>;
 export const tCustomerSPPBOutSppbIn = z.object({
 	id_sppb_in: z.string(),
-	items: tCustomerSPPBOutPoItems,
+	items: tCustomerSPPBOutPoItems.refine(atLeastOneDefined).refine(
+		items => {
+			const itemsExcluded = entries(items).map(g => !g[1].exclude);
+
+			if (!itemsExcluded.includes(true)) {
+				throw new ZodError([
+					{code: 'custom', path: [], message: 'At least 1 included'},
+				]);
+			}
+
+			return items;
+		},
+		{message: 'At least 1 included'},
+	),
 	// customer_no_lot: z.string(),
 });
 
@@ -339,7 +353,7 @@ export const tCustomerSPPBOutItem = zId.extend({
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	...zIndex.shape,
-	invoice_no: z.string(),
+	invoice_no: z.string().nullable(),
 	date: z.string(),
 	id_kendaraan: z.string(),
 	id_customer: z.string(),

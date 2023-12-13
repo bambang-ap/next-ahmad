@@ -49,7 +49,7 @@ export function SppbOutModalChild({
 				disabled
 				className="flex-1"
 				label="Nomor Surat"
-				byPassValue={renderIndex(dataForm!, invoice_no)}
+				byPassValue={renderIndex(dataForm!, invoice_no!)}
 			/>
 			<Input type="date" control={control} fieldName="date" label="Tanggal" />
 			<Select
@@ -235,8 +235,10 @@ export function SppbOutModalChild({
 													);
 
 													if (isPreview && !hasItem) return <></>;
-													// if (hasItem && isEdit) return <></>;
-													if (isClosed && isAdd) return <></>;
+													if (isClosed) {
+														if (isAdd) return <></>;
+														if (!hasItem) return <></>;
+													}
 
 													return (
 														<>

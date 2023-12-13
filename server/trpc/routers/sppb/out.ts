@@ -255,7 +255,19 @@ const sppbOutRouters = router({
 								id: isExist?.dataValues.id ?? generateId('SJB-'),
 							});
 
-							for (const [id_item, item] of Object.entries(bin.items)) {
+							const binItems = entries(bin.items);
+
+							const removedItemsId = binItems.reduce<string[]>((ret, [, e]) => {
+								if (e.exclude) ret.push(e.id!);
+								return ret;
+							}, []);
+
+							await OrmCustomerSPPBOutItem.destroy({
+								transaction,
+								where: {id: removedItemsId},
+							});
+
+							for (const [id_item, item] of binItems) {
 								if (!item.exclude) {
 									await OrmCustomerSPPBOutItem.upsert({
 										id_item,

@@ -90,7 +90,7 @@ export default function SPPBOUT() {
 				<>
 					<CellSelect fieldName={`idSppbOuts.${id}`} />
 					<Cell>{index + 1}</Cell>
-					<Cell>{renderIndex(item, item.invoice_no)}</Cell>
+					<Cell>{renderIndex(item, item.invoice_no!)}</Cell>
 					<Cell>{item.dVehicle?.name}</Cell>
 					<Cell>{item.dCust?.name}</Cell>
 					<Cell>{item.keterangan}</Cell>
