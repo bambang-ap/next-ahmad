@@ -3,7 +3,6 @@ import {CRUD_ENABLED} from '@enum';
 import {trpc} from '@utils/trpc';
 
 export function useSppbOut() {
-	const {data: invoiceId} = trpc.sppb.out.getInvoice.useQuery();
 	const {data: dataKendaraan = []} = trpc.basic.get.useQuery<any, TKendaraan[]>(
 		{target: CRUD_ENABLED.KENDARAAN},
 	);
@@ -11,5 +10,5 @@ export function useSppbOut() {
 		target: CRUD_ENABLED.CUSTOMER,
 	});
 
-	return {invoiceId, dataKendaraan, dataCustomer};
+	return {dataKendaraan, dataCustomer};
 }

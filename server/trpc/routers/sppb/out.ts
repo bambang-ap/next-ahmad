@@ -31,7 +31,6 @@ import {IndexNumber} from '@enum';
 import {
 	checkCredentialV2,
 	generateId,
-	genInvoice,
 	genNumberIndexUpsert,
 	pagingResult,
 } from '@server';
@@ -76,15 +75,6 @@ const sppbOutRouters = router({
 			return dataPO.map(e => e.toJSON() as unknown as RetOutput);
 		});
 	}),
-
-	getInvoice: procedure.query(() =>
-		genInvoice(
-			OrmCustomerSPPBOut,
-			'SJ/IMI',
-			value => value?.invoice_no,
-			'invoice_no',
-		),
-	),
 
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type RetType = typeof Ret;
@@ -247,6 +237,7 @@ const sppbOutRouters = router({
 						IndexNumber.OutSJ,
 						{...rest, id},
 					);
+
 					const [dataSppbOut] = await OrmCustomerSPPBOut.upsert(body);
 
 					for (const cur of po) {

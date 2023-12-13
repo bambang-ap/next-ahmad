@@ -3,10 +3,18 @@ import {useWatch} from 'react-hook-form';
 
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps} from '@appTypes/app.type';
-import {Button, Input, Select, selectMapper, Table, Text} from '@components';
+import {
+	Button,
+	Input,
+	InputDummy,
+	Select,
+	selectMapper,
+	Table,
+	Text,
+} from '@components';
 import {REJECT_REASON_VIEW} from '@enum';
 import {useSppbOut} from '@hooks';
-import {isClosedParser, modalTypeParser, qtyMap} from '@utils';
+import {isClosedParser, modalTypeParser, qtyMap, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export function SppbOutModalChild({
@@ -14,7 +22,8 @@ export function SppbOutModalChild({
 	reset,
 	control,
 }: FormProps<FormValue, 'control' | 'reset' | 'unregister'>) {
-	const {id_customer, type: modalType, po: listPO} = useWatch({control});
+	const dataForm = useWatch({control});
+	const {id_customer, type: modalType, po: listPO, invoice_no} = dataForm;
 
 	const {
 		data: poDataa = [],
@@ -25,7 +34,7 @@ export function SppbOutModalChild({
 		{enabled: !!id_customer},
 	);
 
-	const {dataCustomer, dataKendaraan, invoiceId} = useSppbOut();
+	const {dataCustomer, dataKendaraan} = useSppbOut();
 	const {isDelete, isEdit, isPreview, isPreviewEdit} =
 		modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
@@ -36,13 +45,11 @@ export function SppbOutModalChild({
 
 	return (
 		<>
-			<Input
+			<InputDummy
 				disabled
-				control={control}
+				className="flex-1"
 				label="Nomor Surat"
-				fieldName="invoice_no"
-				key={invoiceId}
-				defaultValue={invoiceId}
+				byPassValue={renderIndex(dataForm!, invoice_no)}
 			/>
 			<Input type="date" control={control} fieldName="date" label="Tanggal" />
 			<Select

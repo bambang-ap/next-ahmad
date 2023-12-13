@@ -347,11 +347,13 @@ export const tCustomerSPPBOut = zId.extend({
 });
 
 export type TCustomerSPPBOutUpsert = z.infer<typeof tCustomerSPPBOutUpsert>;
-export const tCustomerSPPBOutUpsert = tCustomerSPPBOut.extend({
-	po: tCustomerSPPBOutPo.array(),
-	dCust: tCustomer.partial().optional(),
-	dVehicle: tKendaraan.partial().optional(),
-});
+export const tCustomerSPPBOutUpsert = tCustomerSPPBOut
+	.partial({index_id: true, index_number: true, invoice_no: true})
+	.extend({
+		po: tCustomerSPPBOutPo.array(),
+		dCust: tCustomer.partial().optional(),
+		dVehicle: tKendaraan.partial().optional(),
+	});
 
 export type TMaterial = z.infer<typeof tMaterial>;
 export const tMaterial = zId.extend({
