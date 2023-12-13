@@ -24,6 +24,7 @@ export function InternalDashboard({control, calculated}: K) {
 		unit: string,
 		isCalculated = !!calculated,
 	) {
+		// @ts-ignore
 		const val = numberFormat(value * (calculated ? harga : 1), isCalculated);
 		return `${val} ${calculated ? '' : unit}`;
 	}
