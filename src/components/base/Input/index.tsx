@@ -105,7 +105,13 @@ export function InputComponent<F extends FieldValues>(
 	) : null;
 
 	useEffect(() => {
-		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
+		if (type === 'checkbox') {
+			if (value === undefined && defaultValue !== undefined)
+				setTimeout(() => onChange(defaultValue), 100);
+		} else {
+			if (!value && !!defaultValue)
+				setTimeout(() => onChange(defaultValue), 100);
+		}
 	}, [value, defaultValue]);
 
 	switch (type) {

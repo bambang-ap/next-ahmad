@@ -35,7 +35,7 @@ export function SppbOutModalChild({
 	);
 
 	const {dataCustomer, dataKendaraan} = useSppbOut();
-	const {isDelete, isEdit, isPreview, isPreviewEdit} =
+	const {isDelete, isAdd, isAddEdit, isEdit, isPreview, isPreviewEdit} =
 		modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
@@ -190,7 +190,7 @@ export function SppbOutModalChild({
 													'Nomor Lot',
 													'Nomor Lot IMI',
 													'Jumlah',
-													'Exclude',
+													isAddEdit && 'Exclude',
 												]}
 												renderItem={({Cell, item}) => {
 													const {
@@ -214,22 +214,29 @@ export function SppbOutModalChild({
 
 													const hj = dOutItems.find(e => e.id === items?.id);
 
-													const hasItem = isEdit && !!items?.id;
+													const hasItem = !!items?.id;
 
 													const isExcludedItem = items?.exclude;
 
+													const sdklflkdsf =
+														`po.${i}.sppb_in.${ii}.items.${id_item}` as const;
+
 													const excludeComponent = (
 														<Input
+															key={sdklflkdsf}
 															type="checkbox"
 															label="exclude"
 															control={control}
-															defaultValue={hasItem ? true : undefined}
-															fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.exclude`}
+															fieldName={`${sdklflkdsf}.exclude`}
+															defaultValue={
+																hasItem ? false : isEdit ? true : undefined
+															}
 														/>
 													);
 
 													if (isPreview && !hasItem) return <></>;
-													if (isClosed && !isPreviewEdit) return <></>;
+													// if (hasItem && isEdit) return <></>;
+													if (isClosed && isAdd) return <></>;
 
 													return (
 														<>
@@ -240,14 +247,14 @@ export function SppbOutModalChild({
 																		control={control}
 																		shouldUnregister
 																		defaultValue={dItem?.id}
-																		fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.master_item_id`}
+																		fieldName={`${sdklflkdsf}.master_item_id`}
 																	/>
 																	<Input
 																		hidden
 																		control={control}
 																		shouldUnregister
 																		defaultValue={dPoItem.id}
-																		fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.id_item_po`}
+																		fieldName={`${sdklflkdsf}.id_item_po`}
 																	/>
 																</>
 															)}
@@ -291,7 +298,7 @@ export function SppbOutModalChild({
 																					className="flex-1 bg-white"
 																					rightAcc={<Text>{unit}</Text>}
 																					defaultValue={jumlah.toString()}
-																					fieldName={`po.${i}.sppb_in.${ii}.items.${id_item}.${qtyKey}`}
+																					fieldName={`${sdklflkdsf}.${qtyKey}`}
 																					rules={{
 																						max: {
 																							value: max,
@@ -328,7 +335,7 @@ export function SppbOutModalChild({
 																	})}
 																</Cell>
 															)}
-															<Cell>{excludeComponent}</Cell>
+															{isAddEdit && <Cell>{excludeComponent}</Cell>}
 														</>
 													);
 												}}

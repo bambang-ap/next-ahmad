@@ -350,6 +350,7 @@ export function modalTypeParser(type?: ModalTypeSelect, pageName = '') {
 	const isSelect = type === 'select';
 	const isOther = type === 'other';
 	const isPreviewEdit = isEdit || isPreview;
+	const isAddEdit = isEdit || isAdd;
 
 	return {
 		isEdit,
@@ -359,6 +360,7 @@ export function modalTypeParser(type?: ModalTypeSelect, pageName = '') {
 		isDelete,
 		isSelect,
 		isPreviewEdit,
+		isAddEdit,
 		get modalTitle() {
 			switch (type) {
 				case 'add':

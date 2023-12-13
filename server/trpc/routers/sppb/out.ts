@@ -124,7 +124,7 @@ const sppbOutRouters = router({
 				search,
 			);
 			const {count, rows: data} = await sjOut.model.findAndCountAll({
-				limit,
+				limit: 1,
 				offset: (page - 1) * limit,
 				attributes: {include: [whereIndex.attributes]},
 				where: !!search
@@ -157,7 +157,7 @@ const sppbOutRouters = router({
 				return remapData(val);
 			});
 
-			return pagingResult(count, page, limit, allDataSppbIn, data);
+			return pagingResult(count, page, limit, allDataSppbIn);
 		});
 	}),
 
