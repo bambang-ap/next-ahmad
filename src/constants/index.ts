@@ -130,6 +130,7 @@ export const BtnGroupQty: SelectPropsData<UQty>[] = [
 
 export const cuttingLineClassName =
 	'border border-gray-500 border-dashed border-l-0 border-t-0';
+export const cuttingLineClassName2 = `${cuttingLineClassName} border-b-0`;
 
 export const focusInputClassName =
 	'border-2 border-transparent focus-within:border-app-secondary-03';

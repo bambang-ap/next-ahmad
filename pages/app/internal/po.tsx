@@ -18,7 +18,7 @@ import {
 	Table,
 } from '@components';
 import {
-	cuttingLineClassName,
+	cuttingLineClassName2,
 	IMIConst,
 	paperF4,
 	ppnMultiply,
@@ -49,7 +49,7 @@ type FormType = {
 
 InternalPo.getLayout = getLayout;
 
-const paperWidth = 1530;
+const paperWidth = 1550;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
@@ -78,7 +78,7 @@ export default function InternalPo() {
 			orientation: 'l',
 			paperSize: paperF4,
 			renderItem: item => (
-				<div className={classNames('w-1/2', cuttingLineClassName)}>
+				<div className={classNames('w-1/2', cuttingLineClassName2)}>
 					<RenderPdf {...item} />
 				</div>
 			),
