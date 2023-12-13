@@ -9,6 +9,8 @@ import {CRUD_ENABLED} from '@enum';
 import {atomMappedMenu} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
+import {useSession} from './useAuth';
+
 export type FormMenu = Record<
 	string,
 	{
@@ -20,9 +22,13 @@ export type FormMenu = Record<
 >;
 
 export function useMenu() {
-	const {data: all} = trpc.menu.all.useQuery(undefined, nonRequiredRefetch);
+	const {data} = useSession();
+	const {data: all} = trpc.menu.all.useQuery(
+		{id: data?.user?.id},
+		nonRequiredRefetch,
+	);
 	const {data: allSub} = trpc.menu.allWithSub.useQuery(
-		undefined,
+		{id: data?.user?.id},
 		nonRequiredRefetch,
 	);
 

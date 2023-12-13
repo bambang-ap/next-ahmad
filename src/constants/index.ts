@@ -194,6 +194,7 @@ export const nonRequiredRefetch: any = {
 	refetchOnMount: false,
 	refetchOnWindowFocus: false,
 	refetchOnReconnect: false,
+	refetchInterval: 1000 * 60 * 60,
 } as QueryObserverOptions;
 
 export const through = {attributes: []};

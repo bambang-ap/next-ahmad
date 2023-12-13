@@ -1,13 +1,13 @@
 import {Op} from 'sequelize';
 import {z} from 'zod';
 
-import {tMenu} from '@appTypes/app.zod';
+import {tMenu, zId} from '@appTypes/app.zod';
 import {menuAttributes, orderPages, OrmMenu, wherePagesV4} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 
 const menuRouters = router({
-	all: procedure.query(({ctx}) => {
+	all: procedure.input(zId.partial()).query(({ctx}) => {
 		const {Ret, menu} = menuAttributes();
 
 		type RetType = typeof Ret;
@@ -25,7 +25,7 @@ const menuRouters = router({
 		});
 	}),
 
-	allWithSub: procedure.query(({ctx}) => {
+	allWithSub: procedure.input(zId.partial()).query(({ctx}) => {
 		const {RetSub, menu} = menuAttributes();
 
 		type RetType = typeof RetSub;
