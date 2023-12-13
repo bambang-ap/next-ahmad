@@ -536,13 +536,13 @@ function RenderPdf(props: InRetOutput) {
 				<div className="flex flex-col flex-1 items-center">
 					<div>Di periksa</div>
 					<div className="h-16"></div>
-					<div className="text-transparent">{session?.data.user?.name}</div>
+					<div className="text-transparent">{session?.data?.user?.name}</div>
 					<div>( ............................ )</div>
 				</div>
 				<div className="flex flex-col flex-1 items-center">
 					<div>Yang Menyerahkan</div>
 					<div className="h-16"></div>
-					<div className="text-transparent">{session?.data.user?.name}</div>
+					<div className="text-transparent">{session?.data?.user?.name}</div>
 					<div>( ............................ )</div>
 				</div>
 				<div className="flex flex-col flex-1 items-center">

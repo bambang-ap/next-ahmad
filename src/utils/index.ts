@@ -98,7 +98,7 @@ export function numberFormat<C extends false>(
 	currency?: C,
 	minFractionDigits?: number,
 	maxFractionDigits?: number,
-): number;
+): string;
 export function numberFormat<C extends boolean>(
 	qty: number,
 	currency?: C,
@@ -116,8 +116,6 @@ export function numberFormat(
 		maximumFractionDigits,
 		...(currency ? {style: 'currency', currency: 'IDR'} : {}),
 	}).format(qty);
-
-	if (!currency) return parseFloat(formatted);
 
 	return formatted;
 }
