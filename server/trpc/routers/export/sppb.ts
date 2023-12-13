@@ -169,7 +169,7 @@ const exportSppbRouters = router({
 						CUSTOMER: dCust.name,
 						'NO PO': dPo.nomor_po!,
 						'NO SURAT JALAN MASUK': dSJIn?.nomor_surat!,
-						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no)!,
+						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no!)!,
 						'TANGGAL SJ KELUAR ': date,
 						'PART NAME / ITEM': dItem.name!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
