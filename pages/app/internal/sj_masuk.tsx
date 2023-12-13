@@ -495,8 +495,8 @@ function RenderPdf(props: InRetOutput) {
 							<BorderTd center>{qty}</BorderTd>
 							<BorderTd center>{unitItem}</BorderTd>
 							<BorderTd>{nameItem}</BorderTd>
-							<BorderTd>{numberFormat(hargaItem, false)}</BorderTd>
-							<BorderTd>{numberFormat(jumlah, false)}</BorderTd>
+							<BorderTd>{numberFormat(hargaItem)}</BorderTd>
+							<BorderTd>{numberFormat(jumlah)}</BorderTd>
 							<BorderTd>{keterangan}</BorderTd>
 						</tr>
 					);
@@ -515,19 +515,19 @@ function RenderPdf(props: InRetOutput) {
 				<tr>
 					<BorderTd colSpan={4} />
 					<BorderTd>Jumlah</BorderTd>
-					<BorderTd>{numberFormat(jumlahValue, false)}</BorderTd>
+					<BorderTd>{numberFormat(jumlahValue)}</BorderTd>
 					<BorderTd />
 				</tr>
 				<tr>
 					<BorderTd colSpan={4} />
 					<BorderTd>{`PPn ${ppnPercentage}%`}</BorderTd>
-					<BorderTd>{numberFormat(ppnValue, false)}</BorderTd>
+					<BorderTd>{numberFormat(ppnValue)}</BorderTd>
 					<BorderTd />
 				</tr>
 				<tr>
 					<BorderTd colSpan={4} />
 					<BorderTd>Total</BorderTd>
-					<BorderTd>{numberFormat(jumlahValue + ppnValue, false)}</BorderTd>
+					<BorderTd>{numberFormat(jumlahValue + ppnValue)}</BorderTd>
 					<BorderTd />
 				</tr>
 			</table>

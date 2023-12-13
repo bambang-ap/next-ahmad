@@ -98,13 +98,13 @@ export function numberFormat<C extends false>(
 	currency?: C,
 	minFractionDigits?: number,
 	maxFractionDigits?: number,
-): number;
+): string;
 export function numberFormat<C extends boolean>(
 	qty: number,
 	currency?: C,
 	minFractionDigits?: number,
 	maxFractionDigits?: number,
-): string | number;
+): string;
 export function numberFormat(
 	qty: number,
 	currency = true,
@@ -116,9 +116,6 @@ export function numberFormat(
 		maximumFractionDigits,
 		...(currency ? {style: 'currency', currency: 'IDR'} : {}),
 	}).format(qty);
-
-	if (!currency)
-		return parseFloat(formatted.replace(/\,./g, '').replace(/\,/g, '.'));
 
 	return formatted;
 }
