@@ -35,7 +35,7 @@ export function SppbOutModalChild({
 	);
 
 	const {dataCustomer, dataKendaraan} = useSppbOut();
-	const {isDelete, isAdd, isAddEdit, isEdit, isPreview, isPreviewEdit} =
+	const {isDelete, isAdd, isAddEdit, isEdit, isPreview} =
 		modalTypeParser(modalType);
 	const selectedCustomer = dataCustomer.find(e => e.id === id_customer);
 
@@ -218,16 +218,16 @@ export function SppbOutModalChild({
 
 													const isExcludedItem = items?.exclude;
 
-													const sdklflkdsf =
+													const fieldNameItem =
 														`po.${i}.sppb_in.${ii}.items.${id_item}` as const;
 
 													const excludeComponent = (
 														<Input
-															key={sdklflkdsf}
+															key={fieldNameItem}
 															type="checkbox"
 															label="exclude"
 															control={control}
-															fieldName={`${sdklflkdsf}.exclude`}
+															fieldName={`${fieldNameItem}.exclude`}
 															defaultValue={
 																hasItem ? false : isEdit ? true : undefined
 															}
@@ -247,14 +247,14 @@ export function SppbOutModalChild({
 																		control={control}
 																		shouldUnregister
 																		defaultValue={dItem?.id}
-																		fieldName={`${sdklflkdsf}.master_item_id`}
+																		fieldName={`${fieldNameItem}.master_item_id`}
 																	/>
 																	<Input
 																		hidden
 																		control={control}
 																		shouldUnregister
 																		defaultValue={dPoItem.id}
-																		fieldName={`${sdklflkdsf}.id_item_po`}
+																		fieldName={`${fieldNameItem}.id_item_po`}
 																	/>
 																</>
 															)}
@@ -298,7 +298,7 @@ export function SppbOutModalChild({
 																					className="flex-1 bg-white"
 																					rightAcc={<Text>{unit}</Text>}
 																					defaultValue={jumlah.toString()}
-																					fieldName={`${sdklflkdsf}.${qtyKey}`}
+																					fieldName={`${fieldNameItem}.${qtyKey}`}
 																					rules={{
 																						max: {
 																							value: max,
