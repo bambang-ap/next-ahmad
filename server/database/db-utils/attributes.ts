@@ -768,7 +768,7 @@ export function dashboardMesinAttributes() {
 	const inItem = attrParserV2(dInItem, ['id']);
 	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
 	const mesin = attrParserExclude(dMesin, ['name']);
-	const katMesin = attrParserV2(dKatMesin, ['name']);
+	const katMesin = attrParserV2(dKatMesin, ['name', 'color']);
 
 	type Ret = typeof scnItem.obj & {
 		dScan: typeof scan.obj;

@@ -102,15 +102,13 @@ export default function MachineDashboard({control}: FormProps<J>) {
 				spacing={isMobile ? 0 : 0}
 				data={machineData}
 				renderItem={({item: [, item], Col}) => {
-					const {nomor_mesin} = item.mesin ?? {};
-					const [, bgColor] =
-						colorClass[Math.randomInt(0, colorClass.length - 1)]!;
+					const {nomor_mesin, dKatMesin} = item.mesin ?? {};
 
 					return (
 						<Col className={classNames('p-1 ', {'mb-2': isMobile})}>
 							<TotalQty
 								small
-								className={bgColor}
+								backgroundColor={dKatMesin?.color}
 								title={nomor_mesin!}
 								renderItem={Item => {
 									return qtyMap(({num, qtyKey, unitKey}) => {
@@ -141,6 +139,7 @@ export default function MachineDashboard({control}: FormProps<J>) {
 }
 
 type TotalQtyProps = {
+	backgroundColor?: string;
 	className?: string;
 	title: string;
 	small?: boolean;
@@ -149,11 +148,19 @@ type TotalQtyProps = {
 	) => ReactNode;
 };
 
-function TotalQty({title, className, renderItem, small}: TotalQtyProps) {
+function TotalQty({
+	title,
+	backgroundColor: color,
+	className,
+	renderItem,
+	small,
+}: TotalQtyProps) {
 	const asd = classNames('font-bold text-xl text-white', {'text-base': small});
 
 	return (
-		<div className={classNames('border-2 border-black flex-1', className)}>
+		<div
+			className={classNames('border-2 border-black flex-1', className)}
+			style={{backgroundColor: color}}>
 			<div
 				className={classNames(
 					'py-2 px-4 mb-2',

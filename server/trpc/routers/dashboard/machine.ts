@@ -36,6 +36,7 @@ async function s(input: Partial<TDateFilter>) {
 	const scnItemData = await scnItem.model.findAll({
 		attributes: scnItem.attributes,
 		order: orderPages<Ret>({
+			'dKnbItem.dMesin.dKatMesin.name': true,
 			'dKnbItem.dInItem.dPoItem.unit1': true,
 			'dKnbItem.dInItem.dPoItem.unit2': true,
 			'dKnbItem.dInItem.dPoItem.unit3': true,
