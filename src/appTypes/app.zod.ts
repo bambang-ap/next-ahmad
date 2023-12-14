@@ -206,6 +206,7 @@ export const tMasterItem = zId.extend({
 export type TKategoriMesin = z.infer<typeof tKategoriMesin>;
 export const tKategoriMesin = zId.extend({
 	name: z.string(),
+	color: z.string(),
 });
 
 export type TMesin = z.infer<typeof tMesin>;

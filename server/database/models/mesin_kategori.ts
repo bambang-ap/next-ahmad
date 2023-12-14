@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
 import {TKategoriMesin} from '@appTypes/app.type';
 import {defaultExcludeColumn, defaultOrderBy} from '@constants';
@@ -13,6 +13,7 @@ export default function initOrmKategoriMesin(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			name: {type: DataTypes.STRING},
+			color: STRING,
 		},
 		{
 			sequelize,
@@ -39,6 +40,7 @@ export function initKatMesin(sequelize: Sequelize) {
 		{
 			id: {type: DataTypes.STRING, primaryKey: true},
 			name: {type: DataTypes.STRING},
+			color: STRING,
 		},
 		{
 			sequelize,

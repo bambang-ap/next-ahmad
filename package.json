@@ -41,6 +41,7 @@
 		"@trpc/next": "10.11.1",
 		"@trpc/react-query": "10.11.1",
 		"@trpc/server": "10.11.1",
+		"@uiw/react-color-sketch": "^2.0.3",
 		"apexcharts": "3.35.3",
 		"axios": "0.27.2",
 		"blob-stream": "0.1.3",
