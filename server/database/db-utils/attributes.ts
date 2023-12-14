@@ -624,6 +624,8 @@ export function printSppbOutAttributes() {
 		'date',
 		'invoice_no',
 		'keterangan',
+		'index_id',
+		'index_number',
 	]);
 	const vehicle = attrParserV2(dVehicle, ['name']);
 	const customer = attrParserV2(dCust, ['name', 'alamat']);

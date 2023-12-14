@@ -21,6 +21,7 @@ import {
 	itemInScanParser,
 	paperSizeCalculator,
 	qtyMap,
+	renderIndex,
 } from '@utils';
 import {trpc} from '@utils/trpc';
 
@@ -206,7 +207,9 @@ export function SPPBOutGenerateQR({
 								</div>
 							</div>
 							<Section title="Tanggal">{dateUtils.dateS(detail?.date)}</Section>
-							<Section title="No. D.O.">{detail?.invoice_no}</Section>
+							<Section title="No. D.O.">
+								{renderIndex(detail!, detail?.invoice_no!)}
+							</Section>
 							<Section title="Kendaraan">{detail?.dVehicle?.name}</Section>
 							<Section title="No. Pol."></Section>
 							<TxtBold>
