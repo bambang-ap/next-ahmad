@@ -20,7 +20,7 @@ import {generateId} from '@utils';
 
 export type RetPoInternal = ReturnType<typeof internalPoAttributes>['Ret'];
 
-async function agd(input: TableFormValue, where?: any) {
+async function agd(input: TableFormValue, where?: any, byPassWhere = false) {
 	const {id: supId, page, limit, search} = input;
 	const {item, po, poItem, sup, tIndex} = internalPoAttributes();
 
@@ -36,7 +36,9 @@ async function agd(input: TableFormValue, where?: any) {
 		include: [tIndex, sup],
 		offset: (page - 1) * limit,
 		attributes: {include: [whereSearch.attributes]},
-		where: !whereSearch.where
+		where: byPassWhere
+			? where
+			: !whereSearch.where
 			? supIdWhere
 			: {
 					[Op.or]: [whereSearch.where, where],
@@ -65,10 +67,7 @@ async function agd(input: TableFormValue, where?: any) {
 export const poRouters = router({
 	pdf: procedure.input(zIds).query(({ctx, input}) => {
 		return checkCredentialV2(ctx, async (): Promise<RetPoInternal[]> => {
-			const {rows} = await agd(
-				{limit: 9999, page: 1},
-				wherePagesV3<RetPoInternal>({id: input.ids}),
-			);
+			const {rows} = await agd({limit: 9999, page: 1}, {id: input.ids}, true);
 
 			return rows;
 		});

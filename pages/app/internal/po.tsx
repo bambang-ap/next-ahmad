@@ -63,6 +63,8 @@ export default function InternalPo() {
 			property: 'selectedIds',
 		});
 
+	console.log(selectedIds);
+
 	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,
@@ -71,6 +73,7 @@ export default function InternalPo() {
 		exportUseQuery: () =>
 			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
+			debug: true,
 			tagId: 'internal-po',
 			filename: 'internal-po',
 			splitPagePer: 2,
