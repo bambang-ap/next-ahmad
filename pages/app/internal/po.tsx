@@ -73,7 +73,6 @@ export default function InternalPo() {
 		exportUseQuery: () =>
 			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
-			debug: true,
 			tagId: 'internal-po',
 			filename: 'internal-po',
 			splitPagePer: 2,

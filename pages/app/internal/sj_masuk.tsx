@@ -202,8 +202,6 @@ function RenderModal({
 	const isSelection = selct || !!form?.id_po;
 	const selectedPo = dataPo?.rows.find(e => e.id === form?.id_po);
 	const selectedItems = form?.oInItems;
-	const selectedIdItems =
-		selectedItems?.map(e => e.id_item).filter(Boolean) ?? [];
 
 	const {keyPo, keySup} = {
 		keySup: `${!!dataSup}${form?.sup_id}`,
@@ -249,6 +247,7 @@ function RenderModal({
 					control={control}
 					fieldName="form.id_po"
 					data={selectMapperV3(dataPo?.rows ?? [], item => {
+						// if (item.isClosed && item.id !== form?.id_po) return;
 						return {value: item.id!, label: renderIndex(item)};
 					})}
 				/>
@@ -270,13 +269,15 @@ function RenderModal({
 					const selPoItem = poItems?.find(e => e.id === poItem?.id);
 					const inItem = selPoItem?.oInItems.find(e => e.id === idItem);
 					const oItem = poItem?.oItem;
+					const isClosedParser = selectedPo?.oPoItems?.filter(e => {
+						if (item.id === e.id) return true;
+						return !e.isClosed;
+					});
 
 					const itemSelections = selectMapper(
-						selectedPo?.oPoItems ?? [],
+						isClosedParser ?? [],
 						'id',
 						'oItem.nama',
-					).filter(
-						e => e.value === item.id_item || !selectedIdItems.includes(e.value),
 					);
 
 					const defaultValue = selPoItem?.max;

@@ -1,7 +1,13 @@
 import {Op} from 'sequelize';
 
 import {PagingResult, TableFormValue} from '@appTypes/app.type';
-import {sPoUpsert, tableFormValue, zId, zIds} from '@appTypes/app.zod';
+import {
+	SoPoItemUpsert,
+	sPoUpsert,
+	tableFormValue,
+	zId,
+	zIds,
+} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {
 	getInternalPOStatus,
@@ -22,7 +28,7 @@ export type RetPoInternal = ReturnType<typeof internalPoAttributes>['Ret'];
 
 async function agd(input: TableFormValue, where?: any, byPassWhere = false) {
 	const {id: supId, page, limit, search} = input;
-	const {item, po, poItem, sup, tIndex} = internalPoAttributes();
+	const {item, po, inItem, poItem, sup, tIndex} = internalPoAttributes();
 
 	const whereSearch = indexWhereAttributes(
 		'dIndex.prefix',
@@ -53,11 +59,28 @@ async function agd(input: TableFormValue, where?: any, byPassWhere = false) {
 			const status = await getInternalPOStatus(val.id as string);
 
 			const poItems = await poItem.model.findAll({
-				include: [item],
+				include: [item, inItem],
 				where: {id_po: val.id},
 			});
 
-			return {...val, oPoItems: poItems.map(f => f.toJSON()), status};
+			const retVal: RetPoInternal = {
+				...val,
+				status,
+				oPoItems: poItems.map(f => {
+					const vall = f.toJSON() as unknown as SoPoItemUpsert;
+
+					const total =
+						vall.oInItems?.reduce((ret, cur) => ret + cur.qty, 0) ?? 0;
+
+					return {...vall, isClosed: total === vall.qty};
+				}),
+				get isClosed() {
+					const isClodeds = this.oPoItems.map(e => e.isClosed);
+					return !isClodeds.includes(false);
+				},
+			};
+
+			return retVal;
 		}),
 	);
 

@@ -690,20 +690,6 @@ export const oPoItem = zId.extend({
 	updatedAt: z.string().optional(),
 });
 
-export type SPoUpsert = z.infer<typeof sPoUpsert>;
-export const sPoUpsert = sPo
-	.partial({id: true, index_id: true, index_number: true})
-	.extend({
-		dIndex: tIndex.optional(),
-		status: z.nativeEnum(INTERNAL_PO_STATUS).optional(),
-		oSup: sSupplier.optional(),
-		oPoItems: oPoItem
-			.extend({oItem: sItem, temp_id: z.string()})
-			.partial({id: true, id_po: true, oItem: true, temp_id: true})
-			.array()
-			.min(1),
-	});
-
 export type SSjIn = z.infer<typeof sSjIn>;
 export const sSjIn = zId.extend({
 	sup_id: z.string(),
@@ -737,6 +723,28 @@ export const sInUpsertManual = sSjIn.partial({id: true, id_po: true}).extend({
 		.array()
 		.min(1),
 });
+
+export type SoPoItemUpsert = z.infer<typeof sPoItemUpsert>;
+export const sPoItemUpsert = oPoItem.extend({
+	oItem: sItem,
+	temp_id: z.string(),
+	isClosed: z.boolean().optional(),
+	oInItems: sInItem.array().optional(),
+});
+
+export type SPoUpsert = z.infer<typeof sPoUpsert>;
+export const sPoUpsert = sPo
+	.partial({id: true, index_id: true, index_number: true})
+	.extend({
+		dIndex: tIndex.optional(),
+		status: z.nativeEnum(INTERNAL_PO_STATUS).optional(),
+		oSup: sSupplier.optional(),
+		isClosed: z.boolean().optional(),
+		oPoItems: sPoItemUpsert
+			.partial({id: true, id_po: true, oItem: true, temp_id: true})
+			.array()
+			.min(1),
+	});
 
 export type SInUpsert = z.infer<typeof sInUpsert>;
 export const sInUpsert = sSjIn.partial({id: true}).extend({

@@ -39,9 +39,9 @@ export const Select = withReactFormController(SelectComponent);
 
 export function selectMapperV3<T extends FieldValues>(
 	data: T[],
-	callback: (item: T) => SelectPropsData,
+	callback: (item: T) => SelectPropsData | undefined,
 ): SelectPropsData[] {
-	return data.map(e => callback(e));
+	return data.map(e => callback(e)).filter(Boolean);
 }
 
 export function selectMapperV2<T extends FieldValues, P extends FieldPath<T>>(
