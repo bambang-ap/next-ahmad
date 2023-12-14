@@ -201,7 +201,6 @@ function RenderModal({
 
 	const isSelection = selct || !!form?.id_po;
 	const selectedPo = dataPo?.rows.find(e => e.id === form?.id_po);
-	const selectedItems = form?.oInItems;
 
 	const {keyPo, keySup} = {
 		keySup: `${!!dataSup}${form?.sup_id}`,
