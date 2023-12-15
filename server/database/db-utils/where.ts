@@ -10,7 +10,8 @@ import {
 import {Primitive} from 'zod';
 
 import {indexAlias, TDateFilter} from '@appTypes/app.zod';
-import {regPrefix} from '@constants';
+import {formatAll, regPrefix} from '@constants';
+import {moment} from '@utils';
 
 export function groupPages<T extends {}>(searchKey: L1<T>): any {
 	return searchKey;
@@ -103,10 +104,12 @@ export function whereDateFilter<T extends {}>(
 	field: LiteralUnion<L<T>>,
 	{filterFrom, filterTo}: Partial<TDateFilter>,
 ): any {
-	uuid;
+	const from = moment(filterFrom).format(formatAll);
+	const to = moment(filterTo).endOf('date').format(formatAll);
+
 	return {
 		[field as string]: {
-			[Op.and]: [{[Op.gte]: filterFrom}, {[Op.lte]: filterTo}],
+			[Op.and]: [{[Op.gte]: from}, {[Op.lte]: to}],
 		},
 	};
 }

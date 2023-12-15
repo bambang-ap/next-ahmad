@@ -125,9 +125,9 @@ export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 ];
 
 export const BtnGroupQty: SelectPropsData<UQty>[] = [
-	{value: 1, label: 'Qty 1'},
-	{value: 2, label: 'Qty 2'},
-	{value: 3, label: 'Qty 3'},
+	{value: 1, label: 'Qty 1 - Global'},
+	{value: 2, label: 'Qty 2 - Pcs'},
+	{value: 3, label: 'Qty 3 - Kg'},
 ];
 
 export const cuttingLineClassName =
@@ -143,9 +143,10 @@ export const defaultExcludeColumn = []; // ['createdAt', 'updatedAt'];
 export const defaultExcludeColumns = ['createdAt', 'updatedAt'];
 export const defaultOrderBy = {order: [['createdAt', 'desc'] as OrderItem]};
 
-export const formatDate = 'YYYY-MM-DD';
-export const formatHour = 'HH:mm:ss';
-export const formatFull = `${formatDate} - ${formatHour}`;
+export const formatDate = 'YYYY-MM-DD' as const;
+export const formatHour = 'HH:mm:ss' as const;
+export const formatFull = `${formatDate} - ${formatHour}` as const;
+export const formatAll = `${formatDate} HH:mm:ss.SSS` as const;
 
 export const formatDateView = 'DD/MM/YYYY';
 export const formatDateStringView = 'D MMMM YYYY';

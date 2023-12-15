@@ -46,6 +46,7 @@ export default function Dashboard() {
 				})}>
 				<div className="flex-1">
 					<ButtonGroup
+						wrapped={isMobile}
 						className="flex-1"
 						fieldName="view"
 						control={control}
@@ -55,6 +56,7 @@ export default function Dashboard() {
 				</div>
 				{(isMachine || isMachineChart || isMachineDaily) && (
 					<MultipleButtonGroup
+						className={classNames({'w-full': isMobile})}
 						control={control}
 						fieldName="qtyKey"
 						data={BtnGroupQty}
@@ -63,7 +65,8 @@ export default function Dashboard() {
 
 				<div
 					className={classNames('flex gap-2 justify-end', {
-						'w-1/3': isMachine || isMachineDaily,
+						'w-1/3': !isMobile && (isMachine || isMachineDaily),
+						'w-full': isMobile,
 					})}>
 					{isMachine && fromToComponent}
 					{isMachineDaily && monthYearComponent}

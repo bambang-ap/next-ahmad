@@ -20,6 +20,7 @@ import {
 	decimalSchema,
 	decimalValue,
 	defaultErrorMutation,
+	formatAll,
 	formatDate,
 	formatDateStringView,
 	formatDateView,
@@ -63,6 +64,7 @@ export const dateUtils = {
 		convertDate(formatDateStringView, date),
 	full: (date?: LiteralUnion<'now'> | number) =>
 		convertDate(formatFullView, date),
+	all: (date?: LiteralUnion<'now'> | number) => convertDate(formatAll, date),
 };
 
 export {default as twColors} from 'tailwindcss/colors';

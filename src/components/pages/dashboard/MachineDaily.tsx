@@ -2,11 +2,10 @@ import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
 import {FormProps} from '@appTypes/app.type';
-import {chartOpts, formatDate} from '@constants';
+import {chartOpts} from '@constants';
 import {useMachine} from '@hooks';
 import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
-import {moment} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {J, JJ} from '.';
@@ -21,12 +20,11 @@ export default function MachineDaily({
 
 	const queries = trpc.useQueries(t => {
 		return days.map(date => {
-			const filterTo = moment(date).add(1, 'd').format(formatDate);
-			return t.dashboard.machine.summary({filterFrom: date, filterTo});
+			return t.dashboard.machine.summary({filterFrom: date, filterTo: date});
 		});
 	});
 
-	const series = useMachine(queries, qtyKeySelected, ['kg']);
+	const series = useMachine(queries, qtyKeySelected);
 
 	const title = `Data Mesin Bulan ${daysSelectedDate.format('MMMM YYYY')}`;
 
