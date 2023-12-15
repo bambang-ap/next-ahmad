@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {FormEventHandler, useRef} from 'react';
 
 import {useRouter} from 'next/router';
@@ -113,7 +112,7 @@ export default function Kanban() {
 					{!isProd && <Cell>{item.id}</Cell>}
 					<Cell>{dateUtils.date(item.createdAt)}</Cell>
 					<Cell>{item.OrmCustomerPO.nomor_po}</Cell>
-					<Cell>{renderIndex(item, item.nomor_kanban)}</Cell>
+					<Cell>{renderIndex(item, item.nomor_kanban!)}</Cell>
 					<Cell>{item?.OrmCustomerSPPBIn?.nomor_surat}</Cell>
 					<Cell>{item.OrmCustomerPO?.OrmCustomer?.name}</Cell>
 					<Cell>
@@ -148,21 +147,19 @@ export default function Kanban() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(
-			async ({nomor_kanban, type, callbacks, list_mesin = {}, ...rest}) => {
-				if (callbacks) callbacks.forEach(callback => callback());
+		handleSubmit(async ({type, callbacks, list_mesin = {}, ...rest}) => {
+			if (callbacks) callbacks.forEach(callback => callback());
 
-				switch (type) {
-					case 'add':
-					case 'edit':
-						return mutateUpsert({...rest, list_mesin}, {onSuccess});
-					case 'delete':
-						return mutateDelete({id: rest.id}, {onSuccess});
-					default:
-						return null;
-				}
-			},
-		)();
+			switch (type) {
+				case 'add':
+				case 'edit':
+					return mutateUpsert({...rest, list_mesin}, {onSuccess});
+				case 'delete':
+					return mutateDelete({id: rest.id}, {onSuccess});
+				default:
+					return null;
+			}
+		})();
 
 		function onSuccess() {
 			modalRef.current?.hide();

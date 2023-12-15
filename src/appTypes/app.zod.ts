@@ -231,7 +231,7 @@ export const tKanban = zId.extend({
 	...zIndex.shape,
 	printed: z.number().optional(),
 	id_po: z.string(),
-	nomor_kanban: z.string(),
+	nomor_kanban: z.string().nullish(),
 	id_sppb_in: z.string(),
 	keterangan: z.string().nullish(),
 	createdBy: z.string(),

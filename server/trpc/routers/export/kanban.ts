@@ -83,7 +83,7 @@ const exportKanbanRouters = {
 						CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
 						'NOMOR PO': val.OrmCustomerPO.nomor_po,
 						'NOMOR SJ': val.OrmCustomerSPPBIn.nomor_surat,
-						'NOMOR KANBAN': renderIndex(val, val.nomor_kanban)!,
+						'NOMOR KANBAN': renderIndex(val, val.nomor_kanban!)!,
 						'PART NAME': name!,
 						'PART NO': kode_item!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),

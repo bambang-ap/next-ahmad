@@ -72,7 +72,7 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 			<Wrapper title="Nomor Kanban">
 				{renderIndex(
 					dataItem?.dKnbItem?.dKanban!,
-					dataItem?.dKnbItem?.dKanban.nomor_kanban,
+					dataItem?.dKnbItem?.dKanban?.nomor_kanban!,
 				)}
 			</Wrapper>
 			<Wrapper title="Nama Barang">{masterItem?.name!}</Wrapper>

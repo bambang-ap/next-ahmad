@@ -137,7 +137,7 @@ export function exportPoMapper(): MapperReturn<
 					{renderQty(dPoItems, dPoItems)}
 					<td>{dSJIn?.nomor_surat}</td>
 					{renderQty(dPoItems, dInItems)}
-					<td>{renderIndex(dKanban!, dKanban?.nomor_kanban)}</td>
+					<td>{renderIndex(dKanban!, dKanban?.nomor_kanban!)}</td>
 					{renderQty(dPoItems, dKnbItems)}
 					{renderQty(dPoItems, scanProd)}
 					{renderQty(dPoItems, scanQc)}

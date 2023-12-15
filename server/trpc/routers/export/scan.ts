@@ -71,7 +71,7 @@ const exportScanRouters = {
 						'NO LOT CUSTOMER': dInItem?.lot_no!,
 						'NO LOT IMI': val.lot_no_imi,
 						PROSES: instruksi,
-						'NOMOR KANBAN': renderIndex(dKanban!, dKanban?.nomor_kanban)!,
+						'NOMOR KANBAN': renderIndex(dKanban!, dKanban?.nomor_kanban!)!,
 						'NAMA MESIN': mesinnnn.map(e => e.toJSON().name).join(' | '),
 						'NOMOR MESIN': mesinnnn
 							.map(e => e.toJSON().nomor_mesin)

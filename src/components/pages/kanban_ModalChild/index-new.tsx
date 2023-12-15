@@ -87,7 +87,7 @@ export function NewKanbanModalChild({
 					disabled
 					className="flex-1"
 					label="Nomor Kanban"
-					byPassValue={renderIndex(detailKanban!, detailKanban?.nomor_kanban)}
+					byPassValue={renderIndex(detailKanban!, detailKanban?.nomor_kanban!)}
 				/>
 
 				{isPreview ? (

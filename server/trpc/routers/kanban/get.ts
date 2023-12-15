@@ -132,6 +132,7 @@ export const kanbanGet = {
 			const dataKanban = await OrmKanban.findOne({
 				where: {id},
 				include: [
+					{model: dIndex},
 					{model: OrmDocument},
 					{model: OrmCustomerPO, include: [OrmCustomer]},
 					{model: OrmUser, as: OrmKanban._aliasCreatedBy},

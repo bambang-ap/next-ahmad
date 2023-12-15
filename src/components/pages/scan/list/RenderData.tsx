@@ -36,7 +36,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 			<Cell>{data.dPo.dCust.name}</Cell>
 			<Cell>{data.dPo.nomor_po}</Cell>
 			<Cell>{data.dSJIn.nomor_surat}</Cell>
-			<Cell>{renderIndex(data, data.nomor_kanban)}</Cell>
+			<Cell>{renderIndex(data, data.nomor_kanban!)}</Cell>
 			<Cell>{data?.keterangan}</Cell>
 			<Cell>{theDate}</Cell>
 			{!isSelect && (

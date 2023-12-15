@@ -178,7 +178,7 @@ export function RenderKanbanCardV2(props: AProps) {
 				<tr>
 					<BorderTd className="text-base">Nomor Kanban</BorderTd>
 					<BorderTd colSpan={2}>
-						{renderIndex(OrmKanban!, nomor_kanban)}
+						{renderIndex(OrmKanban!, nomor_kanban!)}
 					</BorderTd>
 				</tr>
 				<tr>
