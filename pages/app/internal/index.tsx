@@ -15,7 +15,7 @@ const data: SelectPropsData<TDashboardInternal>[] = [
 
 export default function Internal() {
 	const {
-		dateComponent,
+		fromToComponent,
 		form: {control, watch},
 	} = useFormFilter<UseDateFilterProps<FormType>>(true, {
 		defaultValues: {view: 'qty'},
@@ -29,7 +29,7 @@ export default function Internal() {
 		<div className="flex flex-col gap-2">
 			<div className="flex justify-between gap-2">
 				<ButtonGroup control={control} fieldName="view" data={data} />
-				<div className="flex gap-2">{dateComponent}</div>
+				<div className="flex gap-2">{fromToComponent}</div>
 			</div>
 			<InternalDashboard control={control} calculated={isCalculated} />
 		</div>

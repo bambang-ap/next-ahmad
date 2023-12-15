@@ -1,3 +1,4 @@
+import {Moment} from 'moment';
 import {Control, useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
@@ -11,15 +12,20 @@ import {classNames} from '@utils';
 import BarChart from './BarChart';
 import MachineDashboard from './Machine';
 import MachineChart from './MachineChart';
+import MachineDaily from './MachineDaily';
 import MainDashboard from './Main';
 import TotalCount from './TotalCount';
 
 export type J = UseDateFilterProps<{view: TDashboardView; qtyKey: UQty[]}>;
+export type JJ = {days: string[]; daysSelectedDate: Moment};
 
 export default function Dashboard() {
 	const {
+		days,
+		fromToComponent,
+		daysSelectedDate,
+		monthYearComponent,
 		form: {control, watch},
-		dateComponent,
 	} = useFormFilter<J>(true, {
 		defaultValues: {qtyKey: [2, 3]},
 	});
@@ -29,6 +35,7 @@ export default function Dashboard() {
 
 	const isMachine = view === 'machine';
 	const isMachineChart = view === 'machine_chart';
+	const isMachineDaily = view === 'machine_daily';
 
 	return (
 		<div className="flex flex-col">
@@ -46,23 +53,36 @@ export default function Dashboard() {
 						defaultValue={DashboardSelectView?.[0]?.value}
 					/>
 				</div>
-				{(isMachine || isMachineChart) && (
+				{(isMachine || isMachineChart || isMachineDaily) && (
 					<MultipleButtonGroup
 						control={control}
 						fieldName="qtyKey"
 						data={BtnGroupQty}
 					/>
 				)}
-				{isMachine && (
-					<div className="flex gap-2 justify-end">{dateComponent}</div>
-				)}
+
+				<div
+					className={classNames('flex gap-2 justify-end', {
+						'w-1/3': isMachine || isMachineDaily,
+					})}>
+					{isMachine && fromToComponent}
+					{isMachineDaily && monthYearComponent}
+				</div>
 			</div>
-			<RenderView control={control} />
+			<RenderView
+				days={days}
+				control={control}
+				daysSelectedDate={daysSelectedDate}
+			/>
 		</div>
 	);
 }
 
-function RenderView({control}: {control: Control<J>}) {
+function RenderView({
+	days,
+	control,
+	daysSelectedDate,
+}: JJ & {control: Control<J>}) {
 	const {view} = useWatch({control});
 
 	switch (view) {
@@ -76,6 +96,14 @@ function RenderView({control}: {control: Control<J>}) {
 			return <MachineDashboard control={control} />;
 		case 'machine_chart':
 			return <MachineChart control={control} />;
+		case 'machine_daily':
+			return (
+				<MachineDaily
+					days={days}
+					control={control}
+					daysSelectedDate={daysSelectedDate}
+				/>
+			);
 		default:
 			return <TotalCount />;
 	}

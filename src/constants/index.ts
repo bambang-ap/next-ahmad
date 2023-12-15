@@ -120,7 +120,8 @@ export const DashboardSelectView: SelectPropsData<TDashboardView>[] = [
 	{value: 'main', label: 'Utama'},
 	{value: 'bar', label: 'Business Process'},
 	{value: 'machine', label: 'Mesin Produksi'},
-	{value: 'machine_chart', label: 'Chart Mesin'},
+	{value: 'machine_chart', label: 'Monthly Mesin'},
+	{value: 'machine_daily', label: 'Daily Mesin'},
 ];
 
 export const BtnGroupQty: SelectPropsData<UQty>[] = [
@@ -203,8 +204,9 @@ export const through = {attributes: []};
 
 export function chartOpts(
 	categories: ApexXAxis['categories'],
-	hideZero = false,
+	opts?: {hideZero?: boolean; horizontal?: boolean},
 ) {
+	const {hideZero, horizontal} = opts ?? {};
 	const fontFamily = 'Bahnschrift';
 	const fontSize = '16px';
 	const colors = ['black'];
@@ -214,6 +216,9 @@ export function chartOpts(
 		fontSize,
 		colors,
 		opt: {
+			plotOptions: {bar: {horizontal}},
+			stroke: {curve: 'smooth'},
+			markers: {size: 2},
 			grid: {
 				show: true,
 				borderColor: '#90A4AE',
@@ -248,7 +253,9 @@ export function chartOpts(
 			yaxis: {labels: {style: {fontFamily, fontSize}}},
 			xaxis: {categories, labels: {style: {colors, fontFamily, fontSize}}},
 			dataLabels: {
+				enabled: true,
 				style: {colors, fontFamily, fontSize},
+				background: {enabled: false},
 				dropShadow: {
 					enabled: true,
 					top: 1,

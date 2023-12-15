@@ -1,4 +1,3 @@
-import moment from 'moment';
 import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
@@ -7,32 +6,29 @@ import {chartOpts, formatDate} from '@constants';
 import {useMachine} from '@hooks';
 import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
+import {moment} from '@utils';
 import {trpc} from '@utils/trpc';
 
-import {J} from '.';
+import {J, JJ} from '.';
 
-export default function MachineChart({control}: FormProps<J>) {
+export default function MachineDaily({
+	days,
+	control,
+	daysSelectedDate,
+}: FormProps<J> & JJ) {
 	const horizontal = useRecoilValue(atomIsMobile);
-	const title = `Data Mesin Tahun ${moment().format('YYYY')}`;
-
-	const months = Array.from({length: 12}).map((_, i) => {
-		const currentMonth = moment().startOf('year').add(i, 'month');
-
-		return {month: currentMonth.format('MMMM'), currentMonth};
-	});
-
 	const {qtyKey: qtyKeySelected = []} = useWatch({control});
 
 	const queries = trpc.useQueries(t => {
-		return months.map(({currentMonth}) => {
-			const filterFrom = currentMonth.format(formatDate);
-			const filterTo = currentMonth.endOf('month').format(formatDate);
-
-			return t.dashboard.machine.summary({filterFrom, filterTo});
+		return days.map(date => {
+			const filterTo = moment(date).add(1, 'd').format(formatDate);
+			return t.dashboard.machine.summary({filterFrom: date, filterTo});
 		});
 	});
 
-	const series = useMachine(queries, qtyKeySelected);
+	const series = useMachine(queries, qtyKeySelected, ['kg']);
+
+	const title = `Data Mesin Bulan ${daysSelectedDate.format('MMMM YYYY')}`;
 
 	return (
 		<>
@@ -41,12 +37,12 @@ export default function MachineChart({control}: FormProps<J>) {
 			</div>
 
 			<Chart
-				type="bar"
+				type="line"
 				height={500}
 				series={series}
 				options={
 					chartOpts(
-						months.map(e => e.month),
+						days.map((_, i) => i + 1),
 						{hideZero: true, horizontal},
 					).opt
 				}

@@ -619,8 +619,9 @@ export const tDashboardView = z
 	.or(z.literal('main'))
 	.or(z.literal('bar'))
 	.or(z.literal('line'))
+	.or(z.literal('machine'))
 	.or(z.literal('machine_chart'))
-	.or(z.literal('machine'));
+	.or(z.literal('machine_daily'));
 
 export type TDashboardInternal = z.infer<typeof tDashboardInternal>;
 export const tDashboardInternal = z.literal('transaksi').or(z.literal('qty'));
@@ -790,4 +791,6 @@ export type TDateFilter = z.infer<typeof tDateFilter>;
 export const tDateFilter = z.object({
 	filterFrom: z.string(),
 	filterTo: z.string(),
+	filterMonth: z.number().min(1).max(12).default(1),
+	filterYear: z.string().length(4),
 });
