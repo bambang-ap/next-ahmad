@@ -29,10 +29,13 @@ export function CheckBox({
 				{hidden, 'cursor-pointer': !disabled, 'cursor-not-allowed': disabled},
 				className,
 			)}>
-			<div className="flex justify-center items-center mr-2 border rounded h-6 w-6">
-				{value && <Icon name={value === '@' ? 'faMinus' : 'faCheck'} />}
+			<div className="flex justify-center items-center mr-2 border rounded p-1">
+				<Icon
+					className={classNames({'text-transparent': !value})}
+					name={value === '@' ? 'faMinus' : 'faCheck'}
+				/>
 			</div>
-			<Text>{label}</Text>
+			<Text className="select-none">{label}</Text>
 			{errorMessage}
 		</div>
 	);

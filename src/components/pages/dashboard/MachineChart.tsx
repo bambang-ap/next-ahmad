@@ -67,7 +67,12 @@ export default function MachineChart({control}: FormProps<J>) {
 				type="bar"
 				height={500}
 				series={series}
-				options={chartOpts(months.map(e => e.month)).opt}
+				options={
+					chartOpts(
+						months.map(e => e.month),
+						true,
+					).opt
+				}
 			/>
 		</>
 	);

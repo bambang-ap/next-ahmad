@@ -18,6 +18,7 @@ import {
 } from '@appTypes/app.zod';
 import {
 	decimalSchema,
+	decimalValue,
 	defaultErrorMutation,
 	formatDate,
 	formatDateStringView,
@@ -118,6 +119,21 @@ export function numberFormat(
 	}).format(qty);
 
 	return formatted;
+}
+
+export function numberFormatIsRound(
+	qty: number,
+	currency = true,
+	minimumFractionDigits = decimalValue,
+	maximumFractionDigits = decimalValue,
+) {
+	if (qty % 1 === 0) return numberFormat(qty, currency);
+	return numberFormat(
+		qty,
+		currency,
+		minimumFractionDigits,
+		maximumFractionDigits,
+	);
 }
 
 export function ppnParser(ppn: boolean, price: number, qty = 1) {

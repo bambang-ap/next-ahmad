@@ -17,6 +17,7 @@ import {TItemUnitInternal} from '@appTypes/app.zod';
 import {SelectPropsData} from '@components';
 import {IndexNumber, REQ_FORM_STATUS} from '@enum';
 import {TRPCClientError} from '@trpc/client';
+import {numberFormatIsRound} from '@utils';
 
 export * from './colors';
 export * from './pages';
@@ -200,7 +201,10 @@ export const nonRequiredRefetch: any = {
 
 export const through = {attributes: []};
 
-export function chartOpts(categories: ApexXAxis['categories']) {
+export function chartOpts(
+	categories: ApexXAxis['categories'],
+	hideZero = false,
+) {
 	const fontFamily = 'Bahnschrift';
 	const fontSize = '16px';
 	const colors = ['black'];
@@ -210,6 +214,36 @@ export function chartOpts(categories: ApexXAxis['categories']) {
 		fontSize,
 		colors,
 		opt: {
+			grid: {
+				show: true,
+				borderColor: '#90A4AE',
+				strokeDashArray: 0,
+				position: 'back',
+				xaxis: {
+					lines: {
+						show: true,
+					},
+				},
+				yaxis: {
+					lines: {
+						show: true,
+					},
+				},
+				row: {
+					colors: undefined,
+					opacity: 0.5,
+				},
+				column: {
+					colors: undefined,
+					opacity: 0.5,
+				},
+				padding: {
+					top: 0,
+					right: 0,
+					bottom: 0,
+					left: 0,
+				},
+			},
 			legend: {fontFamily, fontSize},
 			yaxis: {labels: {style: {fontFamily, fontSize}}},
 			xaxis: {categories, labels: {style: {colors, fontFamily, fontSize}}},
@@ -222,6 +256,11 @@ export function chartOpts(categories: ApexXAxis['categories']) {
 					blur: 1,
 					color: 'white',
 					opacity: 1,
+				},
+				formatter(val) {
+					const value = numberFormatIsRound(val as number, false);
+					if (hideZero && val == 0) return '';
+					return value;
 				},
 			},
 		} as ApexOptions,
