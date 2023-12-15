@@ -714,17 +714,6 @@ export const sInItem = zId.extend({
 	keterangan: z.string().nullish(),
 });
 
-export type SInUpsertManual = z.infer<typeof sInUpsertManual>;
-export const sInUpsertManual = sSjIn.partial({id: true, id_po: true}).extend({
-	oSup: sSupplier.optional(),
-	oInItems: sInItem
-		.extend({temp_id: z.string()})
-		.partial({temp_id: true, id: true, in_id: true})
-		.required({nama: true, harga: true, kode: true, unit: true})
-		.array()
-		.min(1),
-});
-
 export type SoPoItemUpsert = z.infer<typeof sPoItemUpsert>;
 export const sPoItemUpsert = oPoItem.extend({
 	oItem: sItem,
@@ -757,6 +746,17 @@ export const sInUpsert = sSjIn.partial({id: true}).extend({
 			oPoItem: oPoItem.extend({oItem: sItem.optional()}).optional(),
 		})
 		.partial({id: true, in_id: true, temp_id: true})
+		.array()
+		.min(1),
+});
+
+export type SInUpsertManual = z.infer<typeof sInUpsertManual>;
+export const sInUpsertManual = sSjIn.partial({id: true, id_po: true}).extend({
+	oSup: sSupplier.optional(),
+	oInItems: sInItem
+		.extend({temp_id: z.string()})
+		.partial({temp_id: true, id: true, in_id: true})
+		.required({nama: true, harga: true, kode: true, unit: true})
 		.array()
 		.min(1),
 });

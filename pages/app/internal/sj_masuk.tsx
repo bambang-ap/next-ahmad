@@ -4,7 +4,7 @@ import {useForm, useWatch} from 'react-hook-form';
 
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
-import {SInUpsert} from '@appTypes/app.zod';
+import {SInUpsert, SInUpsertManual} from '@appTypes/app.zod';
 import {
 	BorderTd,
 	Button,
@@ -138,17 +138,7 @@ export default function InternalSiIn() {
 				const isSelection = selct || !!form?.id_po;
 
 				if (isSelection) return mutateUpsert(value.form, {onSuccess});
-				else
-					return mutateManual(
-						{
-							// @ts-ignore
-							oInItems: form.oInItems,
-							sup_id: form.sup_id,
-							date: form.date,
-							id: form?.id,
-						},
-						{onSuccess},
-					);
+				else return mutateManual(form as SInUpsertManual, {onSuccess});
 			}
 
 			function onSuccess() {
@@ -182,6 +172,8 @@ function RenderModal({
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form, isSelection: selct} = useWatch({control});
+
+	console.log(useWatch({control}));
 
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
