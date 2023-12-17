@@ -21,14 +21,23 @@ export default function MachineChart({control}: FormProps<J>) {
 		return {month: currentMonth.format('MMMM'), currentMonth};
 	});
 
-	const {qtyKey: qtyKeySelected = []} = useWatch({control});
+	const {
+		qtyKey: qtyKeySelected = [],
+		machineCatId,
+		machineId,
+	} = useWatch({control});
 
 	const queries = trpc.useQueries(t => {
 		return months.map(({currentMonth}) => {
 			const filterFrom = currentMonth.format(formatDate);
 			const filterTo = currentMonth.endOf('month').format(formatDate);
 
-			return t.dashboard.machine.summary({filterFrom, filterTo});
+			return t.dashboard.machine.summary({
+				filterFrom,
+				filterTo,
+				machineCatId,
+				machineId,
+			});
 		});
 	});
 

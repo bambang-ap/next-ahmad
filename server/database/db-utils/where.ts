@@ -69,20 +69,23 @@ export function wherePagesV3<T extends {}>(
 	operator: keyof typeof Op = 'and',
 ): any {
 	return {
-		[Op[operator]]: Object.entries(searchKey).map(keys => {
-			const [key, value] = keys;
-			return {[key]: value};
-		}),
+		[Op[operator]]: Object.entries(searchKey)
+			.map(keys => {
+				const [key, value] = keys;
+				if (Array.isArray(value))
+					return !!value[1] ? {[key]: value[1]} : undefined;
+				return {[key]: value};
+			})
+			.filter(Boolean),
 	};
 }
 
+type K = Primitive | WhereAttributeHashValue<any>;
 type L1<T extends {}> = Path<ObjectNonArray<T>>;
 type L2<T extends {}> = `$${Path<ObjectNonArray<T>>}$`;
 type L<T extends {}> = L1<T> | L2<T>;
 type U<T extends {}> = ['or' | 'and', O<T>];
-type O<T extends {}> = Partial<
-	Record<L<T>, Primitive | WhereAttributeHashValue<any>>
->;
+type O<T extends {}> = Partial<Record<L<T>, K | [filter: true, value: K]>>;
 
 export function wherePagesV4<T extends {}>(
 	...searchKeys: (U<T> | O<T>)[]

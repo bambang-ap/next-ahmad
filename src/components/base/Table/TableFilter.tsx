@@ -70,7 +70,6 @@ export function TableFilter<T>({
 						<Select
 							className={classNames({['flex-1']: disableSearch})}
 							disableClear
-							topSelected={false}
 							label="Data per halaman"
 							data={dataPerPageSelection}
 							control={control}

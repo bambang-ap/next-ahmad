@@ -794,3 +794,9 @@ export const tDateFilter = z.object({
 	filterMonth: z.number().min(1).max(12).default(1),
 	filterYear: z.string().length(4),
 });
+
+export type TMachineFilter = z.infer<typeof tMachineFilter>;
+export const tMachineFilter = z.object({
+	machineCatId: z.string(),
+	machineId: z.string(),
+});

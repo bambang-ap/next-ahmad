@@ -1,6 +1,12 @@
 import {Op} from 'sequelize';
 
-import {TDateFilter, tDateFilter, TItemUnit} from '@appTypes/app.zod';
+import {
+	TDateFilter,
+	tDateFilter,
+	TItemUnit,
+	TMachineFilter,
+	tMachineFilter,
+} from '@appTypes/app.zod';
 import {
 	dashboardMesinAttributes,
 	orderPages,
@@ -11,7 +17,7 @@ import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 import {qtyMap, V} from '@utils';
 
-async function s(input: Partial<TDateFilter>) {
+async function s(input: Partial<TDateFilter & TMachineFilter>) {
 	const {
 		Ret: ARet,
 		rootRet,
@@ -26,7 +32,7 @@ async function s(input: Partial<TDateFilter>) {
 
 	type Ret = typeof ARet;
 
-	const {filterFrom, filterTo} = input;
+	const {filterFrom, filterTo, machineCatId, machineId} = input;
 
 	const dateFilter =
 		!!filterFrom && !!filterTo
@@ -46,6 +52,8 @@ async function s(input: Partial<TDateFilter>) {
 			...wherePagesV3<Ret>({
 				'$dScan.status$': 'produksi',
 				'$dKnbItem.id_mesin$': {[Op.not]: null},
+				'$dKnbItem.dMesin.dKatMesin.id$': [true, machineCatId],
+				'$dKnbItem.dMesin.id$': [true, machineId],
 			}),
 		},
 		include: [
@@ -71,42 +79,46 @@ export type MachineSummary = Partial<
 >;
 
 const machineDashboardRouters = router({
-	summary: procedure.input(tDateFilter.partial()).query(({ctx, input}) => {
-		type Ret = typeof ARet;
+	summary: procedure
+		.input(tDateFilter.extend(tMachineFilter.shape).partial())
+		.query(({ctx, input}) => {
+			type Ret = typeof ARet;
 
-		const {Ret: ARet} = dashboardMesinAttributes();
+			const {Ret: ARet} = dashboardMesinAttributes();
 
-		return checkCredentialV2(ctx, async () => {
-			const scnItemData = await s(input);
+			return checkCredentialV2(ctx, async () => {
+				const scnItemData = await s(input);
 
-			return scnItemData.reduce<MachineSummary>((ret, e) => {
-				const val = e.toJSON() as unknown as Ret;
+				return scnItemData.reduce<MachineSummary>((ret, e) => {
+					const val = e.toJSON() as unknown as Ret;
 
-				const {
-					item_from_kanban,
-					dKnbItem: {
-						dInItem: {dPoItem},
-					},
-					...item
-				} = val;
+					const {
+						item_from_kanban,
+						dKnbItem: {
+							dInItem: {dPoItem},
+						},
+						...item
+					} = val;
 
-				qtyMap(({qtyKey, unitKey}) => {
-					if (!ret[qtyKey]) ret[qtyKey] = {};
+					qtyMap(({qtyKey, unitKey}) => {
+						if (!ret[qtyKey]) ret[qtyKey] = {};
 
-					const unit = dPoItem[unitKey]!;
+						const unit = dPoItem[unitKey]!;
 
-					if (!ret[qtyKey]![unit]) ret[qtyKey]![unit] = [0, 0];
+						if (!ret[qtyKey]![unit]) ret[qtyKey]![unit] = [0, 0];
 
-					ret[qtyKey]![unit]![0] += parseFloat(
-						item_from_kanban[qtyKey]?.toString() ?? '0',
-					);
-					ret[qtyKey]![unit]![1] += parseFloat(item[qtyKey]?.toString() ?? '0');
-				});
+						ret[qtyKey]![unit]![0] += parseFloat(
+							item_from_kanban[qtyKey]?.toString() ?? '0',
+						);
+						ret[qtyKey]![unit]![1] += parseFloat(
+							item[qtyKey]?.toString() ?? '0',
+						);
+					});
 
-				return ret;
-			}, {});
-		});
-	}),
+					return ret;
+				}, {});
+			});
+		}),
 
 	list: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		type Ret = typeof ARet;

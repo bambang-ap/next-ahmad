@@ -116,7 +116,7 @@ function SelectComponent<F extends FieldValues>({
 	firstOption,
 	className,
 	isLoading = false,
-	topSelected = true,
+	topSelected,
 	noLabel,
 	forceEditable,
 	label: labelProps,

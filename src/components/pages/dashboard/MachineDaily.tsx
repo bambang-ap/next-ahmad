@@ -16,13 +16,24 @@ export default function MachineDaily({
 	daysSelectedDate,
 }: FormProps<J> & JJ) {
 	const horizontal = useRecoilValue(atomIsMobile);
-	const {qtyKey: qtyKeySelected = []} = useWatch({control});
+	const {
+		qtyKey: qtyKeySelected = [],
+		machineCatId,
+		machineId,
+	} = useWatch({control});
 
 	const queries = trpc.useQueries(t => {
 		return days.map(date => {
-			return t.dashboard.machine.summary({filterFrom: date, filterTo: date});
+			return t.dashboard.machine.summary({
+				filterFrom: date,
+				filterTo: date,
+				machineCatId,
+				machineId,
+			});
 		});
 	});
+
+	console.log(queries);
 
 	const series = useMachine(queries, qtyKeySelected);
 

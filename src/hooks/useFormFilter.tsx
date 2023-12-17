@@ -89,7 +89,6 @@ export function useFormFilter<T extends TDateFilter & {}>(
 				className="flex-1"
 				label="Tahun"
 				data={years}
-				topSelected={false}
 				control={form.control}
 				fieldName="filterYear"
 			/>
@@ -97,7 +96,6 @@ export function useFormFilter<T extends TDateFilter & {}>(
 				className="flex-1"
 				label="Bulan"
 				data={months}
-				topSelected={false}
 				control={form.control}
 				fieldName="filterMonth"
 			/>
