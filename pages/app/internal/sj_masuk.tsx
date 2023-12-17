@@ -173,8 +173,6 @@ function RenderModal({
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form, isSelection: selct} = useWatch({control});
 
-	console.log(useWatch({control}));
-
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
 	});

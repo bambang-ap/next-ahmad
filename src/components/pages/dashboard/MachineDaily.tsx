@@ -33,8 +33,6 @@ export default function MachineDaily({
 		});
 	});
 
-	console.log(queries);
-
 	const series = useMachine(queries, qtyKeySelected);
 
 	const title = `Data Mesin Bulan ${daysSelectedDate.format('MMMM YYYY')}`;

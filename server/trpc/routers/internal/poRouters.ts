@@ -75,6 +75,7 @@ async function agd(input: TableFormValue, where?: any, byPassWhere = false) {
 					return {...vall, isClosed: total === vall.qty};
 				}),
 				get isClosed() {
+					// eslint-disable-next-line @typescript-eslint/no-shadow
 					const isClodeds = this.oPoItems.map(e => e.isClosed);
 					return !isClodeds.includes(false);
 				},
@@ -165,6 +166,7 @@ export const poRouters = router({
 				await transaction.commit();
 				return Success;
 			} catch (err) {
+				// eslint-disable-next-line no-console
 				console.log(err);
 				await transaction.rollback();
 				throw new TRPCError({code: 'BAD_REQUEST'});

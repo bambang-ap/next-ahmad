@@ -92,6 +92,7 @@ const exportInternalRouters = router({
 			});
 
 			return data.map((e, i) => {
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				const {nama, oSup, harga, kode, ppn} = e.toJSON() as unknown as Ret;
 
 				return {
@@ -211,6 +212,7 @@ const exportInternalRouters = router({
 
 			for (const e of data) {
 				const val = e.toJSON() as unknown as Ret;
+				// eslint-disable-next-line @typescript-eslint/no-shadow
 				const {id, date, due_date, oSup, oPoItems} = val;
 
 				const status = await getInternalPOStatus(id);

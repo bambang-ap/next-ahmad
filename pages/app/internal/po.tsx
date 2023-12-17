@@ -63,8 +63,6 @@ export default function InternalPo() {
 			property: 'selectedIds',
 		});
 
-	console.log(selectedIds);
-
 	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		reset,
 		control,

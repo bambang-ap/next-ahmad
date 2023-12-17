@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-shadow */
 import {col, fn} from 'sequelize';
 
 import {tDateFilter} from '@appTypes/app.zod';
