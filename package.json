@@ -9,6 +9,7 @@
 		"deploy": "pm2 kill; pm2 start \"npm run start\" --watch --name \"IMI Inventory\"; pm2 save; yarn restart;",
 		"build": "next lint --fix; next build",
 		"start": "next start --port 7534",
+		"ssh": "ssh root@45.90.223.23",
 		"dev": "next dev --port 1234",
 		"next-lint": "next lint",
 		"lint": "eslint . --ext=jsx,ts,tsx",
