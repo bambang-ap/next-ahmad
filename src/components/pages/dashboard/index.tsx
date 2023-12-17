@@ -109,10 +109,10 @@ export default function Dashboard() {
 function RenderMachineFilter({control}: FormProps<J>) {
 	const {machineCatId} = useWatch({control});
 
-	const {data: dataCat} = trpc.basic.get.useQuery<any, TKategoriMesin>({
+	const {data: dataCat} = trpc.basic.get.useQuery<any, TKategoriMesin[]>({
 		target: CRUD_ENABLED.MESIN_KATEGORI,
 	});
-	const {data: dataMesin} = trpc.basic.get.useQuery<any, TMesin>(
+	const {data: dataMesin} = trpc.basic.get.useQuery<any, TMesin[]>(
 		{
 			target: CRUD_ENABLED.MESIN,
 			where: JSON.stringify({kategori_mesin: machineCatId} as TMesin),
