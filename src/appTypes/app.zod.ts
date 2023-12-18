@@ -58,6 +58,13 @@ export const tableFormValue = z.object({
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
+export type ZCreated = z.infer<typeof zCreated>;
+export const zCreated = z.object({createdAt: z.string().optional()});
+export type ZUpdated = z.infer<typeof zUpdated>;
+export const zUpdated = z.object({updatedAt: z.string().optional()});
+export type ZCreatedUpdated = z.infer<typeof zCreatedUpdated>;
+export const zCreatedUpdated = zCreated.extend(zUpdated.shape);
+
 export type ZIds = z.infer<typeof zIds>;
 export const zIds = z.object({ids: z.string().array()});
 
@@ -75,7 +82,7 @@ export const tIndex = zId.extend({
 	prefix: z.string().regex(regIndexPrefix),
 	target: z.nativeEnum(IndexNumber),
 	keterangan: z.string().nullish(),
-	createdAt: z.string().optional(),
+	...zCreated.shape,
 });
 
 export type TUser = z.infer<typeof tUser>;
@@ -153,6 +160,7 @@ export const tPOItem = zId.extend({
 	harga: zDecimal.optional(),
 	...unitUnit.shape,
 	...unitQty.shape,
+	...zCreated.shape,
 });
 
 export type TPOItemSppbIn = z.infer<typeof tPOItemSppbIn>;
@@ -161,6 +169,7 @@ export const tPOItemSppbIn = zId.extend({
 	id_item: z.string(),
 	master_item_id: z.string(),
 	lot_no: z.string().optional(),
+	...zCreated.shape,
 	...unitQty.shape,
 });
 
@@ -229,6 +238,7 @@ export const tInstruksiKanban = zId.extend({
 export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	...zIndex.shape,
+	...zCreatedUpdated.shape,
 	printed: z.number().optional(),
 	id_po: z.string(),
 	nomor_kanban: z.string().nullish(),
@@ -236,8 +246,6 @@ export const tKanban = zId.extend({
 	keterangan: z.string().nullish(),
 	createdBy: z.string(),
 	updatedBy: z.string(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional(),
 	image: z.string().optional().nullish(),
 	doc_id: z.string(),
 	list_mesin: z.record(z.string().min(1).array().min(1)),
@@ -293,6 +301,7 @@ export const tCustomerSPPBIn = zId.partial().extend({
 	nomor_surat: z.string(),
 	id_po: z.string(),
 	tgl: z.string(),
+	...zCreated.shape,
 });
 
 const picker = {id: true, id_sppb_in: true} as const;
@@ -348,6 +357,7 @@ export type TCustomerSPPBOutItem = z.infer<typeof tCustomerSPPBOutItem>;
 export const tCustomerSPPBOutItem = zId.extend({
 	id_sppb_out: z.string(),
 	id_item: z.string(),
+	...zCreated.shape,
 	...unitQty.shape,
 });
 
@@ -407,13 +417,12 @@ export const tParameterKategori = zId.extend({
 
 export type TDocument = z.infer<typeof tDocument>;
 export const tDocument = zId.extend({
+	...zCreatedUpdated.shape,
 	doc_no: z.string(),
 	tgl_efektif: z.string(),
 	revisi: z.string().nullish(),
 	terbit: z.string().nullish(),
 	keterangan: z.string().optional(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional(),
 	target: z.literal('kanban').or(z.literal('qc')).nullish(),
 });
 
@@ -454,14 +463,15 @@ export const tScanItem = z.object({
 
 export type TScanDate = z.infer<typeof tScanDate>;
 export const tScanDate = z.object({
-	produksi_updatedAt: z.string().optional(),
-	qc_updatedAt: z.string().optional(),
-	finish_good_updatedAt: z.string().optional(),
+	produksi_updatedAt: zUpdated.shape.updatedAt,
+	qc_updatedAt: zUpdated.shape.updatedAt,
+	finish_good_updatedAt: zUpdated.shape.updatedAt,
 });
 
 export type TScan = z.infer<typeof tScan>;
 export const tScan = zId.extend({
 	...tScanItem.shape,
+	...zCreatedUpdated.shape,
 	id_customer: z.string(),
 	lot_no_imi: z.string().min(1),
 	id_kanban: z.string(),
@@ -472,8 +482,6 @@ export const tScan = zId.extend({
 	notes: z.string().optional(),
 	date: tScanDate.optional(),
 	item_from_kanban: z.record(unitQty).optional(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional(),
 });
 
 export type TScanTarget = z.infer<typeof tScanTarget>;
@@ -497,7 +505,7 @@ export const tScanNew = zId.extend({
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
 	id_qc: z.string().nullish(),
-	updatedAt: z.string().optional(),
+	...zUpdated.shape,
 });
 
 export type TScanNewItem = z.infer<typeof tScanNewItem>;
@@ -506,7 +514,7 @@ export const tScanNewItem = zId.extend({
 	id_scan: z.string(),
 	id_kanban_item: z.string(),
 	item_from_kanban: unitQty,
-	createdAt: z.string().optional(),
+	...zCreated.shape,
 });
 
 export type TScanItemReject = z.infer<typeof tScanItemReject>;
@@ -574,8 +582,7 @@ export type TSupplierItem = z.infer<typeof tSupplierItem>;
 export const tSupplierItem = zId.extend({
 	code_item: z.string().optional(),
 	name_item: z.string().optional(),
-	createdAt: z.string().optional(),
-	updatedAt: z.string().optional(),
+	...zCreatedUpdated.shape,
 });
 
 export type TSupplierItemUpsert = z.infer<typeof tSupplierItemUpsert>;
@@ -689,7 +696,7 @@ export const oPoItem = zId.extend({
 	qty: zDecimal,
 	unit: tItemUnitInternal,
 	discount: zDecimal.optional(),
-	updatedAt: z.string().optional(),
+	...zUpdated.shape,
 });
 
 export type SSjIn = z.infer<typeof sSjIn>;
@@ -768,10 +775,10 @@ export const sStock = sItem
 	.required({id: true, sup_id: true})
 	.omit({nama: true, kode: true})
 	.extend({
+		...zCreated.shape,
 		nama: z.string().nullish(),
 		kode: z.string().nullish(),
 
-		createdAt: z.string().optional(),
 		id_item_in: z.string().nullish(),
 		id_item: z.string().nullish(),
 		unit: tItemUnitInternal,
@@ -784,7 +791,7 @@ export const sOutBarang = zId.extend({
 	id_stock: z.string(),
 	user: z.string().nullish(),
 	keterangan: z.string().nullish(),
-	createdAt: z.string().optional(),
+	...zCreated.shape,
 });
 
 export type TDateFilter = z.infer<typeof tDateFilter>;

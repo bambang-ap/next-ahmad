@@ -511,6 +511,15 @@ export function sppbOutGetAttributes() {
 	};
 }
 
+export function getPOScoreAttributes() {
+	const po = attrParserV2(dPo, ['id']);
+	const poItem = attrParserV2(dPoItem, ['qty1', 'qty2', 'qty3', 'createdAt']);
+	const inItem = attrParserV2(dInItem, ['qty1', 'qty2', 'qty3', 'createdAt']);
+	const outItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3', 'createdAt']);
+
+	return {po, poItem, inItem, outItem};
+}
+
 export function getPOSppbOutAttributes() {
 	const kanban = attrParserV2(dKanban, ['id']);
 	const sjIn = attrParserV2(dSJIn);

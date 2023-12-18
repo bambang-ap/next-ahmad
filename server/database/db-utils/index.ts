@@ -18,6 +18,7 @@ import {
 import {appRouter} from '@trpc/routers';
 
 export * from './attributes';
+export * from './getPoScore';
 export * from './getPoStatus';
 export * from './relation';
 export * from './where';

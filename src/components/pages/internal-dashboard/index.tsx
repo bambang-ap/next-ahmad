@@ -43,7 +43,7 @@ export function InternalDashboard({control, calculated}: K) {
 				{dataEntries.map(([key, {className, data = []}]) => {
 					let total: Record<typeof key, number> = {
 						'SJ Masuk': 0,
-						LPB: 0,
+						'Item Keluar': 0,
 						PO: 0,
 						Stock: 0,
 					};

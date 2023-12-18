@@ -105,7 +105,7 @@ export const dashboardRouters = procedure
 					className: MenuColorClass.SJIn,
 					data: sjInQty.map(e => e.toJSON() as unknown as UU),
 				},
-				LPB: {
+				'Item Keluar': {
 					className: MenuColorClass.SJOut,
 					data: outQty.reduce<UU[]>((ret, e) => {
 						const val = e.toJSON() as unknown as UU;
@@ -127,7 +127,9 @@ export const dashboardRouters = procedure
 						className: MenuColorClass.QC,
 						data: stockQty.reduce<UU[]>((ret, e) => {
 							const val = e.toJSON() as unknown as UU;
-							const outBarang = this['LPB'].data.find(e => e.unit === val.unit);
+							const outBarang = this['Item Keluar'].data.find(
+								e => e.unit === val.unit,
+							);
 
 							const index = ret.findIndex(
 								e => e.harga1 == val.harga2 || e.harga2 == val.harga2,

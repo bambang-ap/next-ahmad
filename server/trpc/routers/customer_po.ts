@@ -14,6 +14,7 @@ import {
 import {defaultLimit, qtyList, Success} from '@constants';
 import {
 	getCurrentPOStatus,
+	getPoScore,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -94,8 +95,9 @@ const customer_poRouters = router({
 				const val = e.dataValues as PoGetV2;
 
 				const status = await getCurrentPOStatus(val.id);
+				const d = await getPoScore(val.id);
 
-				return {...val, status};
+				return {d, ...val, status};
 			});
 
 			return pagingResult(count, page, limit, await Promise.all(promisedRows));
