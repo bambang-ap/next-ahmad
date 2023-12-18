@@ -72,7 +72,7 @@ export function wherePagesV3<T extends {}>(
 		[Op[operator]]: Object.entries(searchKey)
 			.map(keys => {
 				const [key, value] = keys;
-				if (Array.isArray(value))
+				if (Array.isArray(value) && value[0] === true)
 					return !!value[1] ? {[key]: value[1]} : undefined;
 				return {[key]: value};
 			})
