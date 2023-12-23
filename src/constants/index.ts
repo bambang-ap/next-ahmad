@@ -203,6 +203,14 @@ export const nonRequiredRefetch: any = {
 
 export const through = {attributes: []};
 
+export const poScoreAlpha = {
+	A: 3,
+	B: 6,
+	C: 9,
+	D: 15,
+	E: Infinity,
+} as const;
+
 export function chartOpts(
 	categories: ApexXAxis['categories'],
 	opts?: {hideZero?: boolean; horizontal?: boolean},

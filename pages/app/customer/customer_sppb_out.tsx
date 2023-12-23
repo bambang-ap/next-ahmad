@@ -12,6 +12,7 @@ import {useTableFilterComponent} from '@hooks';
 import {SppbOutModalChild} from '@pageComponent/ModalChildSppbOut';
 import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
 import {
+	atLeastOneDefined,
 	modalTypeParser,
 	renderIndex,
 	renderItemAsIs,
@@ -123,7 +124,28 @@ export default function SPPBOUT() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, ...values}) => {
+		handleSubmit(({type, ...formValues}) => {
+			const values = {
+				...formValues,
+				po: formValues.po.map(e => {
+					return {
+						...e,
+						sppb_in: e.sppb_in.map(y => {
+							return {
+								...y,
+								items: entries(y.items).reduce<typeof y.items>(
+									(ret, [k, v]) => {
+										if (atLeastOneDefined(v)) ret[k] = v;
+										return ret;
+									},
+									{},
+								),
+							};
+						}),
+					};
+				}),
+			};
+
 			const callbackOpt: MutateOptions<any, any, any> = {
 				onSuccess() {
 					refetch();

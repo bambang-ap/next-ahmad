@@ -93,6 +93,7 @@ export function SppbOutModalChild({
 
 					{listPO?.map((po, i) => {
 						const poSelected = poData?.find(e => e.id === po.id_po);
+						const sppbInIds = po.sppb_in?.map(e => e.id_sppb_in);
 
 						const availablePo = poData?.filter(e => {
 							if (po.id_po === e.id) return true;
@@ -148,6 +149,7 @@ export function SppbOutModalChild({
 
 									const availableSppbIn = poSelected?.dSJIns?.filter(e => {
 										if (sppb.id_sppb_in === e.id) return true;
+										if (sppbInIds?.includes(e.id)) return false;
 										return !e?.isClosed;
 									});
 

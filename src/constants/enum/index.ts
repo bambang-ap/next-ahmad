@@ -122,6 +122,13 @@ export enum CRUD_ENABLED {
 	ITEM = 'master_item',
 }
 
+export enum PO_SCORE_STATUS {
+	UN_PROC = 'UnProcess',
+	IN = 'OnSJIn',
+	OUT = 'OnSJOut',
+	NONE = 'None',
+}
+
 export const MenuColorClass = {
 	PO: classNames('bg-emerald-500'),
 	SJIn: classNames('bg-amber-500'),

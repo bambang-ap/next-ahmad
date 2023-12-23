@@ -17,6 +17,7 @@ import {
 	TScan,
 	tScan,
 	tUser,
+	ZCreated,
 } from '@appTypes/app.zod';
 import {
 	attrParser,
@@ -512,12 +513,25 @@ export function sppbOutGetAttributes() {
 }
 
 export function getPOScoreAttributes() {
-	const po = attrParserV2(dPo, ['id']);
-	const poItem = attrParserV2(dPoItem, ['qty1', 'qty2', 'qty3', 'createdAt']);
-	const inItem = attrParserV2(dInItem, ['qty1', 'qty2', 'qty3', 'createdAt']);
-	const outItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3', 'createdAt']);
+	const attrWithQty: (keyof UnitQty | keyof ZCreated)[] = [
+		'qty1',
+		'qty2',
+		'qty3',
+		'createdAt',
+	];
 
-	return {po, poItem, inItem, outItem};
+	const po = attrParserV2(dPo, ['id']);
+	const poItem = attrParserV2(dPoItem, attrWithQty);
+	const inItem = attrParserV2(dInItem, attrWithQty);
+	const outItem = attrParserV2(dOutItem, attrWithQty);
+
+	type Ret = typeof po.obj & {
+		dPoItems: (typeof poItem.obj & {
+			dInItems: (typeof inItem.obj & {dOutItems: typeof outItem.obj[]})[];
+		})[];
+	};
+
+	return {po, poItem, inItem, outItem, Ret: {} as Ret};
 }
 
 export function getPOSppbOutAttributes() {

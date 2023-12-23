@@ -27,12 +27,13 @@ import {
 	formatFullView,
 	formatHour,
 	paperA4,
+	poScoreAlpha,
 	ppnMultiply,
 	qtyList,
 	regPrefix,
 } from '@constants';
-import {getPOSppbOutAttributes} from '@database';
-import {REJECT_REASON} from '@enum';
+import {getPoScore, getPOSppbOutAttributes} from '@database';
+import {PO_SCORE_STATUS, REJECT_REASON} from '@enum';
 import {Fields, useLoader} from '@hooks';
 import {
 	UseTRPCMutationOptions,
@@ -71,6 +72,29 @@ export {default as twColors} from 'tailwindcss/colors';
 
 export const moment = momentTz.default;
 export const classNames = classnames;
+
+export function calculatePOScore(
+	params: Awaited<ReturnType<typeof getPoScore>>,
+) {
+	const poItemsDays = params ?? [];
+	const days = poItemsDays.reduce<number[]>((ret, cur) => {
+		const {NONE, UN_PROC} = PO_SCORE_STATUS;
+		cur.forEach(item => {
+			if (![NONE, UN_PROC].includes(item.status)) ret.push(item.days!);
+		});
+		return ret;
+	}, []);
+
+	if (days.length > 0) {
+		const day = Math.max(...days);
+
+		for (const [key, value] of entries(poScoreAlpha)) {
+			if (day <= value) return key;
+		}
+	}
+
+	return 'N/A' as const;
+}
 
 export function typingCallback(callback: () => void, timeout = 500) {
 	clearTimeout(typingTimer);

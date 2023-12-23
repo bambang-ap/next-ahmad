@@ -15,6 +15,7 @@ import {defaultLimit, qtyList, Success} from '@constants';
 import {
 	getCurrentPOStatus,
 	getPoScore,
+	orderPages,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -27,6 +28,7 @@ import {
 import {PO_STATUS} from '@enum';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {calculatePOScore} from '@utils';
 
 import {appRouter} from '.';
 
@@ -76,6 +78,7 @@ const customer_poRouters = router({
 				limit,
 				attributes: A.keys,
 				offset: (page - 1) * limit,
+				order: orderPages<PoGetV2>({createdAt: false}),
 				where: wherePagesV2<PoGetV2>(
 					['nomor_po', '$OrmCustomer.name$'],
 					search,
@@ -95,9 +98,9 @@ const customer_poRouters = router({
 				const val = e.dataValues as PoGetV2;
 
 				const status = await getCurrentPOStatus(val.id);
-				const d = await getPoScore(val.id);
+				const poScore = await getPoScore(val.id);
 
-				return {d, ...val, status};
+				return {...val, status, poScore: calculatePOScore(poScore)};
 			});
 
 			return pagingResult(count, page, limit, await Promise.all(promisedRows));

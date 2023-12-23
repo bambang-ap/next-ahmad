@@ -179,6 +179,7 @@ export const tCustomerPO = zId.extend({
 	due_date: z.string().optional(),
 	id_customer: z.string(),
 	nomor_po: z.string(),
+	...zCreated.shape,
 });
 
 export type TCustomerPOExtended = z.infer<typeof tCustomerPOExtended>;
