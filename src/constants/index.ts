@@ -55,10 +55,6 @@ export const unitData: TItemUnit[] = [
 export const allowedUnit: TItemUnit[] = [
 	'pcs',
 	'kg',
-
-	/**
-	 * NOTE: Kemungkinan value dibawah di hidden
-	 */
 	'drum',
 	'box',
 	'set',
@@ -85,6 +81,12 @@ export const unitDataInternal: TItemUnitInternal[] = [
 	'lembar',
 	'liter',
 	'tabung',
+	'unit',
+	'pasang',
+	'meter',
+	'roll',
+	'batang',
+	'lusin',
 ];
 export const selectUnitDataInternal: SelectPropsData<TItemUnitInternal>[] =
 	unitDataInternal.map(value => ({value}));
