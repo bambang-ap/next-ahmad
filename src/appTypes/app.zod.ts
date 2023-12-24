@@ -58,10 +58,16 @@ export const tableFormValue = z.object({
 export type ZId = z.infer<typeof zId>;
 export const zId = z.object({id: z.string()});
 
+export type ZDate = z.infer<typeof zDate>;
+export const zDate = z.string().optional();
+
+export type ZDateR = z.infer<typeof zDateR>;
+export const zDateR = z.string();
+
 export type ZCreated = z.infer<typeof zCreated>;
-export const zCreated = z.object({createdAt: z.string().optional()});
+export const zCreated = z.object({createdAt: zDate});
 export type ZUpdated = z.infer<typeof zUpdated>;
-export const zUpdated = z.object({updatedAt: z.string().optional()});
+export const zUpdated = z.object({updatedAt: zDate});
 export type ZCreatedUpdated = z.infer<typeof zCreatedUpdated>;
 export const zCreatedUpdated = zCreated.extend(zUpdated.shape);
 
@@ -175,8 +181,8 @@ export const tPOItemSppbIn = zId.extend({
 
 export type TCustomerPO = z.infer<typeof tCustomerPO>;
 export const tCustomerPO = zId.extend({
-	tgl_po: z.string(),
-	due_date: z.string().optional(),
+	tgl_po: zDateR,
+	due_date: zDate,
 	id_customer: z.string(),
 	nomor_po: z.string(),
 	...zCreated.shape,
@@ -301,7 +307,7 @@ export type TCustomerSPPBIn = z.infer<typeof tCustomerSPPBIn>;
 export const tCustomerSPPBIn = zId.partial().extend({
 	nomor_surat: z.string(),
 	id_po: z.string(),
-	tgl: z.string(),
+	tgl: zDateR,
 	...zCreated.shape,
 });
 
@@ -366,7 +372,7 @@ export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	...zIndex.shape,
 	invoice_no: z.string().nullable(),
-	date: z.string(),
+	date: zDate,
 	id_kendaraan: z.string(),
 	id_customer: z.string(),
 	keterangan: z.string().nullish(),
@@ -420,7 +426,7 @@ export type TDocument = z.infer<typeof tDocument>;
 export const tDocument = zId.extend({
 	...zCreatedUpdated.shape,
 	doc_no: z.string(),
-	tgl_efektif: z.string(),
+	tgl_efektif: zDateR,
 	revisi: z.string().nullish(),
 	terbit: z.string().nullish(),
 	keterangan: z.string().optional(),
@@ -464,9 +470,9 @@ export const tScanItem = z.object({
 
 export type TScanDate = z.infer<typeof tScanDate>;
 export const tScanDate = z.object({
-	produksi_updatedAt: zUpdated.shape.updatedAt,
-	qc_updatedAt: zUpdated.shape.updatedAt,
-	finish_good_updatedAt: zUpdated.shape.updatedAt,
+	produksi_updatedAt: zDate,
+	qc_updatedAt: zDate,
+	finish_good_updatedAt: zDate,
 });
 
 export type TScan = z.infer<typeof tScan>;
@@ -595,8 +601,8 @@ export const tSupplierItemUpsert = z.object({
 export type TSupplierPO = z.infer<typeof tSupplierPO>;
 export const tSupplierPO = zId.extend({
 	ppn: z.boolean().optional(),
-	tgl_po: z.string(),
-	tgl_req_send: z.string(),
+	tgl_po: zDateR,
+	tgl_req_send: zDateR,
 	keterangan: z.string().nullish(),
 	ppn_percentage: z.number().min(0).max(100).optional(),
 });
@@ -674,8 +680,8 @@ const sItemReqForm = zId.extend({
 export type SReqForm = z.infer<typeof sReqForm>;
 export const sReqForm = zId.extend({
 	...zIndex.shape,
-	date: z.string(),
-	due_date: z.string(),
+	date: zDateR,
+	due_date: zDateR,
 	items: sItemReqForm.array().min(1),
 	status: z.nativeEnum(REQ_FORM_STATUS).default(REQ_FORM_STATUS.req),
 	keterangan: z.string().nullish(),
@@ -685,8 +691,8 @@ export type SPo = z.infer<typeof sPo>;
 export const sPo = zId.extend({
 	...zIndex.shape,
 	sup_id: z.string(),
-	date: z.string(),
-	due_date: z.string(),
+	date: zDateR,
+	due_date: zDateR,
 	keterangan: z.string().nullish(),
 });
 
@@ -705,7 +711,7 @@ export const sSjIn = zId.extend({
 	sup_id: z.string(),
 	id_po: z.string().nullish(),
 	no_sj: z.string(),
-	date: zDecimal,
+	date: zDate,
 	no_lpb: z.string().nullish(),
 });
 

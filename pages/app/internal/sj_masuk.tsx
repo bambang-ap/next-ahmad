@@ -72,6 +72,7 @@ export default function InternalSiIn() {
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		genPdfOptions: {
+			debug: true,
 			width: 965,
 			paperSize: paperLpb,
 			splitPagePer: 1,
@@ -260,6 +261,7 @@ function RenderModal({
 					const oItem = poItem?.oItem;
 					const isClosedParser = selectedPo?.oPoItems?.filter(e => {
 						if (item.id === e.id) return true;
+						if (isEdit && e.isClosed) return true;
 						return !e.isClosed;
 					});
 
