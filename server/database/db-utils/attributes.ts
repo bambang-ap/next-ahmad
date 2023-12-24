@@ -282,7 +282,7 @@ export function scanListAttributes() {
 		};
 	};
 
-	return {scan, kanban, sjIn, po, cust, num, Ret: {} as Ret};
+	return {scan, tIndex, kanban, sjIn, po, cust, num, Ret: {} as Ret};
 }
 
 export function printScanAttributes() {

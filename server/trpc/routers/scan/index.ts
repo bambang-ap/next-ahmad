@@ -78,7 +78,8 @@ const scanRouters = router({
 		.query(({ctx, input}) => {
 			const {limit, page, search, target} = input;
 
-			const {scan, kanban, sjIn, po, cust, num, Ret} = scanListAttributes();
+			const {scan, kanban, tIndex, sjIn, po, cust, num, Ret} =
+				scanListAttributes();
 
 			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
 				const {count, rows: data} = await scan.model.findAndCountAll({
@@ -99,7 +100,9 @@ const scanRouters = router({
 							search,
 						),
 					},
-					include: [{...kanban, include: [sjIn, {...po, include: [cust]}]}],
+					include: [
+						{...kanban, include: [tIndex, sjIn, {...po, include: [cust]}]},
+					],
 				});
 
 				const allDataScan = data.map(e => e.toJSON() as unknown as typeof Ret);
