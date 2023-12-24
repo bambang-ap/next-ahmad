@@ -12,10 +12,11 @@ import {
 	useTheme,
 } from '@mui/material';
 import {signOut} from 'next-auth/react';
+import {useRouter} from 'next/router';
 
 import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Icon, Text} from '@components';
-import {IMIConst, SidebarCollapseOn} from '@constants';
+import {IMIConst, isProd, SidebarCollapseOn} from '@constants';
 import {useSession} from '@hooks';
 import Scrollbar from '@prevComp/Scrollbar';
 
@@ -36,7 +37,7 @@ const SidebarWrapper = styled(Box)(
 function RenderSidebar() {
 	const theme = useTheme();
 	const {data} = useSession();
-	// const {replace} = useRouter();
+	const {push} = useRouter();
 
 	return (
 		<>
@@ -67,7 +68,7 @@ function RenderSidebar() {
 					background: theme.colors.alpha.trueWhite[10],
 				}}
 			/>
-			<Box p={2}>
+			<Box className="flex gap-2" p={2}>
 				<Button
 					onClick={() => signOut({redirect: false})}
 					variant="contained"
@@ -76,6 +77,16 @@ function RenderSidebar() {
 					fullWidth>
 					Sign Out
 				</Button>
+				{!isProd && (
+					<Button
+						onClick={() => push('/app/scanRemove')}
+						variant="contained"
+						color="primary"
+						size="small"
+						fullWidth>
+						Remove Scan
+					</Button>
+				)}
 			</Box>
 		</>
 	);
