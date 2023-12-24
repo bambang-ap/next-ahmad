@@ -19,11 +19,16 @@ export const useAuth = () => {
 	const index = allSub.findIndex(e => e.path === asPath);
 
 	useEffect(() => {
-		if (status === 'unauthenticated') replace('/auth/signin');
-		if (status === 'authenticated') {
-			if (!asPath.includes('/app')) replace('/app');
-			else if (index < 0) replace({pathname: firstPath});
+		function targeting() {
+			if (asPath.includes('scanRemove')) return;
+			if (status === 'unauthenticated') replace('/auth/signin');
+			if (status === 'authenticated') {
+				if (!asPath.includes('/app')) replace('/app');
+				else if (index < 0) replace({pathname: firstPath});
+			}
 		}
+
+		targeting();
 	}, [status, asPath, firstPath, index]);
 };
 

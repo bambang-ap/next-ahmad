@@ -11,8 +11,8 @@ import {
 } from 'react-hook-form';
 
 type DefaultProps = {
-	leftAcc?: JSX.Element;
-	rightAcc?: JSX.Element;
+	leftAcc?: JSX.Element | false;
+	rightAcc?: JSX.Element | false;
 	className?: string;
 };
 

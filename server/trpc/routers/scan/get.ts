@@ -8,8 +8,10 @@ import {TRPCError} from '@trpc/server';
 import {scanRouterParser} from '@utils';
 
 import type {ScanGetV2} from './';
+import scanDevOnly from './devOnly';
 
 export const getScan = {
+	devOnly: scanDevOnly(),
 	getV3: procedure.input(zId.extend(tRoute.shape)).query(({ctx, input}) => {
 		const {id, route} = input;
 
