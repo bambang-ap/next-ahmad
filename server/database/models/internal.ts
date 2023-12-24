@@ -87,6 +87,7 @@ export function initOPo(sequelize: Sequelize) {
 			sup_id: STRING,
 			index_id: STRING,
 			index_number: STRING,
+			keterangan: STRING,
 		},
 		{
 			...defaultScope(sequelize, false),

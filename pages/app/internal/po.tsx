@@ -92,12 +92,13 @@ export default function InternalPo() {
 			'Date',
 			'Due Date',
 			'Status',
+			'Keterangan',
 			'Action',
 		],
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		useQuery: form => trpc.internal.po.get.useQuery(form),
 		renderItem: ({Cell, CellSelect, item}, index) => {
-			const {oSup: dSSUp, date, due_date, status} = item;
+			const {oSup: dSSUp, date, due_date, keterangan, status} = item;
 
 			return (
 				<>
@@ -108,6 +109,7 @@ export default function InternalPo() {
 					<Cell>{date}</Cell>
 					<Cell>{due_date}</Cell>
 					<Cell>{status}</Cell>
+					<Cell>{keterangan}</Cell>
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
@@ -463,7 +465,7 @@ function RenderPdf(props: RetPoInternal) {
 				</TableBorder>
 			</div>
 
-			<Wrapper noColon noPadding title="Ket:">
+			<Wrapper sizes={['w-1/6']} noColon noPadding title="Ket:">
 				{keterangan!}
 			</Wrapper>
 
