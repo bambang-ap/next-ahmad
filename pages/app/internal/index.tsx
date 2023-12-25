@@ -5,6 +5,7 @@ import {TDashboardInternal} from '@appTypes/app.zod';
 import {ButtonGroup, SelectPropsData} from '@components';
 import {getLayout} from '@hoc';
 import {UseDateFilterProps, useFormFilter} from '@hooks';
+import InternalDashboardDTransaksi from '@pageComponent/internal-dashboard/DailyTransaksi';
 import InternalDashboardMTransaksi from '@pageComponent/internal-dashboard/MonthTransaksi';
 import {InternalDashboardQty} from '@pageComponent/internal-dashboard/Qty';
 import {InternalDashboardTransaksi} from '@pageComponent/internal-dashboard/Transaksi';
@@ -25,6 +26,7 @@ export default function Internal() {
 		monthYearComponent,
 		fromToComponent,
 		form: {control, watch},
+		days,
 	} = useFormFilter<UseDateFilterProps<FormType>>(true, {
 		defaultValues: {view: 'qty'},
 	});
@@ -43,12 +45,15 @@ export default function Internal() {
 					{isDaily && monthYearComponent}
 				</div>
 			</div>
-			<RenderInternalDashboard control={control} />
+			<RenderInternalDashboard days={days} control={control} />
 		</div>
 	);
 }
 
-function RenderInternalDashboard({control}: FormProps<FormType>) {
+function RenderInternalDashboard({
+	control,
+	days,
+}: FormProps<FormType> & {days: string[]}) {
 	const {view} = useWatch({control});
 
 	switch (view) {
@@ -59,7 +64,7 @@ function RenderInternalDashboard({control}: FormProps<FormType>) {
 		case 'm-transaksi':
 			return <InternalDashboardMTransaksi control={control} />;
 		case 'd-transaksi':
-			return <InternalDashboardTransaksi control={control} />;
+			return <InternalDashboardDTransaksi days={days} control={control} />;
 		default:
 			return <InternalDashboardQty control={control} />;
 	}
