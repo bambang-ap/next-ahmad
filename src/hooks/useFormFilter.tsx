@@ -8,7 +8,6 @@ import {
 
 import {TDateFilter} from '@appTypes/app.zod';
 import {Input, Select, SelectPropsData} from '@components';
-import {formatDate} from '@constants';
 import {dateUtils, moment} from '@utils';
 
 export type UseDateFilterProps<F extends FieldValues> = F & TDateFilter;
@@ -23,16 +22,14 @@ export function useFormFilter<T extends TDateFilter & {}>(
 
 	const {defaultValues, ...restOpts} = options ?? {};
 
-	const months: SelectPropsData<number>[] = Array.from({length: 12}).map(
-		(_, i) => {
-			const currentMonth = moment().startOf('year').add(i, 'month');
-
+	const months: SelectPropsData<number>[] = dateUtils
+		.getMonths(moment())
+		.map(({currentMonth}) => {
 			return {
 				label: currentMonth.format('MMMM'),
 				value: currentMonth.get('months'),
 			};
-		},
-	);
+		});
 
 	const years: SelectPropsData<number>[] = Array.from({length: 15}).map(
 		(_, i) => {
@@ -56,13 +53,7 @@ export function useFormFilter<T extends TDateFilter & {}>(
 	const {filterYear, filterMonth} = form.watch();
 
 	const daysSelectedDate = moment(`${filterYear}-${filterMonth + 1}-20`);
-	const days = Array.from({
-		length: daysSelectedDate.endOf('month').get('dates'),
-	}).map((_, i) => {
-		const currentMonth = daysSelectedDate.startOf('month').add(i, 'day');
-
-		return currentMonth.format(formatDate);
-	});
+	const days = dateUtils.getDays(daysSelectedDate);
 
 	const fromToComponent = (
 		<>

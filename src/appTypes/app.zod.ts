@@ -644,7 +644,11 @@ export const tDashboardView = z
 	.or(z.literal('machine_daily'));
 
 export type TDashboardInternal = z.infer<typeof tDashboardInternal>;
-export const tDashboardInternal = z.literal('transaksi').or(z.literal('qty'));
+export const tDashboardInternal = z
+	.literal('transaksi')
+	.or(z.literal('qty'))
+	.or(z.literal('m-transaksi'))
+	.or(z.literal('d-transaksi'));
 
 export type TSPPBRelation = z.infer<typeof tSPPBRelation>;
 export const tSPPBRelation = zId.extend({

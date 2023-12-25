@@ -66,6 +66,29 @@ export const dateUtils = {
 	full: (date?: LiteralUnion<'now'> | number) =>
 		convertDate(formatFullView, date),
 	all: (date?: LiteralUnion<'now'> | number) => convertDate(formatAll, date),
+
+	getMonths(selectedDate: string | momentTz.Moment) {
+		const months = Array.from({length: 12}).map((_, i) => {
+			const currentMonth = moment(selectedDate).startOf('year').add(i, 'month');
+
+			return {month: currentMonth.format('MMMM'), currentMonth};
+		});
+
+		return months;
+	},
+	getDays(selectedDate: string | momentTz.Moment) {
+		const daysSelectedDate = moment(selectedDate);
+
+		const days = Array.from({
+			length: daysSelectedDate.endOf('month').get('dates'),
+		}).map((_, i) => {
+			const currentMonth = daysSelectedDate.startOf('month').add(i, 'day');
+
+			return currentMonth.format(formatDate);
+		});
+
+		return days;
+	},
 };
 
 export {default as twColors} from 'tailwindcss/colors';

@@ -1,4 +1,5 @@
 export * from './useAuth';
+export * from './useDashboardTransaksi';
 export * from './useExport';
 export * from './useFormFilter';
 export * from './useKanban';
