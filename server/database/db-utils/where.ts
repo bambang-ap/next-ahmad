@@ -51,7 +51,7 @@ export function wherePages(
 }
 
 export function wherePagesV2<T extends {}>(
-	searchKey: L<T>[],
+	searchKey: (L<T> | false)[],
 	search?: string | WhereAttributeHashValue<any>,
 	like = true,
 ): any {
@@ -59,6 +59,7 @@ export function wherePagesV2<T extends {}>(
 
 	return {
 		[Op.or]: searchKey.map(key => {
+			if (!key) return {};
 			return {[key]: !like ? search : {[Op.iLike]: `%${search}%`}};
 		}),
 	};

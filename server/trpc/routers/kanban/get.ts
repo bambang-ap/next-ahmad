@@ -27,6 +27,7 @@ import {
 	tMasterItem,
 } from '@appTypes/app.zod';
 import {ItemDetail} from '@appTypes/props.type';
+import {isProd} from '@constants';
 import {
 	dIndex,
 	indexWhereAttributes,
@@ -160,6 +161,7 @@ export const kanbanGet = {
 					'$OrmCustomerPO.nomor_po$',
 					'$OrmCustomerSPPBIn.nomor_surat$',
 					'$OrmCustomerPO.OrmCustomer.name$',
+					!isProd && 'id',
 				],
 				search,
 			);

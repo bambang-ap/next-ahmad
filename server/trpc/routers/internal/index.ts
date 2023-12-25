@@ -17,7 +17,7 @@ const internalRouters = router({
 	request: requestRouters,
 	stock: stockRouters,
 	out: outBarangRouters,
-	dashboard: dashboardRouters,
+	dashboard: dashboardRouters(),
 });
 
 export default internalRouters;
