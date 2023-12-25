@@ -7,7 +7,6 @@ import {getLayout} from '@hoc';
 import {UseDateFilterProps, useFormFilter} from '@hooks';
 import InternalDashboardDTransaksi from '@pageComponent/internal-dashboard/DailyTransaksi';
 import InternalDashboardMTransaksi from '@pageComponent/internal-dashboard/MonthTransaksi';
-import {InternalDashboardQty} from '@pageComponent/internal-dashboard/Qty';
 import {InternalDashboardTransaksi} from '@pageComponent/internal-dashboard/Transaksi';
 
 Internal.getLayout = getLayout;
@@ -15,7 +14,7 @@ Internal.getLayout = getLayout;
 export type FormType = UseDateFilterProps<{view: TDashboardInternal}>;
 
 const data: SelectPropsData<TDashboardInternal>[] = [
-	{value: 'qty', label: 'Qty'},
+	// {value: 'qty', label: 'Qty'},
 	{value: 'transaksi', label: 'Nilai Transaksi'},
 	{value: 'm-transaksi', label: 'Monthly Transaksi'},
 	{value: 'd-transaksi', label: 'Daily Transaksi'},
@@ -57,8 +56,8 @@ function RenderInternalDashboard({
 	const {view} = useWatch({control});
 
 	switch (view) {
-		case 'qty':
-			return <InternalDashboardQty control={control} />;
+		// case 'qty':
+		// 	return <InternalDashboardQty control={control} />;
 		case 'transaksi':
 			return <InternalDashboardTransaksi control={control} />;
 		case 'm-transaksi':
@@ -66,6 +65,7 @@ function RenderInternalDashboard({
 		case 'd-transaksi':
 			return <InternalDashboardDTransaksi days={days} control={control} />;
 		default:
-			return <InternalDashboardQty control={control} />;
+			return <InternalDashboardTransaksi control={control} />;
+		// return <InternalDashboardQty control={control} />;
 	}
 }

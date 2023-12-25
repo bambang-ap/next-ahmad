@@ -30,10 +30,6 @@ export default function InternalDashboardMTransaksi({}: FormProps<FormType>) {
 	});
 
 	const series = useDashboardTransaksi(queries);
-	const {opt: options} = chartOpts(
-		months.map(e => e.month),
-		{hideZero: true, horizontal},
-	);
 
 	return (
 		<>
@@ -45,7 +41,17 @@ export default function InternalDashboardMTransaksi({}: FormProps<FormType>) {
 				type="bar"
 				height={500}
 				series={series}
-				options={{...options, chart: {...options.chart, stacked: true}}}
+				options={
+					chartOpts(
+						months.map(e => e.month),
+						{
+							hideZero: true,
+							horizontal,
+							dataLabel: false,
+							currency: true,
+						},
+					).opt
+				}
 			/>
 		</>
 	);

@@ -32,10 +32,6 @@ export default function InternalDashboardDTransaksi({
 	});
 
 	const series = useDashboardTransaksi(queries);
-	const {opt: options} = chartOpts(
-		days.map((_, i) => i + 1),
-		{hideZero: true, horizontal},
-	);
 
 	return (
 		<>
@@ -44,10 +40,15 @@ export default function InternalDashboardDTransaksi({
 			</div>
 
 			<Chart
-				type="bar"
+				type="line"
 				height={500}
 				series={series}
-				options={{...options, chart: {...options.chart, stacked: true}}}
+				options={
+					chartOpts(
+						days.map((_, i) => i + 1),
+						{hideZero: true, horizontal, dataLabel: false, currency: true},
+					).opt
+				}
 			/>
 		</>
 	);

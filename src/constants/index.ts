@@ -215,9 +215,11 @@ export const poScoreAlpha = {
 
 export function chartOpts(
 	categories: ApexXAxis['categories'],
-	opts?: {hideZero?: boolean; horizontal?: boolean},
+	opts?: Partial<
+		Record<'hideZero' | 'horizontal' | 'dataLabel' | 'currency', boolean>
+	>,
 ) {
-	const {hideZero, horizontal} = opts ?? {};
+	const {hideZero, horizontal, dataLabel = true, currency = false} = opts ?? {};
 	const fontFamily = 'Bahnschrift';
 	const fontSize = '16px';
 	const colors = ['black'];
@@ -261,10 +263,29 @@ export function chartOpts(
 				},
 			},
 			legend: {fontFamily, fontSize},
-			yaxis: {labels: {style: {fontFamily, fontSize}}},
-			xaxis: {categories, labels: {style: {colors, fontFamily, fontSize}}},
+			yaxis: {
+				labels: {
+					style: {fontFamily, fontSize},
+					formatter(val) {
+						const value = numberFormatIsRound(val, currency);
+						if (horizontal) return val;
+						return value;
+					},
+				},
+			},
+			xaxis: {
+				categories,
+				labels: {
+					style: {colors, fontFamily, fontSize},
+					formatter(val) {
+						const value = numberFormatIsRound(parseFloat(val), currency);
+						if (!horizontal) return val;
+						return value;
+					},
+				},
+			},
 			dataLabels: {
-				enabled: true,
+				enabled: dataLabel,
 				style: {colors, fontFamily, fontSize},
 				background: {enabled: false},
 				dropShadow: {
@@ -276,7 +297,7 @@ export function chartOpts(
 					opacity: 1,
 				},
 				formatter(val) {
-					const value = numberFormatIsRound(val as number, false);
+					const value = numberFormatIsRound(val as number, currency);
 					if (hideZero && val == 0) return '';
 					return value;
 				},
