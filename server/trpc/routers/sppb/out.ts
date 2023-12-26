@@ -292,11 +292,19 @@ const sppbOutRouters = router({
 		}),
 	delete: procedure.input(zId).mutation(({ctx: {req, res}, input}) => {
 		return checkCredentialV2({req, res}, async () => {
-			await dSppbBridge.destroy({where: {out_id: input.id}});
-			await dSjOut.destroy({where: input});
-			await dOutItem.destroy({where: {id_sppb_out: input.id}});
+			const transaction = await ORM.transaction();
 
-			return Success;
+			try {
+				await dSppbBridge.destroy({transaction, where: {out_id: input.id}});
+				await dSjOut.destroy({transaction, where: input});
+				await dOutItem.destroy({transaction, where: {id_sppb_out: input.id}});
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				throw new TRPCError({code: 'BAD_REQUEST'});
+			}
 		});
 	}),
 });

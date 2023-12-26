@@ -124,28 +124,7 @@ export default function SPPBOUT() {
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
 		clearErrors();
-		handleSubmit(({type, ...formValues}) => {
-			const values = {
-				...formValues,
-				po: formValues.po.map(e => {
-					return {
-						...e,
-						sppb_in: e.sppb_in.map(y => {
-							return {
-								...y,
-								items: entries(y.items).reduce<typeof y.items>(
-									(ret, [k, v]) => {
-										if (atLeastOneDefined(v)) ret[k] = v;
-										return ret;
-									},
-									{},
-								),
-							};
-						}),
-					};
-				}),
-			};
-
+		handleSubmit(({type, id, ...formValues}) => {
 			const callbackOpt: MutateOptions<any, any, any> = {
 				onSuccess() {
 					refetch();
@@ -153,8 +132,32 @@ export default function SPPBOUT() {
 				},
 			};
 
-			if (type === 'delete') mutateDelete({id: values.id}, callbackOpt);
-			else mutateUpsert(values, callbackOpt);
+			if (type === 'delete') mutateDelete({id}, callbackOpt);
+			else {
+				const values = {
+					...formValues,
+					id,
+					po: formValues.po?.map(e => {
+						return {
+							...e,
+							sppb_in: e.sppb_in.map(y => {
+								return {
+									...y,
+									items: entries(y.items).reduce<typeof y.items>(
+										(ret, [k, v]) => {
+											if (atLeastOneDefined(v)) ret[k] = v;
+											return ret;
+										},
+										{},
+									),
+								};
+							}),
+						};
+					}),
+				};
+
+				mutateUpsert(values, callbackOpt);
+			}
 		})();
 	};
 
