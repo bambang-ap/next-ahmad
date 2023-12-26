@@ -601,7 +601,8 @@ CREATE TABLE public.mesin_kategori (
     id character varying(47) NOT NULL,
     name character varying(100) NOT NULL,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    color character varying(20)
 );
 
 

@@ -21,6 +21,7 @@ import {
 import {defaultLimit, Success} from '@constants';
 import {
 	attrParser,
+	orderPages,
 	ORM,
 	OrmCustomer,
 	OrmCustomerPO,
@@ -51,6 +52,7 @@ const sppbInRouters = router({
 			.query(({ctx, input}) => {
 				const A = attrParser(tCustomerPO, ['id', 'nomor_po']);
 				const B = attrParser(tPOItem, [
+					'createdAt',
 					'id',
 					'master_item_id',
 					'qty1',
@@ -77,6 +79,7 @@ const sppbInRouters = router({
 					const dataPO = await OrmCustomerPO.findAll({
 						attributes: A.keys,
 						where: input,
+						order: orderPages<Ret>({'OrmCustomerPOItems.createdAt': true}),
 						include: [
 							{
 								attributes: B.keys,

@@ -1,1 +1,18 @@
-{}
+{
+	"Create Sequelize Transaction": {
+		"prefix": "trx",
+		"body": [
+			"const transaction = await ORM$2.transaction();",
+			"\n",
+			"try {",
+			"  $1",
+			"  await transaction.commit();",
+			"  return Success;",
+			"} catch (err) {",
+			"  await transaction.rollback();",
+			"  throw new TRPCError$3({code: 'BAD_REQUEST'});",
+			"}"
+		],
+		"description": "Create Sequelize Transaction"
+	}
+}

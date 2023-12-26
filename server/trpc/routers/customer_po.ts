@@ -15,6 +15,7 @@ import {defaultLimit, qtyList, Success} from '@constants';
 import {
 	getCurrentPOStatus,
 	orderPages,
+	ORM,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -27,6 +28,7 @@ import {
 import {PO_STATUS} from '@enum';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
 
 import {appRouter} from '.';
 
@@ -199,27 +201,28 @@ const customer_poRouters = router({
 		)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
-				const {po_item, ...body} = input;
-				const {dataValues: createdPo} = await OrmCustomerPO.create({
-					...body,
-					id: generateId('PO_'),
-				});
-				po_item.forEach(async item => {
-					await OrmCustomerPOItem.create({
-						...item,
-						id: generateId('POI_'),
-						id_po: createdPo.id,
-					});
-				});
-				// const poItemPromises = po_item?.map(item =>
-				// 	OrmCustomerPOItem.create({
-				// 		...item,
-				// 		id: generateId("POI_"),
-				// 		id_po: createdPo.id,
-				// 	}),
-				// );
-				// await Promise.all(poItemPromises ?? []);
-				return Success;
+				const transaction = await ORM.transaction();
+
+				try {
+					const {po_item, ...body} = input;
+					const {dataValues: createdPo} = await OrmCustomerPO.create(
+						{...body, id: generateId('PO_')},
+						{transaction},
+					);
+
+					for (const item of po_item) {
+						await OrmCustomerPOItem.create(
+							{...item, id: generateId('POI_'), id_po: createdPo.id},
+							{transaction},
+						);
+					}
+
+					await transaction.commit();
+					return Success;
+				} catch (err) {
+					await transaction.rollback();
+					throw new TRPCError({code: 'BAD_REQUEST'});
+				}
 			});
 		}),
 
