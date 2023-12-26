@@ -17,6 +17,10 @@ export function groupPages<T extends {}>(searchKey: L1<T>): any {
 	return searchKey;
 }
 
+/**
+ * @param True ASCENDING
+ * @param False DESCENDING
+ */
 export function orderPages<T extends {}>(
 	searchKey: Partial<Record<L1<T>, boolean>>,
 ): any {

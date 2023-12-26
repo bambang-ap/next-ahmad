@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
-import {Model, ModelStatic, WhereOptions} from 'sequelize';
+import {Model, ModelStatic, Op, WhereOptions} from 'sequelize';
 
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {TIndex, ZIndex} from '@appTypes/app.zod';
@@ -108,8 +108,9 @@ export async function genNumberIndex<T extends ZIndex & {}>(
 	const index_id = indexNumber.toJSON().id;
 
 	const count = await orm.findOne({
-		where: {index_id} as WhereOptions<T>,
-		order: [['createdAt', 'desc']],
+		order: orderPages<ZIndex>({index_number: false}),
+		attributes: ['index_number'] as (keyof ZIndex)[],
+		where: {index_id, index_number: {[Op.not]: null}} as WhereOptions<T>,
 	});
 
 	return {

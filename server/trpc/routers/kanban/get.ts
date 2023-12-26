@@ -31,6 +31,7 @@ import {isProd} from '@constants';
 import {
 	dIndex,
 	indexWhereAttributes,
+	orderPages,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerSPPBIn,
@@ -174,7 +175,7 @@ export const kanbanGet = {
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
 				limit,
-				order: [['nomor_kanban', 'desc']],
+				order: orderPages<UUU>({createdAt: false, index_number: false}),
 				offset: (page - 1) * limit,
 				where: search ? {[Op.or]: [where1, indexAttr?.where]} : {},
 				attributes: {include: [indexAttr.attributes]},

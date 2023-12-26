@@ -6,20 +6,15 @@ import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
 export default function scanDevOnly() {
-	type Ret1 = typeof knb.obj & {dScans: typeof scnId.obj[]};
-	type Ret2 = typeof knb.obj & {
-		dScans: (typeof scnId.obj & {
-			dScanItems: (typeof scItemId.obj & {dRejItems: typeof sciReject.obj[]})[];
-		})[];
-	};
-
-	const {knb, scItemId, sciReject, scnId} = getScanAttributesV2();
-
 	const aa = procedure.input(zId);
 
 	return router({
 		get: aa.query(({ctx, input}) => {
 			if (isProd) throw new TRPCError({code: 'NOT_FOUND'});
+
+			type Ret1 = typeof knb.obj & {dScans: typeof scnId.obj[]};
+
+			const {knb, scnId} = getScanAttributesV2();
 
 			return checkCredentialV2(ctx, async () => {
 				const data = await knb.model.findOne({
@@ -34,6 +29,16 @@ export default function scanDevOnly() {
 
 		remove: aa.mutation(({ctx, input}) => {
 			if (isProd) throw new TRPCError({code: 'NOT_FOUND'});
+
+			type Ret2 = typeof knb.obj & {
+				dScans: (typeof scnId.obj & {
+					dScanItems: (typeof scItemId.obj & {
+						dRejItems: typeof sciReject.obj[];
+					})[];
+				})[];
+			};
+
+			const {knb, scItemId, sciReject, scnId} = getScanAttributesV2();
 
 			return checkCredentialV2(ctx, async () => {
 				const transaction = await ORM.transaction();
