@@ -92,7 +92,7 @@ export function getPrintPoAttributes() {
 						OutItem,
 						{
 							...KnbItem,
-							include: [Kanban],
+							include: [{...Kanban, include: [tIndex]}],
 						},
 					],
 				},
