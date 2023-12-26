@@ -21,6 +21,7 @@ import {
 import {defaultLimit, Success} from '@constants';
 import {
 	attrParser,
+	ORM,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -35,6 +36,7 @@ import {procedure, router} from '@trpc';
 
 import {appRouter} from '..';
 
+import {TRPCError} from '@trpc/server';
 import {qtyMap, qtyReduce} from '@utils';
 
 import {GetPageRows} from '../customer_po';
@@ -224,39 +226,53 @@ const sppbInRouters = router({
 		.input(tUpsertSppbIn)
 		.mutation(({ctx: {req, res}, input}) => {
 			return checkCredentialV2({req, res}, async () => {
-				const {id, po_item, ...rest} = input;
+				const transaction = await ORM.transaction();
 
-				const [{dataValues: createdSppb}] = await OrmCustomerSPPBIn.upsert({
-					...rest,
-					id: id || generateId('SPPBIN_'),
-				});
+				try {
+					const {id, po_item, ...rest} = input;
 
-				const existingPoItemPromises = (
-					await OrmPOItemSppbIn.findAll({
-						where: {id_sppb_in: createdSppb.id},
-					})
-				).map(({dataValues}) => {
-					const itemFounded = po_item.find(item => item.id === dataValues.id);
-					if (!itemFounded) {
-						return OrmPOItemSppbIn.destroy({where: {id: dataValues.id}});
-					}
-					return null;
-				});
+					const [{dataValues: createdSppb}] = await OrmCustomerSPPBIn.upsert(
+						{...rest, id: id || generateId('SPPBIN_')},
+						{transaction},
+					);
 
-				await Promise.all(existingPoItemPromises);
-
-				po_item.forEach(item => {
-					const {id: idItem, id_item, id_sppb_in} = item;
-
-					OrmPOItemSppbIn.upsert({
-						...item,
-						id_item,
-						id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
-						id: idItem || generateId('SPPBINITM_'),
+					const existingPoItemPromises = (
+						await OrmPOItemSppbIn.findAll({
+							where: {id_sppb_in: createdSppb.id},
+						})
+					).map(({dataValues}) => {
+						const itemFounded = po_item.find(item => item.id === dataValues.id);
+						if (!itemFounded) {
+							return OrmPOItemSppbIn.destroy({
+								transaction,
+								where: {id: dataValues.id},
+							});
+						}
+						return null;
 					});
-				});
 
-				return Success;
+					await Promise.all(existingPoItemPromises);
+
+					for (const item of po_item) {
+						const {id: idItem, id_item, id_sppb_in} = item;
+
+						await OrmPOItemSppbIn.upsert(
+							{
+								...item,
+								id_item,
+								id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
+								id: idItem || generateId('SPPBINITM_'),
+							},
+							{transaction},
+						);
+					}
+
+					await transaction.commit();
+					return Success;
+				} catch (err) {
+					await transaction.rollback();
+					throw new TRPCError({code: 'BAD_REQUEST'});
+				}
 			});
 		}),
 	delete: procedure
