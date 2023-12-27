@@ -219,7 +219,12 @@ export function chartOpts(
 		Record<'hideZero' | 'horizontal' | 'dataLabel' | 'currency', boolean>
 	>,
 ) {
-	const {hideZero, horizontal, dataLabel = true, currency = false} = opts ?? {};
+	const {
+		hideZero,
+		horizontal,
+		dataLabel = false,
+		currency = false,
+	} = opts ?? {};
 	const fontFamily = 'Bahnschrift';
 	const fontSize = '16px';
 	const colors = ['black'];

@@ -46,7 +46,7 @@ export default function InternalDashboardDTransaksi({
 				options={
 					chartOpts(
 						days.map((_, i) => i + 1),
-						{hideZero: true, horizontal, dataLabel: false, currency: true},
+						{hideZero: true, horizontal, currency: true},
 					).opt
 				}
 			/>

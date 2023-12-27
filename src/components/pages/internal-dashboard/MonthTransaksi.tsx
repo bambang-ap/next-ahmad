@@ -45,9 +45,8 @@ export default function InternalDashboardMTransaksi({}: FormProps<FormType>) {
 					chartOpts(
 						months.map(e => e.month),
 						{
-							hideZero: true,
 							horizontal,
-							dataLabel: false,
+							hideZero: true,
 							currency: true,
 						},
 					).opt

@@ -24,7 +24,7 @@ export default function BarChart({type = 'bar'}: {type?: 'bar' | 'line'}) {
 			key={type}
 			height={500}
 			type={type}
-			options={chartOpts(categories, {horizontal, dataLabel: false}).opt}
+			options={chartOpts(categories, {horizontal}).opt}
 			series={[{name: 'series-1', data: dataChart}]}
 		/>
 	);
