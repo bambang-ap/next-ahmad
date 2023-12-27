@@ -1,7 +1,7 @@
 import {z, ZodError} from 'zod';
 
 import {SelectPropsData} from '@components';
-import {defaultLimit, regIndexPrefix} from '@constants';
+import {defaultLimit, regIndexPrefix, regMd5} from '@constants';
 import {
 	CATEGORY_REJECT_DB,
 	IndexNumber,
@@ -27,6 +27,8 @@ export const zDecimal = z
 // 		return parseFloat(val.toFixed(decimalValue));
 // 	}),
 // );
+
+export const zMd5 = z.string().regex(regMd5);
 
 export type ModalType = z.infer<typeof uModalType>;
 export const uModalType = z.union([
@@ -97,6 +99,7 @@ export const tUser = zId.extend({
 	name: z.string(),
 	role: z.string(),
 	password: z.string().optional(),
+	password2: z.string().optional(),
 });
 
 export type TUserSignIn = z.infer<typeof tUserSignIn>;

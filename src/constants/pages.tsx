@@ -566,7 +566,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 						dataMapping: (item: TRole[]) =>
 							item?.map(({id, name}) => ({value: id, label: name})),
 					},
-					{col: 'password', label: 'Password'},
+					{col: 'password', label: 'Password', type: 'password'},
 				];
 			},
 			get edit(): FieldForm<TUser>[] {

@@ -1,10 +1,11 @@
 import bufferToDataUrl from 'buffer-to-data-url';
+import md5 from 'md5';
 import qr, {image_type} from 'qr-image';
 import {z} from 'zod';
 
-import {tCustomer} from '@appTypes/app.zod';
-import {isProd} from '@constants';
-import {ORM} from '@database';
+import {tCustomer, TUser, zMd5} from '@appTypes/app.zod';
+import {isProd, Success} from '@constants';
+import {dUser, ORM} from '@database';
 import {generateId, getNow} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
@@ -12,6 +13,35 @@ import {TRPCError} from '@trpc/server';
 const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
+	changeToMd5: procedure.query(async () => {
+		if (isProd) throw new TRPCError({code: 'BAD_REQUEST'});
+
+		const transaction = await ORM.transaction();
+
+		try {
+			const userData = await dUser.findAll({
+				attributes: {include: ['password'] as (keyof TUser)[]},
+			});
+
+			const promisedUserData = userData.map(e => {
+				const val = e.toJSON();
+
+				if (zMd5.safeParse(val.password!).success) return;
+				return dUser.update(
+					{...val, password: md5(val.password!)},
+					{transaction, where: {id: val.id}},
+				);
+			});
+
+			await Promise.all(promisedUserData);
+
+			await transaction.commit();
+			return Success;
+		} catch (err) {
+			await transaction.rollback();
+			throw new TRPCError({code: 'PARSE_ERROR'});
+		}
+	}),
 	statsActivity: procedure.query(async () => {
 		if (isProd) throw new TRPCError({code: 'NOT_FOUND'});
 		const [queries] = await ORM.query(
@@ -33,10 +63,9 @@ const miscRouter = {
 		if (isProd) throw new TRPCError({code: 'NOT_FOUND'});
 		const [queries] = await ORM.query(
 			`select 
-			schemaname, indexname, 			tablename, 			format('drop index %I.%I;',
-			schemaname, indexname) as drop_statement
-from pg_indexes
-where schemaname not in ('pg_catalog', 'pg_toast')`,
+				schemaname, indexname, tablename, format('drop index %I.%I;', schemaname, indexname) as drop_statement
+			from pg_indexes
+			where schemaname not in ('pg_catalog', 'pg_toast')`,
 		);
 
 		// @ts-ignore

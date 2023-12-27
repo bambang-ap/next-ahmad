@@ -7,9 +7,19 @@ import {
 	FormProps,
 	PagingResult,
 	TableFormValue,
-	TKategoriMesin,
+	TRole,
+	TUser,
 } from '@appTypes/app.type';
-import {Button, Form, FormContext, Input, Modal, ModalRef} from '@components';
+import {
+	Button,
+	Form,
+	FormContext,
+	Input,
+	Modal,
+	ModalRef,
+	Select,
+	selectMapper,
+} from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {
 	ControlledComponentProps,
@@ -22,13 +32,15 @@ import {trpc} from '@utils/trpc';
 
 MesinKategori.getLayout = getLayout;
 
-type FormType = Fields<TKategoriMesin>;
+type FormType = Fields<TUser>;
 
-const target = CRUD_ENABLED.MESIN_KATEGORI;
+const target = CRUD_ENABLED.USER;
 
 export default function MesinKategori() {
 	const modalRef = useRef<ModalRef>(null);
-
+	const {data: roles} = trpc.basic.get.useQuery<any, TRole[]>({
+		target: CRUD_ENABLED.ROLE,
+	});
 	const {control, reset, watch, clearErrors, handleSubmit} =
 		useForm<FormType>();
 
@@ -39,18 +51,18 @@ export default function MesinKategori() {
 		exportUseQuery: nullUseQuery,
 		useQuery,
 		topComponent: <Button onClick={() => showModal()}>Add</Button>,
-		header: ['Nama', 'Warna', 'Action'],
+		header: ['Nama', 'Email', 'Role', 'Action'],
 		renderItem({Cell, item}) {
-			const {id, color} = item;
+			const {id, email, name, role: roleId} = item;
+
+			const role = roles?.find(e => e.id === roleId);
+
 			return (
 				<>
-					<Cell>{item.name}</Cell>
-					<Cell className="justify-center">
-						<div
-							className="p-4 rounded-full"
-							style={{backgroundColor: color}}
-						/>
-					</Cell>
+					<Cell>{name}</Cell>
+					<Cell>{email}</Cell>
+					<Cell>{role?.name}</Cell>
+
 					<Cell className="gap-2">
 						<Button
 							icon="faMagnifyingGlass"
@@ -103,7 +115,7 @@ export default function MesinKategori() {
 		})();
 	};
 
-	function showModal(initValue?: Partial<FormType>) {
+	function showModal(initValue?: FormType) {
 		reset({...initValue});
 		modalRef.current?.show();
 	}
@@ -124,6 +136,9 @@ export default function MesinKategori() {
 }
 
 function ModalChild({control}: FormProps<FormType>) {
+	const {data: roles = []} = trpc.basic.get.useQuery<any, TRole[]>({
+		target: CRUD_ENABLED.ROLE,
+	});
 	const {type} = useWatch({control});
 	const {isDelete} = modalTypeParser(type);
 
@@ -132,9 +147,20 @@ function ModalChild({control}: FormProps<FormType>) {
 	return (
 		<>
 			<Input control={control} fieldName="name" />
-			<div className="flex w-1/4 self-center justify-center">
-				<ColorPicker control={control} fieldName="color" />
-			</div>
+			<Input control={control} fieldName="email" />
+			<Select
+				data={selectMapper(roles, 'id', 'name')}
+				control={control}
+				fieldName="role"
+			/>
+			<Input control={control} fieldName="password" type="password" />
+			<Input
+				control={control}
+				label="Konfirmasi Password"
+				type="password"
+				fieldName="password2"
+			/>
+
 			<Button type="submit">Submit</Button>
 		</>
 	);
@@ -173,7 +199,7 @@ function CColorPicker<F extends FieldValues>({
 const ColorPicker = withReactFormController(CColorPicker);
 
 function useQuery(form: TableFormValue) {
-	return trpc.basic.getPage.useQuery<any, PagingResult<TKategoriMesin>>({
+	return trpc.basic.getPage.useQuery<any, PagingResult<TUser>>({
 		...form,
 		target,
 	});

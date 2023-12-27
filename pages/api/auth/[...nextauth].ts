@@ -1,3 +1,4 @@
+import md5 from 'md5';
 import NextAuth, {NextAuthOptions} from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 import {Op} from 'sequelize';
@@ -37,7 +38,9 @@ export const authOptions: NextAuthOptions = {
 				findUser: {
 					if (token) break findUser;
 
-					userData = await OrmUser.findOne({where: {password, email}});
+					userData = await OrmUser.findOne({
+						where: {password: md5(password!), email},
+					});
 				}
 
 				tokenChecker: {
@@ -63,7 +66,11 @@ export const authOptions: NextAuthOptions = {
 				}
 
 				if (!userData!)
-					throw new TRPCError({code: 'NOT_FOUND', message: 'User not found'});
+					throw new TRPCError({
+						code: 'NOT_FOUND',
+						message:
+							'User tidak ditemukan, silahkan cek email atau password anda.',
+					});
 
 				return userData.dataValues;
 			},

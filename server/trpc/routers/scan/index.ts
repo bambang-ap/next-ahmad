@@ -63,7 +63,7 @@ function enabled(target: TScanTarget, dataScan?: TScan) {
 
 const scanRouters = router({
 	...updateScan,
-	...getScan,
+	...getScan(),
 	editNotes: procedure
 		.input(tScanNew.pick({id: true, status: true, notes: true}).partial())
 		.mutation(({ctx, input: {id, notes, status}}) => {
