@@ -16,6 +16,7 @@ import rejectRouters from './reject';
 import scanRouters from './scan';
 import sppbRouters from './sppb';
 import supplierRouters from './supplier';
+import userRouters from './user';
 import user_loginRouters from './user_login';
 
 export const appRouter = router({
@@ -35,6 +36,7 @@ export const appRouter = router({
 	reject: rejectRouters,
 	internal: internalRouters,
 	index: indexRouters,
+	user: userRouters(),
 });
 
 export type AppRouter = typeof appRouter;

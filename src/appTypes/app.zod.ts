@@ -99,8 +99,16 @@ export const tUser = zId.extend({
 	name: z.string(),
 	role: z.string(),
 	password: z.string().optional(),
-	password2: z.string().optional(),
 });
+
+export type TUserUpsert = z.infer<typeof tUserUpsert>;
+export const tUserUpsert = tUser
+	.partial({id: true})
+	.extend({confirmPassword: z.string().optional()})
+	.refine(data => data.password === data.confirmPassword, {
+		message: 'Password tidak sama',
+		path: ['confirmPassword'],
+	});
 
 export type TUserSignIn = z.infer<typeof tUserSignIn>;
 export const tUserSignIn = tUser

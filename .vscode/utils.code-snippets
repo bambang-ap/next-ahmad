@@ -1,18 +1,62 @@
 {
 	"Create Sequelize Transaction": {
-		"prefix": "trx",
+		"prefix": "transaction",
+		"description": "Create Sequelize Transaction",
 		"body": [
-			"const transaction = await ORM$2.transaction();",
+			"const transaction = await ORM$1.transaction();",
 			"\n",
 			"try {",
-			"  $1",
+			"  $2",
 			"  await transaction.commit();",
 			"  return Success;",
 			"} catch (err) {",
 			"  await transaction.rollback();",
-			"  throw new TRPCError$3({code: 'BAD_REQUEST'});",
+			"  throw new TRPCError({code: 'BAD_REQUEST'});",
 			"}"
-		],
-		"description": "Create Sequelize Transaction"
+		]
+	},
+	"Create Table Filter Procedure": {
+		"prefix": "procedureFilter",
+		"description": "Create procedure for TableFilter API",
+		"body": [
+			"procedure$2.input(tableFormValue).query(({ctx, input}) => {",
+			"const {limit, page, search} = input;",
+			"return checkCredentialV2(ctx, async () => {",
+			"const {count, rows} = await ${1:dUser}.findAndCountAll({",
+			"limit,",
+			"offset: (page - 1) * limit,",
+			"where: wherePagesV2([], search),",
+			"});",
+			"\n",
+			"const dataRows = rows.map(e => {",
+			"const val = e.toJSON(); // as unknown as Ret",
+			"\n",
+			"return val;",
+			"});",
+			"\n",
+			"return pagingResult(count, page, limit, dataRows);",
+			"});",
+			"})"
+		]
+	},
+	"Create Mutation Procedure": {
+		"prefix": "procedureMutate",
+		"description": "Create procedure for Mutation API",
+		"body": [
+			"procedure.input(${2:zodInput}).mutation(({ctx, input}) => {",
+			"return checkCredentialV2(ctx, async () => {",
+			"const transaction = await ORM$1.transaction();",
+			"\n",
+			"try {",
+			"  $3",
+			"  await transaction.commit();",
+			"  return Success;",
+			"} catch (err) {",
+			"  await transaction.rollback();",
+			"  throw new TRPCError({code: 'BAD_REQUEST'});",
+			"}"
+			"});",
+			"})"
+		]
 	}
 }
