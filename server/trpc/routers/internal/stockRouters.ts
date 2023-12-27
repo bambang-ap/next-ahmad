@@ -39,7 +39,10 @@ export const stockRouters = router({
 			const {count, rows} = await stock.model.findAndCountAll({
 				include: [out, sup, item],
 				where: ids ? {id: ids} : !sup_id ? where : {sup_id},
-				order: orderPages<RetStock>({'oOuts.createdAt': false}),
+				order: orderPages<RetStock>({
+					updatedAt: false,
+					'oOuts.createdAt': false,
+				}),
 			});
 
 			const data = rows.map(e => {

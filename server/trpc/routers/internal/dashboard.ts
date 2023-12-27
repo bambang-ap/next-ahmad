@@ -113,41 +113,45 @@ export function dashboardRouters() {
 			},
 			'Item Keluar': {
 				className: MenuColorClass.SJOut,
-				data: outQty.reduce<UU[]>((ret, e) => {
-					const val = e.toJSON() as unknown as UU;
+				data: outQty.map(e => e.toJSON() as unknown as UU),
+				// data: outQty.reduce<UU[]>((ret, e) => {
+				// const val = e.toJSON() as unknown as UU;
 
-					const index = ret.findIndex(
-						e => e.harga1 == val.harga2 || e.harga2 == val.harga2,
-					);
+				// const index = ret.findIndex(
+				// 	e => e.harga1 == val.harga2 || e.harga2 == val.harga2,
+				// );
 
-					if (index >= 0) {
-						const jj = ret?.[index] as UU;
-						return ret.replace(index, {...jj, qty: jj?.qty + val.qty});
-					} else ret.push(val);
+				// if (index >= 0) {
+				// 	const jj = ret?.[index] as UU;
+				// 	return ret.replace(index, {...jj, qty: jj?.qty + val.qty});
+				// } else ret.push(val);
 
-					return ret;
-				}, []),
+				// return ret;
+				// }, []),
 			},
 			get Stock() {
 				return {
 					className: MenuColorClass.QC,
-					data: stockQty.reduce<UU[]>((ret, e) => {
-						const val = e.toJSON() as unknown as UU;
-						const outBarang = this['Item Keluar'].data.find(
-							e => e.unit === val.unit,
-						);
+					data: stockQty.map(e => e.toJSON() as unknown as UU),
 
-						const index = ret.findIndex(
-							e => e.harga1 == val.harga2 || e.harga2 == val.harga2,
-						);
+					// data: stockQty.reduce<UU[]>((ret, e) => {
+					// 	const val = e.toJSON() as unknown as UU;
 
-						if (index >= 0) {
-							const jj = ret?.[index] as UU;
-							return ret.replace(index, {...jj, qty: jj?.qty + val.qty});
-						} else ret.push({...val, qty: val.qty - (outBarang?.qty ?? 0)});
+					// 	const outBarang = this['Item Keluar'].data.find(
+					// 		e => e.unit === val.unit,
+					// 	);
 
-						return ret;
-					}, []),
+					// 	const index = ret.findIndex(
+					// 		e => e.harga1 == val.harga2 || e.harga2 == val.harga2,
+					// 	);
+
+					// 	if (index >= 0) {
+					// 		const jj = ret?.[index] as UU;
+					// 		return ret.replace(index, {...jj, qty: jj?.qty + val.qty});
+					// 	} else ret.push({...val, qty: val.qty - (outBarang?.qty ?? 0)});
+
+					// 	return ret;
+					// }, []),
 				};
 			},
 		};
@@ -196,7 +200,16 @@ export function dashboardRouters() {
 						>,
 					);
 
-					return calculateData;
+					return {
+						...calculateData,
+						get Stock() {
+							const {className, value} = calculateData.Stock;
+							return {
+								className,
+								value: value - calculateData['Item Keluar'].value,
+							};
+						},
+					};
 				});
 			}),
 	});

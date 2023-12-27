@@ -792,7 +792,7 @@ export const sStock = sItem
 	.required({id: true, sup_id: true})
 	.omit({nama: true, kode: true})
 	.extend({
-		...zCreated.shape,
+		...zCreatedUpdated.shape,
 		nama: z.string().nullish(),
 		kode: z.string().nullish(),
 
