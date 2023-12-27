@@ -97,7 +97,9 @@ export default function InternalStock() {
 					<Cell>{oItem?.nama ?? nama}</Cell>
 					<Cell>{numberFormat(oItem?.harga ?? harga)}</Cell>
 					<Cell>
-						{numberFormat(ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0)}
+						{numberFormat(
+							oItem?.ppn || ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0,
+						)}
 					</Cell>
 					<Cell>{`${qty} ${unit}`}</Cell>
 					<Cell>{`${qty - usedQty} ${unit}`}</Cell>

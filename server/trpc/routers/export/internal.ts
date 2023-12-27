@@ -51,7 +51,7 @@ const exportInternalRouters = router({
 					'Kode Item': oItem?.kode ?? kode,
 					'Nama Item': oItem?.nama ?? nama,
 					Harga: oItem?.harga ?? harga,
-					PPn: ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0,
+					PPn: oItem?.ppn || ppn ? (oItem?.harga ?? harga) * ppnMultiply : 0,
 					'Qty Masuk': qty,
 					'Qty Stock': qty - usedQty,
 					'Qty Keluar': usedQty,
