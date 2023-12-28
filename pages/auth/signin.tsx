@@ -6,6 +6,7 @@ import {useForm} from 'react-hook-form';
 
 import {TUserSignIn} from '@appTypes/app.type';
 import {Button, Input} from '@components';
+import {PATHS} from '@enum';
 import {useLoader, useSession} from '@hooks';
 
 export default function SignIn() {
@@ -36,7 +37,7 @@ export default function SignIn() {
 	});
 
 	useEffect(() => {
-		if (status === 'authenticated') replace('/app');
+		if (status === 'authenticated') replace(PATHS.app);
 	}, [status]);
 
 	function toggleMethod() {

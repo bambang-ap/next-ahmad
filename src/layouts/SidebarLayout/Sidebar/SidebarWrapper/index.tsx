@@ -17,6 +17,7 @@ import {useRouter} from 'next/router';
 import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Icon, Text} from '@components';
 import {IMIConst, isProd, SidebarCollapseOn} from '@constants';
+import {PATHS} from '@enum';
 import {useSession} from '@hooks';
 import Scrollbar from '@prevComp/Scrollbar';
 
@@ -79,7 +80,7 @@ function RenderSidebar() {
 				</Button>
 				{!isProd && (
 					<Button
-						onClick={() => push('/app/scanRemove')}
+						onClick={() => push(PATHS.app_scan_remove)}
 						variant="contained"
 						color="primary"
 						size="small"

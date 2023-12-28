@@ -6,6 +6,7 @@ import {useForm} from 'react-hook-form';
 import {ZId} from '@appTypes/app.type';
 import {Button, Form, Input} from '@components';
 import {isProd} from '@constants';
+import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
 import {useLoader} from '@hooks';
 import {trpc} from '@utils/trpc';
@@ -16,7 +17,7 @@ export default function RemoveScan() {
 	const {replace} = useRouter();
 
 	useEffect(() => {
-		if (isProd) replace('/app');
+		if (isProd) replace(PATHS.app);
 	}, [isProd]);
 
 	if (isProd) return null;

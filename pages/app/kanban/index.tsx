@@ -11,6 +11,7 @@ import {
 } from '@appTypes/app.zod';
 import {Button, Form, Modal, ModalRef} from '@components';
 import {cuttingLineClassName, isProd, nonRequiredRefetch} from '@constants';
+import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
 import {useTableFilterComponent} from '@hooks';
 import {RenderKanbanCardV2} from '@pageComponent/KanbanCardV2';
@@ -180,7 +181,7 @@ export default function Kanban() {
 	}
 
 	function navigateReject() {
-		push('/app/kanban/reject');
+		push(PATHS.app_kanban_reject);
 	}
 
 	return (

@@ -7,7 +7,7 @@ import {
 import {useRouter} from 'next/router';
 
 import {TSession} from '@appTypes/app.type';
-import {USER_ROLE} from '@enum';
+import {PATHS, USER_ROLE} from '@enum';
 
 import {useMenu} from './useMenu';
 
@@ -22,9 +22,9 @@ export const useAuth = () => {
 	useEffect(() => {
 		function targeting() {
 			if (asPath.includes('scanRemove')) return;
-			if (status === 'unauthenticated') replace('/auth/signin');
+			if (status === 'unauthenticated') replace(PATHS.signin);
 			if (status === 'authenticated') {
-				if (!asPath.includes('/app')) replace('/app');
+				if (!asPath.includes(PATHS.app)) replace(PATHS.app);
 				else if (index < 0) replace({pathname: firstPath});
 			}
 		}

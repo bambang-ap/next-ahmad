@@ -20,7 +20,7 @@ import {
 	TUser,
 } from '@appTypes/app.type';
 import {InputProps, SelectPropsData} from '@components';
-import {CRUD_ENABLED} from '@enum';
+import {CRUD_ENABLED, PATHS} from '@enum';
 import {TRPCClientErrorLike} from '@trpc/client';
 import {UseTRPCQueryResult} from '@trpc/react-query/shared';
 import {AnyProcedure} from '@trpc/server';
@@ -83,8 +83,8 @@ export type FieldForm<T extends {}> = {
 	  }
 );
 
-export const allowedPages: Record<string, AllowedPages> = {
-	'/app/document': {
+export const allowedPages: Record<PATHS, AllowedPages> = {
+	[PATHS.app_document]: {
 		enumName: CRUD_ENABLED.DOCUMENT,
 		searchKey: 'doc_no',
 		table: {
@@ -133,7 +133,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/hardness': {
+	[PATHS.app_hardness]: {
 		enumName: CRUD_ENABLED.HARDNESS,
 		searchKey: 'name',
 		table: {
@@ -182,7 +182,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/hardness/kategori': {
+	[PATHS.app_hardness_kategori]: {
 		enumName: CRUD_ENABLED.HARDNESS_KATEGORI,
 		searchKey: 'name',
 		table: {
@@ -208,7 +208,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/material': {
+	[PATHS.app_material]: {
 		enumName: CRUD_ENABLED.MATERIAL,
 		searchKey: 'name',
 		table: {
@@ -255,7 +255,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/material/kategori': {
+	[PATHS.app_material_kategori]: {
 		enumName: CRUD_ENABLED.MATERIAL_KATEGORI,
 		searchKey: 'name',
 		table: {
@@ -281,7 +281,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/parameter': {
+	[PATHS.app_parameter]: {
 		enumName: CRUD_ENABLED.PARAMETER,
 		searchKey: 'name',
 		table: {
@@ -334,7 +334,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/parameter/kategori': {
+	[PATHS.app_parameter_kategori]: {
 		enumName: CRUD_ENABLED.PARAMETER_KATEGORI,
 		searchKey: 'name',
 		table: {
@@ -360,7 +360,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/mesin': {
+	[PATHS.app_mesin]: {
 		enumName: CRUD_ENABLED.MESIN,
 		searchKey: 'nomor_mesin',
 		table: {
@@ -411,7 +411,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/mesin/kategori': {
+	[PATHS.app_mesin_kategori]: {
 		enumName: CRUD_ENABLED.MESIN_KATEGORI,
 		searchKey: 'name',
 		table: {
@@ -437,7 +437,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/kendaraan': {
+	[PATHS.app_kendaraan]: {
 		enumName: CRUD_ENABLED.KENDARAAN,
 		searchKey: 'name',
 		table: {
@@ -463,7 +463,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/kanban/instruksi': {
+	[PATHS.app_kanban_instruksi]: {
 		enumName: CRUD_ENABLED.INSTRUKSI_KANBAN,
 		searchKey: 'name',
 		table: {
@@ -489,7 +489,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/customer': {
+	[PATHS.app_customer]: {
 		enumName: CRUD_ENABLED.CUSTOMER,
 		searchKey: 'name',
 		table: {
@@ -533,7 +533,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/user': {
+	[PATHS.app_user]: {
 		enumName: CRUD_ENABLED.USER,
 		searchKey: 'name',
 		table: {
@@ -584,7 +584,7 @@ export const allowedPages: Record<string, AllowedPages> = {
 		},
 	},
 
-	'/app/user/role': {
+	[PATHS.app_user_role]: {
 		enumName: CRUD_ENABLED.ROLE,
 		searchKey: 'name',
 		table: {
