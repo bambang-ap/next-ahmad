@@ -666,7 +666,7 @@ export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 ) {
 	const {index_str, index_number, dIndex} = item ?? {};
 
-	const prefix = dIndex?.prefix.replace(
+	const prefix = dIndex?.prefix?.replace(
 		regPrefix,
 		index_number?.toString().padStart(1, '0') ?? '',
 	);
