@@ -1,6 +1,7 @@
 import {useRecoilValue} from 'recoil';
 
 import {Button, Text} from '@components';
+import {PATHS} from '@enum';
 import {useRouter} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 import {classNames} from '@utils';
@@ -16,7 +17,7 @@ export default function TotalCount() {
 		<div className="-m-1 flex flex-wrap md:-m-2">
 			{data?.map(({path, bgColor, image, title, count = 0}, i) => {
 				function navigate() {
-					push(path!);
+					push(path! as PATHS);
 				}
 				return (
 					<div

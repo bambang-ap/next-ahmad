@@ -14,6 +14,7 @@ import {useRecoilValue} from 'recoil';
 import {SidebarContext} from '@app/contexts/SidebarContext';
 import {MenuSubT} from '@appTypes/app.type';
 import {Icon} from '@components';
+import {PATHS} from '@enum';
 import {useMenu, useRouter} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 
@@ -23,7 +24,7 @@ function SubMenu({title, path, icon, OrmMenus: subMenu}: MenuSubT) {
 
 	function handleClick() {
 		setOpen(opened => !opened);
-		if (!!path) push(path);
+		if (!!path) push(path as PATHS);
 	}
 
 	return (
@@ -55,7 +56,7 @@ function Menu(menu: MenuSubT) {
 	const hasSubMenu = !!subMenu && subMenu.length > 0;
 
 	function handleClick() {
-		if (!!path) push(path);
+		if (!!path) push(path as PATHS);
 		if (isMobile) closeSidebar();
 	}
 
