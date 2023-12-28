@@ -7,6 +7,7 @@ import {
 import {useRouter} from 'next/router';
 
 import {TSession} from '@appTypes/app.type';
+import {USER_ROLE} from '@enum';
 
 import {useMenu} from './useMenu';
 
@@ -34,8 +35,13 @@ export const useAuth = () => {
 
 export function useSession() {
 	const {status, data} = useSessionNext() ?? {};
+	const session = data as TSession;
 
-	return {status, data: data as TSession};
+	return {
+		status,
+		data: session,
+		isAdmin: session?.user?.role === USER_ROLE.ADMIN,
+	};
 }
 
 export async function getSession() {

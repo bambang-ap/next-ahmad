@@ -15,7 +15,7 @@ import {
 } from '@components';
 import {ppnMultiply, selectUnitDataInternal} from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponent} from '@hooks';
+import {useSession, useTableFilterComponent} from '@hooks';
 import type {RetStock} from '@trpc/routers/internal/stockRouters';
 import {
 	dateUtils,
@@ -36,6 +36,7 @@ type FormType = {
 InternalStock.getLayout = getLayout;
 
 export default function InternalStock() {
+	const {isAdmin}=useSession()
 	const modalRef = useRef<ModalRef>(null);
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
@@ -117,10 +118,12 @@ export default function InternalStock() {
 							icon="faEdit"
 							onClick={() => showModal({type: 'edit', form: item})}
 						/> */}
-						<Button
-							icon="faTrash"
-							onClick={() => showModal({type: 'delete', form: item})}
-						/>
+						{isAdmin && (
+							<Button
+								icon="faTrash"
+								onClick={() => showModal({type: 'delete', form: item})}
+							/>
+						)}
 					</Cell>
 				</>
 			);

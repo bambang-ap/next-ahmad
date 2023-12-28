@@ -2,6 +2,10 @@ import {z} from 'zod';
 
 import {classNames, twColors} from '@utils';
 
+export enum USER_ROLE {
+	ADMIN = 'admin',
+}
+
 export enum REQ_FORM_STATUS {
 	req = 'request',
 	proc = 'process',

@@ -5,7 +5,7 @@ import {literal, Model, ModelStatic, Op, WhereOptions} from 'sequelize';
 
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {TIndex, ZIndex} from '@appTypes/app.zod';
-import {IndexNumber} from '@enum';
+import {IndexNumber, USER_ROLE} from '@enum';
 import {TRPCError} from '@trpc/server';
 import {moment} from '@utils';
 
@@ -17,7 +17,7 @@ export {generateId} from '@utils';
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
 		return {
-			session: {user: {role: 'admin'}} as TSession,
+			session: {user: {role: USER_ROLE.ADMIN}} as TSession,
 			hasSession: true,
 		};
 	}
