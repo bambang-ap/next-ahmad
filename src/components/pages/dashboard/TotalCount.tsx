@@ -1,7 +1,7 @@
-import {useRouter} from 'next/router';
 import {useRecoilValue} from 'recoil';
 
 import {Button, Text} from '@components';
+import {useRouter} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';

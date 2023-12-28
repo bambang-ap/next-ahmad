@@ -1,7 +1,6 @@
 import {FormEventHandler, Fragment, useEffect, useState} from 'react';
 
 import {useSession} from 'next-auth/react';
-import {useRouter} from 'next/router';
 import {KanbanFormType} from 'pages/app/kanban';
 import {FieldPath, useForm} from 'react-hook-form';
 import {useRecoilState, useSetRecoilState} from 'recoil';
@@ -29,8 +28,9 @@ import {
 	Select,
 	Text,
 } from '@components';
+import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
-import {useLoader} from '@hooks';
+import {useLoader, useRouter} from '@hooks';
 import {RenderMesin} from '@pageComponent/kanban_ModalChild/RenderMesin';
 import Scrollbar from '@prevComp/Scrollbar';
 import {selectorScanIds} from '@recoil/selectors';
@@ -72,7 +72,7 @@ export default function Scan() {
 	}
 
 	function navigateListData() {
-		push(`${asPath}/list`);
+		push(`${asPath}/list` as PATHS);
 	}
 
 	useEffect(() => {

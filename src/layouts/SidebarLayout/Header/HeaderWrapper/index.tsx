@@ -12,13 +12,12 @@ import {
 	useTheme,
 } from '@mui/material';
 import Head from 'next/head';
-import {useRouter} from 'next/router';
 import {useRecoilState} from 'recoil';
 
 import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Text} from '@components';
 import {IMIConst, SidebarCollapseOn} from '@constants';
-import {useAuth, useMenu} from '@hooks';
+import {useAuth, useMenu, useRouter} from '@hooks';
 import {atomHeaderTitle} from '@recoil/atoms';
 import {classNames} from '@utils';
 

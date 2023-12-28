@@ -1,6 +1,5 @@
 import {FormEventHandler, useEffect} from 'react';
 
-import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
 import {ZId} from '@appTypes/app.type';
@@ -8,7 +7,7 @@ import {Button, Form, Input} from '@components';
 import {isProd} from '@constants';
 import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
-import {useLoader} from '@hooks';
+import {useLoader, useRouter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
 RemoveScan.getLayout = getLayout;

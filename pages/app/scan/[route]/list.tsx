@@ -1,6 +1,5 @@
 import {useEffect, useRef} from 'react';
 
-import {useRouter} from 'next/router';
 import {KanbanFormType as KanbanFormTypee} from 'pages/app/kanban';
 import {useForm} from 'react-hook-form';
 import {useSetRecoilState} from 'recoil';
@@ -10,7 +9,7 @@ import {Route} from '@appTypes/app.type';
 import {Form, Modal, ModalRef} from '@components';
 import {cuttingLineClassName} from '@constants';
 import {getLayout} from '@hoc';
-import {useTableFilterComponent} from '@hooks';
+import {useRouter, useTableFilterComponent} from '@hooks';
 import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
 import {RenderData} from '@pageComponent/scan/list/RenderData';
 import {RenderPdfData} from '@pageComponent/scan/list/RenderPdfData';

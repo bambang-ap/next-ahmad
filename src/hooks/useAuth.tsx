@@ -4,10 +4,10 @@ import {
 	getSession as getSessionNext,
 	useSession as useSessionNext,
 } from 'next-auth/react';
-import {useRouter} from 'next/router';
 
 import {TSession} from '@appTypes/app.type';
 import {PATHS, USER_ROLE} from '@enum';
+import {useRouter} from '@hooks';
 
 import {useMenu} from './useMenu';
 

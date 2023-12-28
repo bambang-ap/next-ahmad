@@ -1,13 +1,12 @@
 import {Suspense, useRef} from 'react';
 
-import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
 import {ModalType, TUser, ZId} from '@appTypes/app.type';
 import {Button, Modal, ModalRef, TableFilter, Text} from '@components';
 import {allowedPages} from '@constants';
 import {CRUD_ENABLED} from '@enum';
-import {useLoader, useTableFilter} from '@hooks';
+import {useLoader, useRouter, useTableFilter} from '@hooks';
 import {trpc} from '@utils/trpc';
 
 import {ModalChild} from './ModalChild';

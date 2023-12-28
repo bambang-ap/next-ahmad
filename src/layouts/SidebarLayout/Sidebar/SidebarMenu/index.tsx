@@ -9,13 +9,12 @@ import {
 	ListItemIcon,
 	ListItemText,
 } from '@mui/material';
-import {useRouter} from 'next/router';
 import {useRecoilValue} from 'recoil';
 
 import {SidebarContext} from '@app/contexts/SidebarContext';
 import {MenuSubT} from '@appTypes/app.type';
 import {Icon} from '@components';
-import {useMenu} from '@hooks';
+import {useMenu, useRouter} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
 
 function SubMenu({title, path, icon, OrmMenus: subMenu}: MenuSubT) {

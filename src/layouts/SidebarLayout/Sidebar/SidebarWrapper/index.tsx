@@ -12,13 +12,12 @@ import {
 	useTheme,
 } from '@mui/material';
 import {signOut} from 'next-auth/react';
-import {useRouter} from 'next/router';
 
 import {SidebarContext} from '@app/contexts/SidebarContext';
 import {Icon, Text} from '@components';
 import {IMIConst, isProd, SidebarCollapseOn} from '@constants';
 import {PATHS} from '@enum';
-import {useSession} from '@hooks';
+import {useRouter, useSession} from '@hooks';
 import Scrollbar from '@prevComp/Scrollbar';
 
 import SidebarMenu from '../SidebarMenu';

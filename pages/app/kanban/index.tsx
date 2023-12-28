@@ -1,6 +1,5 @@
 import {FormEventHandler, useRef} from 'react';
 
-import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
 import {
@@ -13,7 +12,7 @@ import {Button, Form, Modal, ModalRef} from '@components';
 import {cuttingLineClassName, isProd, nonRequiredRefetch} from '@constants';
 import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
-import {useTableFilterComponent} from '@hooks';
+import {useRouter, useTableFilterComponent} from '@hooks';
 import {RenderKanbanCardV2} from '@pageComponent/KanbanCardV2';
 import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
 import {

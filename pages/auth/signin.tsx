@@ -1,13 +1,12 @@
 import {useEffect, useState} from 'react';
 
 import {signIn} from 'next-auth/react';
-import {useRouter} from 'next/router';
 import {useForm} from 'react-hook-form';
 
 import {TUserSignIn} from '@appTypes/app.type';
 import {Button, Input} from '@components';
 import {PATHS} from '@enum';
-import {useLoader, useSession} from '@hooks';
+import {useLoader, useRouter, useSession} from '@hooks';
 
 export default function SignIn() {
 	const {component, show, hide} = useLoader();

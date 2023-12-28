@@ -6,6 +6,7 @@ export * from './useKanban';
 export * from './useLoader';
 export * from './useMachine';
 export * from './useMenu';
+export * from './useNextHooks';
 export * from './useQtyData';
 export * from './useSppbOut';
 export * from './useTable';
