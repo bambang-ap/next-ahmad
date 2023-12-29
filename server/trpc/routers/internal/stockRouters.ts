@@ -6,11 +6,14 @@ import {Success} from '@constants';
 import {
 	internalStockAttributes,
 	orderPages,
+	ORM,
 	oStock,
 	wherePagesV3,
 } from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {TRPCError} from '@trpc/server';
+import {isAdminRole} from '@utils';
 
 export type RetStock = ReturnType<typeof internalStockAttributes>['Ret'];
 
@@ -66,11 +69,23 @@ export const stockRouters = router({
 				return Success;
 			});
 		}),
-	delete: procedure.input(zId).mutation(({ctx, input}) => {
-		return checkCredentialV2(ctx, async () => {
-			await oStock.destroy({where: {id: input.id}});
 
-			return Success;
+	delete: procedure.input(zId).mutation(({ctx, input}) => {
+		return checkCredentialV2(ctx, async session => {
+			if (!isAdminRole(session.user?.role))
+				throw new TRPCError({code: 'FORBIDDEN'});
+
+			const transaction = await ORM.transaction();
+
+			try {
+				await oStock.destroy({transaction, where: {id: input.id}});
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				throw new TRPCError({code: 'BAD_REQUEST'});
+			}
 		});
 	}),
 });

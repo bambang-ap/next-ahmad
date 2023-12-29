@@ -1,9 +1,12 @@
 import {useRouter as useNextRouter} from 'next/router';
+import {UrlObject} from 'url';
 
 import {PATHS} from '@enum';
 
-type Ret = Omit<ReturnType<typeof useNextRouter>, 'push'> & {
-	push: (path: PATHS) => Promise<boolean>;
+type R = ReturnType<typeof useNextRouter>;
+type Url = UrlObject & {pathname?: PATHS};
+type Ret = Omit<R, 'push'> & {
+	push: (path: PATHS | Url) => Promise<boolean>;
 };
 
 export function useRouter(): Ret {

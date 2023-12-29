@@ -41,7 +41,7 @@ export function useSession() {
 	return {
 		status,
 		data: session,
-		isAdmin: isAdminRole(session?.user?.role!),
+		isAdmin: isAdminRole(session?.user?.role),
 	};
 }
 
