@@ -3,8 +3,8 @@ import {z} from 'zod';
 import {classNames, twColors} from '@utils';
 
 export enum USER_ROLE {
-	ADMIN = 'admin',
-	S_ADMIN = 'SUPER ADMIN',
+	ADMIN = '26c100d8-64d7-48c8-1252-47bcd5a7a0e6-1677662729',
+	SUPER_ADMIN = 'R230823da93',
 }
 
 export enum PATHS {

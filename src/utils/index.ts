@@ -675,5 +675,5 @@ export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 }
 
 export function isAdminRole(role?: string) {
-	return role === USER_ROLE.ADMIN || role === USER_ROLE.S_ADMIN;
+	return role === USER_ROLE.ADMIN || role === USER_ROLE.SUPER_ADMIN;
 }

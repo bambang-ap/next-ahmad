@@ -37,6 +37,7 @@ InternalStock.getLayout = getLayout;
 
 export default function InternalStock() {
 	const {isAdmin} = useSession();
+
 	const modalRef = useRef<ModalRef>(null);
 	const {control, reset, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
