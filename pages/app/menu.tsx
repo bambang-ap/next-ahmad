@@ -6,10 +6,10 @@ import {useRecoilState, useRecoilValue, useSetRecoilState} from 'recoil';
 import {AllIcon} from '@appComponent/AllIcon';
 import {TMenu, TRole} from '@appTypes/app.type';
 import {Button, IconForm, Input, Modal, ModalRef, Table} from '@components';
-import {USER_ROLE} from '@enum';
 import {getLayout} from '@hoc';
 import {FormMenu, useLoader, useMenu} from '@hooks';
 import {atomMenuChangeOrder, atomMenuIconKey} from '@recoil/atoms';
+import {isAdminRole} from '@utils';
 
 // TODO: Change menu renderer data to useMenu().all method
 
@@ -209,7 +209,7 @@ const RenderMenu = (props: {
 						</Cell>
 						<Cell className="flex flex-1 flex-wrap">
 							{dataRole?.map(role => {
-								if (role.name === USER_ROLE.ADMIN) return null;
+								if (isAdminRole(role.name)) return null;
 
 								return (
 									<div className="w-1/4 p-1" key={role.id}>

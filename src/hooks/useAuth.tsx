@@ -6,8 +6,9 @@ import {
 } from 'next-auth/react';
 
 import {TSession} from '@appTypes/app.type';
-import {PATHS, USER_ROLE} from '@enum';
+import {PATHS} from '@enum';
 import {useRouter} from '@hooks';
+import {isAdminRole} from '@utils';
 
 import {useMenu} from './useMenu';
 
@@ -40,7 +41,7 @@ export function useSession() {
 	return {
 		status,
 		data: session,
-		isAdmin: session?.user?.role === USER_ROLE.ADMIN,
+		isAdmin: isAdminRole(session?.user?.role!),
 	};
 }
 

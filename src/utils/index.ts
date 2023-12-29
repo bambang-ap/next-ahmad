@@ -33,7 +33,7 @@ import {
 	regPrefix,
 } from '@constants';
 import {getPoScore, getPOSppbOutAttributes} from '@database';
-import {PO_SCORE_STATUS, REJECT_REASON} from '@enum';
+import {PO_SCORE_STATUS, REJECT_REASON, USER_ROLE} from '@enum';
 import {Fields, useLoader} from '@hooks';
 import {
 	UseTRPCMutationOptions,
@@ -672,4 +672,8 @@ export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 	);
 
 	return index_str ?? prefix ?? defaultValue;
+}
+
+export function isAdminRole(role: string) {
+	return role === USER_ROLE.ADMIN || role === USER_ROLE.S_ADMIN;
 }

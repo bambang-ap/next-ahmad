@@ -4,6 +4,7 @@ import {classNames, twColors} from '@utils';
 
 export enum USER_ROLE {
 	ADMIN = 'admin',
+	S_ADMIN = 'SUPER ADMIN',
 }
 
 export enum PATHS {
