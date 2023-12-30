@@ -316,6 +316,8 @@ export function qtyMap<T = ReactNode>(
 
 export function scanMapperByStatus(
 	target: TScanTarget,
+	status?: boolean,
+	isAdmin?: boolean,
 ): [
 	jumlah?: string,
 	jumlahNext?: string,
@@ -323,12 +325,14 @@ export function scanMapperByStatus(
 	form?: string,
 	cardName?: string,
 ] {
+	const forceSubmit = status && isAdmin;
+
 	switch (target) {
 		case 'produksi':
 			return [
 				'Jumlah Planning',
 				'Jumlah Produksi',
-				'Send to QC',
+				forceSubmit ? 'Update' : 'Send to QC',
 				'PROD',
 				'KARTU PRODUKSI',
 			];
@@ -336,12 +340,18 @@ export function scanMapperByStatus(
 			return [
 				'Jumlah Produksi',
 				'Jumlah QC',
-				'Send to Finish Good',
+				forceSubmit ? 'Update' : 'Send to Finish Good',
 				'QC',
 				'KARTU BARANG OK',
 			];
 		case 'finish_good':
-			return ['Jumlah QC', 'Jumlah FG', 'Diterima', 'FG', 'KARTU BARANG OK'];
+			return [
+				'Jumlah QC',
+				'Jumlah FG',
+				forceSubmit ? 'Update' : 'Diterima',
+				'FG',
+				'KARTU BARANG OK',
+			];
 		default:
 			return [];
 	}

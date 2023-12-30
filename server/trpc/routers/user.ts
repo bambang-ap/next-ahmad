@@ -1,6 +1,6 @@
 import md5 from 'md5';
 
-import {tableFormValue, tUserUpsert, zId} from '@appTypes/app.zod';
+import {tableFormValue, TUser, tUserUpsert, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {dUser, ORM, wherePagesV2} from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
@@ -15,7 +15,7 @@ export default function userRouters() {
 				const {count, rows} = await dUser.findAndCountAll({
 					limit,
 					offset: (page - 1) * limit,
-					where: wherePagesV2([], search),
+					where: wherePagesV2<TUser>(['name', 'email'], search),
 				});
 
 				const dataRows = rows.map(e => {

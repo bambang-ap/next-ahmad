@@ -26,6 +26,7 @@ export const useAuth = () => {
 			if (status === 'unauthenticated') replace(PATHS.signin);
 			if (status === 'authenticated') {
 				if (!asPath.includes(PATHS.app)) replace(PATHS.app);
+				else if (asPath.includes('?')) return;
 				else if (index < 0) replace({pathname: firstPath});
 			}
 		}

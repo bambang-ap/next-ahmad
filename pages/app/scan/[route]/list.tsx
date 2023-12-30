@@ -6,16 +6,18 @@ import {useSetRecoilState} from 'recoil';
 
 import {Wrapper as Wrp, WrapperProps} from '@appComponent/Wrapper';
 import {Route} from '@appTypes/app.type';
-import {Form, Modal, ModalRef} from '@components';
+import {Button, Form, Modal, ModalRef} from '@components';
 import {cuttingLineClassName} from '@constants';
+import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
-import {useRouter, useTableFilterComponent} from '@hooks';
+import {useRouter, useSession, useTableFilterComponent} from '@hooks';
 import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
 import {RenderData} from '@pageComponent/scan/list/RenderData';
 import {RenderPdfData} from '@pageComponent/scan/list/RenderPdfData';
 import {TxtBold} from '@pageComponent/sppbOut_GenerateQR';
 import {atomHeaderTitle} from '@recoil/atoms';
 import {classNames, getIds, modalTypeParser, scanRouterParser} from '@utils';
+import {StorageScan} from '@utils/storage';
 import {trpc} from '@utils/trpc';
 
 ScanListData.getLayout = getLayout;
@@ -43,7 +45,8 @@ export default function ScanListData() {
 }
 
 function RenderScanList() {
-	const {...router} = useRouter();
+	const {isAdmin} = useSession();
+	const {push, ...router} = useRouter();
 	const {route} = router.query as Route;
 
 	const {control, watch, reset} = useForm<ScanListFormType>();
@@ -52,14 +55,14 @@ function RenderScanList() {
 	const modalRef = useRef<ModalRef>(null);
 
 	const {type} = formData;
-	const {modalTitle, isPreview} = modalTypeParser(type);
+	const {isSelect, modalTitle, isPreview} = modalTypeParser(type);
 	const {title, isQC} = scanRouterParser(route);
 
 	const dateHeader = `Tanggal ${title}`;
 
 	const {property, selectedIds} = getIds(formData, 'idScans');
 
-	const {component} = useTableFilterComponent({
+	const {component, refetch, mutateOpts} = useTableFilterComponent({
 		control,
 		reset,
 
@@ -73,7 +76,7 @@ function RenderScanList() {
 			'Nomor Kanban',
 			'Keterangan',
 			dateHeader,
-			// !isSelect && 'Action',
+			!isSelect && 'Action',
 		],
 		genPdfOptions: isQC
 			? {
@@ -111,14 +114,34 @@ function RenderScanList() {
 					route={route}
 					control={control}
 					key={item.item.id_kanban}>
-					{/* <Button
-						icon="faMagnifyingGlass"
-						// onClick={() => preview(item.item.id_kanban)}
-					/> */}
+					<Button
+						icon={isAdmin ? 'faEdit' : 'faMagnifyingGlass'}
+						onClick={() => navigate(item.item.id_kanban)}
+					/>
+					{isAdmin && (
+						<Button
+							icon="faTrash"
+							onClick={() => removeScan(item.item.id_kanban)}
+						/>
+					)}
 				</RenderData>
 			);
 		},
 	});
+
+	const {mutateAsync: mutate} = trpc.scan.remove.useMutation(mutateOpts);
+
+	function navigate(id: string) {
+		StorageScan.get(route)?.set(prev => [id, ...prev]);
+		push({pathname: PATHS.app_scan_produksi});
+	}
+
+	async function removeScan(id: string) {
+		if (!confirm('Yakin ingin menghapus data ini?')) return;
+
+		await mutate({id, status: route});
+		refetch();
+	}
 
 	return (
 		<>

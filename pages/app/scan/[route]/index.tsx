@@ -1,6 +1,5 @@
 import {FormEventHandler, Fragment, useEffect, useState} from 'react';
 
-import {useSession} from 'next-auth/react';
 import {KanbanFormType} from 'pages/app/kanban';
 import {FieldPath, useForm} from 'react-hook-form';
 import {useRecoilState, useSetRecoilState} from 'recoil';
@@ -30,13 +29,14 @@ import {
 } from '@components';
 import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
-import {useLoader, useRouter} from '@hooks';
+import {useLoader, useRouter, useSession} from '@hooks';
 import {RenderMesin} from '@pageComponent/kanban_ModalChild/RenderMesin';
 import Scrollbar from '@prevComp/Scrollbar';
 import {selectorScanIds} from '@recoil/selectors';
 import {
 	classNames,
 	dateUtils,
+	isAdminRole,
 	qtyMap,
 	scanMapperByStatus,
 	scanRouterParser,
@@ -52,7 +52,6 @@ const {TBody, THead, Tr} = RootTable;
 const Td = BorderTd;
 
 export type Route = {route: TScanTarget};
-
 export type FormTypeScan = Pick<
 	TScan,
 	keyof TScanItem | 'lot_no_imi' | 'id' | 'notes'
@@ -154,10 +153,16 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const {isProduksi, isQC, width, isFG, colSpan, rejectTitle} =
 		scanRouterParser(route, isRejected);
 
-	const [, , submitText] = scanMapperByStatus(route);
+	const isAdmin = isAdminRole(session?.user?.role);
+	const status = route === data?.status;
+	const forceSubmit = status && isAdmin;
+
+	const aaa = forceSubmit ? false : status;
+
+	const [, , submitText] = scanMapperByStatus(route, status, isAdmin);
 	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
 
-	const status = route === data?.status;
+	const isFetchingData = forceSubmit || (!isFetching && !!data);
 	const showReject = !isProduksi && (dataForm.reject || isRejected);
 	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
 
@@ -166,6 +171,12 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 		clearErrors();
 
 		handleSubmit(values => {
+			if (forceSubmit) {
+				if (
+					!confirm('Data sudah disubmit, apakah anda yakin akan mengubah data?')
+				)
+					return;
+			}
 			if (route === 'qc') {
 				if (confirm('Apakah Anda yakin data tersebut sudah benar?'))
 					return mutate(values);
@@ -225,9 +236,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	return (
 		<>
 			{loader.component}
-			<Form
-				onSubmit={submit}
-				context={{disableSubmit: status, disabled: status}}>
+			<Form onSubmit={submit} context={{disableSubmit: aaa, disabled: aaa}}>
 				<RootTable>
 					<THead>
 						<Tr>
@@ -281,8 +290,8 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 										{showReject ? 'Batal Reject' : 'Reject'}
 									</Button>
 								)}
-								{!isFetching && !!data && (
-									<Button type="submit" className="h-10" disabled={status}>
+								{isFetchingData && (
+									<Button type="submit" className="h-10" disabled={aaa}>
 										{submitText}
 									</Button>
 								)}
