@@ -44,9 +44,11 @@ export default function Dashboard() {
 		days,
 		fromToComponent,
 		daysSelectedDate,
-		monthYearComponent,
+		MonthYear,
 		form: {control, watch},
-	} = useFormFilter<J>(true, {
+	} = useFormFilter<J>({
+		sameMonth: true,
+		hideMonthSelection: true,
 		defaultValues: {qtyKey: [2, 3]},
 	});
 	const {view} = watch();
@@ -85,11 +87,14 @@ export default function Dashboard() {
 
 				<div
 					className={classNames('flex gap-2 justify-end', {
-						'w-1/3': !isMobile && (isMachine || isMachineDaily),
+						'w-1/3':
+							!isMobile && (isMachine || isMachineDaily || isMachineChart),
 						'w-full': isMobile,
 					})}>
 					{isMachine && fromToComponent}
-					{isMachineDaily && monthYearComponent}
+					{(isMachineChart || isMachineDaily) && (
+						<MonthYear hideMonth={isMachineChart} />
+					)}
 				</div>
 			</div>
 

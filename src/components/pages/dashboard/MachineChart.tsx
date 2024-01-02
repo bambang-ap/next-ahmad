@@ -12,11 +12,14 @@ import {trpc} from '@utils/trpc';
 import {J} from '.';
 
 export default function MachineChart({control}: FormProps<J>) {
+	const {filterYear} = useWatch({control});
+
+	const now = moment(`${filterYear}/01/01`);
 	const horizontal = useRecoilValue(atomIsMobile);
-	const title = `Data Mesin Tahun ${moment().format('YYYY')}`;
+	const title = `Data Mesin Tahun ${now.format('YYYY')}`;
 
 	const months = Array.from({length: 12}).map((_, i) => {
-		const currentMonth = moment().startOf('year').add(i, 'month');
+		const currentMonth = now.startOf('year').add(i, 'month');
 
 		return {month: currentMonth.format('MMMM'), currentMonth};
 	});

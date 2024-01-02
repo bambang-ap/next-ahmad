@@ -22,11 +22,12 @@ const data: SelectPropsData<TDashboardInternal>[] = [
 
 export default function Internal() {
 	const {
-		monthYearComponent,
+		MonthYear,
 		fromToComponent,
 		form: {control, watch},
 		days,
-	} = useFormFilter<UseDateFilterProps<FormType>>(true, {
+	} = useFormFilter<UseDateFilterProps<FormType>>({
+		sameMonth: true,
 		defaultValues: {view: 'qty'},
 	});
 
@@ -41,7 +42,7 @@ export default function Internal() {
 				<ButtonGroup control={control} fieldName="view" data={data} />
 				<div className="flex w-1/3 gap-2">
 					{!isDaily && !isMonthly && fromToComponent}
-					{isDaily && monthYearComponent}
+					{isDaily && <MonthYear />}
 				</div>
 			</div>
 			<RenderInternalDashboard days={days} control={control} />

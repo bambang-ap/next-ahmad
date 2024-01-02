@@ -13,14 +13,13 @@ import {dateUtils, moment} from '@utils';
 export type UseDateFilterProps<F extends FieldValues> = F & TDateFilter;
 
 export function useFormFilter<T extends TDateFilter & {}>(
-	isSameMonth?: boolean,
-	options?: UseFormProps<T | TDateFilter>,
+	options?: UseFormProps<T | TDateFilter> & {sameMonth?: boolean},
 ) {
 	const today = moment();
 	const to = dateUtils.readable(today.endOf('month').unix() * 1000)!;
 	const from = dateUtils.readable(today.startOf('month').unix() * 1000)!;
 
-	const {defaultValues, ...restOpts} = options ?? {};
+	const {defaultValues, sameMonth, ...restOpts} = options ?? {};
 
 	const months: SelectPropsData<number>[] = dateUtils
 		.getMonths(moment())
@@ -39,7 +38,7 @@ export function useFormFilter<T extends TDateFilter & {}>(
 
 	const form = useForm<TDateFilter>({
 		...restOpts,
-		defaultValues: (isSameMonth
+		defaultValues: (sameMonth
 			? {
 					...defaultValues,
 					filterFrom: from,
@@ -74,30 +73,34 @@ export function useFormFilter<T extends TDateFilter & {}>(
 		</>
 	);
 
-	const monthYearComponent = (
-		<>
-			<Select
-				className="flex-1"
-				label="Tahun"
-				data={years}
-				control={form.control}
-				fieldName="filterYear"
-			/>
-			<Select
-				className="flex-1"
-				label="Bulan"
-				data={months}
-				control={form.control}
-				fieldName="filterMonth"
-			/>
-		</>
-	);
+	function MonthYear({hideMonth}: {hideMonth?: boolean}) {
+		return (
+			<>
+				<Select
+					className="flex-1"
+					label="Tahun"
+					data={years}
+					control={form.control}
+					fieldName="filterYear"
+				/>
+				{!hideMonth && (
+					<Select
+						className="flex-1"
+						label="Bulan"
+						data={months}
+						control={form.control}
+						fieldName="filterMonth"
+					/>
+				)}
+			</>
+		);
+	}
 
 	return {
 		days,
 		fromToComponent,
 		daysSelectedDate,
-		monthYearComponent,
+		MonthYear,
 		form: form as unknown as UseFormReturn<T>,
 	};
 }
