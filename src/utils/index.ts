@@ -672,7 +672,7 @@ export function renderItemAsIs<T extends {}>(item: T) {
 
 export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 	item: T,
-	defaultValue?: string,
+	defaultValue?: string | null,
 ) {
 	const {index_str, index_number, dIndex} = item ?? {};
 

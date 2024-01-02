@@ -436,7 +436,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 												);
 											})}
 										</Td>
-										<Td>
+										<Td className="gap-2">
 											{qtyMap(({unitKey, qtyKey, num}) => {
 												if (!poItem[unitKey]) return null;
 
@@ -475,7 +475,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 											})}
 										</Td>
 										{showReject && (
-											<Td>
+											<Td className="gap-2">
 												{qtyMap(({unitKey, qtyKey, num}) => {
 													if (!poItem[unitKey]) return null;
 

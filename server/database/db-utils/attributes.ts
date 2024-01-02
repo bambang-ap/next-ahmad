@@ -767,17 +767,25 @@ export function sppbOutGetPoAttributes() {
 }
 
 export function getRejectAttributes() {
-	const rejScan = attrParserV2(dRejItem);
-	const scanItem = attrParserV2(dScanItem);
-	const scan = attrParserV2(dScan);
+	const rejScan = attrParserV2(dRejItem, ['id', 'reason']);
+	const scanItem = attrParserV2(dScanItem, ['id']);
+	const scan = attrParserV2(dScan, ['lot_no_imi', 'status']);
+	const kanban = attrParserV2(dKanban, [
+		'nomor_kanban',
+		'index_id',
+		'index_number',
+	]);
+	const tIndex = attrParserV2(dIndex);
 
 	type Ret = typeof rejScan.obj & {
 		dScanItem: typeof scanItem.obj & {
-			dScan: typeof scan.obj;
+			dScan: typeof scan.obj & {
+				dKanban: typeof kanban.obj & {dIndex: typeof tIndex.obj};
+			};
 		};
 	};
 
-	return {rejScan, scanItem, scan, Ret: {} as Ret};
+	return {rejScan, scanItem, scan, kanban, tIndex, Ret: {} as Ret};
 }
 
 export function dashboardMesinAttributes() {
