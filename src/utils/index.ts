@@ -681,7 +681,7 @@ export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 		index_number?.toString().padStart(1, '0') ?? '',
 	);
 
-	return index_str ?? prefix ?? defaultValue;
+	return index_str ?? prefix ?? defaultValue ?? '';
 }
 
 export function isAdminRole(role?: string) {

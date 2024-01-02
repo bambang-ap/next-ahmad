@@ -21,7 +21,7 @@ import {
 } from '@components';
 import {
 	IMIConst,
-	paperLpb,
+	paperLPB,
 	ppnPercentage,
 	selectUnitDataInternal,
 } from '@constants';
@@ -72,8 +72,8 @@ export default function InternalSiIn() {
 		exportUseQuery: () =>
 			trpc.export.internal.sj_in.useQuery({ids: selectedIds}),
 		genPdfOptions: {
-			width: 965,
-			paperSize: paperLpb,
+			width: 1100,
+			paperSize: paperLPB,
 			splitPagePer: 1,
 			orientation: 'l',
 			tagId: 'internal-sj-in',

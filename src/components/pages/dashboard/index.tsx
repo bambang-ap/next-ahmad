@@ -46,11 +46,7 @@ export default function Dashboard() {
 		daysSelectedDate,
 		MonthYear,
 		form: {control, watch},
-	} = useFormFilter<J>({
-		sameMonth: true,
-		hideMonthSelection: true,
-		defaultValues: {qtyKey: [2, 3]},
-	});
+	} = useFormFilter<J>({sameMonth: true, defaultValues: {qtyKey: [2, 3]}});
 	const {view} = watch();
 
 	const isMobile = useRecoilValue(atomIsMobile);
