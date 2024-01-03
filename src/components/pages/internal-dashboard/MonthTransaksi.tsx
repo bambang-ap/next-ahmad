@@ -1,5 +1,6 @@
 import moment from 'moment';
 import {FormType} from 'pages/app/internal';
+import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
 import {FormProps} from '@appTypes/app.type';
@@ -10,8 +11,11 @@ import {atomIsMobile} from '@recoil/atoms';
 import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
-export default function InternalDashboardMTransaksi({}: FormProps<FormType>) {
-	const now = moment();
+export default function InternalDashboardMTransaksi({
+	control,
+}: FormProps<FormType>) {
+	const {filterYear} = useWatch({control});
+	const now = moment(`${filterYear}-01-01`);
 	const horizontal = useRecoilValue(atomIsMobile);
 	const title = `Data Transaksi Tahun ${now.format('YYYY')}`;
 	const months = dateUtils.getMonths(now);

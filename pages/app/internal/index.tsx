@@ -28,21 +28,26 @@ export default function Internal() {
 		days,
 	} = useFormFilter<UseDateFilterProps<FormType>>({
 		sameMonth: true,
-		defaultValues: {view: 'qty'},
+		defaultValues: {view: 'transaksi'},
 	});
 
 	const {view} = watch();
 
+	const isTrx = view === 'transaksi';
 	const isMonthly = view === 'm-transaksi';
 	const isDaily = view === 'd-transaksi';
+
+	const showFromTo = isTrx;
+	const showMonthYear = isDaily || isMonthly;
+	const hideMonth = isMonthly;
 
 	return (
 		<div className="flex flex-col gap-2">
 			<div className="flex justify-between items-center gap-2">
 				<ButtonGroup control={control} fieldName="view" data={data} />
 				<div className="flex w-1/3 gap-2">
-					{!isDaily && !isMonthly && fromToComponent}
-					{isDaily && <MonthYear />}
+					{showFromTo && fromToComponent}
+					{showMonthYear && <MonthYear hideMonth={hideMonth} />}
 				</div>
 			</div>
 			<RenderInternalDashboard days={days} control={control} />
