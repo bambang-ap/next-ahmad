@@ -16,6 +16,7 @@ export default function BarChart({
 }: FormProps<DashboardForm> & {type?: 'bar' | 'line'}) {
 	const {filterYear} = useWatch({control});
 	const now = moment(`${filterYear}/01/01`);
+	const title = `Data Tahun ${now.format('YYYY')}`;
 
 	const horizontal = useRecoilValue(atomIsMobile);
 	const {data} = trpc.dashboard.businessProcess.useQuery({
@@ -34,12 +35,18 @@ export default function BarChart({
 		) ?? {};
 
 	return (
-		<Chart
-			key={type}
-			height={500}
-			type={type}
-			options={chartOpts(categories, {horizontal}).opt}
-			series={[{name: 'series-1', data: dataChart}]}
-		/>
+		<>
+			<div className="text-center text-xl font-bold font-bachshrift">
+				{title}
+			</div>
+
+			<Chart
+				key={type}
+				height={500}
+				type={type}
+				options={chartOpts(categories, {horizontal}).opt}
+				series={[{name: 'series-1', data: dataChart}]}
+			/>
+		</>
 	);
 }

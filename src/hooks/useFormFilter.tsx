@@ -1,3 +1,5 @@
+import {useEffect} from 'react';
+
 import {
 	DeepPartial,
 	FieldValues,
@@ -8,6 +10,7 @@ import {
 
 import {TDateFilter} from '@appTypes/app.zod';
 import {Input, Select, SelectPropsData} from '@components';
+import {formatDate} from '@constants';
 import {dateUtils, moment} from '@utils';
 
 export type UseDateFilterProps<F extends FieldValues> = F & TDateFilter;
@@ -95,6 +98,40 @@ export function useFormFilter<T extends TDateFilter & {}>(
 			</>
 		);
 	}
+
+	useEffect(() => {
+		if (!!filterYear) {
+			form.reset(prev => {
+				const {filterFrom, filterTo} = prev;
+				return {
+					...prev,
+					filterFrom: moment(filterFrom)
+						.set('year', parseInt(filterYear))
+						.format(formatDate),
+					filterTo: moment(filterTo)
+						.set('year', parseInt(filterYear))
+						.format(formatDate),
+				};
+			});
+		}
+	}, [filterYear]);
+
+	useEffect(() => {
+		if (!!filterMonth) {
+			form.reset(prev => {
+				const {filterFrom, filterTo} = prev;
+				return {
+					...prev,
+					filterFrom: moment(filterFrom)
+						.set('month', filterMonth)
+						.format(formatDate),
+					filterTo: moment(filterTo)
+						.set('month', filterMonth)
+						.format(formatDate),
+				};
+			});
+		}
+	}, [filterMonth]);
 
 	return {
 		days,
