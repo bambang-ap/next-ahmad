@@ -6,11 +6,16 @@ import {decimalValue} from '@constants';
 import {useQtyData} from '@hooks';
 import {Chart} from '@prevComp/Chart';
 
+import {DashboardForm} from '..';
+
 import {FormValue} from './';
 
-export default function DonutChart({control}: FormProps<FormValue>) {
+export default function DonutChart({
+	control,
+	rootForm,
+}: FormProps<FormValue> & {rootForm: FormProps<DashboardForm>}) {
 	const {type} = useWatch({control});
-	const {qtyParser} = useQtyData();
+	const {qtyParser} = useQtyData(rootForm);
 
 	const qtys = qtyParser(type!);
 

@@ -8,13 +8,13 @@ import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
-import {J, JJ} from '.';
+import {DashboardForm, JJ} from '.';
 
 export default function MachineDaily({
 	days,
 	control,
 	daysSelectedDate,
-}: FormProps<J> & JJ) {
+}: FormProps<DashboardForm> & JJ) {
 	const horizontal = useRecoilValue(atomIsMobile);
 	const {
 		qtyKey: qtyKeySelected = [],

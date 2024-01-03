@@ -9,6 +9,8 @@ import {classNames, numberFormat} from '@utils';
 
 import {FormValue} from './';
 
+import {DashboardForm} from '..';
+
 const {TBody, THead, Tr} = Table;
 
 export function Td({className, rootClassName, ...props}: BorderTdProps) {
@@ -24,8 +26,11 @@ export function Td({className, rootClassName, ...props}: BorderTdProps) {
 export default function QtyTable({
 	control,
 	setValue,
-}: FormProps<FormValue, 'control' | 'setValue'>) {
-	const {dataList, qtyParser} = useQtyData();
+	rootForm,
+}: FormProps<FormValue, 'control' | 'setValue'> & {
+	rootForm: FormProps<DashboardForm>;
+}) {
+	const {dataList, qtyParser} = useQtyData(rootForm);
 
 	const titleClassName = 'text-lg text-white';
 

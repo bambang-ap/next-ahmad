@@ -112,7 +112,7 @@ export function whereDateFilter<T extends {}>(
 	field: LiteralUnion<L<T>>,
 	{filterFrom, filterTo}: Partial<TDateFilter>,
 ): any {
-	const from = moment(filterFrom).format(formatAll);
+	const from = moment(filterFrom).startOf('date').format(formatAll);
 	const to = moment(filterTo).endOf('date').format(formatAll);
 
 	return {

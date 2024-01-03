@@ -1,7 +1,7 @@
 import {col, FindOptions, fn} from 'sequelize';
 
 import {TDecimal, TItemUnit, UQty} from '@appTypes/app.type';
-import {tScanItemReject, tScanNew} from '@appTypes/app.zod';
+import {tDateFilter, tScanItemReject, tScanNew} from '@appTypes/app.zod';
 import {allowedUnit as unitData} from '@constants';
 import {
 	attrParserV2,
@@ -16,6 +16,7 @@ import {
 	OrmCustomerSPPBOutItem,
 	OrmKanbanItem,
 	OrmPOItemSppbIn,
+	whereDateFilter,
 	wherePagesV3,
 } from '@database';
 import {checkCredentialV2} from '@server';
@@ -47,13 +48,13 @@ async function parseQueries(queries: Promise<any>[]) {
 }
 
 const mainDashboardRouter = router({
-	po: procedure.query(({ctx}) => {
+	po: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		function selector(num: UQty): FindOptions {
 			const uu = `unit${num}`;
 
 			return {
 				group: [uu],
-				where: {[uu]: unitData},
+				where: {[uu]: unitData, ...whereDateFilter('$createdAt$', input)},
 				attributes: [
 					[uu, 'unit'],
 					[fn('sum', col(`qty${num}`)), 'qty'],
@@ -71,14 +72,17 @@ const mainDashboardRouter = router({
 			return parseQueries(queries);
 		});
 	}),
-	sppbIn: procedure.query(({ctx}) => {
+	sppbIn: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		function selector(num: UQty): FindOptions {
 			const group = `OrmCustomerPOItem.unit${num}`;
 			return {
 				group,
 				raw: true,
 				include: [{model: OrmCustomerPOItem, attributes: []}],
-				where: {[`$${group}$`]: unitData},
+				where: {
+					[`$${group}$`]: unitData,
+					...whereDateFilter('$OrmPOItemSppbIn.createdAt$', input),
+				},
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`OrmPOItemSppbIn.qty${num}`)), 'qty'],
@@ -95,13 +99,16 @@ const mainDashboardRouter = router({
 			return parseQueries(queries);
 		});
 	}),
-	kanban: procedure.query(({ctx}) => {
+	kanban: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		function selector(num: UQty): FindOptions {
 			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
 			return {
 				group,
 				raw: true,
-				where: {[`$${group}$`]: unitData},
+				where: {
+					[`$${group}$`]: unitData,
+					...whereDateFilter('$OrmKanbanItem.createdAt$', input),
+				},
 				include: [
 					{
 						attributes: [],
@@ -126,60 +133,65 @@ const mainDashboardRouter = router({
 			return parseQueries(queries);
 		});
 	}),
-	scan: procedure.input(tScanNew.pick({status: true})).query(({ctx, input}) => {
-		const {status: target} = input;
+	scan: procedure
+		.input(tScanNew.pick({status: true}).extend(tDateFilter.partial().shape))
+		.query(({ctx, input}) => {
+			const {status: target} = input;
 
-		async function selector(num: UQty) {
-			type Ret = typeof scnItem.obj & {
-				dScan: typeof scn.obj;
-				dKnbItem: typeof knbItem.obj & {
-					dInItem: typeof inItem.obj & {
-						dPoItem: typeof poItem.obj;
+			async function selector(num: UQty) {
+				type Ret = typeof scnItem.obj & {
+					dScan: typeof scn.obj;
+					dKnbItem: typeof knbItem.obj & {
+						dInItem: typeof inItem.obj & {
+							dPoItem: typeof poItem.obj;
+						};
 					};
 				};
-			};
 
-			const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
+				const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
 
-			const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
-			const data = scnItem.model.findAll({
-				group,
-				where: {
-					...wherePagesV3<Ret>({'$dScan.status$': target}),
-					[`$${group}$`]: unitData,
-				},
-				attributes: [
-					[col(group), 'unit'],
-					[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
-				],
-				include: [
-					{model: scn.model, attributes: []},
-					{
-						model: knbItem.model,
-						attributes: [],
-						include: [
-							{
-								model: inItem.model,
-								attributes: [],
-								include: [{model: poItem.model, attributes: []}],
-							},
-						],
+				const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
+				const data = scnItem.model.findAll({
+					group,
+					where: {
+						...wherePagesV3<Ret>({'$dScan.status$': target}),
+						...whereDateFilter('$dScanItem.createdAt$', input),
+						[`$${group}$`]: unitData,
 					},
-				],
+					attributes: [
+						[col(group), 'unit'],
+						[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
+					],
+					include: [
+						{model: scn.model, attributes: []},
+						{
+							model: knbItem.model,
+							attributes: [],
+							include: [
+								{
+									model: inItem.model,
+									attributes: [],
+									include: [{model: poItem.model, attributes: []}],
+								},
+							],
+						},
+					],
+				});
+
+				return data;
+			}
+
+			return checkCredentialV2(ctx, async (): Promise<J> => {
+				const queries = [selector(1), selector(2), selector(3)];
+
+				return parseQueries(queries);
 			});
-
-			return data;
-		}
-
-		return checkCredentialV2(ctx, async (): Promise<J> => {
-			const queries = [selector(1), selector(2), selector(3)];
-
-			return parseQueries(queries);
-		});
-	}),
+		}),
 
 	reject: procedure
-		.input(tScanItemReject.pick({reason: true}))
+		.input(
+			tScanItemReject.pick({reason: true}).extend(tDateFilter.partial().shape),
+		)
 		.query(({ctx, input}) => {
 			const {reason: target} = input;
 
@@ -203,6 +215,7 @@ const mainDashboardRouter = router({
 					group,
 					where: {
 						...wherePagesV3<Ret>({reason: target}),
+						...whereDateFilter('$dRejItem.createdAt$', input),
 						[`$${group}$`]: unitData,
 					},
 					attributes: [
@@ -240,13 +253,16 @@ const mainDashboardRouter = router({
 			});
 		}),
 
-	sppbOut: procedure.query(({ctx}) => {
+	sppbOut: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		function selector(num: UQty): FindOptions {
 			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
 			return {
 				group,
 				raw: true,
-				where: {[`$${group}$`]: unitData},
+				where: {
+					[`$${group}$`]: unitData,
+					...whereDateFilter('$OrmCustomerSPPBOutItem.createdAt$', input),
+				},
 				include: [
 					{
 						attributes: [],

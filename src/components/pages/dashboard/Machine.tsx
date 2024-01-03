@@ -13,9 +13,9 @@ import type {MachineSummary} from '@trpc/routers/dashboard/machine';
 import {classNames, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
 
-import {J} from '.';
+import {DashboardForm} from '.';
 
-export default function MachineDashboard({control}: FormProps<J>) {
+export default function MachineDashboard({control}: FormProps<DashboardForm>) {
 	const {
 		filterFrom,
 		filterTo,

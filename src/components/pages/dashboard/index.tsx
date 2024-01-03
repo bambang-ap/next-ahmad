@@ -31,7 +31,7 @@ import MachineDaily from './MachineDaily';
 import MainDashboard from './Main';
 import TotalCount from './TotalCount';
 
-export type J = UseDateFilterProps<
+export type DashboardForm = UseDateFilterProps<
 	TMachineFilter & {
 		view: TDashboardView;
 		qtyKey: UQty[];
@@ -46,14 +46,22 @@ export default function Dashboard() {
 		daysSelectedDate,
 		MonthYear,
 		form: {control, watch},
-	} = useFormFilter<J>({sameMonth: true, defaultValues: {qtyKey: [2, 3]}});
+	} = useFormFilter<DashboardForm>({
+		sameMonth: true,
+		defaultValues: {qtyKey: [2, 3]},
+	});
 	const {view} = watch();
 
 	const isMobile = useRecoilValue(atomIsMobile);
 
 	const isMachine = view === 'machine';
+	const isMain = view === 'main';
 	const isMachineChart = view === 'machine_chart';
 	const isMachineDaily = view === 'machine_daily';
+
+	const isMachineView = isMachine || isMachineChart || isMachineDaily;
+	const showFromTo = isMachine || isMain;
+	const showMonthYear = isMachineChart || isMachineDaily;
 
 	return (
 		<div className="flex flex-col">
@@ -72,7 +80,7 @@ export default function Dashboard() {
 						defaultValue={DashboardSelectView?.[0]?.value}
 					/>
 				</div>
-				{(isMachine || isMachineChart || isMachineDaily) && (
+				{isMachineView && (
 					<MultipleButtonGroup
 						className={classNames({'w-full': isMobile})}
 						control={control}
@@ -87,10 +95,8 @@ export default function Dashboard() {
 							!isMobile && (isMachine || isMachineDaily || isMachineChart),
 						'w-full': isMobile,
 					})}>
-					{isMachine && fromToComponent}
-					{(isMachineChart || isMachineDaily) && (
-						<MonthYear hideMonth={isMachineChart} />
-					)}
+					{showFromTo && fromToComponent}
+					{showMonthYear && <MonthYear hideMonth={isMachineChart} />}
 				</div>
 			</div>
 
@@ -107,7 +113,7 @@ export default function Dashboard() {
 	);
 }
 
-function RenderMachineFilter({control}: FormProps<J>) {
+function RenderMachineFilter({control}: FormProps<DashboardForm>) {
 	const {machineCatId} = useWatch({control});
 
 	const {data: dataCat} = trpc.basic.get.useQuery<any, TKategoriMesin[]>({
@@ -149,12 +155,12 @@ function RenderView({
 	days,
 	control,
 	daysSelectedDate,
-}: JJ & {control: Control<J>}) {
+}: JJ & {control: Control<DashboardForm>}) {
 	const {view} = useWatch({control});
 
 	switch (view) {
 		case 'main':
-			return <MainDashboard />;
+			return <MainDashboard control={control} />;
 		case 'bar':
 			return <BarChart />;
 		case 'line':

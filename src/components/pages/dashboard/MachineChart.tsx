@@ -9,9 +9,9 @@ import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
 import {trpc} from '@utils/trpc';
 
-import {J} from '.';
+import {DashboardForm} from '.';
 
-export default function MachineChart({control}: FormProps<J>) {
+export default function MachineChart({control}: FormProps<DashboardForm>) {
 	const {filterYear} = useWatch({control});
 
 	const now = moment(`${filterYear}/01/01`);
