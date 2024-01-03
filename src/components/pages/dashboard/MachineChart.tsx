@@ -32,12 +32,10 @@ export default function MachineChart({control}: FormProps<DashboardForm>) {
 			const filterFrom = currentMonth.format(formatDate);
 			const filterTo = currentMonth.endOf('month').format(formatDate);
 
-			return t.dashboard.machine.summary({
-				filterFrom,
-				filterTo,
-				machineCatId,
-				machineId,
-			});
+			return t.dashboard.machine.summary(
+				{filterFrom, filterTo, machineCatId, machineId},
+				{initialData: {qty1: {}, qty2: {}, qty3: {}}},
+			);
 		});
 	});
 

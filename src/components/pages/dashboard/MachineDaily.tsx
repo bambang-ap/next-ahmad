@@ -24,12 +24,10 @@ export default function MachineDaily({
 
 	const queries = trpc.useQueries(t => {
 		return days.map(date => {
-			return t.dashboard.machine.summary({
-				filterFrom: date,
-				filterTo: date,
-				machineCatId,
-				machineId,
-			});
+			return t.dashboard.machine.summary(
+				{filterFrom: date, filterTo: date, machineCatId, machineId},
+				{initialData: {qty1: {}, qty2: {}, qty3: {}}},
+			);
 		});
 	});
 
