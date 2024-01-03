@@ -56,12 +56,15 @@ export default function Dashboard() {
 
 	const isMachine = view === 'machine';
 	const isMain = view === 'main';
+	const isTotal = view === 'total';
+	const isBar = view === 'bar';
 	const isMachineChart = view === 'machine_chart';
 	const isMachineDaily = view === 'machine_daily';
 
 	const isMachineView = isMachine || isMachineChart || isMachineDaily;
 	const showFromTo = isMachine || isMain;
-	const showMonthYear = isMachineChart || isMachineDaily;
+	const showMonthYear = isBar || isTotal || isMachineChart || isMachineDaily;
+	const hideMonth = isBar || isTotal || isMachineChart;
 
 	return (
 		<div className="flex flex-col">
@@ -91,12 +94,11 @@ export default function Dashboard() {
 
 				<div
 					className={classNames('flex gap-2 justify-end', {
-						'w-1/3':
-							!isMobile && (isMachine || isMachineDaily || isMachineChart),
+						'w-1/3': !isMobile,
 						'w-full': isMobile,
 					})}>
 					{showFromTo && fromToComponent}
-					{showMonthYear && <MonthYear hideMonth={isMachineChart} />}
+					{showMonthYear && <MonthYear hideMonth={hideMonth} />}
 				</div>
 			</div>
 
@@ -162,9 +164,9 @@ function RenderView({
 		case 'main':
 			return <MainDashboard control={control} />;
 		case 'bar':
-			return <BarChart />;
+			return <BarChart control={control} />;
 		case 'line':
-			return <BarChart type="line" />;
+			return <BarChart control={control} type="line" />;
 		case 'machine':
 			return <MachineDashboard control={control} />;
 		case 'machine_chart':
@@ -178,6 +180,6 @@ function RenderView({
 				/>
 			);
 		default:
-			return <TotalCount />;
+			return <TotalCount control={control} />;
 	}
 }

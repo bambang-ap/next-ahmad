@@ -1,6 +1,7 @@
 import {Op} from 'sequelize';
 
 import {TDashboard, TDashboardTitle, TItemUnit} from '@appTypes/app.type';
+import {tDateFilter} from '@appTypes/app.zod';
 import {unitData} from '@constants';
 import {OrmCustomerPOItem} from '@database';
 import {checkCredentialV2} from '@server';
@@ -50,23 +51,25 @@ const dashboardRouters = router({
 		});
 	}),
 
-	businessProcess: procedure.query(async ({ctx}): Promise<TDashboard[]> => {
-		const parameters: TDashboardTitle[] = [
-			'PO',
-			'SPPB In',
-			'Kanban',
-			'Scan Produksi',
-			'Scan QC',
-			'Scan Finish Good',
-			'SPPB Out',
-		];
-		const routerCaller = appRouter.createCaller(ctx);
-		const datas = await routerCaller.dashboard.totalCount();
+	businessProcess: procedure
+		.input(tDateFilter.partial())
+		.query(async ({input, ctx}): Promise<TDashboard[]> => {
+			const parameters: TDashboardTitle[] = [
+				'PO',
+				'SPPB In',
+				'Kanban',
+				'Scan Produksi',
+				'Scan QC',
+				'Scan Finish Good',
+				'SPPB Out',
+			];
+			const routerCaller = appRouter.createCaller(ctx);
+			const datas = await routerCaller.dashboard.totalCount(input);
 
-		return parameters.map(param => {
-			return datas.find(d => d.title === param)!;
-		});
-	}),
+			return parameters.map(param => {
+				return datas.find(d => d.title === param)!;
+			});
+		}),
 });
 
 export default dashboardRouters;

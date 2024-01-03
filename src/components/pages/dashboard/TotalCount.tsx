@@ -1,14 +1,26 @@
+import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
+import {FormProps} from '@appTypes/app.type';
 import {Button, Text} from '@components';
+import {formatAll} from '@constants';
 import {PATHS} from '@enum';
 import {useRouter} from '@hooks';
 import {atomIsMobile} from '@recoil/atoms';
-import {classNames} from '@utils';
+import {classNames, moment} from '@utils';
 import {trpc} from '@utils/trpc';
 
-export default function TotalCount() {
-	const {data} = trpc.dashboard.totalCount.useQuery();
+import {DashboardForm} from '.';
+
+export default function TotalCount({control}: FormProps<DashboardForm>) {
+	const {filterYear} = useWatch({control});
+
+	const now = moment(`${filterYear}/01/01`);
+
+	const {data} = trpc.dashboard.totalCount.useQuery({
+		filterFrom: now.format(formatAll),
+		filterTo: now.endOf('year').format(formatAll),
+	});
 	const {push} = useRouter();
 
 	const isMobile = useRecoilValue(atomIsMobile);

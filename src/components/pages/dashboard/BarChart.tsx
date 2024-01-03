@@ -1,13 +1,27 @@
+import {useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
-import {chartOpts} from '@constants';
+import {FormProps} from '@appTypes/app.type';
+import {chartOpts, formatAll} from '@constants';
 import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
+import {moment} from '@utils';
 import {trpc} from '@utils/trpc';
 
-export default function BarChart({type = 'bar'}: {type?: 'bar' | 'line'}) {
+import {DashboardForm} from '.';
+
+export default function BarChart({
+	type = 'bar',
+	control,
+}: FormProps<DashboardForm> & {type?: 'bar' | 'line'}) {
+	const {filterYear} = useWatch({control});
+	const now = moment(`${filterYear}/01/01`);
+
 	const horizontal = useRecoilValue(atomIsMobile);
-	const {data} = trpc.dashboard.businessProcess.useQuery();
+	const {data} = trpc.dashboard.businessProcess.useQuery({
+		filterFrom: now.format(formatAll),
+		filterTo: now.endOf('year').format(formatAll),
+	});
 
 	const {categories = [], dataChart = []} =
 		data?.reduce(
