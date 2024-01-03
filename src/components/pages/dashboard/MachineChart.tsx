@@ -7,6 +7,7 @@ import {chartOpts, formatDate} from '@constants';
 import {useMachine} from '@hooks';
 import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
+import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {DashboardForm} from '.';
@@ -18,11 +19,7 @@ export default function MachineChart({control}: FormProps<DashboardForm>) {
 	const horizontal = useRecoilValue(atomIsMobile);
 	const title = `Data Mesin Tahun ${now.format('YYYY')}`;
 
-	const months = Array.from({length: 12}).map((_, i) => {
-		const currentMonth = now.startOf('year').add(i, 'month');
-
-		return {month: currentMonth.format('MMMM'), currentMonth};
-	});
+	const months = dateUtils.getMonths(now);
 
 	const {
 		qtyKey: qtyKeySelected = [],

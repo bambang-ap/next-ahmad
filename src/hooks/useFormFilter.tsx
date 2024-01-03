@@ -9,9 +9,9 @@ import {
 } from 'react-hook-form';
 
 import {TDateFilter} from '@appTypes/app.zod';
-import {Input, Select, SelectPropsData} from '@components';
+import {Input, Select} from '@components';
 import {formatDate} from '@constants';
-import {dateUtils, moment} from '@utils';
+import {dateUtils, getMoments, moment} from '@utils';
 
 export type UseDateFilterProps<F extends FieldValues> = F & TDateFilter;
 
@@ -23,21 +23,6 @@ export function useFormFilter<T extends TDateFilter & {}>(
 	const from = dateUtils.readable(today.startOf('month').unix() * 1000)!;
 
 	const {defaultValues, sameMonth, ...restOpts} = options ?? {};
-
-	const months: SelectPropsData<number>[] = dateUtils
-		.getMonths(moment())
-		.map(({currentMonth}) => {
-			return {
-				label: currentMonth.format('MMMM'),
-				value: currentMonth.get('months'),
-			};
-		});
-
-	const years: SelectPropsData<number>[] = Array.from({length: 15}).map(
-		(_, i) => {
-			return {value: i + 2023};
-		},
-	);
 
 	const form = useForm<TDateFilter>({
 		...restOpts,
@@ -55,7 +40,8 @@ export function useFormFilter<T extends TDateFilter & {}>(
 	const {filterYear, filterMonth} = form.watch();
 
 	const daysSelectedDate = moment(`${filterYear}-${filterMonth + 1}-20`);
-	const days = dateUtils.getDays(daysSelectedDate);
+
+	const {days, months, years} = getMoments(daysSelectedDate);
 
 	const fromToComponent = (
 		<>

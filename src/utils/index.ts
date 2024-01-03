@@ -16,6 +16,7 @@ import {
 	TScanTarget,
 	ZIndex,
 } from '@appTypes/app.zod';
+import {SelectPropsData} from '@components';
 import {
 	decimalSchema,
 	decimalValue,
@@ -55,6 +56,25 @@ function convertDate(format: string, date?: LiteralUnion<'now'> | number) {
 	return moment(isNow ? undefined : date).format(format);
 }
 
+export function getMoments(date: string | momentTz.Moment) {
+	const months: SelectPropsData<number>[] = dateUtils
+		.getMonths(moment(date))
+		.map(({currentMonth}) => {
+			return {
+				label: currentMonth.format('MMMM'),
+				value: currentMonth.get('months'),
+			};
+		});
+
+	const years: SelectPropsData<number>[] = dateUtils
+		.getYears()
+		.map(value => ({value}));
+
+	const days = dateUtils.getDays(date);
+
+	return {years, months, days};
+}
+
 export const dateUtils = {
 	date: (date?: LiteralUnion<'now'> | number) =>
 		convertDate(formatDateView, date),
@@ -67,6 +87,14 @@ export const dateUtils = {
 		convertDate(formatFullView, date),
 	all: (date?: LiteralUnion<'now'> | number) => convertDate(formatAll, date),
 
+	getYears(from = 2023, length = 15) {
+		const years = Array.from({length}).map((_, i) => {
+			return i + from;
+		});
+
+		return years;
+	},
+
 	getMonths(selectedDate: string | momentTz.Moment) {
 		const months = Array.from({length: 12}).map((_, i) => {
 			const currentMonth = moment(selectedDate).startOf('year').add(i, 'month');
@@ -76,6 +104,7 @@ export const dateUtils = {
 
 		return months;
 	},
+
 	getDays(selectedDate: string | momentTz.Moment) {
 		const daysSelectedDate = moment(selectedDate);
 
