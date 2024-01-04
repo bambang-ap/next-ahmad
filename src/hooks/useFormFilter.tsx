@@ -37,7 +37,7 @@ export function useFormFilter<T extends TDateFilter & {}>(
 			: defaultValues) as DeepPartial<TDateFilter>,
 	});
 
-	const {filterYear, filterMonth} = form.watch();
+	const {filterYear, filterMonth = 0} = form.watch();
 
 	const daysSelectedDate = moment(`${filterYear}-${filterMonth + 1}-20`);
 
@@ -66,6 +66,7 @@ export function useFormFilter<T extends TDateFilter & {}>(
 		return (
 			<>
 				<Select
+					disableClear
 					className="flex-1"
 					label="Tahun"
 					data={years}
@@ -74,6 +75,7 @@ export function useFormFilter<T extends TDateFilter & {}>(
 				/>
 				{!hideMonth && (
 					<Select
+						disableClear
 						className="flex-1"
 						label="Bulan"
 						data={months}
