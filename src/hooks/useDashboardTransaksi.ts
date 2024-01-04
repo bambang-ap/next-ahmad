@@ -1,15 +1,9 @@
-import {RouterOutput} from '@appTypes/app.type';
-import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import type {RetTotal} from '@trpc/routers/internal/dashboard';
 
-export function useDashboardTransaksi(
-	queries: UseTRPCQueryResult<
-		RouterOutput['internal']['dashboard']['total'],
-		any
-	>[],
-) {
+export function useDashboardTransaksi(queries: RetTotal[]) {
 	const series = queries.reduce<Record<string, ApexAxisChartSeries[number]>>(
 		(ret, cur, i) => {
-			entries(cur.data).forEach(([name, {value}]) => {
+			entries(cur).forEach(([name, {value}]) => {
 				if (!ret[name]) ret[name] = {data: [], name};
 
 				ret[name]!.data[i] = value;

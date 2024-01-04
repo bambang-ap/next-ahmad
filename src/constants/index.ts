@@ -217,7 +217,10 @@ export const poScoreAlpha = {
 export function chartOpts(
 	categories: ApexXAxis['categories'],
 	opts?: Partial<
-		Record<'hideZero' | 'horizontal' | 'dataLabel' | 'currency', boolean>
+		Record<
+			'hideZero' | 'horizontal' | 'dataLabel' | 'currency' | 'isFetching',
+			boolean
+		>
 	>,
 ) {
 	const {
@@ -225,16 +228,37 @@ export function chartOpts(
 		horizontal,
 		dataLabel = false,
 		currency = false,
+		isFetching,
 	} = opts ?? {};
 	const fontFamily = 'Bahnschrift';
 	const fontSize = '16px';
 	const colors = ['black'];
+
+	const isLoading = isFetching === undefined ? false : isFetching;
+
+	const noData = !isLoading
+		? undefined
+		: {
+				noData: {
+					text: 'Harap tunggu...',
+					align: 'center',
+					verticalAlign: 'middle',
+					offsetX: 0,
+					offsetY: 0,
+					style: {
+						color: '#000000',
+						fontSize: '14px',
+						fontFamily: 'Helvetica',
+					},
+				} as ApexOptions['noData'],
+		  };
 
 	return {
 		fontFamily,
 		fontSize,
 		colors,
 		opt: {
+			...noData,
 			plotOptions: {bar: {horizontal}},
 			stroke: {curve: 'smooth'},
 			markers: {size: 2},
@@ -280,7 +304,7 @@ export function chartOpts(
 				},
 			},
 			xaxis: {
-				categories,
+				categories: isLoading ? undefined : categories,
 				labels: {
 					style: {colors, fontFamily, fontSize},
 					formatter(val) {

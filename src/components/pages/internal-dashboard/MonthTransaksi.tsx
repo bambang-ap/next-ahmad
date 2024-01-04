@@ -20,20 +20,15 @@ export default function InternalDashboardMTransaksi({
 	const title = `Data Transaksi Tahun ${now.format('YYYY')}`;
 	const months = dateUtils.getMonths(now);
 
-	const queries = trpc.useQueries(t => {
-		return months.map(({currentMonth}) => {
+	const {data = []} = trpc.internal.dashboard.totalList.useQuery(
+		months.map(({currentMonth}) => {
 			const filterFrom = currentMonth.format(formatDate);
 			const filterTo = currentMonth.endOf('month').format(formatDate);
+			return {filterFrom, filterTo, isCalculated: true};
+		}),
+	);
 
-			return t.internal.dashboard.total({
-				filterFrom,
-				filterTo,
-				isCalculated: true,
-			});
-		});
-	});
-
-	const series = useDashboardTransaksi(queries);
+	const series = useDashboardTransaksi(data);
 
 	return (
 		<>
@@ -48,11 +43,7 @@ export default function InternalDashboardMTransaksi({
 				options={
 					chartOpts(
 						months.map(e => e.month),
-						{
-							horizontal,
-							hideZero: true,
-							currency: true,
-						},
+						{horizontal, hideZero: true, currency: true},
 					).opt
 				}
 			/>

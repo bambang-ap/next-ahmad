@@ -21,17 +21,11 @@ export default function InternalDashboardDTransaksi({
 		`${filterYear}/${filterMonth! + 1}`,
 	).format('MMMM YYYY')}`;
 
-	const queries = trpc.useQueries(t => {
-		return days.map(date => {
-			return t.internal.dashboard.total({
-				filterFrom: date,
-				filterTo: date,
-				isCalculated: true,
-			});
-		});
-	});
+	const {data = []} = trpc.internal.dashboard.totalList.useQuery(
+		days.map(date => ({filterFrom: date, filterTo: date, isCalculated: true})),
+	);
 
-	const series = useDashboardTransaksi(queries);
+	const series = useDashboardTransaksi(data);
 
 	return (
 		<>
