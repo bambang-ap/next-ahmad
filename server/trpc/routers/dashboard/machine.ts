@@ -1,4 +1,5 @@
 import {Op} from 'sequelize';
+import {z} from 'zod';
 
 import {
 	TDateFilter,
@@ -78,47 +79,57 @@ export type MachineSummary = Partial<
 	>
 >;
 
+async function asd(input: z.infer<typeof dInput>) {
+	type Ret = typeof ARet;
+
+	const {Ret: ARet} = dashboardMesinAttributes();
+
+	const scnItemData = await s(input);
+
+	return scnItemData.reduce<MachineSummary>((ret, e) => {
+		const val = e.toJSON() as unknown as Ret;
+
+		const {
+			item_from_kanban,
+			dKnbItem: {
+				dInItem: {dPoItem},
+			},
+			...item
+		} = val;
+
+		qtyMap(({qtyKey, unitKey}) => {
+			if (!ret[qtyKey]) ret[qtyKey] = {};
+
+			const unit = dPoItem[unitKey]!;
+
+			if (!ret[qtyKey]![unit]) ret[qtyKey]![unit] = [0, 0];
+
+			ret[qtyKey]![unit]![0] += parseFloat(
+				item_from_kanban[qtyKey]?.toString() ?? '0',
+			);
+			ret[qtyKey]![unit]![1] += parseFloat(item[qtyKey]?.toString() ?? '0');
+		});
+
+		return ret;
+	}, {});
+}
+
+export type RetAsd = Awaited<ReturnType<typeof asd>>;
+
+const dInput = tDateFilter.extend(tMachineFilter.shape).partial();
+
 const machineDashboardRouters = router({
-	summary: procedure
-		.input(tDateFilter.extend(tMachineFilter.shape).partial())
-		.query(({ctx, input}) => {
-			type Ret = typeof ARet;
+	summaryList: procedure.input(dInput.array()).query(({ctx, input}) => {
+		return checkCredentialV2(ctx, () => {
+			const promised = input.map(e => asd(e));
 
-			const {Ret: ARet} = dashboardMesinAttributes();
+			return Promise.all(promised);
+		});
+	}),
 
-			return checkCredentialV2(ctx, async () => {
-				const scnItemData = await s(input);
-
-				return scnItemData.reduce<MachineSummary>((ret, e) => {
-					const val = e.toJSON() as unknown as Ret;
-
-					const {
-						item_from_kanban,
-						dKnbItem: {
-							dInItem: {dPoItem},
-						},
-						...item
-					} = val;
-
-					qtyMap(({qtyKey, unitKey}) => {
-						if (!ret[qtyKey]) ret[qtyKey] = {};
-
-						const unit = dPoItem[unitKey]!;
-
-						if (!ret[qtyKey]![unit]) ret[qtyKey]![unit] = [0, 0];
-
-						ret[qtyKey]![unit]![0] += parseFloat(
-							item_from_kanban[qtyKey]?.toString() ?? '0',
-						);
-						ret[qtyKey]![unit]![1] += parseFloat(
-							item[qtyKey]?.toString() ?? '0',
-						);
-					});
-
-					return ret;
-				}, {});
-			});
-		}),
+	summary: procedure.input(dInput).query(({ctx, input}) => {
+		return checkCredentialV2(ctx, async () => asd(input));
+	}),
 
 	list: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
 		type Ret = typeof ARet;

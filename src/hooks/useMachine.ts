@@ -1,18 +1,15 @@
-import {RouterOutput, TItemUnit, UQty} from '@appTypes/app.type';
+import {TItemUnit, UQty} from '@appTypes/app.type';
 import {decimalValue} from '@constants';
 import {getTotalQty} from '@pageComponent/dashboard/Machine';
-import {UseTRPCQueryResult} from '@trpc/react-query/shared';
+import type {RetAsd} from '@trpc/routers/dashboard/machine';
 
 export function useMachine(
-	queries: UseTRPCQueryResult<
-		RouterOutput['dashboard']['machine']['summary'],
-		any
-	>[],
+	queries: RetAsd[],
 	qtyKeySelected: UQty[],
 	unitFiltering?: TItemUnit[],
 ) {
 	const series = queries.reduce<ApexAxisChartSeries>((ret, e, i) => {
-		const totalQty = getTotalQty(qtyKeySelected, e.data);
+		const totalQty = getTotalQty(qtyKeySelected, e);
 
 		for (const [name, [, value]] of entries(totalQty)) {
 			const isPcsKg = (

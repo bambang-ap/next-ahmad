@@ -27,19 +27,16 @@ export default function MachineChart({control}: FormProps<DashboardForm>) {
 		machineId,
 	} = useWatch({control});
 
-	const queries = trpc.useQueries(t => {
-		return months.map(({currentMonth}) => {
+	const {data = []} = trpc.dashboard.machine.summaryList.useQuery(
+		months.map(({currentMonth}) => {
 			const filterFrom = currentMonth.format(formatDate);
 			const filterTo = currentMonth.endOf('month').format(formatDate);
 
-			return t.dashboard.machine.summary(
-				{filterFrom, filterTo, machineCatId, machineId},
-				{initialData: {qty1: {}, qty2: {}, qty3: {}}},
-			);
-		});
-	});
+			return {filterFrom, filterTo, machineCatId, machineId};
+		}),
+	);
 
-	const series = useMachine(queries, qtyKeySelected);
+	const series = useMachine(data, qtyKeySelected);
 
 	return (
 		<>
