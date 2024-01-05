@@ -138,22 +138,30 @@ export function getPrintPoAttributes() {
 }
 
 export function sppbInGetPage() {
-	const A = attrParser(tCustomerSPPBIn, ['tgl', 'id', 'id_po', 'nomor_surat']);
-	const B = attrParser(tCustomerPO, ['nomor_po']);
-	const C = attrParser(tCustomer, ['name', 'id']);
-	const D = attrParser(tPOItemSppbIn);
-	const E = attrParser(tPOItem);
-	const F = attrParser(tMasterItem);
+	const sjIn = attrParserV2(dSJIn, ['tgl', 'id', 'id_po', 'nomor_surat']);
+	const po = attrParserV2(dPo, ['nomor_po']);
+	const cust = attrParserV2(dCust, ['name', 'id']);
+	const inItem = attrParserV2(dInItem);
+	const poItem = attrParserV2(dPoItem);
+	const item = attrParserV2(dItem);
 
-	type Ret = typeof A.obj & {
-		OrmCustomerPO: typeof B.obj & {OrmCustomer: typeof C.obj};
-		OrmPOItemSppbIns: (typeof D.obj & {
-			OrmCustomerPOItem: typeof E.obj;
-			OrmMasterItem: typeof F.obj;
+	type Ret = typeof sjIn.obj & {
+		dPo: typeof po.obj & {dCust: typeof cust.obj};
+		dInItems: (typeof inItem.obj & {
+			dPoItem: typeof poItem.obj;
+			dItem: typeof item.obj;
 		})[];
 	};
 
-	return {A, B, C, D, E, F, Ret: {} as Ret};
+	return {
+		sjIn,
+		po,
+		cust,
+		inItem,
+		poItem,
+		item,
+		Ret: {} as Ret,
+	};
 }
 
 export function exportKanbanAttributes() {

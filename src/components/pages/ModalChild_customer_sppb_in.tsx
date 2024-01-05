@@ -36,8 +36,8 @@ export function SppbInModalChild({
 
 	const {
 		id_customer = '',
-		OrmCustomerPO,
-		OrmPOItemSppbIns,
+		dPo: OrmCustomerPO,
+		dInItems: OrmPOItemSppbIns,
 		id_po,
 		type,
 	} = dataForm;

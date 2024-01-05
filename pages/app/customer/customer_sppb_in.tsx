@@ -29,7 +29,7 @@ export type FormType = {
 	id_customer?: string;
 	idSppbIns?: MyObject<boolean>;
 } & TUpsertSppbIn &
-	Partial<Pick<SppbInRows, 'OrmPOItemSppbIns' | 'OrmCustomerPO'>>;
+	Partial<Pick<SppbInRows, 'dInItems' | 'dPo'>>;
 
 SPPBIN.getLayout = getLayout;
 
@@ -123,8 +123,8 @@ export default function SPPBIN() {
 							)}
 							<Cell>{index + 1}</Cell>
 							<Cell>{dateUtils.date(item.tgl)}</Cell>
-							<Cell>{item.OrmCustomerPO?.nomor_po}</Cell>
-							<Cell>{item.OrmCustomerPO?.OrmCustomer.name}</Cell>
+							<Cell>{item.dPo?.nomor_po}</Cell>
+							<Cell>{item.dPo?.dCust.name}</Cell>
 							<Cell>{item.nomor_surat}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-2">

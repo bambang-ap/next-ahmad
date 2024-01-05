@@ -16,14 +16,16 @@ import {
 	tPOItem,
 	tPOItemSppbIn,
 	tUpsertSppbIn,
+	ZCreatedQty,
 	zId,
 } from '@appTypes/app.zod';
 import {defaultLimit, Success} from '@constants';
 import {
 	attrParser,
+	attrParserV2,
+	dOutItem,
 	orderPages,
 	ORM,
-	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
@@ -187,42 +189,50 @@ const sppbInRouters = router({
 	getPage: procedure
 		.input(tableFormValue.partial())
 		.query(({ctx: {req, res}, input}) => {
-			const {A, B, C, D, E, F} = sppbInGetPage();
+			const {sjIn, po, cust, inItem, poItem, item} = sppbInGetPage();
 			const {limit = defaultLimit, page = 1, search} = input;
 
-			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
-				const {count, rows: rr} = await OrmCustomerSPPBIn.findAndCountAll({
-					limit,
-					attributes: A.keys,
-					offset: (page - 1) * limit,
-					where: wherePagesV2<SppbInRows>(
-						[
-							'nomor_surat',
-							'$OrmCustomerPO.nomor_po$',
-							'$OrmCustomerPO.OrmCustomer.name$',
-						],
-						search,
-					),
-					include: [
-						{
-							model: OrmCustomerPO,
-							attributes: B.keys,
-							include: [{model: OrmCustomer, attributes: C.keys}],
-						},
-						{
-							separate: true,
-							model: OrmPOItemSppbIn,
-							attributes: D.keys,
-							include: [
-								{model: OrmCustomerPOItem, attributes: E.keys},
-								{model: OrmMasterItem, attributes: F.keys},
-							],
-						},
-					],
+			async function asd(id: string[]) {
+				const qtys: (keyof ZCreatedQty)[] = [
+					'createdAt',
+					'qty1',
+					'qty2',
+					'qty3',
+				];
+
+				const _inItem = inItem._modify(qtys);
+				const outItem = attrParserV2(dOutItem, qtys);
+
+				const data = await sjIn.model.findOne({
+					where: {id},
+					include: [{..._inItem, include: [outItem]}],
 				});
 
-				// @ts-ignore
-				return pagingResult(count, page, limit, rr as SppbInRows);
+				return data?.toJSON();
+			}
+
+			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
+				const {count, rows: rr} = await sjIn.model.findAndCountAll({
+					limit: 1,
+					attributes: sjIn.attributes,
+					offset: (page - 1) * limit,
+					include: [
+						{...po, include: [cust]},
+						{...inItem, separate: true, include: [poItem, item]},
+					],
+					where: wherePagesV2<SppbInRows>(
+						['nomor_surat', '$dPo.nomor_po$', '$dPo.dCust.name$'],
+						search,
+					),
+				});
+
+				const rows = rr.map(e => e.toJSON() as unknown as SppbInRows);
+
+				const score = await asd(rows.map(e => e.id!));
+
+				prettyConsole(score);
+
+				return pagingResult(count, page, limit, rows);
 			});
 		}),
 	upsert: procedure
