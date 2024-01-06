@@ -54,6 +54,7 @@ import {
 	oStock,
 	oSup,
 } from '@database';
+import {getSJInGrade} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
 
 export function getPrintPoAttributes() {
@@ -146,6 +147,7 @@ export function sppbInGetPage() {
 	const item = attrParserV2(dItem);
 
 	type Ret = typeof sjIn.obj & {
+		grade?: Awaited<ReturnType<typeof getSJInGrade>>[number];
 		dPo: typeof po.obj & {dCust: typeof cust.obj};
 		dInItems: (typeof inItem.obj & {
 			dPoItem: typeof poItem.obj;

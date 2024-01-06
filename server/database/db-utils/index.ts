@@ -36,9 +36,14 @@ export function attrParser<
 		);
 		obj = schema.pick(reducer);
 	}
+
+	function _modify<_K extends ObjKeyof<T>>(attrs?: _K[]) {
+		return attrParser(schema, attrs);
+	}
+
 	// @ts-ignore
 	type ObjType = Pick<z.infer<typeof obj>, K>;
-	return {obj: {} as ObjType, keys: attributes as K[]};
+	return {obj: {} as ObjType, keys: attributes as K[], _modify};
 }
 
 export function attrParserZod<
@@ -70,8 +75,13 @@ export function attrParserV2<T extends {}, K extends keyof T>(
 ) {
 	type ObjType = Pick<T, K>;
 
-	return {model, obj: {} as ObjType, attributes};
+	function _modify<_K extends keyof T>(attrs?: _K[]) {
+		return attrParserV2(model, attrs);
+	}
+
+	return {model, obj: {} as ObjType, attributes, _modify};
 }
+
 export function attrParserExclude<T extends {}, K extends keyof T>(
 	model: ModelStatic<Model<T>>,
 	attributes?: K[],
@@ -79,8 +89,14 @@ export function attrParserExclude<T extends {}, K extends keyof T>(
 ) {
 	type Keys = Exclude<keyof T, K>;
 	type ObjType = Pick<T, Keys>;
+
+	function _modify<_K extends keyof T>(attrs?: _K[]) {
+		return attrParserExclude(model, attrs, excludeDefault);
+	}
+
 	return {
 		model,
+		_modify,
 		obj: {} as ObjType,
 		attributes: (!!attributes
 			? {

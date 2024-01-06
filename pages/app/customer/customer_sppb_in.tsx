@@ -108,6 +108,7 @@ export default function SPPBIN() {
 					'Nomor PO',
 					'Customer',
 					'Nomor Surat Jalan',
+					'Score',
 					!isSelect && 'Action',
 				]}
 				renderItem={({Cell, item}: VRenderItem<SppbInRows>, index: number) => {
@@ -126,6 +127,7 @@ export default function SPPBIN() {
 							<Cell>{item.dPo?.nomor_po}</Cell>
 							<Cell>{item.dPo?.dCust.name}</Cell>
 							<Cell>{item.nomor_surat}</Cell>
+							<Cell>{item.grade?.score}</Cell>
 							{!isSelect && (
 								<Cell className="flex gap-2">
 									<Button onClick={() => showModal('preview', item)}>

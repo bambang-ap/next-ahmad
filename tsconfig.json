@@ -52,6 +52,9 @@
 			"@dbUtils/*": [
 				"./server/database/utils/*"
 			],
+			"@db/*": [
+				"./server/database/db-utils/query/*"
+			],
 			"@appTypes/*": [
 				"./src/appTypes/*"
 			],

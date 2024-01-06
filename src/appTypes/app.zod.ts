@@ -176,6 +176,9 @@ export const unitUnit = z.object({
 	// unit5: tItemUnit.nullish(),
 });
 
+export type ZCreatedQty = z.infer<typeof zCreatedQty>;
+export const zCreatedQty = unitQty.extend(zCreated.shape);
+
 export type TPOItem = z.infer<typeof tPOItem>;
 export const tPOItem = zId.extend({
 	master_item_id: z.string(),

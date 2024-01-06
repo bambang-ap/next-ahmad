@@ -214,6 +214,16 @@ export const poScoreAlpha = {
 	E: Infinity,
 } as const;
 
+/**
+ * TODO: create utils to calculate average on po
+ * @example avg score is 84, there is no index founded on constant value
+ * so, it's must bu lte from existing values
+ */
+export const SJ_IN_POINT = [
+	100, 95, 90, 89, 85, 80, 79, 75, 70, 69, 65, 60, 57, 53, 50, 49, 45, 40, 35,
+	30, 25, 20, 15, 10, 5, 0,
+];
+
 export function chartOpts(
 	categories: ApexXAxis['categories'],
 	opts?: Partial<

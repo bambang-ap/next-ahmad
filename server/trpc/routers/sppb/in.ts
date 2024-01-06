@@ -16,14 +16,11 @@ import {
 	tPOItem,
 	tPOItemSppbIn,
 	tUpsertSppbIn,
-	ZCreatedQty,
 	zId,
 } from '@appTypes/app.zod';
 import {defaultLimit, Success} from '@constants';
 import {
 	attrParser,
-	attrParserV2,
-	dOutItem,
 	orderPages,
 	ORM,
 	OrmCustomerPO,
@@ -34,6 +31,7 @@ import {
 	sppbInGetPage,
 	wherePagesV2,
 } from '@database';
+import {getSJInGrade} from '@db/getSjGrade';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -192,28 +190,9 @@ const sppbInRouters = router({
 			const {sjIn, po, cust, inItem, poItem, item} = sppbInGetPage();
 			const {limit = defaultLimit, page = 1, search} = input;
 
-			async function asd(id: string[]) {
-				const qtys: (keyof ZCreatedQty)[] = [
-					'createdAt',
-					'qty1',
-					'qty2',
-					'qty3',
-				];
-
-				const _inItem = inItem._modify(qtys);
-				const outItem = attrParserV2(dOutItem, qtys);
-
-				const data = await sjIn.model.findOne({
-					where: {id},
-					include: [{..._inItem, include: [outItem]}],
-				});
-
-				return data?.toJSON();
-			}
-
 			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
 				const {count, rows: rr} = await sjIn.model.findAndCountAll({
-					limit: 1,
+					limit,
 					attributes: sjIn.attributes,
 					offset: (page - 1) * limit,
 					include: [
@@ -226,13 +205,14 @@ const sppbInRouters = router({
 					),
 				});
 
-				const rows = rr.map(e => e.toJSON() as unknown as SppbInRows);
+				const rows = rr.map(async e => {
+					const val = e.toJSON() as unknown as SppbInRows;
+					const grade = await getSJInGrade({id: val.id});
 
-				const score = await asd(rows.map(e => e.id!));
+					return {...val, grade: grade.find(g => g.id === val.id)};
+				});
 
-				prettyConsole(score);
-
-				return pagingResult(count, page, limit, rows);
+				return pagingResult(count, page, limit, await Promise.all(rows));
 			});
 		}),
 	upsert: procedure
