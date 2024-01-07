@@ -20,7 +20,6 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 
 	const data = await _sjIn.model.unscoped().findAll({
 		where,
-		logging: true,
 		attributes: _sjIn.attributes,
 		include: [{..._inItem, include: [outItem]}],
 		order: orderPages<Ret>({'dInItems.dOutItems.createdAt': false}),
