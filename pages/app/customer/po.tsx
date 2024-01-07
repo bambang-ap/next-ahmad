@@ -41,6 +41,7 @@ export default function POCustomer() {
 			'Tanggal',
 			'Due Date',
 			'Status',
+			'Grade',
 			'Action',
 		],
 		topComponent: <Button onClick={() => showModal('add', {})}>Add</Button>,
@@ -57,6 +58,7 @@ export default function POCustomer() {
 		renderItem({item, Cell, CellSelect}, index) {
 			const {
 				id,
+				grade,
 				tgl_po,
 				status,
 				due_date,
@@ -73,6 +75,7 @@ export default function POCustomer() {
 					<Cell>{dateUtils.date(tgl_po)}</Cell>
 					<Cell>{dateUtils.date(due_date)}</Cell>
 					<Cell>{status}</Cell>
+					<Cell>{grade}</Cell>
 					<Cell className="flex gap-x-2">
 						<Button onClick={() => showModal('preview', item)}>Preview</Button>
 						<Button onClick={() => showModal('edit', item)}>Edit</Button>

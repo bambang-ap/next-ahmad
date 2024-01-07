@@ -14,19 +14,20 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 	const {sjIn, inItem} = sppbInGetPage();
 	const qtys: (keyof ZCreatedQty)[] = ['createdAt', 'qty1', 'qty2', 'qty3'];
 
-	const _sjIn = sjIn._modify(['id', 'createdAt']);
+	const _sjIn = sjIn._modify(['id', 'id_po', 'createdAt']);
 	const _inItem = inItem._modify(qtys);
 	const outItem = attrParserV2(dOutItem, qtys);
 
 	const data = await _sjIn.model.unscoped().findAll({
 		where,
+		logging: true,
 		attributes: _sjIn.attributes,
 		include: [{..._inItem, include: [outItem]}],
 		order: orderPages<Ret>({'dInItems.dOutItems.createdAt': false}),
 	});
 
 	const mappedData = data.map(e => {
-		const {id, dInItems, createdAt} = e.toJSON() as unknown as Ret;
+		const {id, id_po, dInItems, createdAt} = e.toJSON() as unknown as Ret;
 
 		let endDate: undefined | string,
 			outItems: typeof outItem.obj[] = [];
@@ -52,6 +53,7 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 
 		const retValue = {
 			id,
+			id_po,
 			endDate,
 			startDate: createdAt,
 			get day() {
@@ -72,11 +74,11 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 	return mappedData;
 }
 
-function calculatePoint(day: number) {
+export function calculatePoint(day: number) {
 	return SJ_IN_POINT[day] || 0;
 }
 
-function calculateScore(day: number, point: number) {
+export function calculateScore(day: number, point: number) {
 	if (day < 0) return 'N/A';
 
 	switch (true) {

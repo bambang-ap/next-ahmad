@@ -25,7 +25,7 @@ import {
 	poGetAttributes,
 	wherePagesV2,
 } from '@database';
-import {getSJInGrade} from '@db/getSjGrade';
+import {calculatePoint, calculateScore, getSJInGrade} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
@@ -76,7 +76,7 @@ const customer_poRouters = router({
 
 		return checkCredentialV2(ctx, async () => {
 			const {count, rows} = await OrmCustomerPO.findAndCountAll({
-				limit: 1,
+				limit,
 				attributes: A.keys,
 				offset: (page - 1) * limit,
 				order: orderPages<PoGetV2>({createdAt: false}),
@@ -95,15 +95,25 @@ const customer_poRouters = router({
 				],
 			});
 
+			const sjGrades = await getSJInGrade({
+				id_po: rows.map(e => e.dataValues.id),
+			});
+
 			const promisedRows = rows.map(async e => {
+				let grade: ReturnType<typeof calculateScore> = 'N/A';
 				const val = e.dataValues as PoGetV2;
-
 				const status = await getCurrentPOStatus(val.id);
-				const gradeAvg = await getSJInGrade({id_po: val.id});
 
-				prettyConsole(gradeAvg);
+				{
+					const grades = sjGrades.filter(e => e.id_po === val.id);
+					const days = grades.reduce((t, e) => t + e.day, 0);
 
-				return {...val, status};
+					const avgDay = Math.round(days / grades.length) || -1;
+					const point = calculatePoint(avgDay);
+					grade = calculateScore(avgDay, point);
+				}
+
+				return {...val, status, grade};
 			});
 
 			return pagingResult(count, page, limit, await Promise.all(promisedRows));
