@@ -162,9 +162,9 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const [, , submitText] = scanMapperByStatus(route, status, isAdmin);
 	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
 
-	const isFetchingData = forceSubmit || (!isFetching && !!data);
 	const showReject = !isProduksi && (dataForm.reject || isRejected);
 	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
+	const isFetchingData = !isHidden && (forceSubmit || (!isFetching && !!data));
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();

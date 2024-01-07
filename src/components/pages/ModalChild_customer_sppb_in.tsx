@@ -1,23 +1,11 @@
-// FIXME: use unused vars
-// @ts-nocheck
-/* eslint-disable @typescript-eslint/no-unused-vars */
-
-import {PropsWithChildren, useEffect} from 'react';
+import {useEffect} from 'react';
 
 import {FormType} from 'pages/app/customer/customer_sppb_in';
 import {useWatch} from 'react-hook-form';
 import {useRecoilState} from 'recoil';
 
 import {FormProps, TCustomer} from '@appTypes/app.type';
-import {
-	Button,
-	Cells,
-	Input,
-	Select,
-	selectMapper,
-	Table,
-	Text,
-} from '@components';
+import {Button, Input, Select, selectMapper, Table, Text} from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {atomExcludedItem, atomIncludedItem} from '@recoil/atoms';
 import {modalTypeParser, qtyMap} from '@utils';
@@ -31,8 +19,10 @@ export function SppbInModalChild({
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const dataForm = useWatch({control});
 
-	const [excludedItem, setExcludedItem] = useRecoilState(atomExcludedItem);
-	const [includedItem, setIncludedItem] = useRecoilState(atomIncludedItem);
+	const [, /* excludedItem */ setExcludedItem] =
+		useRecoilState(atomExcludedItem);
+	const [, /* includedItem */ setIncludedItem] =
+		useRecoilState(atomIncludedItem);
 
 	const {
 		id_customer = '',
@@ -41,6 +31,7 @@ export function SppbInModalChild({
 		id_po,
 		type,
 	} = dataForm;
+	const {isPreview, isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
 
 	const {data: dataCustomer = [], isFetching: isFetchingCustomer} =
 		trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -49,11 +40,9 @@ export function SppbInModalChild({
 	const {data: listPo = [], isFetching: isFetchingPo} =
 		trpc.sppb.in.po.gett.useQuery({id_customer}, {enabled: !!id_customer});
 
-	const {isPreview, isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
-
 	useEffect(() => {
-		reset(prev => ({...prev, id_customer: OrmCustomerPO?.OrmCustomer?.id}));
-	}, [OrmCustomerPO?.OrmCustomer?.id]);
+		reset(prev => ({...prev, id_customer: OrmCustomerPO?.dCust?.id}));
+	}, [OrmCustomerPO?.dCust?.id]);
 
 	useEffect(() => {
 		return () => {
@@ -66,21 +55,21 @@ export function SppbInModalChild({
 
 	const selectedPo = listPo.find(e => e.id === id_po);
 
-	function _excludeItem(id: string) {
-		setExcludedItem(prev => [...prev, id]);
-	}
+	// function _excludeItem(id: string) {
+	// 	setExcludedItem(prev => [...prev, id]);
+	// }
 
-	function _includeItem(id: string) {
-		setExcludedItem(prev => prev.filter(item => item !== id));
-	}
+	// function _includeItem(id: string) {
+	// 	setExcludedItem(prev => prev.filter(item => item !== id));
+	// }
 
-	function _excludeItemEdit(id: string) {
-		setIncludedItem(prev => prev.filter(item => item !== id));
-	}
+	// function _excludeItemEdit(id: string) {
+	// 	setIncludedItem(prev => prev.filter(item => item !== id));
+	// }
 
-	function _includeItemEdit(id: string) {
-		setIncludedItem(prev => [...prev, id]);
-	}
+	// function _includeItemEdit(id: string) {
+	// 	setIncludedItem(prev => [...prev, id]);
+	// }
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -96,6 +85,7 @@ export function SppbInModalChild({
 					data={selectMapper(dataCustomer, 'id', 'name')}
 				/>
 				<Select
+					key={`${isFetchingPo}${id_customer}${id_po}`}
 					className="flex-1"
 					disabled={isPreviewEdit}
 					control={control}
@@ -216,17 +206,17 @@ export function SppbInModalChild({
 	);
 }
 
-function RenderReAddItem({
-	Cell,
-	onClick,
-	children,
-}: PropsWithChildren<Cells & {onClick: NoopVoid}>) {
-	return (
-		<>
-			<Cell colSpan={qtyList.length + 2}>{children}</Cell>
-			<Cell>
-				<Button onClick={onClick}>Add</Button>
-			</Cell>
-		</>
-	);
-}
+// function RenderReAddItem({
+// 	Cell,
+// 	onClick,
+// 	children,
+// }: PropsWithChildren<Cells & {onClick: NoopVoid}>) {
+// 	return (
+// 		<>
+// 			<Cell colSpan={qtyList.length + 2}>{children}</Cell>
+// 			<Cell>
+// 				<Button onClick={onClick}>Add</Button>
+// 			</Cell>
+// 		</>
+// 	);
+// }

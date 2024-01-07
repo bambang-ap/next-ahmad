@@ -42,11 +42,11 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 					return qty == itemIn[qtyKey];
 				});
 
-				return d.includes(false);
+				return !d.includes(false);
 			})
 			.includes(false);
 
-		if (isNotClosed && outItems.length > 0) {
+		if (!isNotClosed && outItems.length > 0) {
 			endDate = outItems?.[0]?.createdAt;
 		}
 
@@ -56,32 +56,13 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 			startDate: createdAt,
 			get day() {
 				if (!this.endDate) return -1;
-
 				return moment(this.endDate).diff(moment(this.startDate), 'day');
 			},
 			get point() {
-				const {day} = this;
-				return SJ_IN_POINT[day] || 0;
+				return calculatePoint(this.day);
 			},
 			get score() {
-				const {point, day} = this;
-
-				if (day < 0) return 'N/A';
-
-				switch (true) {
-					case point <= 100:
-						return 'A';
-					case point < 90:
-						return 'B';
-					case point < 80:
-						return 'C';
-					case point < 70:
-						return 'D';
-					case point >= 50:
-						return 'E';
-					default:
-						return 'E';
-				}
+				return calculateScore(this.day, this.point);
 			},
 		};
 
@@ -89,4 +70,27 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 	});
 
 	return mappedData;
+}
+
+function calculatePoint(day: number) {
+	return SJ_IN_POINT[day] || 0;
+}
+
+function calculateScore(day: number, point: number) {
+	if (day < 0) return 'N/A';
+
+	switch (true) {
+		case point <= 49:
+			return 'E';
+		case point <= 69:
+			return 'D';
+		case point <= 79:
+			return 'C';
+		case point <= 89:
+			return 'B';
+		case point <= 100:
+			return 'A';
+		default:
+			return 'E';
+	}
 }

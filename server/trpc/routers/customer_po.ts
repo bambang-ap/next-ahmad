@@ -25,6 +25,7 @@ import {
 	poGetAttributes,
 	wherePagesV2,
 } from '@database';
+import {getSJInGrade} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
@@ -75,7 +76,7 @@ const customer_poRouters = router({
 
 		return checkCredentialV2(ctx, async () => {
 			const {count, rows} = await OrmCustomerPO.findAndCountAll({
-				limit,
+				limit: 1,
 				attributes: A.keys,
 				offset: (page - 1) * limit,
 				order: orderPages<PoGetV2>({createdAt: false}),
@@ -98,6 +99,9 @@ const customer_poRouters = router({
 				const val = e.dataValues as PoGetV2;
 
 				const status = await getCurrentPOStatus(val.id);
+				const gradeAvg = await getSJInGrade({id_po: val.id});
+
+				prettyConsole(gradeAvg);
 
 				return {...val, status};
 			});
