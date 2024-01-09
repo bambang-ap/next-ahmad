@@ -27,31 +27,10 @@ import {qtyMap} from '@utils';
 export type U = {unit: TItemUnit; qty: TDecimal};
 export type J = Record<UQty, U[]>;
 
-function getAttributes() {
-	const rejItem = attrParserV2(dRejItem);
-	const scnItem = attrParserV2(dScanItem);
-	const scn = attrParserV2(dScan);
-	const knbItem = attrParserV2(dKnbItem);
-	const inItem = attrParserV2(dInItem);
-	const poItem = attrParserV2(dPoItem);
-
-	return {rejItem, scnItem, scn, knbItem, inItem, poItem};
-}
-
-async function parseQueries(queries: Promise<any>[]) {
-	const result = await Promise.all(queries);
-	const numData = qtyMap(({num}, i) => {
-		const data = result[i]! as U;
-		return {[num]: data};
-	});
-	// @ts-ignore
-	return numData.reduce((a, b) => ({...a, ...b})) as J;
-}
+type TInput = z.infer<typeof tInput>;
+const tInput = tDateFilter.partial();
 
 export default function mainDashboardRouter() {
-	type TInput = z.infer<typeof tInput>;
-	const tInput = tDateFilter.partial();
-
 	type TScanInput = z.infer<typeof tScanInput>;
 	const tScanInput = tInput.extend(tScanNew.pick({status: true}).shape);
 
@@ -136,39 +115,6 @@ export default function mainDashboardRouter() {
 			OrmKanbanItem.findAll(selector(1)),
 			OrmKanbanItem.findAll(selector(2)),
 			OrmKanbanItem.findAll(selector(3)),
-		];
-
-		return parseQueries(queries);
-	}
-
-	function dashSppbOut(input: TInput) {
-		function selector(num: UQty): FindOptions {
-			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
-			return {
-				group,
-				raw: true,
-				where: {
-					[`$${group}$`]: unitData,
-					...whereDateFilter('$OrmCustomerSPPBOutItem.createdAt$', input),
-				},
-				include: [
-					{
-						attributes: [],
-						model: OrmPOItemSppbIn,
-						include: [{model: OrmCustomerPOItem, attributes: []}],
-					},
-				],
-				attributes: [
-					[col(group), 'unit'],
-					[fn('sum', col(`OrmCustomerSPPBOutItem.qty${num}`)), 'qty'],
-				],
-			};
-		}
-
-		const queries = [
-			OrmCustomerSPPBOutItem.findAll(selector(1)),
-			OrmCustomerSPPBOutItem.findAll(selector(2)),
-			OrmCustomerSPPBOutItem.findAll(selector(3)),
 		];
 
 		return parseQueries(queries);
@@ -304,4 +250,58 @@ export default function mainDashboardRouter() {
 			return checkCredentialV2(ctx, () => dashRej(input));
 		}),
 	});
+}
+
+export function dashSppbOut(input: TInput) {
+	function selector(num: UQty): FindOptions {
+		const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
+		return {
+			group,
+			raw: true,
+			where: {
+				[`$${group}$`]: unitData,
+				...whereDateFilter('$OrmCustomerSPPBOutItem.createdAt$', input),
+			},
+			include: [
+				{
+					attributes: [],
+					model: OrmPOItemSppbIn,
+					include: [{model: OrmCustomerPOItem, attributes: []}],
+				},
+			],
+			attributes: [
+				[col(group), 'unit'],
+				[fn('sum', col(`OrmCustomerSPPBOutItem.qty${num}`)), 'qty'],
+			],
+		};
+	}
+
+	const queries = [
+		OrmCustomerSPPBOutItem.findAll(selector(1)),
+		OrmCustomerSPPBOutItem.findAll(selector(2)),
+		OrmCustomerSPPBOutItem.findAll(selector(3)),
+	];
+
+	return parseQueries(queries);
+}
+
+function getAttributes() {
+	const rejItem = attrParserV2(dRejItem);
+	const scnItem = attrParserV2(dScanItem);
+	const scn = attrParserV2(dScan);
+	const knbItem = attrParserV2(dKnbItem);
+	const inItem = attrParserV2(dInItem);
+	const poItem = attrParserV2(dPoItem);
+
+	return {rejItem, scnItem, scn, knbItem, inItem, poItem};
+}
+
+async function parseQueries(queries: Promise<any>[]) {
+	const result = await Promise.all(queries);
+	const numData = qtyMap(({num}, i) => {
+		const data = result[i]! as U;
+		return {[num]: data};
+	});
+	// @ts-ignore
+	return numData.reduce((a, b) => ({...a, ...b})) as J;
 }

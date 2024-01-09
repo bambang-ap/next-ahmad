@@ -55,11 +55,11 @@ export const unitData: TItemUnit[] = [
 export const allowedUnit: TItemUnit[] = [
 	'pcs',
 	'kg',
-	'drum',
-	'box',
-	'set',
-	'carton',
-	'pallet',
+	// 'drum',
+	// 'box',
+	// 'set',
+	// 'carton',
+	// 'pallet',
 ];
 
 export const selectionIndex: SelectPropsData<IndexNumber>[] = Object.values(
@@ -87,6 +87,19 @@ export const unitDataInternal: TItemUnitInternal[] = [
 	'roll',
 	'batang',
 	'lusin',
+	'pail',
+	'galon',
+	'pack',
+	'kaleng',
+	'gram',
+	'rim',
+	'lbc',
+	'sak',
+	'dus',
+	'colt',
+	'paket',
+	'botol',
+	'lot',
 ];
 export const selectUnitDataInternal: SelectPropsData<TItemUnitInternal>[] =
 	unitDataInternal.map(value => ({value}));

@@ -199,6 +199,7 @@ export const MenuColorClass = {
 	[REJECT_REASON.SC]: classNames('bg-yellow-500'),
 	OtPO: classNames('bg-violet-500'),
 	OtProd: classNames('bg-sky-500'),
+	OtSjOut: classNames('bg-orange-500'),
 
 	Mesin: classNames('bg-stone-500'),
 	Vehicle: classNames('bg-amber-700'),

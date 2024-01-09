@@ -95,7 +95,7 @@ export function useQtyData({control}: FormProps<DashboardForm>) {
 		[
 			'OT SJ Out',
 			[dataFg, dataSppbOut],
-			classNames(MenuColorClass.OtProd, 'text-white'),
+			classNames(MenuColorClass.OtSjOut, 'text-white'),
 		],
 	];
 

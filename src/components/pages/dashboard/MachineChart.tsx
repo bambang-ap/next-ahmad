@@ -5,6 +5,7 @@ import {useRecoilValue} from 'recoil';
 import {FormProps} from '@appTypes/app.type';
 import {chartOpts, formatDate} from '@constants';
 import {useMachine} from '@hooks';
+// import {useMachine} from '@hooks';
 import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
 import {dateUtils} from '@utils';
@@ -27,16 +28,19 @@ export default function MachineChart({control}: FormProps<DashboardForm>) {
 		machineId,
 	} = useWatch({control});
 
-	const {data = []} = trpc.dashboard.machine.summaryList.useQuery(
-		months.map(({currentMonth}) => {
-			const filterFrom = currentMonth.format(formatDate);
-			const filterTo = currentMonth.endOf('month').format(formatDate);
+	const filtering = months.map(({currentMonth}) => {
+		const filterFrom = currentMonth.format(formatDate);
+		const filterTo = currentMonth.endOf('month').format(formatDate);
 
-			return {filterFrom, filterTo, machineCatId, machineId};
-		}),
-	);
+		return {filterFrom, filterTo, machineCatId, machineId};
+	});
 
-	const series = useMachine(data, qtyKeySelected);
+	const {data: dataProd = []} =
+		trpc.dashboard.machine.summaryList.useQuery(filtering);
+	const {data: dataOut = []} =
+		trpc.dashboard.machine.sjOutList.useQuery(filtering);
+
+	const series = useMachine(dataProd, dataOut, qtyKeySelected);
 
 	return (
 		<>
@@ -45,7 +49,7 @@ export default function MachineChart({control}: FormProps<DashboardForm>) {
 			</div>
 
 			<Chart
-				type="bar"
+				type="line"
 				height={500}
 				series={series}
 				options={

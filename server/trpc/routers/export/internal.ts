@@ -1,4 +1,4 @@
-import {TItemUnitInternal, zIds} from '@appTypes/app.zod';
+import {zIds} from '@appTypes/app.zod';
 import {ppnMultiply} from '@constants';
 import {
 	getInternalPOStatus,
@@ -14,7 +14,7 @@ import {dateUtils, ppnParser, renderIndex} from '@utils';
 import {appRouter} from '..';
 
 export type RetExportStock = {
-	Unit: TItemUnitInternal;
+	Unit: string;
 	'Qty Masuk': number;
 	'Qty Keluar': number;
 	'Qty Stock': number;

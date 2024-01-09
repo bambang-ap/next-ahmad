@@ -22,13 +22,16 @@ export default function MachineDaily({
 		machineId,
 	} = useWatch({control});
 
-	const {data = []} = trpc.dashboard.machine.summaryList.useQuery(
-		days.map(date => {
-			return {filterFrom: date, filterTo: date, machineCatId, machineId};
-		}),
-	);
+	const filtering = days.map(date => {
+		return {filterFrom: date, filterTo: date, machineCatId, machineId};
+	});
 
-	const series = useMachine(data, qtyKeySelected);
+	const {data: dataProd = []} =
+		trpc.dashboard.machine.summaryList.useQuery(filtering);
+	const {data: dataOut = []} =
+		trpc.dashboard.machine.sjOutList.useQuery(filtering);
+
+	const series = useMachine(dataProd, dataOut, qtyKeySelected);
 
 	const title = `Data Mesin Bulan ${daysSelectedDate.format('MMMM YYYY')}`;
 

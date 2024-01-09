@@ -18,6 +18,8 @@ import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 import {qtyMap, V} from '@utils';
 
+import {dashSppbOut} from './main';
+
 async function s(input: Partial<TDateFilter & TMachineFilter>) {
 	const {
 		Ret: ARet,
@@ -122,6 +124,14 @@ const machineDashboardRouters = router({
 	summaryList: procedure.input(dInput.array()).query(({ctx, input}) => {
 		return checkCredentialV2(ctx, () => {
 			const promised = input.map(e => asd(e));
+
+			return Promise.all(promised);
+		});
+	}),
+
+	sjOutList: procedure.input(dInput.array()).query(({ctx, input}) => {
+		return checkCredentialV2(ctx, () => {
+			const promised = input.map(e => dashSppbOut(e));
 
 			return Promise.all(promised);
 		});

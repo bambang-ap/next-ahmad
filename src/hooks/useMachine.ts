@@ -1,42 +1,51 @@
-import {TItemUnit, UQty} from '@appTypes/app.type';
-import {decimalValue} from '@constants';
+import {RouterOutput, UQty} from '@appTypes/app.type';
 import {getTotalQty} from '@pageComponent/dashboard/Machine';
 import type {RetAsd} from '@trpc/routers/dashboard/machine';
+import {qtyMap} from '@utils';
 
 export function useMachine(
-	queries: RetAsd[],
+	dataProduksi: RetAsd[],
+	dataSjOut: RouterOutput['dashboard']['machine']['sjOutList'],
 	qtyKeySelected: UQty[],
-	unitFiltering?: TItemUnit[],
-) {
-	const series = queries.reduce<ApexAxisChartSeries>((ret, e, i) => {
-		const totalQty = getTotalQty(qtyKeySelected, e);
+): ApexAxisChartSeries {
+	let rett: Record<string, number[]> = {};
+	for (let i = 0; i < dataProduksi.length; i++) {
+		const prod = dataProduksi[i];
+		const out = dataSjOut[i];
+		const totalQty = getTotalQty(qtyKeySelected, prod);
 
-		for (const [name, [, value]] of entries(totalQty)) {
-			const isPcsKg = (
-				unitFiltering ?? (['pcs', 'kg'] as TItemUnit[])
-			).includes(name);
-			const index = ret.findIndex(r => r.name === name);
+		for (const [nm, [, value]] of entries(totalQty)) {
+			// @ts-ignore
+			if (nm != 'null') {
+				const name = `Prod ${nm}`;
 
-			if (index < 0) {
-				if (isPcsKg) {
-					ret.push({
-						name,
-						data: Array.from<number>({length: queries.length}).fill(0),
-					});
-
-					ret[ret.findIndex(r => r.name === name)]!.data[i] = parseFloat(
-						value.toFixed(decimalValue),
+				if (!rett[name]) {
+					rett[name] = Array.from<number>({length: dataProduksi.length}).fill(
+						0,
 					);
+					rett[name]![i] = value;
+				} else {
+					rett[name]![i] = value;
 				}
-			} else {
-				ret[ret.findIndex(r => r.name === name)]!.data[i] = parseFloat(
-					value.toFixed(decimalValue),
-				);
 			}
 		}
 
-		return ret;
-	}, []);
+		qtyMap(({num}) => {
+			for (const {qty, unit} of out?.[num] ?? []) {
+				const name = `Out ${unit}`;
+				if (!qtyKeySelected.includes(num)) continue;
 
-	return series;
+				if (!rett[name]) {
+					rett[name] = Array.from<number>({length: dataProduksi.length}).fill(
+						0,
+					);
+					rett[name]![i] += parseFloat(qty?.toString() ?? 0);
+				} else {
+					rett[name]![i] += parseFloat(qty?.toString() ?? 0);
+				}
+			}
+		});
+	}
+
+	return entries(rett).map(([name, data]) => ({name, data}));
 }

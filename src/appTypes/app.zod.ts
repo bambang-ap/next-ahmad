@@ -147,16 +147,7 @@ export const tItemUnit = z
 	.or(z.literal('pallet'));
 
 export type TItemUnitInternal = z.infer<typeof tItemUnitInternal>;
-export const tItemUnitInternal = tItemUnit
-	.or(z.literal('lembar'))
-	.or(z.literal('liter'))
-	.or(z.literal('tabung'))
-	.or(z.literal('unit'))
-	.or(z.literal('pasang'))
-	.or(z.literal('meter'))
-	.or(z.literal('roll'))
-	.or(z.literal('batang'))
-	.or(z.literal('lusin'));
+export const tItemUnitInternal = z.string();
 
 export type UnitQty = z.infer<typeof unitQty>;
 export const unitQty = z.object({
