@@ -27,6 +27,7 @@ export function exportPoMapper(): MapperReturn<
 		[
 			[2, 'No'],
 			[2, 'Customer'],
+			[2, 'Grade'],
 			[2, 'No PO'],
 			[2, 'Tgl PO'],
 			[2, 'Due Date PO'],
@@ -112,7 +113,7 @@ export function exportPoMapper(): MapperReturn<
 	return {
 		headers,
 		renderItem: data => {
-			const {dCust, dPoItems} = data;
+			const {dCust, grade, dPoItems} = data;
 			const {dItem, dInItems} = dPoItems;
 			const {dKnbItems, dSJIn, dOutItems} = dInItems ?? {};
 			const {dKanban, dScanItems} = dKnbItems ?? {};
@@ -129,6 +130,7 @@ export function exportPoMapper(): MapperReturn<
 				<tr>
 					<td>{i}</td>
 					<td>{dCust.name}</td>
+					<td>{grade}</td>
 					<td>{data.nomor_po}</td>
 					<td>{data.tgl_po}</td>
 					<td>{data.due_date}</td>

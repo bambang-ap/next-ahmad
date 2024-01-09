@@ -25,7 +25,7 @@ import {
 	poGetAttributes,
 	wherePagesV2,
 } from '@database';
-import {calculatePoint, calculateScore, getSJInGrade} from '@db/getSjGrade';
+import {getSJInGrade, poCustomerSjGrade} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
@@ -100,18 +100,9 @@ const customer_poRouters = router({
 			});
 
 			const promisedRows = rows.map(async e => {
-				let grade: ReturnType<typeof calculateScore> = 'N/A';
 				const val = e.dataValues as PoGetV2;
 				const status = await getCurrentPOStatus(val.id);
-
-				{
-					const grades = sjGrades.filter(e => e.id_po === val.id);
-					const days = grades.reduce((t, e) => t + e.day, 0);
-
-					const avgDay = Math.round(days / grades.length) || -1;
-					const point = calculatePoint(avgDay);
-					grade = calculateScore(avgDay, point);
-				}
+				const grade = poCustomerSjGrade(val.id, sjGrades);
 
 				return {...val, status, grade};
 			});

@@ -4,6 +4,7 @@ import {
 	printSppbOutAttributes,
 	wherePagesV3,
 } from '@database';
+import {getSJInGrade, poCustomerSjGrade} from '@db/getSjGrade';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
 
@@ -75,6 +76,10 @@ const printRouters = router({
 				include: poIncludeAble,
 			});
 
+			const sjGrades = await getSJInGrade({
+				id_po: dataPO.map(e => e.dataValues.id),
+			});
+
 			const promisedData = dataPO.map(async data => {
 				const val = data as unknown as RetOutput;
 				const {dPoItems} = val;
@@ -92,6 +97,7 @@ const printRouters = router({
 
 				const ret: RetOutput = {
 					...val,
+					grade: poCustomerSjGrade(val.id, sjGrades),
 					dPoItems: {
 						...dPoItems,
 						dInItems: {

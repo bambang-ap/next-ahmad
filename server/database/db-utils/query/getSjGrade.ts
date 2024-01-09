@@ -6,6 +6,9 @@ import {SJ_IN_POINT} from '@constants';
 import {attrParserV2, dOutItem, orderPages, sppbInGetPage} from '@database';
 import {moment, qtyMap} from '@utils';
 
+export type RetSjGrade = Awaited<ReturnType<typeof getSJInGrade>>;
+export type RetCalculateScore = ReturnType<typeof calculateScore>;
+
 export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 	type Ret = typeof _sjIn.obj & {
 		dInItems: (typeof _inItem.obj & {dOutItems: typeof outItem.obj[]})[];
@@ -71,6 +74,20 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 	});
 
 	return mappedData;
+}
+
+export function poCustomerSjGrade(id_po: string, sjGrades: RetSjGrade) {
+	let grade: RetCalculateScore = 'N/A';
+	{
+		const grades = sjGrades.filter(e => e.id_po === id_po);
+		const days = grades.reduce((t, e) => t + e.day, 0);
+
+		const avgDay = Math.round(days / grades.length) || -1;
+		const point = calculatePoint(avgDay);
+		grade = calculateScore(avgDay, point);
+	}
+
+	return grade;
 }
 
 export function calculatePoint(day: number) {

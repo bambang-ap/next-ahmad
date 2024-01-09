@@ -54,11 +54,11 @@ import {
 	oStock,
 	oSup,
 } from '@database';
-import {getSJInGrade} from '@db/getSjGrade';
+import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
 
 export function getPrintPoAttributes() {
-	const Po = attrParserExclude(dPo, ['id', 'id_customer']);
+	const Po = attrParserExclude(dPo, ['id_customer']);
 	const PoItem = attrParserExclude(dPoItem, [
 		'harga',
 		'id',
@@ -106,6 +106,7 @@ export function getPrintPoAttributes() {
 	};
 
 	type Ret = typeof Po.obj & {
+		grade: RetCalculateScore;
 		dCust: typeof Cust.obj;
 		dPoItems: typeof PoItem.obj & {
 			dItem: typeof Item.obj;
