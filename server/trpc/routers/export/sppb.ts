@@ -20,6 +20,7 @@ import {
 	OrmPOItemSppbIn,
 	processMapper,
 } from '@database';
+import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
 import {REJECT_REASON_VIEW} from '@enum';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -27,7 +28,7 @@ import {itemInScanParser, qtyMap, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
-type InResult = Record<
+type InResult = {GRADE: RetCalculateScore} & Record<
 	| 'NO'
 	| 'TANGGAL SJ MASUK'
 	| 'CUSTOMER'
@@ -81,8 +82,14 @@ const exportSppbRouters = router({
 					],
 				});
 
-				for (const {dataValues} of data) {
-					const val = dataValues as Data;
+				const sjGrades = await getSJInGrade({
+					id: data.map(e => e.dataValues.id!),
+				});
+
+				for (let i = 0; i < data.length; i++) {
+					const val = data[i]?.dataValues as Data;
+					const grade = sjGrades[i]!;
+
 					for (const item of val.OrmPOItemSppbIns) {
 						const instruksi = await processMapper(ctx, {
 							instruksi: item.OrmMasterItem.instruksi,
@@ -106,6 +113,7 @@ const exportSppbRouters = router({
 							'PART NAME': item.OrmMasterItem.name!,
 							'PART NO': item.OrmMasterItem.kode_item!,
 							'NO LOT CUSTOMER': item.lot_no!,
+							GRADE: grade.score,
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 							PROSES: instruksi,
 							KETERANGAN: item.OrmMasterItem.keterangan!,
