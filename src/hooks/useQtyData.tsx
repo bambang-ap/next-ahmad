@@ -92,6 +92,11 @@ export function useQtyData({control}: FormProps<DashboardForm>) {
 			[dataKanban, dataFg],
 			classNames(MenuColorClass.OtProd, 'text-white'),
 		],
+		[
+			'OT SJ Out',
+			[dataFg, dataSppbOut],
+			classNames(MenuColorClass.OtProd, 'text-white'),
+		],
 	];
 
 	function qtyParser(unit: TItemUnit) {

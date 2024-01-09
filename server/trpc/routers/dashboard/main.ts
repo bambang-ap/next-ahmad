@@ -1,4 +1,5 @@
 import {col, FindOptions, fn} from 'sequelize';
+import {z} from 'zod';
 
 import {TDecimal, TItemUnit, UQty} from '@appTypes/app.type';
 import {tDateFilter, tScanItemReject, tScanNew} from '@appTypes/app.zod';
@@ -47,8 +48,17 @@ async function parseQueries(queries: Promise<any>[]) {
 	return numData.reduce((a, b) => ({...a, ...b})) as J;
 }
 
-const mainDashboardRouter = router({
-	po: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
+export default function mainDashboardRouter() {
+	type TInput = z.infer<typeof tInput>;
+	const tInput = tDateFilter.partial();
+
+	type TScanInput = z.infer<typeof tScanInput>;
+	const tScanInput = tInput.extend(tScanNew.pick({status: true}).shape);
+
+	type TRejInput = z.infer<typeof tRejInput>;
+	const tRejInput = tInput.extend(tScanItemReject.pick({reason: true}).shape);
+
+	function dashPo(input: TInput) {
 		function selector(num: UQty): FindOptions {
 			const uu = `unit${num}`;
 
@@ -62,17 +72,16 @@ const mainDashboardRouter = router({
 			};
 		}
 
-		return checkCredentialV2(ctx, async (): Promise<J> => {
-			const queries = [
-				OrmCustomerPOItem.findAll(selector(1)),
-				OrmCustomerPOItem.findAll(selector(2)),
-				OrmCustomerPOItem.findAll(selector(3)),
-			];
+		const queries = [
+			OrmCustomerPOItem.findAll(selector(1)),
+			OrmCustomerPOItem.findAll(selector(2)),
+			OrmCustomerPOItem.findAll(selector(3)),
+		];
 
-			return parseQueries(queries);
-		});
-	}),
-	sppbIn: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
+		return parseQueries(queries);
+	}
+
+	function dashSppbIn(input: TInput) {
 		function selector(num: UQty): FindOptions {
 			const group = `OrmCustomerPOItem.unit${num}`;
 			return {
@@ -89,17 +98,17 @@ const mainDashboardRouter = router({
 				],
 			};
 		}
-		return checkCredentialV2(ctx, async (): Promise<J> => {
-			const queries = [
-				OrmPOItemSppbIn.findAll(selector(1)),
-				OrmPOItemSppbIn.findAll(selector(2)),
-				OrmPOItemSppbIn.findAll(selector(3)),
-			];
 
-			return parseQueries(queries);
-		});
-	}),
-	kanban: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
+		const queries = [
+			OrmPOItemSppbIn.findAll(selector(1)),
+			OrmPOItemSppbIn.findAll(selector(2)),
+			OrmPOItemSppbIn.findAll(selector(3)),
+		];
+
+		return parseQueries(queries);
+	}
+
+	function dashKanban(input: TInput) {
 		function selector(num: UQty): FindOptions {
 			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
 			return {
@@ -123,137 +132,16 @@ const mainDashboardRouter = router({
 			};
 		}
 
-		return checkCredentialV2(ctx, async (): Promise<J> => {
-			const queries = [
-				OrmKanbanItem.findAll(selector(1)),
-				OrmKanbanItem.findAll(selector(2)),
-				OrmKanbanItem.findAll(selector(3)),
-			];
+		const queries = [
+			OrmKanbanItem.findAll(selector(1)),
+			OrmKanbanItem.findAll(selector(2)),
+			OrmKanbanItem.findAll(selector(3)),
+		];
 
-			return parseQueries(queries);
-		});
-	}),
-	scan: procedure
-		.input(tScanNew.pick({status: true}).extend(tDateFilter.partial().shape))
-		.query(({ctx, input}) => {
-			const {status: target} = input;
+		return parseQueries(queries);
+	}
 
-			async function selector(num: UQty) {
-				type Ret = typeof scnItem.obj & {
-					dScan: typeof scn.obj;
-					dKnbItem: typeof knbItem.obj & {
-						dInItem: typeof inItem.obj & {
-							dPoItem: typeof poItem.obj;
-						};
-					};
-				};
-
-				const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
-
-				const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
-				const data = scnItem.model.findAll({
-					group,
-					where: {
-						...wherePagesV3<Ret>({'$dScan.status$': target}),
-						...whereDateFilter('$dScanItem.createdAt$', input),
-						[`$${group}$`]: unitData,
-					},
-					attributes: [
-						[col(group), 'unit'],
-						[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
-					],
-					include: [
-						{model: scn.model, attributes: []},
-						{
-							model: knbItem.model,
-							attributes: [],
-							include: [
-								{
-									model: inItem.model,
-									attributes: [],
-									include: [{model: poItem.model, attributes: []}],
-								},
-							],
-						},
-					],
-				});
-
-				return data;
-			}
-
-			return checkCredentialV2(ctx, async (): Promise<J> => {
-				const queries = [selector(1), selector(2), selector(3)];
-
-				return parseQueries(queries);
-			});
-		}),
-
-	reject: procedure
-		.input(
-			tScanItemReject.pick({reason: true}).extend(tDateFilter.partial().shape),
-		)
-		.query(({ctx, input}) => {
-			const {reason: target} = input;
-
-			async function selector(num: UQty) {
-				type Ret = typeof rejItem.obj & {
-					dScanItem: typeof scnItem.obj & {
-						dKnbItem: typeof knbItem.obj & {
-							dInItem: typeof inItem.obj & {
-								dPoItem: typeof poItem.obj;
-							};
-						};
-					};
-				};
-
-				const {rejItem, inItem, knbItem, poItem, scnItem} = getAttributes();
-
-				const group = groupPages<Ret>(
-					`dScanItem.dKnbItem.dInItem.dPoItem.unit${num}`,
-				);
-				const data = rejItem.model.findAll({
-					group,
-					where: {
-						...wherePagesV3<Ret>({reason: target}),
-						...whereDateFilter('$dRejItem.createdAt$', input),
-						[`$${group}$`]: unitData,
-					},
-					attributes: [
-						[col(group), 'unit'],
-						[fn('sum', col(`dRejItem.qty${num}`)), 'qty'],
-					],
-					include: [
-						{
-							model: scnItem.model,
-							attributes: [],
-							include: [
-								{
-									model: knbItem.model,
-									attributes: [],
-									include: [
-										{
-											model: inItem.model,
-											attributes: [],
-											include: [{model: poItem.model, attributes: []}],
-										},
-									],
-								},
-							],
-						},
-					],
-				});
-
-				return data;
-			}
-
-			return checkCredentialV2(ctx, async (): Promise<J> => {
-				const queries = [selector(1), selector(2), selector(3)];
-
-				return parseQueries(queries);
-			});
-		}),
-
-	sppbOut: procedure.input(tDateFilter.partial()).query(({input, ctx}) => {
+	function dashSppbOut(input: TInput) {
 		function selector(num: UQty): FindOptions {
 			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
 			return {
@@ -277,16 +165,143 @@ const mainDashboardRouter = router({
 			};
 		}
 
-		return checkCredentialV2(ctx, async (): Promise<J> => {
-			const queries = [
-				OrmCustomerSPPBOutItem.findAll(selector(1)),
-				OrmCustomerSPPBOutItem.findAll(selector(2)),
-				OrmCustomerSPPBOutItem.findAll(selector(3)),
-			];
+		const queries = [
+			OrmCustomerSPPBOutItem.findAll(selector(1)),
+			OrmCustomerSPPBOutItem.findAll(selector(2)),
+			OrmCustomerSPPBOutItem.findAll(selector(3)),
+		];
 
-			return parseQueries(queries);
-		});
-	}),
-});
+		return parseQueries(queries);
+	}
 
-export default mainDashboardRouter;
+	function dashScan(input: TScanInput) {
+		const {status: target} = input;
+
+		async function selector(num: UQty) {
+			type Ret = typeof scnItem.obj & {
+				dScan: typeof scn.obj;
+				dKnbItem: typeof knbItem.obj & {
+					dInItem: typeof inItem.obj & {
+						dPoItem: typeof poItem.obj;
+					};
+				};
+			};
+
+			const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
+
+			const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
+			const data = scnItem.model.findAll({
+				group,
+				where: {
+					...wherePagesV3<Ret>({'$dScan.status$': target}),
+					...whereDateFilter('$dScanItem.createdAt$', input),
+					[`$${group}$`]: unitData,
+				},
+				attributes: [
+					[col(group), 'unit'],
+					[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
+				],
+				include: [
+					{model: scn.model, attributes: []},
+					{
+						model: knbItem.model,
+						attributes: [],
+						include: [
+							{
+								model: inItem.model,
+								attributes: [],
+								include: [{model: poItem.model, attributes: []}],
+							},
+						],
+					},
+				],
+			});
+
+			return data;
+		}
+
+		const queries = [selector(1), selector(2), selector(3)];
+
+		return parseQueries(queries);
+	}
+
+	function dashRej(input: TRejInput) {
+		const {reason: target} = input;
+
+		async function selector(num: UQty) {
+			type Ret = typeof rejItem.obj & {
+				dScanItem: typeof scnItem.obj & {
+					dKnbItem: typeof knbItem.obj & {
+						dInItem: typeof inItem.obj & {
+							dPoItem: typeof poItem.obj;
+						};
+					};
+				};
+			};
+
+			const {rejItem, inItem, knbItem, poItem, scnItem} = getAttributes();
+
+			const group = groupPages<Ret>(
+				`dScanItem.dKnbItem.dInItem.dPoItem.unit${num}`,
+			);
+			const data = rejItem.model.findAll({
+				group,
+				where: {
+					...wherePagesV3<Ret>({reason: target}),
+					...whereDateFilter('$dRejItem.createdAt$', input),
+					[`$${group}$`]: unitData,
+				},
+				attributes: [
+					[col(group), 'unit'],
+					[fn('sum', col(`dRejItem.qty${num}`)), 'qty'],
+				],
+				include: [
+					{
+						model: scnItem.model,
+						attributes: [],
+						include: [
+							{
+								model: knbItem.model,
+								attributes: [],
+								include: [
+									{
+										model: inItem.model,
+										attributes: [],
+										include: [{model: poItem.model, attributes: []}],
+									},
+								],
+							},
+						],
+					},
+				],
+			});
+
+			return data;
+		}
+
+		const queries = [selector(1), selector(2), selector(3)];
+
+		return parseQueries(queries);
+	}
+
+	return router({
+		po: procedure.input(tInput).query(({input, ctx}) => {
+			return checkCredentialV2(ctx, () => dashPo(input));
+		}),
+		sppbIn: procedure.input(tInput).query(({input, ctx}) => {
+			return checkCredentialV2(ctx, () => dashSppbIn(input));
+		}),
+		kanban: procedure.input(tInput).query(({input, ctx}) => {
+			return checkCredentialV2(ctx, () => dashKanban(input));
+		}),
+		sppbOut: procedure.input(tInput).query(({input, ctx}) => {
+			return checkCredentialV2(ctx, () => dashSppbOut(input));
+		}),
+		scan: procedure.input(tScanInput).query(({ctx, input}) => {
+			return checkCredentialV2(ctx, () => dashScan(input));
+		}),
+		reject: procedure.input(tRejInput).query(({ctx, input}) => {
+			return checkCredentialV2(ctx, () => dashRej(input));
+		}),
+	});
+}

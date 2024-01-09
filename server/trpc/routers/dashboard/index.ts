@@ -16,7 +16,7 @@ import mainDashboardRouter from './main';
 
 const dashboardRouters = router({
 	...defaultDashboardRouter,
-	main: mainDashboardRouter,
+	main: mainDashboardRouter(),
 	machine: machineDashboardRouters,
 	unitCountPoItem: procedure.query(({ctx}) => {
 		return checkCredentialV2(ctx, async () => {
