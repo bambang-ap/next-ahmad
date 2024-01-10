@@ -107,8 +107,9 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 					</Text>
 				</div>
 				<div className={classNames('bg-white flex flex-col flex-1', gap)}>
-					<div className="w-2/5 flex self-center">
+					<div className="w-2/5 flex pb-2 flex-col self-center">
 						<img src={qrImageKanban} alt="" />
+						<div className="font-bold">{data.id_kanban}</div>
 					</div>
 				</div>
 			</div>
