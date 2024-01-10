@@ -1,3 +1,5 @@
+import {useEffect} from 'react';
+
 import {Moment} from 'moment';
 import {Control, useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
@@ -33,6 +35,7 @@ import TotalCount from './TotalCount';
 
 export type DashboardForm = UseDateFilterProps<
 	TMachineFilter & {
+		chartType: 'bar' | 'line';
 		view: TDashboardView;
 		qtyKey: UQty[];
 	}
@@ -45,10 +48,10 @@ export default function Dashboard() {
 		fromToComponent,
 		daysSelectedDate,
 		MonthYear,
-		form: {control, watch},
+		form: {control, watch, reset},
 	} = useFormFilter<DashboardForm>({
 		sameMonth: true,
-		defaultValues: {qtyKey: [2, 3]},
+		defaultValues: {qtyKey: [2, 3], chartType: 'bar'},
 	});
 	const {view} = watch();
 
@@ -65,6 +68,17 @@ export default function Dashboard() {
 	const showFromTo = isMachine || isMain;
 	const showMonthYear = isBar || isTotal || isMachineChart || isMachineDaily;
 	const hideMonth = isBar || isTotal || isMachineChart;
+
+	useEffect(() => {
+		if (isMachineView) {
+			reset(prev => {
+				return {
+					...prev,
+					chartType: isMachineChart ? 'bar' : isMachineDaily ? 'line' : 'bar',
+				};
+			});
+		}
+	}, [isMachineView, isMachineChart, isMachineDaily]);
 
 	return (
 		<div className="flex flex-col">
@@ -148,6 +162,12 @@ function RenderMachineFilter({control}: FormProps<DashboardForm>) {
 				data={selectMapperV2(dataMesin ?? [], 'id', {
 					labels: ['nomor_mesin', 'name'],
 				})}
+			/>
+
+			<ButtonGroup
+				control={control}
+				fieldName="chartType"
+				data={[{value: 'bar'}, {value: 'line'}]}
 			/>
 		</div>
 	);

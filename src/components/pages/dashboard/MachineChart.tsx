@@ -14,7 +14,7 @@ import {trpc} from '@utils/trpc';
 import {DashboardForm} from '.';
 
 export default function MachineChart({control}: FormProps<DashboardForm>) {
-	const {filterYear} = useWatch({control});
+	const {filterYear, chartType} = useWatch({control});
 
 	const now = moment(`${filterYear}/01/01`);
 	const horizontal = useRecoilValue(atomIsMobile);
@@ -49,7 +49,8 @@ export default function MachineChart({control}: FormProps<DashboardForm>) {
 			</div>
 
 			<Chart
-				type="line"
+				key={chartType}
+				type={chartType}
 				height={500}
 				series={series}
 				options={

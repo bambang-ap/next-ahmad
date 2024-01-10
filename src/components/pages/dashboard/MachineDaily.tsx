@@ -20,6 +20,7 @@ export default function MachineDaily({
 		qtyKey: qtyKeySelected = [],
 		machineCatId,
 		machineId,
+		chartType,
 	} = useWatch({control});
 
 	const filtering = days.map(date => {
@@ -42,7 +43,8 @@ export default function MachineDaily({
 			</div>
 
 			<Chart
-				type="line"
+				key={chartType}
+				type={chartType}
 				height={500}
 				series={series}
 				options={
