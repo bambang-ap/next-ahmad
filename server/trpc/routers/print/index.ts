@@ -76,9 +76,9 @@ const printRouters = router({
 				include: poIncludeAble,
 			});
 
-			const sjGrades = await getSJInGrade({
-				id_po: dataPO.map(e => e.dataValues.id),
-			});
+			const id_po = dataPO.map(e => (e as unknown as RetOutput).id);
+
+			const sjGrades = await getSJInGrade({id_po});
 
 			const promisedData = dataPO.map(async data => {
 				const val = data as unknown as RetOutput;
