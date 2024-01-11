@@ -1267,6 +1267,13 @@ CREATE INDEX email_1693939633648_index ON public.user_pengguna USING btree (emai
 
 
 --
+-- Name: email_1703677742070_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX email_1703677742070_index ON public.user_pengguna USING btree (email);
+
+
+--
 -- Name: id_1693939527547_index; Type: INDEX; Schema: public; Owner: postgres
 --
 
