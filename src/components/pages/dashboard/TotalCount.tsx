@@ -32,7 +32,7 @@ export default function TotalCount({control}: FormProps<DashboardForm>) {
 				{title}
 			</div>
 			<div className="-m-1 flex flex-wrap md:-m-2">
-				{data?.map(({path, bgColor, image, title, count = 0}, i) => {
+				{data?.map(({path, bgColor, image, title: dataTitle, count = 0}, i) => {
 					function navigate() {
 						push(path! as PATHS);
 					}
@@ -54,7 +54,7 @@ export default function TotalCount({control}: FormProps<DashboardForm>) {
 										<Text className="!text-white font-bold text-4xl">
 											{count}
 										</Text>
-										<Text className="!text-white text-lg">{title}</Text>
+										<Text className="!text-white text-lg">{dataTitle}</Text>
 									</div>
 									<div className="w-[75px] opacity-50">
 										<img alt="" src={image} />

@@ -137,10 +137,10 @@ export default function SPPBOUT() {
 				const values = {
 					...formValues,
 					id,
-					po: formValues.po?.map(e => {
+					po: formValues.po?.map(po => {
 						return {
-							...e,
-							sppb_in: e.sppb_in.map(y => {
+							...po,
+							sppb_in: po.sppb_in.map(y => {
 								return {
 									...y,
 									items: entries(y.items).reduce<typeof y.items>(
