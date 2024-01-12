@@ -1,6 +1,13 @@
-import {tKanbanUpsert} from '@appTypes/app.zod';
+import {TKanban, tKanbanUpsert, TScanNew} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {ORM, OrmDocument, OrmKanban, OrmKanbanItem} from '@database';
+import {
+	dKanban,
+	dScan,
+	ORM,
+	OrmDocument,
+	OrmKanban,
+	OrmKanbanItem,
+} from '@database';
 import {IndexNumber} from '@enum';
 import {checkCredentialV2, generateId, genNumberIndexUpsert} from '@server';
 import {procedure} from '@trpc';
@@ -29,7 +36,21 @@ export const kanbanUpsert = {
 						doc_id = docData.dataValues.id,
 						...rest
 					} = input;
-					const hasKanban = id ? await OrmKanban.findOne({where: {id}}) : null;
+					const anban = id
+						? await dKanban.findOne({where: {id}, include: [dScan]})
+						: null;
+
+					const hasKanban = anban?.toJSON() as
+						| null
+						| (TKanban & {dScans: TScanNew[]});
+
+					if (!!hasKanban && hasKanban.dScans.length > 0) {
+						throw new TRPCError({
+							code: 'FORBIDDEN',
+							message: 'Silahkan hapus scan produksi terlebih dahulu',
+						});
+					}
+
 					const kanbanUpsertValue = await genNumberIndexUpsert(
 						OrmKanban,
 						IndexNumber.Kanban,
@@ -39,7 +60,7 @@ export const kanbanUpsert = {
 							doc_id,
 							createdBy,
 							updatedBy: session.user?.id!,
-							nomor_kanban: hasKanban?.dataValues?.nomor_kanban,
+							nomor_kanban: hasKanban?.nomor_kanban,
 						},
 					);
 					const [createdKanban] = await OrmKanban.upsert(kanbanUpsertValue, {
@@ -69,6 +90,7 @@ export const kanbanUpsert = {
 					return Success;
 				} catch (err) {
 					await transaction.rollback();
+					if (err instanceof TRPCError) throw new TRPCError(err);
 					throw new TRPCError({code: 'BAD_REQUEST'});
 				}
 			});

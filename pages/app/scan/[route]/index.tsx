@@ -159,8 +159,11 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 
 	const aaa = forceSubmit ? false : status;
 
-	const [, , submitText] = scanMapperByStatus(route, status, isAdmin);
-	const [jumlahPrev, jumlahNext] = scanMapperByStatus(route);
+	const [jumlahPrev, jumlahNext, submitText] = scanMapperByStatus(
+		route,
+		status,
+		isAdmin,
+	);
 
 	const showReject = !isProduksi && (dataForm.reject || isRejected);
 	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
@@ -373,6 +376,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 							<Td>{jumlahNext}</Td>
 							{showReject && <Td>Jumlah Reject</Td>}
 						</Tr>
+
 						{OrmKanbanItems?.map(restItem => {
 							const {
 								id,
@@ -419,7 +423,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 										<Td>{OrmMasterItem.kode_item}</Td>
 										<Td>{OrmMasterItem.name}</Td>
 
-										<Td className="gap-2">
+										<Td className="bg-green-500 gap-2">
 											{qtyMap(({unitKey, qtyKey, num}) => {
 												if (!poItem[unitKey]) return null;
 
