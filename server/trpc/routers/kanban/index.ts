@@ -1,7 +1,7 @@
 import {z} from 'zod';
 
 import {zId} from '@appTypes/app.zod';
-import {Success} from '@constants';
+import {isProd, Success} from '@constants';
 import {OrmKanban, OrmKanbanItem, OrmScan} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -16,6 +16,7 @@ const kanbanRouters = router({
 	...kanbanUpsert,
 	...kanbanImage,
 	printed: procedure.input(z.string().array()).mutation(({ctx, input}) => {
+		if (!isProd) return Success;
 		return checkCredentialV2(ctx, async () => {
 			const kanbans = await OrmKanban.findAll({where: {id: input}});
 			const promisedKanbans = kanbans.map(({dataValues}) =>
