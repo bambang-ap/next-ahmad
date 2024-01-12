@@ -277,6 +277,7 @@ export const tKanbanItem = zId.extend({
 	id_item_po: z.string(),
 	id_mesin: z.string().nullish(),
 	...unitQty.shape,
+	...zCreated.shape,
 });
 
 export type TKanbanUpsertItem = z.infer<typeof tKanbanUpsertItem>;
@@ -538,6 +539,7 @@ export const tScanNewItem = zId.extend({
 export type TScanItemReject = z.infer<typeof tScanItemReject>;
 export const tScanItemReject = zId.extend({
 	...unitQty.shape,
+	...zCreated.shape,
 	id_item: z.string(),
 	reason: tRejectReason,
 });

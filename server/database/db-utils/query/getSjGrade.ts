@@ -1,9 +1,19 @@
-import {WhereOptions} from 'sequelize';
+import {Op, WhereOptions} from 'sequelize';
 
 import {TCustomerSPPBIn} from '@appTypes/app.type';
 import {ZCreatedQty} from '@appTypes/app.zod';
 import {SJ_IN_POINT} from '@constants';
-import {attrParserV2, dOutItem, orderPages, sppbInGetPage} from '@database';
+import {
+	attrParserV2,
+	dOutItem,
+	dRejItem,
+	dScanItem,
+	getPrintPoAttributes,
+	orderPages,
+	sppbInGetPage,
+	wherePagesV3,
+} from '@database';
+import {REJECT_REASON} from '@enum';
 import {moment, qtyMap} from '@utils';
 
 export type RetSjGrade = Awaited<ReturnType<typeof getSJInGrade>>;
@@ -11,20 +21,48 @@ export type RetCalculateScore = ReturnType<typeof calculateScore>;
 
 export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 	type Ret = typeof _sjIn.obj & {
-		dInItems: (typeof _inItem.obj & {dOutItems: typeof outItem.obj[]})[];
+		dInItems: (typeof _inItem.obj & {
+			dOutItems: typeof outItem.obj[];
+			dKnbItems: (typeof knbItem.obj & {
+				dScanItems: (typeof scnItem.obj & {dRejItems: typeof rejItem.obj[]})[];
+			})[];
+		})[];
 	};
 
 	const {sjIn, inItem} = sppbInGetPage();
+	const {KnbItem} = getPrintPoAttributes();
 	const qtys: (keyof ZCreatedQty)[] = ['createdAt', 'qty1', 'qty2', 'qty3'];
 
 	const _sjIn = sjIn._modify(['id', 'id_po', 'createdAt']);
 	const _inItem = inItem._modify(qtys);
+	const knbItem = KnbItem._modify(['id']);
+	// const knbItem = KnbItem._modify(qtys);
 	const outItem = attrParserV2(dOutItem, qtys);
+	const scnItem = attrParserV2(dScanItem, ['id']);
+	const rejItem = attrParserV2(dRejItem, [...qtys, 'reason']);
 
 	const data = await _sjIn.model.unscoped().findAll({
-		where,
+		where: {
+			...where,
+			...wherePagesV3<Ret>(
+				{
+					'$dInItems.qty1$': {[Op.not]: 0},
+					'$dInItems.qty2$': {[Op.not]: 0},
+					'$dInItems.qty3$': {[Op.not]: 0},
+				},
+				'or',
+			),
+		},
 		attributes: _sjIn.attributes,
-		include: [{..._inItem, include: [outItem]}],
+		include: [
+			{
+				..._inItem,
+				include: [
+					outItem,
+					{...knbItem, include: [{...scnItem, include: [rejItem]}]},
+				],
+			},
+		],
 		order: orderPages<Ret>({'dInItems.dOutItems.createdAt': false}),
 	});
 
@@ -37,12 +75,27 @@ export async function getSJInGrade(where: WhereOptions<TCustomerSPPBIn>) {
 		const isNotClosed = dInItems
 			.map(itemIn => {
 				const d = qtyMap(({qtyKey, num}) => {
+					const kk = itemIn.dKnbItems.reduce(
+						(t, s) => {
+							for (const a of s.dScanItems) {
+								// t[0] += a[qtyKey] ?? 0;
+								for (const b of a.dRejItems) {
+									if (![REJECT_REASON.TP, REJECT_REASON.SC].includes(b.reason))
+										continue;
+									t[1] += b[qtyKey] ?? 0;
+								}
+							}
+							return t;
+						},
+						[0, 0] as [number, number],
+					);
+
 					const qty = itemIn.dOutItems.reduce((total, s) => {
 						if (num === 1) outItems.push(s);
 						return total + (s[qtyKey] ?? 0);
 					}, 0);
 
-					return qty == itemIn[qtyKey];
+					return qty + kk[1] == itemIn[qtyKey];
 				});
 
 				return !d.includes(false);
