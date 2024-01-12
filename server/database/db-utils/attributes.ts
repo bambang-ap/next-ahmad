@@ -65,7 +65,7 @@ export function getPrintPoAttributes() {
 		'id_po',
 		'master_item_id',
 	]);
-	const InItem = attrParserV2(dInItem, ['qty1', 'qty2', 'qty3']);
+	const InItem = attrParserV2(dInItem, ['lot_no', 'qty1', 'qty2', 'qty3']);
 	const OutItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
 	const KnbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);
 	const ScanItem = attrParserV2(dScanItem, ['qty1', 'qty2', 'qty3']);
@@ -74,7 +74,7 @@ export function getPrintPoAttributes() {
 		'index_id',
 		'index_number',
 	]);
-	const Scan = attrParserV2(dScan, ['status']);
+	const Scan = attrParserV2(dScan, ['status', 'lot_no_imi']);
 	const SJIn = attrParserV2(dSJIn, ['nomor_surat']);
 	const Item = attrParserV2(dItem, ['name', 'kode_item']);
 	const Cust = attrParserV2(dCust, ['name']);

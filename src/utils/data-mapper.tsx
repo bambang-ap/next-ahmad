@@ -38,6 +38,8 @@ export function exportPoMapper(): MapperReturn<
 			['SJ Masuk', 6],
 			[2, 'Nomor Kanban'],
 			['Kanban', 6],
+			[2, 'Nomor Lot'],
+			[2, 'Lot No IMI'],
 			['Produksi', 6],
 			['QC', 6],
 			['Finish Good', 6],
@@ -141,6 +143,8 @@ export function exportPoMapper(): MapperReturn<
 					{renderQty(dPoItems, dInItems)}
 					<td>{renderIndex(dKanban!, dKanban?.nomor_kanban!)}</td>
 					{renderQty(dPoItems, dKnbItems)}
+					<td>{dInItems?.lot_no}</td>
+					<td>{scanProd?.dScan.lot_no_imi}</td>
 					{renderQty(dPoItems, scanProd)}
 					{renderQty(dPoItems, scanQc)}
 					{renderQty(dPoItems, scanFG)}
