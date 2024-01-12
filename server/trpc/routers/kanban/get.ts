@@ -162,10 +162,11 @@ export const kanbanGet = {
 					'$OrmCustomerPO.nomor_po$',
 					'$OrmCustomerSPPBIn.nomor_surat$',
 					'$OrmCustomerPO.OrmCustomer.name$',
-					!isProd && 'id',
 				],
 				search,
 			);
+
+			const where2 = isProd ? {} : {id: search};
 
 			const indexAttr = indexWhereAttributes<UUU>(
 				'dIndex.prefix',
@@ -177,7 +178,7 @@ export const kanbanGet = {
 				limit,
 				order: orderPages<UUU>({createdAt: false, index_number: false}),
 				offset: (page - 1) * limit,
-				where: search ? {[Op.or]: [where1, indexAttr?.where]} : {},
+				where: search ? {[Op.or]: [where1, indexAttr?.where, where2]} : {},
 				attributes: {include: [indexAttr.attributes]},
 				include: [
 					dIndex,
