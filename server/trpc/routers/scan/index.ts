@@ -1,3 +1,5 @@
+import {Op} from 'sequelize';
+
 import {PagingResult, TDataScan, TScan} from '@appTypes/app.type';
 import {
 	tableFormValue,
@@ -11,7 +13,7 @@ import {
 	UnitQty,
 	zId,
 } from '@appTypes/app.zod';
-import {Success} from '@constants';
+import {isProd, Success} from '@constants';
 import {
 	dScan,
 	getScanAttributes,
@@ -82,6 +84,18 @@ const scanRouters = router({
 				scanListAttributes();
 
 			return checkCredentialV2(ctx, async (): Promise<ListResult> => {
+				const where1 = isProd ? {} : {id_kanban: search};
+				const where2 = wherePagesV2<ScanList>(
+					[
+						'$dKanban.keterangan$',
+						'$dKanban.nomor_kanban$',
+						'$dKanban.dPo.nomor_po$',
+						'$dKanban.dSJIn.nomor_surat$',
+						'$dKanban.dPo.dCust.name$',
+					],
+					search,
+				);
+
 				const {count, rows: data} = await scan.model.findAndCountAll({
 					limit,
 					attributes: [num, ...(scan.attributes ?? [])],
@@ -89,16 +103,7 @@ const scanRouters = router({
 					offset: (page - 1) * limit,
 					where: {
 						status: target,
-						...wherePagesV2<ScanList>(
-							[
-								'$dKanban.keterangan$',
-								'$dKanban.nomor_kanban$',
-								'$dKanban.dPo.nomor_po$',
-								'$dKanban.dSJIn.nomor_surat$',
-								'$dKanban.dPo.dCust.name$',
-							],
-							search,
-						),
+						...(search ? {[Op.or]: [where1, where2]} : {}),
 					},
 					include: [
 						{...kanban, include: [tIndex, sjIn, {...po, include: [cust]}]},

@@ -168,6 +168,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 	const showReject = !isProduksi && (dataForm.reject || isRejected);
 	const isHidden = !OrmKanban?.id || !isSuccess || isFetching;
 	const isFetchingData = !isHidden && (forceSubmit || (!isFetching && !!data));
+	const dataFounded = !isFetching && !!data;
 
 	const submit: FormEventHandler<HTMLFormElement> = e => {
 		e.preventDefault();
@@ -273,6 +274,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 									fieldName="id_po"
 								/>
 								<Input
+									disabled={dataFounded}
 									control={control}
 									label="ID Kanban"
 									className="flex-1"
@@ -423,7 +425,7 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 										<Td>{OrmMasterItem.kode_item}</Td>
 										<Td>{OrmMasterItem.name}</Td>
 
-										<Td className="bg-green-500 gap-2">
+										<Td className="gap-2">
 											{qtyMap(({unitKey, qtyKey, num}) => {
 												if (!poItem[unitKey]) return null;
 

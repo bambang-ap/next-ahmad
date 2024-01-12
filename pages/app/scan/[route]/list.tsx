@@ -7,7 +7,7 @@ import {useSetRecoilState} from 'recoil';
 import {Wrapper as Wrp, WrapperProps} from '@appComponent/Wrapper';
 import {Route} from '@appTypes/app.type';
 import {Button, Form, Modal, ModalRef} from '@components';
-import {cuttingLineClassName} from '@constants';
+import {cuttingLineClassName, isProd} from '@constants';
 import {PATHS} from '@enum';
 import {getLayout} from '@hoc';
 import {useRouter, useSession, useTableFilterComponent} from '@hooks';
@@ -69,6 +69,7 @@ function RenderScanList() {
 		property,
 		header: [
 			'No',
+			!isProd && 'Id Kanban',
 			'Tanggal',
 			'Customer',
 			'Nomor PO',

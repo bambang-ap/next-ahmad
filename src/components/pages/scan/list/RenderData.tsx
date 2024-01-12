@@ -4,6 +4,7 @@ import {Route} from 'pages/app/scan/[route]';
 import {ScanListFormType} from 'pages/app/scan/[route]/list';
 import {Control, useWatch} from 'react-hook-form';
 
+import {isProd} from '@constants';
 import {TableFilterProps} from '@hooks';
 import type {ScanList} from '@trpc/routers/scan';
 import {dateUtils, modalTypeParser, renderIndex} from '@utils';
@@ -32,6 +33,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 		<>
 			{isSelect && <CellSelect fieldName={`idScans.${item.id}`} />}
 			<Cell>{index + 1}</Cell>
+			{!isProd && <Cell>{item.id_kanban}</Cell>}
 			<Cell>{dateUtils.date(data?.createdAt)}</Cell>
 			<Cell>{data.dPo.dCust.name}</Cell>
 			<Cell>{data.dPo.nomor_po}</Cell>
