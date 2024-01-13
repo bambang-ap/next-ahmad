@@ -277,12 +277,12 @@ const sppbInRouters = router({
 					if (upserted > 0) {
 						await transaction.commit();
 						return Success;
+					} else {
+						throw new TRPCError({
+							code: 'FORBIDDEN',
+							message: 'Minimal harus ada 1 item yang di include',
+						});
 					}
-
-					throw new TRPCError({
-						code: 'FORBIDDEN',
-						message: 'Minimal harus ada 1 item yang di include',
-					});
 				} catch (err) {
 					await transaction.rollback();
 					procedureError(err);
