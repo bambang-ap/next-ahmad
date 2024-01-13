@@ -1,7 +1,7 @@
 import {NextApiRequest, NextApiResponse} from 'next';
 import {getServerSession} from 'next-auth';
 import {authOptions} from 'pages/api/auth/[...nextauth]';
-import {literal, Model, ModelStatic, Op, WhereOptions} from 'sequelize';
+import {Error, literal, Model, ModelStatic, Op, WhereOptions} from 'sequelize';
 
 import {PagingResult, TSession} from '@appTypes/app.type';
 import {TIndex, ZIndex} from '@appTypes/app.zod';
@@ -148,4 +148,18 @@ export function pagingResult<T extends unknown>(
 	const totalPage = (count - mod) / limit + (mod > 0 ? 1 : 0);
 
 	return {count, page, limit, totalPage, rows, debug};
+}
+
+export function procedureError(err: any) {
+	if (err instanceof Error) {
+		if (err.message.includes('violates'))
+			throw new TRPCError({
+				code: 'BAD_REQUEST',
+				message:
+					'Sepertinya data sudah di input pada step selanjutnya, silahkan hapus terlebih dahulu untuk melanjutkan proses.',
+			});
+		throw new TRPCError({code: 'BAD_REQUEST', message: err.message});
+	}
+	if (err instanceof TRPCError) throw new TRPCError(err);
+	throw new TRPCError({code: 'BAD_REQUEST'});
 }

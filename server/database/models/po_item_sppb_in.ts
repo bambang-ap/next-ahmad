@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
+import {BOOLEAN, DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
 import {TPOItemSppbIn} from '@appTypes/app.zod';
 import {defaultExcludeColumn} from '@constants';
@@ -16,6 +16,7 @@ export default function initOrmPOItemSppbIn(sequelize: Sequelize) {
 			master_item_id: STRING,
 			id_sppb_in: STRING,
 			lot_no: STRING,
+			included: BOOLEAN,
 			...unitQtyField,
 		},
 		{
@@ -43,6 +44,7 @@ export function initInItem(sequelize: Sequelize) {
 			master_item_id: STRING,
 			id_sppb_in: STRING,
 			lot_no: STRING,
+			included: BOOLEAN,
 			...unitQtyField,
 		},
 		{

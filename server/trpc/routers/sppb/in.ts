@@ -32,7 +32,12 @@ import {
 	wherePagesV2,
 } from '@database';
 import {getSJInGrade} from '@db/getSjGrade';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {
+	checkCredentialV2,
+	generateId,
+	pagingResult,
+	procedureError,
+} from '@server';
 import {procedure, router} from '@trpc';
 
 import {appRouter} from '..';
@@ -245,26 +250,42 @@ const sppbInRouters = router({
 					});
 
 					await Promise.all(existingPoItemPromises);
+					let upserted = 0;
 
 					for (const item of po_item) {
-						const {id: idItem, id_item, id_sppb_in} = item;
+						const {id: idItem, id_item, included, id_sppb_in} = item;
+
+						if (!included) {
+							if (!idItem) continue;
+							await OrmPOItemSppbIn.destroy({where: {id: idItem}});
+							continue;
+						}
 
 						await OrmPOItemSppbIn.upsert(
 							{
 								...item,
+								included,
 								id_item,
 								id_sppb_in: id_sppb_in || id || (createdSppb.id as string),
 								id: idItem || generateId('SPPBINITM_'),
 							},
 							{transaction},
 						);
+						upserted++;
 					}
 
-					await transaction.commit();
-					return Success;
+					if (upserted > 0) {
+						await transaction.commit();
+						return Success;
+					}
+
+					throw new TRPCError({
+						code: 'FORBIDDEN',
+						message: 'Minimal harus ada 1 item yang di include',
+					});
 				} catch (err) {
 					await transaction.rollback();
-					throw new TRPCError({code: 'BAD_REQUEST'});
+					procedureError(err);
 				}
 			});
 		}),

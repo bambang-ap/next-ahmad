@@ -30,8 +30,10 @@ export function SppbInModalChild({
 		dInItems: OrmPOItemSppbIns,
 		id_po,
 		type,
+		po_item: po_item_form,
 	} = dataForm;
-	const {isPreview, isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
+	const {isPreview, isDelete, isAdd, isEdit, isPreviewEdit} =
+		modalTypeParser(type);
 
 	const {data: dataCustomer = [], isFetching: isFetchingCustomer} =
 		trpc.basic.get.useQuery<any, TCustomer[]>({
@@ -124,6 +126,7 @@ export function SppbInModalChild({
 					'Nomor Lot',
 					// @ts-ignore
 					['Jumlah', qtyList.length],
+					'Included',
 					// !isPreview && "Action",
 				]}
 				data={selectedPo?.OrmCustomerPOItems}
@@ -131,6 +134,8 @@ export function SppbInModalChild({
 					const selectedItem = OrmPOItemSppbIns?.find(
 						e => e.id_item === item.id,
 					);
+
+					const included = po_item_form?.[index]?.included;
 
 					return (
 						<>
@@ -157,46 +162,65 @@ export function SppbInModalChild({
 							/>
 							<Cell>{item.OrmMasterItem.kode_item}</Cell>
 							<Cell>{item.OrmMasterItem.name}</Cell>
-							<Cell>
+							<Cell hidden={!included}>
 								<Input
 									className="flex-1"
 									label="Nomor Lot"
 									control={control}
-									defaultValue={selectedItem?.lot_no}
+									defaultValue={!included ? '' : selectedItem?.lot_no}
 									fieldName={`po_item.${index}.lot_no`}
 								/>
 							</Cell>
-							{qtyMap(({num, qtyKey, unitKey}) => {
-								const unit = item[unitKey];
-								if (!unit) return <Cell key={num} />;
+							<Cell
+								hidden={!included}
+								className="gap-2"
+								colSpan={qtyList.length}>
+								{qtyMap(({num, qtyKey, unitKey}) => {
+									const unit = item[unitKey];
+									if (!unit) return <Cell key={num} />;
 
-								const currentQty =
-									item[qtyKey]! -
-									(item.totalQty[qtyKey]! ?? 0) +
-									(isEdit ? selectedItem?.[qtyKey]! : 0);
+									const currentQty =
+										item[qtyKey]! -
+										(item.totalQty[qtyKey]! ?? 0) +
+										(isEdit ? selectedItem?.[qtyKey]! : 0);
 
-								const jumlah = isPreviewEdit
-									? selectedItem?.[qtyKey]
-									: currentQty;
-								const max = isEdit ? item[qtyKey]! - currentQty : currentQty;
+									const jumlah = !included
+										? 0
+										: isPreviewEdit
+										? selectedItem?.[qtyKey]
+										: currentQty;
+									const max = Number.isNaN(currentQty)
+										? item[qtyKey]!
+										: currentQty;
 
-								return (
-									<Cell>
-										<Input
-											className="flex-1"
-											disabled={isPreview}
-											type="decimal"
-											control={control}
-											shouldUnregister
-											label={`Jumlah ${num}`}
-											defaultValue={jumlah}
-											rightAcc={<Text>{unit}</Text>}
-											fieldName={`po_item.${index}.qty${num}`}
-											rules={{max: {value: max, message: `max is ${max}`}}}
-										/>
-									</Cell>
-								);
-							})}
+									return (
+										<>
+											<Input
+												className="flex-1"
+												disabled={isPreview}
+												type="decimal"
+												control={control}
+												shouldUnregister={included}
+												label={`Jumlah ${num}`}
+												defaultValue={included ? max : jumlah}
+												rightAcc={<Text>{unit}</Text>}
+												fieldName={`po_item.${index}.qty${num}`}
+												rules={{max: {value: max, message: `max is ${max}`}}}
+											/>
+										</>
+									);
+								})}
+							</Cell>
+							<Cell>
+								<Input
+									type="checkbox"
+									className="flex-1"
+									label="Included"
+									control={control}
+									defaultValue={isAdd ? true : !!selectedItem}
+									fieldName={`po_item.${index}.included`}
+								/>
+							</Cell>
 						</>
 					);
 				}}

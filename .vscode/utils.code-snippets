@@ -11,8 +11,7 @@
 			"  return Success;",
 			"} catch (err) {",
 			"  await transaction.rollback();",
-			"  if (err instanceof TRPCError) throw new TRPCError(err);",
-			"  throw new TRPCError$3({code: 'BAD_REQUEST'});",
+			"  procedureError(err);",
 			"}"
 		]
 	},
@@ -54,8 +53,7 @@
 			"  return Success;",
 			"} catch (err) {",
 			"  await transaction.rollback();",
-			"  if (err instanceof TRPCError) throw new TRPCError(err);",
-			"  throw new TRPCError({code: 'BAD_REQUEST'});",
+			"  procedureError(err);",
 			"}"
 			"});",
 			"})"

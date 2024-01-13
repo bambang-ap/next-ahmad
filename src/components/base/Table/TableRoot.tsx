@@ -19,10 +19,15 @@ const StyledTableCell = styled(TableCell)(({valign}) => ({
 	verticalAlign: valign,
 }));
 
-const StyledCell = ({children, className, ...rest}: StyledCellProps) => {
+const StyledCell = ({
+	children,
+	hidden,
+	className,
+	...rest
+}: StyledCellProps) => {
 	return (
 		<StyledTableCell {...rest}>
-			<div className={classNames('flex', className)}>{children}</div>
+			<div className={classNames('flex', {hidden}, className)}>{children}</div>
 		</StyledTableCell>
 	);
 };

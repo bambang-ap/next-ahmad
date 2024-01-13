@@ -186,6 +186,7 @@ export const tPOItemSppbIn = zId.extend({
 	id_item: z.string(),
 	master_item_id: z.string(),
 	lot_no: z.string().optional(),
+	included: z.boolean(),
 	...zCreated.shape,
 	...unitQty.shape,
 });
@@ -329,7 +330,7 @@ const tPOItemSppbInOnlyId = tPOItemSppbIn.pick(picker);
 
 export type TUpsertSppbIn = z.infer<typeof tUpsertSppbIn>;
 export const tUpsertSppbIn = tCustomerSPPBIn.extend({
-	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array(),
+	po_item: tPOItemSppbInNonId.and(tPOItemSppbInOnlyId.partial()).array().min(1),
 });
 
 const outItemUpsertExclude = zId
