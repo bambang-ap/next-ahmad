@@ -30,7 +30,7 @@ export default function MainDashboard(rootForm: FormProps<DashboardForm>) {
 
 			<QtyTable rootForm={rootForm} setValue={setValue} control={control} />
 			<div className="mt-6 flex justify-center">
-				<div className="w-4/12">
+				<div className="w-full">
 					<DonutChart rootForm={rootForm} control={control} />
 				</div>
 			</div>

@@ -6,6 +6,7 @@ import clone from 'just-clone';
 import * as momentTz from 'moment-timezone';
 import objectPath from 'object-path';
 import {DeepPartialSkipArrayKey, FieldPath, FieldValues} from 'react-hook-form';
+import twColors from 'tailwindcss/colors';
 import * as XLSX from 'xlsx';
 
 import {GenPdfOpts, Route, RouterOutput, UnitQty} from '@appTypes/app.type';
@@ -715,4 +716,15 @@ export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 
 export function isAdminRole(role?: string) {
 	return role === USER_ROLE.ADMIN || role === USER_ROLE.SUPER_ADMIN;
+}
+
+export function getTwColor(color?: string) {
+	if (!color) return twColors.gray[500];
+
+	type A = typeof twColors;
+	const [name, variant] = color
+		?.replace(/\s(\W|\w)+/, '')
+		.replace(/bg-/, '')
+		.split('-') as [name: ObjKeyof<A>, variant: ObjKeyof<A['amber']>];
+	return twColors[name][variant];
 }
