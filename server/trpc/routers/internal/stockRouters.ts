@@ -1,5 +1,3 @@
-import {Op} from 'sequelize';
-
 import {PagingResult} from '@appTypes/app.type';
 import {sStock, tableFormValue, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
@@ -8,7 +6,7 @@ import {
 	orderPages,
 	ORM,
 	oStock,
-	wherePagesV3,
+	wherePagesV2,
 } from '@database';
 import {checkCredentialV2, generateId, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
@@ -19,33 +17,34 @@ export type RetStock = ReturnType<typeof internalStockAttributes>['Ret'];
 
 export const stockRouters = router({
 	get: procedure.input(tableFormValue).query(({ctx, input}) => {
-		const {limit, page, id: sup_id, ids, search} = input;
+		const {limit: lim, page, id: sup_id, ids, search} = input;
 
 		const {item, out, stock, sup} = internalStockAttributes();
 
+		const limit = !search ? lim : undefined;
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<RetStock>> => {
-			const searcher = {[Op.iLike]: `%${search}%`};
-
 			const where = !search
 				? undefined
-				: wherePagesV3<RetStock>(
-						{
-							nama: searcher,
-							kode: searcher,
-							'$oSup.nama$': searcher,
-							'$oItem.nama$': searcher,
-							'$oItem.kode$': searcher,
-						},
-						'or',
+				: wherePagesV2<RetStock>(
+						[
+							// @ts-ignore
+							'$oStock.nama$',
+							// @ts-ignore
+							'$oStock.kode$',
+							'$oSup.nama$',
+							'$oItem.nama$',
+							'$oItem.kode$',
+						],
+						search,
 				  );
 
-			const {count, rows} = await stock.model.findAndCountAll({
-				include: [out, sup, item],
+			const {count, rows} = await stock.model.unscoped().findAndCountAll({
+				limit,
+				attributes: stock.attributes,
+				offset: (page - 1) * (limit ?? 0),
+				include: [{...out}, {...sup}, {...item}],
 				where: ids ? {id: ids} : !sup_id ? where : {sup_id},
-				order: orderPages<RetStock>({
-					updatedAt: false,
-					'oOuts.createdAt': false,
-				}),
+				order: orderPages<RetStock>({updatedAt: false}),
 			});
 
 			const data = rows.map(e => {
@@ -56,7 +55,7 @@ export const stockRouters = router({
 				return {...val, usedQty, isClosed: val.qty - usedQty <= 0};
 			});
 
-			return pagingResult(count, page, limit, data);
+			return pagingResult(count, page, limit ?? 9999, data);
 		});
 	}),
 
