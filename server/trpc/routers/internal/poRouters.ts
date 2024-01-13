@@ -15,6 +15,7 @@ import {
 	internalPoAttributes,
 	oPo,
 	oPoItem,
+	orderPages,
 	ORM,
 	wherePagesV3,
 } from '@database';
@@ -42,6 +43,7 @@ async function agd(input: TableFormValue, where?: any, byPassWhere = false) {
 		include: [tIndex, sup],
 		offset: (page - 1) * limit,
 		attributes: {include: [whereSearch.attributes]},
+		order: orderPages<RetPoInternal>({createdAt: false}),
 		where: byPassWhere
 			? where
 			: !whereSearch.where

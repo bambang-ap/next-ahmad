@@ -707,6 +707,7 @@ export const sReqForm = zId.extend({
 export type SPo = z.infer<typeof sPo>;
 export const sPo = zId.extend({
 	...zIndex.shape,
+	...zCreatedUpdated.shape,
 	sup_id: z.string(),
 	date: zDateR,
 	due_date: zDateR,
