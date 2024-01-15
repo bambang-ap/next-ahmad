@@ -1,7 +1,10 @@
-import {useWatch} from 'react-hook-form';
+import {useEffect} from 'react';
+
+import {useForm, useWatch} from 'react-hook-form';
 import {useRecoilValue} from 'recoil';
 
 import {FormProps} from '@appTypes/app.type';
+import {MultipleButtonGroup} from '@baseComps/Input/ButtonGroup';
 import {chartOpts, decimalValue} from '@constants';
 import {useQtyData} from '@hooks';
 import {Chart} from '@prevComp/Chart';
@@ -18,14 +21,16 @@ export default function DonutChart({
 	rootForm,
 }: FormProps<FormValue> & {rootForm: FormProps<DashboardForm>}) {
 	const horizontal = useRecoilValue(atomIsMobile);
-	const {type} = useWatch({control});
-	const {qtyParser} = useQtyData(rootForm);
 
-	const qtys = qtyParser(type!);
-	const chartOpt = chartOpts(
-		qtys.map(([n]) => n),
-		{horizontal},
-	);
+	const {control: ctrl, watch, reset} = useForm<{ss: string[]}>();
+	const {qtyParser} = useQtyData(rootForm);
+	const {ss} = watch();
+	const {type} = useWatch({control});
+
+	const qtysa = qtyParser(type!);
+	const categories = qtysa.map(([n]) => n);
+	const qtys = qtysa.filter(([n]) => ss?.includes(n));
+	const chartOpt = chartOpts(categories, {horizontal});
 
 	const series: ApexAxisChartSeries = [
 		{
@@ -37,9 +42,12 @@ export default function DonutChart({
 		},
 	];
 
+	useEffect(() => {
+		if (!!categories && !ss) reset({ss: categories});
+	}, [categories]);
+
 	return (
-		<>
-			<div className="text-center mb-4">Grafik Qty {type?.ucwords()}</div>
+		<div className="flex flex-col gap-2">
 			<Chart
 				key={type}
 				type="bar"
@@ -47,6 +55,11 @@ export default function DonutChart({
 				series={series}
 				options={chartOpt.opt}
 			/>
-		</>
+			<MultipleButtonGroup
+				control={ctrl}
+				fieldName="ss"
+				data={qtysa.map(([value]) => ({value}))}
+			/>
+		</div>
 	);
 }
