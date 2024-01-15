@@ -11,7 +11,7 @@
 		"start": "next start --port 7534",
 		"ssh": "ssh root@45.90.223.23",
 		"dev": "next dev --port 1234",
-		"dev:server": "next dev --port 80",
+		"dev:server": "next dev --port 7534",
 		"next-lint": "next lint",
 		"lint": "eslint . --ext=jsx,ts,tsx",
 		"restart": "/etc/init.d/postgresql restart",
