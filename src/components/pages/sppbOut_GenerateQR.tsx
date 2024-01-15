@@ -287,8 +287,10 @@ export function SPPBOutGenerateQR({
 										if (!item[qtyKey]) return <Td width={115} />;
 
 										const unit = OrmCustomerPOItem?.[unitKey];
-										const qtyRejectRP = rejectedItems.RP?.[qtyKey];
-										const qtyRejectTP = rejectedItems.TP?.[qtyKey];
+										const qtyRejectRP =
+											rejectedItems?.[OrmPOItemSppbIn.id]?.RP?.[qtyKey];
+										const qtyRejectTP =
+											rejectedItems?.[OrmPOItemSppbIn.id]?.TP?.[qtyKey];
 
 										return (
 											<Td width={115} className="flex-col" key={num}>

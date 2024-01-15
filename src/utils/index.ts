@@ -261,23 +261,27 @@ export function itemInScanParser(
 	kanbans?: ReturnType<typeof getPOSppbOutAttributes>['RetKanban'][],
 ) {
 	let rejItems: RejItems = {};
-	type RejItems = Partial<Record<REJECT_REASON, UnitQty>>;
+	type RejItems = Record<string, Partial<Record<REJECT_REASON, UnitQty>>>;
 
 	const itemInScan = qtyReduce((ret, {qtyKey}) => {
 		kanbans?.forEach(knb => {
+			const knbItem = knb.dKnbItems?.[0];
 			knb.dScans.forEach(scan => {
 				scan.dScanItems.forEach(scnItem => {
-					if (idItemSppbIn === knb.dKnbItems?.[0]?.id_item) {
+					if (idItemSppbIn === knbItem?.id_item) {
 						ret[qtyKey] += parseFloat(scnItem?.[qtyKey]?.toString() ?? '0');
 					}
 				});
 
 				scan.rejScan?.dScanItems.forEach(sRItem => {
+					const idS = knbItem?.id_item!;
 					sRItem.dRejItems.forEach(({reason, ...rItem}) => {
-						if (!rejItems[reason]) rejItems[reason] = {} as UnitQty;
-						if (!rejItems[reason]![qtyKey]) rejItems[reason]![qtyKey] = 0;
+						if (!rejItems[idS]) rejItems[idS] = {};
+						if (!rejItems[idS]![reason]) rejItems[idS]![reason] = {} as UnitQty;
+						if (!rejItems[idS]![reason]![qtyKey])
+							rejItems[idS]![reason]![qtyKey] = 0;
 
-						rejItems[reason]![qtyKey] += parseFloat(
+						rejItems[idS]![reason]![qtyKey] += parseFloat(
 							rItem[qtyKey]?.toString() ?? '0',
 						);
 					});

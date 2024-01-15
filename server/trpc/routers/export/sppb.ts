@@ -148,8 +148,8 @@ const exportSppbRouters = router({
 					const qtyMapping = qtyMap(({qtyKey, num, unitKey}) => {
 						const qty = outItem[qtyKey];
 						const unit = dPoItem?.[unitKey];
-						const qtyRejectRP = rejectedItems.RP?.[qtyKey];
-						const qtyRejectTP = rejectedItems.TP?.[qtyKey];
+						const qtyRejectRP = rejectedItems?.[dInItem.id]?.RP?.[qtyKey];
+						const qtyRejectTP = rejectedItems?.[dInItem.id]?.TP?.[qtyKey];
 
 						if (!qty) return {};
 

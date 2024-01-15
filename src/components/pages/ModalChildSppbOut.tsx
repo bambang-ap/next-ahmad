@@ -207,6 +207,8 @@ export function SppbOutModalChild({
 														dOutItems,
 													} = item ?? {};
 
+													console.log(item);
+
 													const items = sppb.items?.[id_item];
 
 													const lot_no_imi = sppbInSelected?.dKanbans
@@ -283,9 +285,9 @@ export function SppbOutModalChild({
 																		const unit = dPoItem?.[unitKey];
 
 																		const qtyRejectRP =
-																			rejectedItems.RP?.[qtyKey];
+																			rejectedItems?.[id_item]?.RP?.[qtyKey];
 																		const qtyRejectTP =
-																			rejectedItems.TP?.[qtyKey];
+																			rejectedItems?.[id_item]?.TP?.[qtyKey];
 																		// const qtyRejectSC =
 																		// 	rejectedItems.SC?.[qtyKey];
 
