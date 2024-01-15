@@ -20,6 +20,7 @@ export const printScanRouter = {
 			sjIn,
 			tIndex,
 			Ret,
+			rejItem,
 		} = printScanAttributes();
 
 		return checkCredentialV2(ctx, async () => {
@@ -30,6 +31,7 @@ export const printScanRouter = {
 					{
 						...scnItem,
 						include: [
+							rejItem,
 							{
 								...knbItem,
 								include: [

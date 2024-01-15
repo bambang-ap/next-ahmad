@@ -297,6 +297,7 @@ export function scanListAttributes() {
 }
 
 export function printScanAttributes() {
+	const rejItem = attrParserExclude(dRejItem, ['id', 'id_item']);
 	const tIndex = attrParserV2(dIndex);
 	const scan = attrParserV2(dScan, [
 		'id_kanban',
@@ -328,6 +329,7 @@ export function printScanAttributes() {
 
 	type Ret = typeof scan.obj & {
 		dScanItems: (typeof scnItem.obj & {
+			dRejItems: typeof rejItem.obj[];
 			dKnbItem?: typeof knbItem.obj & {
 				dKanban: typeof kanban.obj & {
 					dIndex?: typeof tIndex.obj;
@@ -354,6 +356,7 @@ export function printScanAttributes() {
 		inItem,
 		poItem,
 		sjIn,
+		rejItem,
 		Ret: {} as Ret,
 	};
 }

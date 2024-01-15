@@ -83,7 +83,7 @@ function RenderScanList() {
 			? {
 					splitPagePer: 4,
 					orientation: 'l',
-					width: 2150,
+					width: 2250,
 					tagId: `${route}-generated`,
 					renderItem: data => (
 						<div

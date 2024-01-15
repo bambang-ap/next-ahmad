@@ -207,8 +207,6 @@ export function SppbOutModalChild({
 														dOutItems,
 													} = item ?? {};
 
-													console.log(item);
-
 													const items = sppb.items?.[id_item];
 
 													const lot_no_imi = sppbInSelected?.dKanbans

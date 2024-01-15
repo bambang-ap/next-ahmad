@@ -2,7 +2,7 @@ import {Text, Wrapper} from 'pages/app/scan/[route]/list';
 
 import {THardness, TInstruksiKanban, TParameter} from '@appTypes/app.type';
 import {gap} from '@constants';
-import {CRUD_ENABLED} from '@enum';
+import {CRUD_ENABLED, REJECT_REASON_VIEW} from '@enum';
 import {classNames, qtyMap, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
@@ -23,6 +23,9 @@ export function RenderItems({data}: Props) {
 
 export function RenderItem({data: dataItem, rootData: data}: Prop) {
 	const knbItem = dataItem?.dKnbItem;
+
+	const rejItem = dataItem.dRejItems?.[0]!;
+	const hasReject = !!rejItem;
 
 	const masterItem = knbItem?.dItem;
 
@@ -96,7 +99,16 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 					.filter(Boolean)
 					.join(' | ')}
 			</Wrapper>
+			{hasReject && (
+				<Wrapper title={`Jumlah ${REJECT_REASON_VIEW[rejItem.reason]}`}>
+					{qtyMap(({qtyKey, unitKey}) => {
+						const qty = rejItem?.[qtyKey];
+						const unit = knbItem?.dInItem?.dPoItem[unitKey];
 
+						return `${qty} ${unit}`;
+					}).join(' | ')}
+				</Wrapper>
+			)}
 			<div className={classNames('flex min-h-[64px]', gap)}>
 				<div className="bg-white flex justify-center flex-1 p-2">
 					<Text className="self-center text-lg mb-2">LINE-PROCESS</Text>
