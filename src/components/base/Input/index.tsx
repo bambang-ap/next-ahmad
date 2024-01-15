@@ -20,9 +20,9 @@ import {
 } from '@formController';
 import {classNames, decimalParser, moment} from '@utils';
 
-import {CheckBox} from './CheckBox';
+import {CheckBox, CheckboxProps} from './CheckBox';
 
-export type InputProps = {
+export type InputProps = Pick<CheckboxProps, 'renderChildren'> & {
 	byPassValue?: string | number | boolean;
 	hidden?: boolean;
 	placeholder?: string;
@@ -63,6 +63,7 @@ export function InputComponent<F extends FieldValues>(
 		disabled,
 		className,
 		controller,
+		renderChildren,
 		placeholder,
 		noLabel,
 		defaultValue,
@@ -192,6 +193,7 @@ export function InputComponent<F extends FieldValues>(
 					onCheck={onCheck}
 					disabled={isDisabled}
 					className={className}
+					renderChildren={renderChildren}
 					value={byPassed ? (byPassValue as boolean) : value}>
 					{errorMessage}
 				</CheckBox>

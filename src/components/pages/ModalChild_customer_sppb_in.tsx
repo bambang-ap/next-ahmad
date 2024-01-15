@@ -42,6 +42,8 @@ export function SppbInModalChild({
 	const {data: listPo = [], isFetching: isFetchingPo} =
 		trpc.sppb.in.po.gett.useQuery({id_customer}, {enabled: !!id_customer});
 
+	const renderEnabled = isAdd ? true : !isFetchingPo;
+
 	useEffect(() => {
 		reset(prev => ({...prev, id_customer: OrmCustomerPO?.dCust?.id}));
 	}, [OrmCustomerPO?.dCust?.id]);
@@ -119,112 +121,117 @@ export function SppbInModalChild({
 					label="Tanggal"
 				/>
 			</div>
-			<Table
-				header={[
-					'Kode Item',
-					'Nama Item',
-					'Nomor Lot',
-					// @ts-ignore
-					['Jumlah', qtyList.length],
-					'Included',
-					// !isPreview && "Action",
-				]}
-				data={selectedPo?.OrmCustomerPOItems}
-				renderItem={({Cell, item}, index) => {
-					const selectedItem = OrmPOItemSppbIns?.find(
-						e => e.id_item === item.id,
-					);
+			{renderEnabled && (
+				<Table
+					header={[
+						'Kode Item',
+						'Nama Item',
+						'Nomor Lot',
+						// @ts-ignore
+						['Jumlah', qtyList.length],
+						'Action',
+						// !isPreview && "Action",
+					]}
+					data={selectedPo?.OrmCustomerPOItems}
+					renderItem={({Cell, item}, index) => {
+						const selectedItem = OrmPOItemSppbIns?.find(
+							e => e.id_item === item.id,
+						);
 
-					const included = po_item_form?.[index]?.included;
+						const included = po_item_form?.[index]?.included;
 
-					return (
-						<>
-							<Input
-								className="hidden"
-								control={control}
-								shouldUnregister
-								defaultValue={item.id}
-								fieldName={`po_item.${index}.id_item`}
-							/>
-							<Input
-								className="hidden"
-								control={control}
-								shouldUnregister
-								defaultValue={item.master_item_id}
-								fieldName={`po_item.${index}.master_item_id`}
-							/>
-							<Input
-								className="hidden"
-								control={control}
-								shouldUnregister
-								defaultValue={selectedItem?.id}
-								fieldName={`po_item.${index}.id`}
-							/>
-							<Cell>{item.OrmMasterItem.kode_item}</Cell>
-							<Cell>{item.OrmMasterItem.name}</Cell>
-							<Cell hidden={!included}>
+						return (
+							<>
 								<Input
-									className="flex-1"
-									label="Nomor Lot"
+									className="hidden"
 									control={control}
-									defaultValue={!included ? '' : selectedItem?.lot_no}
-									fieldName={`po_item.${index}.lot_no`}
+									shouldUnregister
+									defaultValue={item.id}
+									fieldName={`po_item.${index}.id_item`}
 								/>
-							</Cell>
-							<Cell
-								hidden={!included}
-								className="gap-2"
-								colSpan={qtyList.length}>
-								{qtyMap(({num, qtyKey, unitKey}) => {
-									const unit = item[unitKey];
-									if (!unit) return <Cell key={num} />;
-
-									const currentQty =
-										item[qtyKey]! -
-										(item.totalQty[qtyKey]! ?? 0) +
-										(isEdit ? selectedItem?.[qtyKey]! : 0);
-
-									const jumlah = !included
-										? 0
-										: isPreviewEdit
-										? selectedItem?.[qtyKey]
-										: currentQty;
-									const max = Number.isNaN(currentQty)
-										? item[qtyKey]!
-										: currentQty;
-
-									return (
-										<>
-											<Input
-												className="flex-1"
-												disabled={isPreview}
-												type="decimal"
-												control={control}
-												shouldUnregister={included}
-												label={`Jumlah ${num}`}
-												defaultValue={included ? max : jumlah}
-												rightAcc={<Text>{unit}</Text>}
-												fieldName={`po_item.${index}.qty${num}`}
-												rules={{max: {value: max, message: `max is ${max}`}}}
-											/>
-										</>
-									);
-								})}
-							</Cell>
-							<Cell>
 								<Input
-									type="checkbox"
-									className="flex-1"
-									label="Included"
+									className="hidden"
 									control={control}
-									defaultValue={isAdd ? true : !!selectedItem}
-									fieldName={`po_item.${index}.included`}
+									shouldUnregister
+									defaultValue={item.master_item_id}
+									fieldName={`po_item.${index}.master_item_id`}
 								/>
-							</Cell>
-						</>
-					);
-				}}
-			/>
+								<Input
+									className="hidden"
+									control={control}
+									shouldUnregister
+									defaultValue={selectedItem?.id}
+									fieldName={`po_item.${index}.id`}
+								/>
+								<Cell>{item.OrmMasterItem.kode_item}</Cell>
+								<Cell>{item.OrmMasterItem.name}</Cell>
+								<Cell hidden={!included}>
+									<Input
+										className="flex-1"
+										label="Nomor Lot"
+										control={control}
+										defaultValue={!included ? '' : selectedItem?.lot_no}
+										fieldName={`po_item.${index}.lot_no`}
+									/>
+								</Cell>
+								<Cell
+									hidden={!included}
+									className="gap-2"
+									colSpan={qtyList.length}>
+									{qtyMap(({num, qtyKey, unitKey}) => {
+										const unit = item[unitKey];
+										if (!unit) return <Cell key={num} />;
+
+										const currentQty =
+											item[qtyKey]! -
+											(item.totalQty[qtyKey]! ?? 0) +
+											(isEdit ? selectedItem?.[qtyKey]! : 0);
+
+										const jumlah = !included
+											? 0
+											: isPreviewEdit
+											? selectedItem?.[qtyKey]
+											: currentQty;
+										const max = Number.isNaN(currentQty)
+											? item[qtyKey]!
+											: currentQty;
+
+										return (
+											<>
+												<Input
+													className="flex-1"
+													disabled={isPreview}
+													type="decimal"
+													control={control}
+													shouldUnregister={included}
+													label={`Jumlah ${num}`}
+													defaultValue={included ? max : jumlah}
+													rightAcc={<Text>{unit}</Text>}
+													fieldName={`po_item.${index}.qty${num}`}
+													rules={{max: {value: max, message: `max is ${max}`}}}
+												/>
+											</>
+										);
+									})}
+								</Cell>
+								<Cell>
+									<Input
+										type="checkbox"
+										className="flex-1"
+										label="Included"
+										control={control}
+										fieldName={`po_item.${index}.included`}
+										defaultValue={isAdd ? true : !!selectedItem}
+										renderChildren={v => (
+											<Button icon={v ? 'faTrash' : 'faPlus'} />
+										)}
+									/>
+								</Cell>
+							</>
+						);
+					}}
+				/>
+			)}
 			{!isPreview && <Button type="submit">Submit</Button>}
 		</div>
 	);

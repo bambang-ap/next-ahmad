@@ -3,13 +3,14 @@ import {PropsWithChildren} from 'react';
 import {Icon, Text} from '@components';
 import {classNames} from '@utils';
 
-type Props = PropsWithChildren<{
+export type CheckboxProps = PropsWithChildren<{
 	hidden?: boolean;
 	className?: string;
 	onCheck?: (value: boolean) => void;
 	value?: boolean | '@';
 	label?: string | false;
 	disabled?: boolean;
+	renderChildren?: (value: boolean) => JSX.Element;
 }>;
 
 export function CheckBox({
@@ -19,8 +20,21 @@ export function CheckBox({
 	value,
 	disabled,
 	label,
+	renderChildren,
 	children: errorMessage,
-}: Props) {
+}: CheckboxProps) {
+	const checkBox = (
+		<>
+			<div className="flex justify-center items-center mr-2 border rounded p-1">
+				<Icon
+					className={classNames({'text-transparent': !value})}
+					name={value === '@' ? 'faMinus' : 'faCheck'}
+				/>
+			</div>
+			<Text className="select-none">{label}</Text>
+		</>
+	);
+
 	return (
 		<div
 			onClick={disabled ? noop : () => onCheck?.(!value)}
@@ -29,13 +43,7 @@ export function CheckBox({
 				{hidden, 'cursor-pointer': !disabled, 'cursor-not-allowed': disabled},
 				className,
 			)}>
-			<div className="flex justify-center items-center mr-2 border rounded p-1">
-				<Icon
-					className={classNames({'text-transparent': !value})}
-					name={value === '@' ? 'faMinus' : 'faCheck'}
-				/>
-			</div>
-			<Text className="select-none">{label}</Text>
+			{!!renderChildren ? renderChildren(value as boolean) : checkBox}
 			{errorMessage}
 		</div>
 	);
