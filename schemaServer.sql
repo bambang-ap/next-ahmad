@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.3 (Debian 15.3-1.pgdg110+1)
+-- Dumped from database version 15.3
 -- Dumped by pg_dump version 15.3
 
 SET statement_timeout = 0;
@@ -671,7 +671,8 @@ CREATE TABLE public.po_item_sppb_in (
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     master_item_id character varying(47),
-    lot_no character varying(100)
+    lot_no character varying(100),
+    included boolean DEFAULT true
 );
 
 

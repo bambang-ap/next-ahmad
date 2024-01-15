@@ -601,7 +601,8 @@ CREATE TABLE public.mesin_kategori (
     id character varying(47) NOT NULL,
     name character varying(100) NOT NULL,
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    color character varying(20)
 );
 
 
@@ -670,7 +671,8 @@ CREATE TABLE public.po_item_sppb_in (
     "createdAt" timestamp without time zone,
     "updatedAt" timestamp without time zone,
     master_item_id character varying(47),
-    lot_no character varying(100)
+    lot_no character varying(100),
+    included boolean DEFAULT true
 );
 
 
@@ -1263,6 +1265,13 @@ CREATE INDEX doc_id_1693939147464_index ON public.kanban USING btree (doc_id);
 --
 
 CREATE INDEX email_1693939633648_index ON public.user_pengguna USING btree (email);
+
+
+--
+-- Name: email_1703677742070_index; Type: INDEX; Schema: public; Owner: postgres
+--
+
+CREATE UNIQUE INDEX email_1703677742070_index ON public.user_pengguna USING btree (email);
 
 
 --
