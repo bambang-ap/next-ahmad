@@ -13,6 +13,7 @@ import {SppbOutModalChild} from '@pageComponent/ModalChildSppbOut';
 import {SPPBOutGenerateQR} from '@pageComponent/sppbOut_GenerateQR';
 import {
 	atLeastOneDefined,
+	dateUtils,
 	modalTypeParser,
 	renderIndex,
 	renderItemAsIs,
@@ -60,6 +61,8 @@ export default function SPPBOUT() {
 		exportRenderItem: renderItemAsIs,
 		header: [
 			'No',
+			'Tanggal dibuat',
+			'Tanggal Surat',
 			'Nomor Surat',
 			'Kendaraan',
 			'Customer',
@@ -85,12 +88,14 @@ export default function SPPBOUT() {
 		topComponent: <Button onClick={() => showModal({type: 'add'})}>Add</Button>,
 		useQuery: form => trpc.sppb.out.get.useQuery(form),
 		renderItem({Cell, CellSelect, item}, index) {
-			const {id} = item;
+			const {id, date, createdAt} = item;
 
 			return (
 				<>
 					<CellSelect fieldName={`idSppbOuts.${id}`} />
 					<Cell>{index + 1}</Cell>
+					<Cell>{dateUtils.full(createdAt)}</Cell>
+					<Cell>{dateUtils.date(date)}</Cell>
 					<Cell>{renderIndex(item, item.invoice_no!)}</Cell>
 					<Cell>{item.dVehicle?.name}</Cell>
 					<Cell>{item.dCust?.name}</Cell>

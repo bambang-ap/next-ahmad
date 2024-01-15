@@ -384,6 +384,7 @@ export const tCustomerSPPBOutItem = zId.extend({
 export type TCustomerSPPBOut = z.infer<typeof tCustomerSPPBOut>;
 export const tCustomerSPPBOut = zId.extend({
 	...zIndex.shape,
+	...zCreated.shape,
 	invoice_no: z.string().nullable(),
 	date: zDateR,
 	id_kendaraan: z.string(),
