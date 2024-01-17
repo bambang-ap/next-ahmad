@@ -13,6 +13,7 @@ const exportScanRouters = {
 			| 'NO'
 			| 'TANGGAL PROSES'
 			| 'CUSTOMER'
+			| 'NO SJ CUSTOMER'
 			| 'PART NAME'
 			| 'PART NO'
 			| 'WAKTU / JAM PROSES'
@@ -64,6 +65,7 @@ const exportScanRouters = {
 							? moment(date).format(formatDateStringView)
 							: '',
 						CUSTOMER: dCust?.name!,
+						'NO SJ CUSTOMER': dInItem?.dSJIn.nomor_surat!,
 						'PART NAME': dItem?.name!,
 						'PART NO': dItem?.kode_item!,
 						...enIe,
