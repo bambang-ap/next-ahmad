@@ -526,7 +526,7 @@ export const tScanNew = zId.extend({
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
 	id_qc: z.string().nullish(),
-	...zUpdated.shape,
+	...zCreatedUpdated.shape,
 });
 
 export type TScanNewItem = z.infer<typeof tScanNewItem>;

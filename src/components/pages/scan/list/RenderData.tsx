@@ -26,7 +26,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 	const {isSelect} = modalTypeParser(modalType);
 
 	const data = item.dKanban;
-	const date = item.updatedAt;
+	const date = item.createdAt;
 	const theDate = !date ? '' : dateUtils.full(date);
 
 	return (

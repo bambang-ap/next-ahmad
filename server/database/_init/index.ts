@@ -27,13 +27,13 @@ export const ORM = new Sequelize(
 	isProd ? PROD_PGSQL_USER : DEV_PGSQL_USER,
 	isProd ? PROD_PGSQL_PASSWORD : DEV_PGSQL_PASSWORD,
 	{
-		// query: {raw: true},
-		// logging: isProd ? false : true,
+		// logging: isProd,
+		// timezone: '+07:00',
 		dialect: 'postgres',
 		port: isProd ? PROD_PGSQL_PORT : DEV_PGSQL_PORT,
 		host: isProd ? PROD_PGSQL_HOST : DEV_PGSQL_HOST,
 		logging: false,
-		// minifyAliases: true,
+		minifyAliases: isProd,
 		pool: {
 			max: 10,
 			min: 1,

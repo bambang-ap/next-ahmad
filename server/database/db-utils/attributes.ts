@@ -269,7 +269,7 @@ export function exportScanAttributes(route: Route['route']) {
 }
 
 export function scanListAttributes() {
-	const scan = attrParserV2(dScan, ['id', 'id_kanban', 'status', 'updatedAt']);
+	const scan = attrParserV2(dScan, ['id', 'id_kanban', 'status', 'createdAt']);
 	const kanban = attrParserV2(dKanban, [
 		'nomor_kanban',
 		'index_id',
