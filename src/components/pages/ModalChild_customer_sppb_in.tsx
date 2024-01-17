@@ -21,7 +21,6 @@ export function SppbInModalChild({
 		dInItems: OrmPOItemSppbIns,
 		id_po,
 		type,
-		po_item: po_item_form,
 	} = dataForm;
 
 	const {data: dataCustomer = [], isFetching: isFetchingCustomer} =
