@@ -48,6 +48,7 @@ type OutResult = Record<
 	| 'CUSTOMER'
 	| 'NO SURAT JALAN MASUK'
 	| 'PART NAME / ITEM'
+	| 'NO LOT CUSTOMER'
 	| 'NO PO'
 	| 'NO SURAT JALAN KELUAR'
 	| 'PROSES'
@@ -180,6 +181,7 @@ const exportSppbRouters = router({
 						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no!)!,
 						'TANGGAL SJ KELUAR ': date,
 						'PART NAME / ITEM': dItem.name!,
+						'NO LOT CUSTOMER': dInItem.lot_no!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 						PROSES: instruksi,
 						KETERANGAN: dItem.keterangan!,
