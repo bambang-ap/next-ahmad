@@ -199,7 +199,6 @@ export function SppbOutModalChild({
 														dItem,
 														id: id_item,
 														lot_no,
-														currentQty,
 														isClosed,
 														dPoItem,
 														itemInScan,
