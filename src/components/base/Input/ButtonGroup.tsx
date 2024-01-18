@@ -16,13 +16,19 @@ import {SelectProps} from './Select';
 export const ButtonGroup = withReactFormController(SelectComponent);
 export const MultipleButtonGroup = withReactFormController(SelectComponent2);
 
-type HH = Pick<SelectProps, 'data' | 'disabled'> & {wrapped?: boolean};
+type HH = Pick<SelectProps, 'data' | 'disabled'> & {
+	wrapped?: boolean;
+	clearable?: boolean;
+	label?: string;
+};
 
 function SelectComponent<F extends FieldValues>({
 	data = [],
 	disabled,
+	label: btnLabel,
 	controller,
 	className,
+	clearable,
 	wrapped,
 }: ControlledComponentProps<F, HH>) {
 	const formContext = useContext(FormContext);
@@ -34,43 +40,51 @@ function SelectComponent<F extends FieldValues>({
 	const isDisabled = formContext?.disabled || disabled;
 
 	return (
-		<BtnGroup
-			className={classNames({'flex-wrap': wrapped}, className)}
-			variant={wrapped ? 'outlined' : 'contained'}>
-			{data.map(btn => {
-				const label = btn.label ?? btn.value;
-				const selectedValue = btn.value === value;
+		<>
+			<div>{btnLabel}</div>
+			<BtnGroup
+				className={classNames({'flex-wrap': wrapped}, className)}
+				variant={wrapped ? 'outlined' : 'contained'}>
+				{data.map(btn => {
+					const label = btn.label ?? btn.value;
+					const selectedValue = btn.value === value;
 
-				const btnn = (
-					<Button
-						className="flex-1"
-						disabled={isDisabled}
-						onClick={() => onChange(btn.value)}
-						color={selectedValue ? 'primary' : undefined}>
-						{label}
-					</Button>
-				);
+					const btnn = (
+						<Button
+							className="flex-1"
+							disabled={isDisabled}
+							onClick={() => onChange(btn.value)}
+							color={selectedValue ? 'primary' : undefined}>
+							{label}
+						</Button>
+					);
 
-				if (!wrapped) return btnn;
+					if (!wrapped) return btnn;
 
-				return (
-					<div
-						key={btn.value}
-						className={classNames({
-							'flex w-1/3 !rounded-xl p-1': wrapped,
-						})}>
-						{btnn}
-					</div>
-				);
-			})}
-		</BtnGroup>
+					return (
+						<div
+							key={btn.value}
+							className={classNames({
+								'flex w-1/3 !rounded-xl p-1': wrapped,
+							})}>
+							{btnn}
+						</div>
+					);
+				})}
+				{clearable && (
+					<Button onClick={() => onChange(undefined)} icon="faClose" />
+				)}
+			</BtnGroup>
+		</>
 	);
 }
 
 function SelectComponent2<F extends FieldValues>({
 	data = [],
 	disabled,
+	label: btnLabel,
 	controller,
+	clearable,
 	className,
 	wrapped,
 }: ControlledComponentProps<F, HH>) {
@@ -83,43 +97,48 @@ function SelectComponent2<F extends FieldValues>({
 	const isDisabled = formContext?.disabled || disabled;
 
 	return (
-		<BtnGroup
-			variant="contained"
-			className={classNames({'flex-wrap': wrapped}, className)}>
-			{data.map(btn => {
-				const label = btn.label ?? btn.value;
-				const selectedValue = value.includes(btn.value);
-				const btnn = (
-					<Button
-						className="flex-1"
-						key={btn.value}
-						disabled={isDisabled}
-						color={selectedValue ? 'primary' : undefined}
-						onClick={() => {
-							const i = value.indexOf(btn.value);
-							if (i >= 0) onChange(value.remove(i));
-							else {
-								const uu = value.slice();
-								uu.push(btn.value);
-								onChange(uu);
-							}
-						}}>
-						{label}
-					</Button>
-				);
+		<>
+			<div>{btnLabel}</div>
+			<BtnGroup
+				variant="contained"
+				className={classNames({'flex-wrap': wrapped}, className)}>
+				{data.map(btn => {
+					const label = btn.label ?? btn.value;
+					const selectedValue = value.includes(btn.value);
+					const btnn = (
+						<Button
+							className="flex-1"
+							key={btn.value}
+							disabled={isDisabled}
+							color={selectedValue ? 'primary' : undefined}
+							onClick={() => {
+								const i = value.indexOf(btn.value);
+								if (i >= 0) onChange(value.remove(i));
+								else {
+									const uu = value.slice();
+									uu.push(btn.value);
+									onChange(uu);
+								}
+							}}>
+							{label}
+						</Button>
+					);
 
-				if (!wrapped) return btnn;
+					if (!wrapped) return btnn;
 
-				return (
-					<div
-						key={btn.value}
-						className={classNames({
-							'flex w-1/3 !rounded-xl p-1': wrapped,
-						})}>
-						{btnn}
-					</div>
-				);
-			})}
-		</BtnGroup>
+					return (
+						<div
+							key={btn.value}
+							className={classNames({
+								'flex w-1/3 !rounded-xl p-1': wrapped,
+							})}>
+							{btnn}
+						</div>
+					);
+				})}
+
+				{clearable && <Button onClick={() => onChange([])} icon="faClose" />}
+			</BtnGroup>
+		</>
 	);
 }

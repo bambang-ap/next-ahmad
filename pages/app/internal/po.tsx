@@ -2,6 +2,7 @@ import {FormEventHandler, Fragment, useRef} from 'react';
 
 import {useForm, useWatch} from 'react-hook-form';
 
+import {DiscountSelection} from '@appComponent/DiscountSelection';
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SPoUpsert} from '@appTypes/app.zod';
@@ -172,7 +173,7 @@ function RenderModal({
 	reset,
 }: FormProps<FormType, 'control' | 'reset'>) {
 	const {type, form} = useWatch({control});
-
+	console.log(form);
 	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
@@ -249,6 +250,12 @@ function RenderModal({
 					/>
 				)}
 			</div>
+
+			<DiscountSelection
+				control={control}
+				type="form.discount_type"
+				discount="form.discount"
+			/>
 
 			<Input control={control} fieldName="form.keterangan" label="Keterangan" />
 
