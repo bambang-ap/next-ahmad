@@ -119,6 +119,11 @@ export enum INTERNAL_TABLES {
 	OUT = 'internal_out_barang',
 }
 
+export enum DiscType {
+	Percentage = '%',
+	Value = '1',
+}
+
 export enum TABLES {
 	SUPPLIER = 'inv_supplier',
 	SUPPLIER_ITEM = 'inv_supplier_item',

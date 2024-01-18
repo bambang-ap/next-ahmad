@@ -122,8 +122,9 @@ export function defaultScope(sequelize: Sequelize, withOrder = true) {
 	} as const;
 }
 
-export function ormDecimalType(fieldName: string) {
+export function ormDecimalType(fieldName: string, defaultValue?: any) {
 	return {
+		defaultValue,
 		type: DECIMAL,
 		get(): number {
 			// @ts-ignore
