@@ -42,6 +42,7 @@ import {
 	dSjOut,
 	dUser,
 	dVehicle,
+	literalFieldType,
 	NumberOrderAttribute,
 	oInItem,
 	oItem,
@@ -53,6 +54,7 @@ import {
 	oSjIn,
 	oStock,
 	oSup,
+	whereNearestDate,
 } from '@database';
 import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
@@ -553,8 +555,13 @@ export function getPOSppbOutAttributes() {
 	const kanban = attrParserV2(dKanban, ['id']);
 	const sjIn = attrParserV2(dSJIn);
 	const po = attrParserV2(dPo);
-	const scn = attrParserV2(dScan, ['id', 'lot_no_imi', 'status']);
-	const scnItem = attrParserV2(dScanItem, ['qty1', 'qty2', 'qty3']);
+	const scn = attrParserV2(dScan, ['id', 'lot_no_imi', 'status', 'createdAt']);
+	const scnItem = attrParserV2(dScanItem, [
+		'qty1',
+		'qty2',
+		'qty3',
+		'createdAt',
+	]);
 	const rejItem = attrParserExclude(dRejItem, ['id', 'id_item']);
 	const item = attrParserV2(dItem, ['name', 'kode_item', 'id']);
 	const inItem = attrParserV2(dInItem, [
@@ -575,6 +582,11 @@ export function getPOSppbOutAttributes() {
 		'qty3',
 	]);
 
+	const a = literalFieldType<Ret>('dSJIns.dKanbans.dScans.createdAt');
+	const b = literalFieldType<Ret>(
+		'dSJIns.dKanbans.dScans.dScanItems.createdAt',
+	);
+
 	const sjInInclude: Includeable = {
 		...sjIn,
 		include: [
@@ -589,7 +601,7 @@ export function getPOSppbOutAttributes() {
 					{
 						...scn,
 						include: [
-							scnItem,
+							{...scnItem, where: whereNearestDate(a, b)},
 							{
 								...scn,
 								as: dScan._aliasReject,

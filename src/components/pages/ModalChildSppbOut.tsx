@@ -214,7 +214,9 @@ export function SppbOutModalChild({
 														?.map(e => e.dScans?.[0]?.lot_no_imi)
 														.join(' | ');
 
-													const hj = dOutItems.find(e => e.id === items?.id);
+													const outItem = dOutItems.find(
+														e => e.id === items?.id,
+													);
 
 													const hasItem = !!items?.id;
 
@@ -222,19 +224,6 @@ export function SppbOutModalChild({
 
 													const fieldNameItem =
 														`po.${i}.sppb_in.${ii}.items.${id_item}` as const;
-
-													const excludeComponent = (
-														<Input
-															key={fieldNameItem}
-															type="checkbox"
-															label="exclude"
-															control={control}
-															fieldName={`${fieldNameItem}.exclude`}
-															defaultValue={
-																hasItem ? false : isEdit ? true : undefined
-															}
-														/>
-													);
 
 													if (isPreview && !hasItem) return <></>;
 													if (isClosed) {
@@ -271,16 +260,23 @@ export function SppbOutModalChild({
 															) : (
 																<Cell className="flex gap-2">
 																	{qtyMap(({qtyKey, unitKey, num}) => {
-																		const qtyLeft =
-																			itemInScan?.[qtyKey]! -
-																			currentQty[qtyKey]!;
-																		const cur = hj?.[qtyKey];
-																		const jumlah = cur ?? qtyLeft;
-
-																		const max = isEdit
-																			? qtyLeft + cur!
-																			: jumlah;
 																		const unit = dPoItem?.[unitKey];
+
+																		if (!unit) return null;
+
+																		const qty = item?.[qtyKey];
+																		const curQty = dOutItems.reduce(
+																			(t, e) => t + (e?.[qtyKey] ?? 0),
+																			0,
+																		);
+
+																		const maxVal = (qty ?? 0) - curQty;
+																		const max =
+																			outItem?.[qtyKey] ?? 0 + maxVal ?? 0;
+																		const jumlah =
+																			(!!outItem?.[qtyKey]
+																				? outItem?.[qtyKey]
+																				: itemInScan?.[qtyKey] ?? max) ?? 0;
 
 																		const qtyRejectRP =
 																			rejectedItems?.[id_item]?.RP?.[qtyKey];
@@ -289,12 +285,9 @@ export function SppbOutModalChild({
 																		// const qtyRejectSC =
 																		// 	rejectedItems.SC?.[qtyKey];
 
-																		if (!unit) return null;
-
 																		return (
 																			<div className="flex-1">
 																				<Input
-																					key={jumlah}
 																					type="decimal"
 																					shouldUnregister
 																					control={control}
@@ -339,7 +332,18 @@ export function SppbOutModalChild({
 																	})}
 																</Cell>
 															)}
-															{isAddEdit && <Cell>{excludeComponent}</Cell>}
+															<Cell>
+																<Input
+																	key={fieldNameItem}
+																	type="checkbox"
+																	label="exclude"
+																	control={control}
+																	fieldName={`${fieldNameItem}.exclude`}
+																	defaultValue={
+																		hasItem ? false : isEdit ? true : undefined
+																	}
+																/>
+															</Cell>
 														</>
 													);
 												}}

@@ -25,7 +25,7 @@ import {
 	OrmScan,
 	sppbOutGetAttributes,
 	wherePagesV2,
-	wherePagesV3,
+	wherePagesV4,
 } from '@database';
 import {IndexNumber} from '@enum';
 import {
@@ -57,7 +57,7 @@ const sppbOutRouters = router({
 		const {po, sjInInclude, Ret} = getPOSppbOutAttributes();
 
 		return checkCredentialV2(ctx, async () => {
-			const wherer = wherePagesV3<RetOutput>({
+			const wherer = wherePagesV4<RetOutput>({
 				'$dSJIns.dKanbans.dScans.status$': 'finish_good' as TScanTarget,
 			});
 
@@ -66,7 +66,6 @@ const sppbOutRouters = router({
 			});
 
 			const dataPO = await po.model.findAll({
-				logging: true,
 				order,
 				include: [sjInInclude],
 				attributes: po.attributes,
