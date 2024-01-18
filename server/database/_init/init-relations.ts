@@ -83,23 +83,26 @@ export function initRelations() {
 	oneToMany(OrmCustomerSPPBIn, OrmKanban, 'id_sppb_in');
 	oneToMany(OrmCustomerPO, OrmCustomerSPPBIn, 'id_po');
 
-	oneToMany(OrmUser, OrmKanban, 'createdBy', OrmKanban._aliasCreatedBy);
-	oneToMany(OrmUser, OrmKanban, 'updatedBy', OrmKanban._aliasUpdatedBy);
+	oneToMany(OrmUser, OrmKanban, 'createdBy', {
+		alias: OrmKanban._aliasCreatedBy,
+	});
+	oneToMany(OrmUser, OrmKanban, 'updatedBy', {
+		alias: OrmKanban._aliasUpdatedBy,
+	});
 
 	oneToMany(OrmKanban, dScan, 'id_kanban');
+
 	oneToMany(dScan, dScanItem, 'id_scan');
+
 	oneToMany(dScanItem, OrmKanbanItem, 'id_item');
 	oneToMany(OrmCustomerPO, dScan, 'id_po');
 	oneToMany(dScanItem, dRejItem, 'id_item');
 
 	// UnMap Models
 	oneToMany(OrmKategoriMesin, dItem, 'kategori_mesin');
-	oneToMany(
-		OrmKategoriMesin,
-		OrmMesin,
-		'kategori_mesin',
-		OrmKategoriMesin._alias,
-	);
+	oneToMany(OrmKategoriMesin, OrmMesin, 'kategori_mesin', {
+		alias: OrmKategoriMesin._alias,
+	});
 	oneToMany(OrmSupplierPO, OrmSupplierPOItem, 'id_po');
 	oneToMany(OrmSupItemRelation, OrmSupplierPOItem, 'id_supplier_item');
 	oneToMany(OrmHardnessKategori, OrmHardness, 'id_kategori');
@@ -132,8 +135,8 @@ export function initRelations() {
 	oneToMany(dVehicle, dSjOut, 'id_kendaraan');
 	oneToMany(dDoc, dKanban, 'doc_id');
 
-	oneToMany(dUser, dKanban, 'createdBy', dKanban._aliasCreatedBy);
-	oneToMany(dUser, dKanban, 'updatedBy', dKanban._aliasUpdatedBy);
+	oneToMany(dUser, dKanban, 'createdBy', {alias: dKanban._aliasCreatedBy});
+	oneToMany(dUser, dKanban, 'updatedBy', {alias: dKanban._aliasUpdatedBy});
 	oneToMany(dCust, dPo, 'id_customer');
 
 	oneToMany(dKatMesin, dItem, 'kategori_mesin');

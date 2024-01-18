@@ -1,10 +1,16 @@
 import {tRoute, zIds} from '@appTypes/app.zod';
-import {printScanAttributes} from '@database';
+import {
+	literalFieldType,
+	printScanAttributes,
+	whereNearestDate,
+} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
 
 export const printScanRouter = {
 	scan: procedure.input(zIds.extend(tRoute.shape)).query(({ctx, input}) => {
+		type RetType = typeof Ret;
+
 		const {ids, route} = input;
 
 		const {
@@ -24,12 +30,16 @@ export const printScanRouter = {
 		} = printScanAttributes();
 
 		return checkCredentialV2(ctx, async () => {
+			const a = literalFieldType<RetType>('createdAt', 'dScan');
+			const b = literalFieldType<RetType>('dScanItems.createdAt');
+
 			const data = await scan.model.findAll({
 				where: {id: ids, status: route},
 				attributes: scan.attributes,
 				include: [
 					{
 						...scnItem,
+						where: whereNearestDate(a, b),
 						include: [
 							rejItem,
 							{
@@ -45,8 +55,15 @@ export const printScanRouter = {
 				],
 			});
 
-			// @ts-ignore
-			return data.map(e => e.dataValues as typeof Ret);
+			return data.map(e => {
+				const val = e.toJSON() as unknown as RetType;
+
+				// const dScanItems = val.dScanItems.filter(
+				// 	f => f.createdAt == val.createdAt,
+				// );
+
+				return {...val, dScanItems: val.dScanItems};
+			});
 		});
 	}),
 };

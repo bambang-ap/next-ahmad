@@ -304,6 +304,7 @@ export function printScanAttributes() {
 		'notes',
 		'updatedAt',
 		'lot_no_imi',
+		'createdAt',
 	]);
 	const scnItem = attrParserV2(dScanItem);
 	const kanban = attrParserV2(dKanban, [

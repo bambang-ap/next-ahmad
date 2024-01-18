@@ -82,6 +82,7 @@ function RenderScanList() {
 		genPdfOptions: isQC
 			? {
 					splitPagePer: 4,
+					debug: true,
 					orientation: 'l',
 					width: 2250,
 					tagId: `${route}-generated`,

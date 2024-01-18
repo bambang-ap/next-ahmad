@@ -2,6 +2,7 @@ import {Path} from 'react-hook-form';
 import {
 	col,
 	fn,
+	literal,
 	Op,
 	ProjectionAlias,
 	where,
@@ -147,4 +148,22 @@ export function indexWhereAttributes<T extends {}>(
 		attributes: [attribute, indexAlias] as ProjectionAlias,
 		where: whereQuery,
 	};
+}
+
+export function whereNearestDate(a: string, b: string) {
+	return literal(
+		`TO_CHAR(${a}, 'yyyy/mm/dd hh:mm') = TO_CHAR(${b}, 'yyyy/mm/dd hh:mm')`,
+	);
+}
+
+export function literalFieldType<T extends {}>(
+	fieldName: LiteralUnion<L1<T>>,
+	rootTable?: string,
+) {
+	const field = fieldName.replace(/[.](?=.*[.])/g, '->');
+	const result = field.split('.').join('"."');
+
+	const r = !rootTable ? '' : `${rootTable}"."`;
+
+	return `"${r}${result}"`;
 }
