@@ -54,7 +54,7 @@ const paperWidth = 1550;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
-	const {control, reset, watch, handleSubmit, clearErrors} =
+	const {control, reset, resetField, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
 	const dataForm = watch();
 
@@ -161,7 +161,11 @@ export default function InternalPo() {
 				<Form
 					context={{hideButton: isPreview, disabled: isPreview}}
 					onSubmit={submit}>
-					<RenderModal control={control} reset={reset} />
+					<RenderModal
+						reset={reset}
+						control={control}
+						resetField={resetField}
+					/>
 				</Form>
 			</Modal>
 		</>
@@ -169,11 +173,12 @@ export default function InternalPo() {
 }
 
 function RenderModal({
-	control,
 	reset,
-}: FormProps<FormType, 'control' | 'reset'>) {
+	control,
+	resetField,
+}: FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
 	const {type, form} = useWatch({control});
-	console.log(form);
+
 	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
 	const {data: dataSup} = trpc.internal.supplier.get.useQuery({
 		limit: 9999,
@@ -253,6 +258,7 @@ function RenderModal({
 
 			<DiscountSelection
 				control={control}
+				resetField={resetField}
 				type="form.discount_type"
 				discount="form.discount"
 			/>
@@ -266,6 +272,18 @@ function RenderModal({
 					</Button>
 				}
 				data={form?.oPoItems}
+				renderItemEach={({Cell}, i) => {
+					return (
+						<Cell colSpan={5} className="items-center gap-2">
+							<DiscountSelection
+								control={control}
+								resetField={resetField}
+								discount={`form.oPoItems.${i}.discount`}
+								type={`form.oPoItems.${i}.discount_type`}
+							/>
+						</Cell>
+					);
+				}}
 				renderItem={({Cell, item}, i) => {
 					const idItem = item.id ?? item.temp_id!;
 					const oItem =
@@ -335,7 +353,7 @@ function RenderModal({
 								/>
 							</Cell>
 
-							<Cell>
+							<Cell rowSpan={2}>
 								<Button icon="faTrash" onClick={() => removeItem(idItem)} />
 							</Cell>
 						</Fragment>
