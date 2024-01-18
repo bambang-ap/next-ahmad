@@ -4,6 +4,7 @@ import {SelectPropsData} from '@components';
 import {defaultLimit, regIndexPrefix, regMd5} from '@constants';
 import {
 	CATEGORY_REJECT_DB,
+	DiscType,
 	IndexNumber,
 	INTERNAL_PO_STATUS,
 	REJECT_REASON,
@@ -72,6 +73,12 @@ export type ZUpdated = z.infer<typeof zUpdated>;
 export const zUpdated = z.object({updatedAt: zDate});
 export type ZCreatedUpdated = z.infer<typeof zCreatedUpdated>;
 export const zCreatedUpdated = zCreated.extend(zUpdated.shape);
+
+export type ZDiscount = z.infer<typeof zDiscount>;
+export const zDiscount = z.object({
+	discount: zDecimal.optional(),
+	discount_type: z.nativeEnum(DiscType).nullish(),
+});
 
 export type ZIds = z.infer<typeof zIds>;
 export const zIds = z.object({ids: z.string().array()});
@@ -713,6 +720,7 @@ export type SPo = z.infer<typeof sPo>;
 export const sPo = zId.extend({
 	...zIndex.shape,
 	...zCreatedUpdated.shape,
+	...zDiscount.shape,
 	sup_id: z.string(),
 	date: zDateR,
 	due_date: zDateR,
@@ -725,7 +733,7 @@ export const oPoItem = zId.extend({
 	id_item: z.string(),
 	qty: zDecimal,
 	unit: tItemUnitInternal,
-	discount: zDecimal.optional(),
+	...zDiscount.shape,
 	...zUpdated.shape,
 });
 

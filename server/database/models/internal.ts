@@ -87,6 +87,8 @@ export function initOPo(sequelize: Sequelize) {
 			sup_id: STRING,
 			index_id: STRING,
 			index_number: STRING,
+			discount_type: STRING,
+			discount: ormDecimalType('discount', 0),
 			keterangan: STRING,
 		},
 		{
@@ -102,8 +104,9 @@ export class oPoItem extends Model<SPoItem> {}
 export function initOPoItem(sequelize: Sequelize) {
 	oPoItem.init(
 		{
+			discount_type: STRING,
 			id: {type: STRING, primaryKey: true},
-			discount: ormDecimalType('discount'),
+			discount: ormDecimalType('discount', 0),
 			qty: ormDecimalType('qty'),
 			id_item: STRING,
 			id_po: STRING,
