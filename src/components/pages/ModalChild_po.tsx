@@ -173,75 +173,87 @@ export default function PoModalChild({
 										/>
 									)}
 								</Cell>
-								<Cell>{selectedItem?.kode_item}</Cell>
-								<Cell>
-									<Input
-										className="flex-1"
-										disabled={isPreview}
-										control={control}
-										type="decimal"
-										fieldName={`OrmCustomerPOItems.${index}.harga`}
-										label="Harga"
-									/>
-								</Cell>
-								{qtyMap(({num, qtyKey, unitKey}) => {
-									const theVal = item[qtyKey];
-									const isThird = num === 3,
-										isSecond = num === 2;
-									const isTwoOrThree = isSecond || isThird;
-
-									const presetUnit: undefined | TItemUnit = isSecond
-										? 'pcs'
-										: isThird
-										? 'kg'
-										: undefined;
-
-									const shouldUnregister = isTwoOrThree && !!theVal;
-									const presetUnitValue = isTwoOrThree
-										? !!theVal
-											? presetUnit
-											: undefined
-										: presetUnit;
-
-									return (
-										<Cell key={num} className="gap-2">
+								{!selectedItem ? (
+									<Cell colSpan={headerTable.length - 2} />
+								) : (
+									<>
+										<Cell>{selectedItem?.kode_item}</Cell>
+										<Cell>
 											<Input
+												shouldUnregister
+												label="Harga"
+												type="decimal"
+												control={control}
 												className="flex-1"
 												disabled={isPreview}
-												control={control}
-												type="decimal"
-												fieldName={`OrmCustomerPOItems.${index}.${qtyKey}`}
-												label="Qty"
+												key={selectedItem?.id}
+												defaultValue={selectedItem?.harga}
+												fieldName={`OrmCustomerPOItems.${index}.harga`}
 											/>
-											{!!presetUnit ? (
-												<Input
-													disabled
-													label="Unit"
-													control={control}
-													className="flex-1"
-													placeholder={presetUnit}
-													defaultValue={presetUnitValue}
-													shouldUnregister={shouldUnregister}
-													fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
-												/>
-											) : (
-												<Select
-													disabled={isPreview}
-													className="flex-1"
-													firstOption="- Pilih unit -"
-													control={control}
-													fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
-													data={selectUnitData}
-													label="Unit"
-												/>
-											)}
 										</Cell>
-									);
-								})}
-								{!isPreview && (
-									<Cell>
-										<Button onClick={() => removeItem(index)} icon="faTrash" />
-									</Cell>
+										{qtyMap(({num, qtyKey, unitKey}) => {
+											const theVal = item[qtyKey];
+											const isThird = num === 3,
+												isSecond = num === 2;
+											const isTwoOrThree = isSecond || isThird;
+
+											const presetUnit: undefined | TItemUnit = isSecond
+												? 'pcs'
+												: isThird
+												? 'kg'
+												: undefined;
+
+											const shouldUnregister = isTwoOrThree && !!theVal;
+											const presetUnitValue = isTwoOrThree
+												? !!theVal
+													? presetUnit
+													: undefined
+												: presetUnit;
+
+											return (
+												<Cell key={num} className="gap-2">
+													<Input
+														className="flex-1"
+														disabled={isPreview}
+														control={control}
+														type="decimal"
+														fieldName={`OrmCustomerPOItems.${index}.${qtyKey}`}
+														label="Qty"
+													/>
+													{!!presetUnit ? (
+														<Input
+															disabled
+															label="Unit"
+															control={control}
+															className="flex-1"
+															placeholder={presetUnit}
+															defaultValue={presetUnitValue}
+															shouldUnregister={shouldUnregister}
+															fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
+														/>
+													) : (
+														<Select
+															disabled={isPreview}
+															className="flex-1"
+															firstOption="- Pilih unit -"
+															control={control}
+															fieldName={`OrmCustomerPOItems.${index}.${unitKey}`}
+															data={selectUnitData}
+															label="Unit"
+														/>
+													)}
+												</Cell>
+											);
+										})}
+										{!isPreview && (
+											<Cell>
+												<Button
+													onClick={() => removeItem(index)}
+													icon="faTrash"
+												/>
+											</Cell>
+										)}
+									</>
 								)}
 							</Fragment>
 						);
