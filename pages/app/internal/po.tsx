@@ -26,6 +26,7 @@ import {
 	ppnPercentage,
 	selectUnitDataInternal,
 } from '@constants';
+import {DiscType} from '@enum';
 import {getLayout} from '@hoc';
 import {useSession, useTableFilterComponent} from '@hooks';
 import {TableBorder} from '@pageComponent/sppbOut_GenerateQR';
@@ -72,6 +73,7 @@ export default function InternalPo() {
 		exportUseQuery: () =>
 			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
+			debug: true,
 			tagId: 'internal-po',
 			filename: 'internal-po',
 			splitPagePer: 2,
@@ -368,6 +370,15 @@ function RenderModal({
 
 const maxItem = 10;
 
+function aa(price: number, type?: DiscType, value?: number): [number, number] {
+	if (!type) return [0, 0];
+
+	if (type === DiscType.Value) return [value!, price - value!];
+
+	const s = price * (0.01 * value!);
+	return [s, price - s];
+}
+
 function RenderPdf(props: RetPoInternal) {
 	// const [width, height] = paperSizeCalculator(paperWidth, {minus: 45});
 	const {
@@ -375,19 +386,21 @@ function RenderPdf(props: RetPoInternal) {
 	} = useSession();
 	const {date, oPoItems, oSup, keterangan} = props;
 
-	const {jumlah, ppn, total} = oPoItems.reduce(
+	const {jumlah, ppn, disc, total} = oPoItems.reduce(
 		(ret, item) => {
-			const {oItem, qty} = item;
+			const {oItem, qty, discount, discount_type} = item;
 
 			const sum = oItem?.harga! * qty;
 			const ppnValue = oItem?.ppn ? sum * ppnMultiply : 0;
+			const [discVal] = aa(sum, discount_type!, discount);
 
 			ret.jumlah += sum;
 			ret.ppn += ppnValue;
 			ret.total += sum + ppnValue;
+			ret.disc += discVal;
 			return ret;
 		},
-		{jumlah: 0, ppn: 0, total: 0},
+		{jumlah: 0, ppn: 0, total: 0, disc: 0},
 	);
 
 	const itemRender = oPoItems.concat(
@@ -457,12 +470,15 @@ function RenderPdf(props: RetPoInternal) {
 									<BorderTd />
 									<BorderTd />
 									<BorderTd />
+									<BorderTd />
+									<BorderTd />
 								</tr>
 							);
 						}
 
-						const {qty, unit, oItem} = item;
+						const {qty, unit, oItem, discount, discount_type} = item;
 						const sum = oItem?.harga! * qty;
+						const [disc] = aa(sum, discount_type!, discount);
 
 						return (
 							<tr key={item.id}>
@@ -472,12 +488,18 @@ function RenderPdf(props: RetPoInternal) {
 								<BorderTd>{unit}</BorderTd>
 								<BorderTd>{numberFormat(oItem?.harga!)}</BorderTd>
 								<BorderTd>{numberFormat(sum)}</BorderTd>
+								<BorderTd>{numberFormat(disc)}</BorderTd>
+								<BorderTd>{numberFormat(sum - disc)}</BorderTd>
 							</tr>
 						);
 					})}
 					<tr>
 						<BorderTd colSpan={5}>Jumlah</BorderTd>
 						<BorderTd>{numberFormat(jumlah)}</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd colSpan={5}>Diskon</BorderTd>
+						<BorderTd>{numberFormat(disc)}</BorderTd>
 					</tr>
 					<tr>
 						<BorderTd colSpan={5}>PPn {ppnPercentage}%</BorderTd>

@@ -113,17 +113,5 @@
 	"eslint.onIgnoredFiles": "off",
 	"prettier.trailingComma": "es5",
 	"files.eol": "\n",
-	"tailwindCSS.experimental.classRegex": [
-		[
-			"classNames\\(([^)]*)\\)",
-			"'([^']*)'",
-			"\"([^\"]*)\""
-		]
-	],
-	"tailwindCSS.classAttributes": [
-		"className",
-		"className\\w+",
-		"\\w+ClassName"
-	],
 	"inlineFold.maskChar": "◦◦◦"
 }
