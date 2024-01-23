@@ -707,8 +707,27 @@ export function renderItemAsIs<T extends {}>(item: T) {
 export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
 	item: T,
 	defaultValue?: string | null,
+): any;
+export function renderIndex<T extends Partial<ZIndex> & {}>(
+	item: T,
+	opts?: {indexKey: string; defaultValue?: string | null},
+): any;
+export function renderIndex<T extends Partial<ZIndex> & {dIndex?: TIndex} & {}>(
+	item: T,
+	defaultValueOrOpts?:
+		| string
+		| null
+		| {indexKey: string; defaultValue?: string | null},
 ) {
-	const {index_str, index_number, dIndex} = item ?? {};
+	const isObj = !!defaultValueOrOpts && typeof defaultValueOrOpts === 'object';
+
+	const indexKey = isObj ? defaultValueOrOpts.indexKey : 'dIndex';
+	const defaultValue = isObj
+		? defaultValueOrOpts.defaultValue
+		: defaultValueOrOpts;
+
+	// @ts-ignore
+	const {index_str, index_number, [indexKey]: dIndex} = item ?? {};
 
 	const prefix = dIndex?.prefix?.replace(
 		regPrefix,

@@ -12,6 +12,7 @@ import {
 } from '@appTypes/app.type';
 import {zIds} from '@appTypes/app.zod';
 import {
+	dIndex,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -24,7 +25,7 @@ import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
 import {REJECT_REASON_VIEW} from '@enum';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
-import {itemInScanParser, qtyMap, renderIndex} from '@utils';
+import {dateUtils, itemInScanParser, qtyMap, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
@@ -44,13 +45,17 @@ type InResult = {GRADE: RetCalculateScore} & Record<
 
 type OutResult = Record<
 	| 'NO'
-	| 'TANGGAL SJ KELUAR '
+	| 'TANGGAL SJ KELUAR'
 	| 'CUSTOMER'
 	| 'NO SURAT JALAN MASUK'
 	| 'PART NAME / ITEM'
+	| 'PART NO'
 	| 'NO LOT CUSTOMER'
 	| 'NO PO'
+	| 'NO KANBAN'
 	| 'NO SURAT JALAN KELUAR'
+	| 'TGL SJ MASUK'
+	| 'NO LOT CUSTOMER'
 	| 'PROSES'
 	| 'KETERANGAN',
 	string | number
@@ -136,7 +141,7 @@ const exportSppbRouters = router({
 			for (const itemOut of dataSppbOut) {
 				const {date, invoice_no, dCust, dOutItems} = itemOut;
 				for (const {dInItem, ...outItem} of dOutItems) {
-					const {dPoItem, dSJIn, dItem} = dInItem;
+					const {dPoItem, dSJIn, dItem, id, lot_no} = dInItem;
 					const {dPo} = dPoItem;
 
 					const instruksi = await processMapper(ctx, {
@@ -172,17 +177,27 @@ const exportSppbRouters = router({
 						};
 					});
 
+					const selectedKanban = dSJIn.dKanbans.find(a => {
+						const index = a.dKnbItems.findIndex(b => b.id_item === id);
+						return index >= 0;
+					});
+
 					i++;
 					result.push({
 						NO: i.toString(),
+						'TGL SJ MASUK': dateUtils.full(dSJIn.tgl)!,
 						CUSTOMER: dCust.name,
 						'NO PO': dPo.nomor_po!,
 						'NO SURAT JALAN MASUK': dSJIn?.nomor_surat!,
-						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no!)!,
-						'TANGGAL SJ KELUAR ': date,
 						'PART NAME / ITEM': dItem.name!,
-						'NO LOT CUSTOMER': dInItem.lot_no!,
+						'PART NO': dItem.kode_item!,
+						'NO LOT CUSTOMER': lot_no!,
+						'NO KANBAN': renderIndex(selectedKanban!, {
+							indexKey: dIndex._alias1,
+						}),
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+						'TANGGAL SJ KELUAR': dateUtils.full(date)!,
+						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no!)!,
 						PROSES: instruksi,
 						KETERANGAN: dItem.keterangan!,
 					});

@@ -158,6 +158,7 @@ export function initRelations() {
 
 	oneToMany(OrmMenu, OrmMenu, 'parent_id');
 
+	oneToMany(dIndex, dKanban, 'index_id', {alias: dIndex._alias1});
 	oneToMany(dIndex, dKanban, 'index_id');
 	oneToMany(dIndex, OrmKanban, 'index_id');
 	oneToMany(dIndex, oForm, 'index_id');

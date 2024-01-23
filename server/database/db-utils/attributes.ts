@@ -552,7 +552,12 @@ export function getPOScoreAttributes() {
 }
 
 export function getPOSppbOutAttributes() {
-	const kanban = attrParserV2(dKanban, ['id']);
+	const kanban = attrParserV2(dKanban, [
+		'id',
+		'nomor_kanban',
+		'index_id',
+		'index_number',
+	]);
 	const sjIn = attrParserV2(dSJIn);
 	const po = attrParserV2(dPo);
 	const scn = attrParserV2(dScan, ['id', 'lot_no_imi', 'status', 'createdAt']);
@@ -682,6 +687,7 @@ export function printSppbOutAttributes() {
 	const outItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
 	const inItem = attrParserV2(dInItem, ['id', 'lot_no']);
 	const item = attrParserV2(dItem, [
+		'kode_item',
 		'instruksi',
 		'kategori_mesinn',
 		'name',
@@ -698,6 +704,7 @@ export function printSppbOutAttributes() {
 				include: [
 					doc,
 					knbItem,
+					{...tIndex, as: dIndex._alias1},
 					{
 						...scan,
 						include: [
@@ -722,6 +729,7 @@ export function printSppbOutAttributes() {
 			dInItem: typeof inItem.obj & {
 				dSJIn: typeof sjIn.obj & {
 					dKanbans: (typeof kanban.obj & {
+						[dIndex._alias1]: typeof tIndex.obj;
 						dKnbItems: typeof knbItem.obj[];
 						dScans: (typeof scan.obj & {
 							dScanItems: typeof scnItem.obj[];

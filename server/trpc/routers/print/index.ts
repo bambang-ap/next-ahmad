@@ -35,6 +35,7 @@ const printRouters = router({
 
 			return checkCredentialV2(ctx, async (): Promise<SppbOutGet[]> => {
 				const data = await sjOut.model.findAll({
+					logging: true,
 					where: wherePagesV3<typeof Ret>({
 						id: input.ids,
 						'$dOutItems.dInItem.dSJIn.dKanbans.dScans.status$':
