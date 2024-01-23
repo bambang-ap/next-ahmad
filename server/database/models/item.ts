@@ -4,6 +4,8 @@ import {TMasterItem} from '@appTypes/app.zod';
 import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
+import {ormDecimalType} from '../db-utils';
+
 export class OrmMasterItem extends Model<TMasterItem> {}
 
 export default function initOrmMasterItem(sequelize: Sequelize) {
@@ -16,6 +18,7 @@ export default function initOrmMasterItem(sequelize: Sequelize) {
 			kategori_mesinn: ARRAY(STRING),
 			kategori_mesin: STRING,
 			keterangan: STRING,
+			harga: ormDecimalType('harga'),
 		},
 		{
 			sequelize,
@@ -44,6 +47,7 @@ export function initDItem(sequelize: Sequelize) {
 			kategori_mesinn: ARRAY(STRING),
 			kategori_mesin: STRING,
 			keterangan: STRING,
+			harga: ormDecimalType('harga'),
 		},
 		{
 			sequelize,

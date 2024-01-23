@@ -208,6 +208,7 @@ export const tCustomerPOExtended = tCustomerPO.extend({
 
 export type TMasterItem = z.infer<typeof tMasterItem>;
 export const tMasterItem = zId.extend({
+	harga: zDecimal,
 	name: z.string().nullish(),
 	kode_item: z.string().nullish(),
 	// FIXME: Remove

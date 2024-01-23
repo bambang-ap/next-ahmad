@@ -81,6 +81,7 @@ export default function MasterItem() {
 						'Nama Mesin',
 						'Nama Item',
 						'Kode Item',
+						'Harga',
 						'Keterangan',
 						'Action',
 					]}
@@ -88,7 +89,7 @@ export default function MasterItem() {
 						<Button onClick={() => showModal('add', {})}>Add</Button>
 					}
 					renderItem={({item, Cell}, index) => {
-						const {id, name, kode_item, keterangan} = item;
+						const {id, name, kode_item, harga, keterangan} = item;
 
 						return (
 							<>
@@ -96,6 +97,7 @@ export default function MasterItem() {
 								<Cell>{item.nameMesins.join(', ')}</Cell>
 								<Cell>{name}</Cell>
 								<Cell>{kode_item}</Cell>
+								<Cell>{harga}</Cell>
 								<Cell>{keterangan}</Cell>
 								<Cell className="flex gap-x-2">
 									<Button onClick={() => showModal('preview', item)}>

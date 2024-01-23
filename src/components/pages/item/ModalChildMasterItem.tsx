@@ -46,7 +46,8 @@ export function ModalChildMasterItem({
 	return (
 		<>
 			<Input control={control} fieldName="name" />
-			<Input control={control} fieldName="kode_item" />
+			<Input control={control} fieldName="kode_item" label="Kode Item" />
+			<Input control={control} fieldName="harga" type="decimal" />
 			<Input control={control} fieldName="keterangan" />
 
 			<Button
