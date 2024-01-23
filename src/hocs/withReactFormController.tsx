@@ -52,7 +52,7 @@ export const withReactFormController = <
 	}: WrappedProps<F, T>) {
 		const [rulesApply, setRulesApply] =
 			useState<UseControllerProps<F>['rules']>();
-
+		console.log(fieldName, {...rulesApply, ...rules});
 		return (
 			<Controller
 				name={fieldName}

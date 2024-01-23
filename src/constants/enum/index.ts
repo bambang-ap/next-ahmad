@@ -88,6 +88,14 @@ export enum PO_STATUS {
 	H = 'Unknown',
 }
 
+export enum KANBAN_STATUS {
+	A = 'Open',
+	B = 'Produksi',
+	C = 'QC',
+	D = 'Finish Good',
+	E = 'Surat Jalan Keluar',
+}
+
 export enum INTERNAL_PO_STATUS {
 	A = 'Open',
 	B = 'Partial',

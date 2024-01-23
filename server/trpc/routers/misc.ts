@@ -5,7 +5,7 @@ import {z} from 'zod';
 
 import {tCustomer, TUser, zMd5} from '@appTypes/app.zod';
 import {isProd, Success} from '@constants';
-import {dUser, ORM} from '@database';
+import {attrParserV2, dCust, dKanban, dPo, dSJIn, dUser, ORM} from '@database';
 import {generateId, getNow} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
@@ -13,6 +13,40 @@ import {TRPCError} from '@trpc/server';
 const qrInput = z.string().or(z.string().array()).optional();
 
 const miscRouter = {
+	test: procedure.query(async () => {
+		const po = attrParserV2(dPo.unscoped(), ['nomor_po']);
+		const cust = attrParserV2(dCust, ['name']);
+		const sjIn = attrParserV2(dSJIn, ['id', 'nomor_surat']);
+		const knb = attrParserV2(dKanban.unscoped(), [
+			'id',
+			'index_number',
+			'nomor_kanban',
+		]);
+
+		const data = await po.model.findAll({
+			logging: true,
+			where: {
+				'$dPo.nomor_po$': ['5311002826', '5311002685', '2024010084'],
+				'$dSJIns.nomor_surat$': ['4909060605541'],
+			},
+			include: [
+				{
+					...sjIn,
+					include: [
+						{...knb, separate: true, include: [{...po, include: [cust]}]},
+					],
+				},
+				cust,
+			],
+		});
+
+		const data2 = await knb.model.findAll({
+			where: {id: ['KNB_240119a89f']},
+			include: [{...po, include: [cust]}],
+		});
+
+		return {data, data2};
+	}),
 	changeToMd5: procedure.query(async () => {
 		if (isProd) throw new TRPCError({code: 'BAD_REQUEST'});
 

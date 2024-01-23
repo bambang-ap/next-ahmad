@@ -63,14 +63,13 @@ export function DiscountSelection<T extends {}>(props: Props<T>) {
 							clearButton
 						)
 					}
-					rules={
-						!isPercentage
-							? undefined
-							: {
-									max: {value: 100, message: 'Max value is 100'},
-									min: {value: 0, message: 'Min value is 0'},
-							  }
-					}
+					rules={{
+						min: {value: 0, message: 'Min value is 0'},
+						max: {
+							message: 'Max value is 100',
+							value: isPercentage ? 100 : Infinity,
+						},
+					}}
 				/>
 			)}
 		</>
