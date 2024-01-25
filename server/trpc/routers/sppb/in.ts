@@ -57,6 +57,7 @@ const sppbInRouters = router({
 			.query(({ctx, input}) => {
 				const A = attrParser(tCustomerPO, ['id', 'nomor_po']);
 				const B = attrParser(tPOItem, [
+					'harga',
 					'createdAt',
 					'id',
 					'master_item_id',

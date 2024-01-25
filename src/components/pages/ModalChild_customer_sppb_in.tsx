@@ -5,7 +5,15 @@ import {useWatch} from 'react-hook-form';
 
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {FormProps, TCustomer} from '@appTypes/app.type';
-import {Button, Input, Select, selectMapper, Table, Text} from '@components';
+import {
+	Button,
+	Input,
+	InputDummy,
+	Select,
+	selectMapper,
+	Table,
+	Text,
+} from '@components';
 import {CRUD_ENABLED} from '@enum';
 import {modalTypeParser, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -91,6 +99,7 @@ export function SppbInModalChild({
 				header={[
 					'Kode Item',
 					'Nama Item',
+					'Harga',
 					'Nomor Lot',
 					'Jumlah',
 					!isPreview && 'Action',
@@ -132,6 +141,9 @@ export function SppbInModalChild({
 							/>
 							<Cell>{item.OrmMasterItem.kode_item}</Cell>
 							<Cell>{item.OrmMasterItem.name}</Cell>
+							<Cell hidden={!included}>
+								<InputDummy disabled label="Harga" byPassValue={item.harga} />
+							</Cell>
 							<Cell hidden={!included}>
 								<Input
 									className="flex-1"

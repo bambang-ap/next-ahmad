@@ -195,6 +195,7 @@ export function exportKanbanAttributes() {
 		'unit1',
 		'unit2',
 		'unit3',
+		'harga'
 	]);
 	const knbItem = attrParserV2(OrmKanbanItem, [
 		'id_item',

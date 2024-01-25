@@ -11,7 +11,7 @@ import {dateUtils, itemInScanParser, qtyMap, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
-type InResult = {GRADE: RetCalculateScore} & Record<string, string>;
+type InResult = {GRADE: RetCalculateScore} & Record<string, string | number>;
 
 type OutResult = Record<
 	| 'NO'
@@ -107,7 +107,7 @@ const exportSppbRouters = router({
 						});
 
 						result.push({
-							NO: NO.toString(),
+							NO,
 							'TANGGAL SJ MASUK': val.tgl,
 							CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
 							'NO PO': val.OrmCustomerPO.nomor_po,
@@ -118,6 +118,7 @@ const exportSppbRouters = router({
 							'NOMOR KANBAN': noKanban,
 							GRADE: grade.score,
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+							HARGA: item.OrmCustomerPOItem.harga!,
 							PROSES: instruksi,
 							KETERANGAN: item.OrmMasterItem.keterangan!,
 						});
@@ -181,7 +182,7 @@ const exportSppbRouters = router({
 
 					i++;
 					result.push({
-						NO: i.toString(),
+						NO: i,
 						'TGL SJ MASUK': dateUtils.full(dSJIn.tgl)!,
 						CUSTOMER: dCust.name,
 						'NO PO': dPo.nomor_po!,
