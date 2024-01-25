@@ -73,7 +73,7 @@ export const printKanbanRouter = {
 			const F = attrParser(tMasterItem, ['kode_item', 'instruksi', 'name']);
 			const G = attrParser(tPOItemSppbIn, ['lot_no']);
 			const H = attrParser(tUser, ['name']);
-			const I = attrParser(tPOItem, ['unit1', 'unit2', 'unit3']);
+			const I = attrParser(tPOItem, ['unit1', 'unit2', 'unit3', 'harga']);
 			const J = attrParser(tCustomerSPPBIn, ['nomor_surat', 'tgl']);
 
 			return checkCredentialV2(ctx, async (): Promise<UU[]> => {

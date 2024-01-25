@@ -195,7 +195,7 @@ export function exportKanbanAttributes() {
 		'unit1',
 		'unit2',
 		'unit3',
-		'harga'
+		'harga',
 	]);
 	const knbItem = attrParserV2(OrmKanbanItem, [
 		'id_item',
@@ -223,17 +223,7 @@ export function exportKanbanAttributes() {
 		OrmKanbanItems: (typeof knbItem.obj & {OrmMasterItem: typeof item.obj})[];
 	};
 
-	type Output = Record<
-		| 'CUSTOMER'
-		| 'NOMOR PO'
-		| 'NOMOR SJ'
-		| 'NOMOR KANBAN'
-		| 'PART NAME'
-		| 'PART NO'
-		| 'PROSES'
-		| 'KETERANGAN',
-		string
-	>;
+	type Output = Record<string, string | number>;
 
 	return {
 		tIndex,

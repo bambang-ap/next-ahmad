@@ -17,7 +17,7 @@ export function RenderKanbanCardV2(props: AProps) {
 	const {id_item, qty1, qty2, qty3, OrmKanban, OrmPOItemSppbIn, OrmMasterItem} =
 		props;
 	const {OrmCustomerSPPBIn: dataSppbIn} = OrmPOItemSppbIn;
-	const {unit1, unit2, unit3} = OrmPOItemSppbIn.OrmCustomerPOItem;
+	const {unit1, unit2, unit3, harga} = OrmPOItemSppbIn.OrmCustomerPOItem;
 	const {
 		createdAt,
 		keterangan,
@@ -218,8 +218,8 @@ export function RenderKanbanCardV2(props: AProps) {
 					<BorderTd rowSpan={2} className="text-base">
 						Qty / Jumlah
 					</BorderTd>
-					<BorderTd className={class1}>{`${qty1} ${unit1}`}</BorderTd>
-					<BorderTd className={class2}>{`${qty2} ${unit2}`}</BorderTd>
+					<BorderTd className={class1}>{`Qty1 : ${qty1} ${unit1}`}</BorderTd>
+					<BorderTd className={class2}>{`Qty2 : ${qty2} ${unit2}`}</BorderTd>
 					<BorderTd colSpan={2} rowSpan={2} rootClassName="!p-0">
 						<TableBorder
 							unit="px"
@@ -258,8 +258,8 @@ export function RenderKanbanCardV2(props: AProps) {
 					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd className={class3}>{`${qty3} ${unit3}`}</BorderTd>
-					<BorderTd className="text-white">~</BorderTd>
+					<BorderTd className={class3}>{`QTy3 : ${qty3} ${unit3}`}</BorderTd>
+					<BorderTd>Harga : {harga}</BorderTd>
 				</tr>
 			</table>
 			<div className="mt-2 flex justify-between">

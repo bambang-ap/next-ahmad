@@ -38,9 +38,8 @@ const exportKanbanRouters = {
 					],
 				});
 
-				const promisedData = data.map<Promise<JJJ>>(async ({dataValues}) => {
-					// @ts-ignore
-					const val = dataValues as typeof Ret;
+				const promisedData = data.map<Promise<JJJ>>(async ({toJSON}) => {
+					const val = toJSON() as unknown as typeof Ret;
 
 					const item = val.OrmKanbanItems?.[0];
 					const {instruksi, kategori_mesinn, kode_item, name} =
@@ -64,7 +63,7 @@ const exportKanbanRouters = {
 						};
 					});
 
-					return {
+					const result = {
 						CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
 						'NOMOR PO': val.OrmCustomerPO.nomor_po,
 						'NOMOR SJ': val.OrmCustomerSPPBIn.nomor_surat,
@@ -72,9 +71,12 @@ const exportKanbanRouters = {
 						'PART NAME': name!,
 						'PART NO': kode_item!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+						HARGA: poItem?.harga!,
 						PROSES: proses,
 						KETERANGAN: val.keterangan!,
 					};
+
+					return result;
 				});
 
 				return Promise.all(promisedData);

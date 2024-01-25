@@ -3,7 +3,7 @@ import {useWatch} from 'react-hook-form';
 
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, UnitQty} from '@appTypes/app.type';
-import {Button, Cells, Input, Table, Text} from '@components';
+import {Button, Input, InputDummy, Table, Text} from '@components';
 import {useLoader} from '@hooks';
 import type {KJD} from '@trpc/routers/kanban/po';
 import {modalTypeParser, qtyMap} from '@utils';
@@ -78,6 +78,7 @@ export function RenderItem({
 					'Kode Item',
 					'Nama Item',
 					'Nomor Lot',
+					'Harga',
 					'Jumlah',
 					!isPreview && 'Action',
 				]}
@@ -124,8 +125,16 @@ export function RenderItem({
 								defaultValue={rowItem?.id_item}
 								fieldName={`items.${id_item}.id_item_po`}
 							/>
-							<DetailItem idItem={rowItem?.master_item_id!} Cell={Cell} />
+							{/* <DetailItem idItem={rowItem?.master_item_id!} Cell={Cell} /> */}
+							<Cell>{rowItem?.OrmMasterItem?.kode_item}</Cell>
+							<Cell>{rowItem?.OrmMasterItem?.name}</Cell>
 							<Cell>{rowItem?.lot_no}</Cell>
+							<Cell>
+								<InputDummy
+									label="harga"
+									byPassValue={rowItem?.OrmCustomerPOItem.harga}
+								/>
+							</Cell>
 							<Cell>
 								<div className="flex gap-2">
 									{qtyMap(({num, qtyKey: keyQty, unitKey: keyUnit}) => {
@@ -188,13 +197,13 @@ export function RenderItem({
 	);
 }
 
-function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells['Cell']}) {
-	const {data} = trpc.item.detail.useQuery(idItem);
+// function DetailItem({idItem, Cell}: {idItem: string; Cell: Cells['Cell']}) {
+// 	const {data} = trpc.item.detail.useQuery(idItem);
 
-	return (
-		<>
-			<Cell>{data?.kode_item}</Cell>
-			<Cell>{data?.name}</Cell>
-		</>
-	);
-}
+// 	return (
+// 		<>
+// 			<Cell>{data?.kode_item}</Cell>
+// 			<Cell>{data?.name}</Cell>
+// 		</>
+// 	);
+// }

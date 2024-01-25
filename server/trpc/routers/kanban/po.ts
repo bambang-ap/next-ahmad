@@ -30,9 +30,9 @@ import {qtyMap} from '@utils';
 
 export type GG = TPOItemSppbIn & {
 	isClosed: boolean;
-	OrmMasterItem: Pick<TMasterItem, 'id' | 'name' | 'keterangan'>;
+	OrmMasterItem: Pick<TMasterItem, 'id' | 'name' | 'keterangan' | 'kode_item'>;
 	OrmKanbanItems: TKanbanItem[];
-	OrmCustomerPOItem: Pick<TPOItem, keyof UnitUnit | keyof ZId>;
+	OrmCustomerPOItem: Pick<TPOItem, keyof UnitUnit | keyof ZId | 'harga'>;
 };
 export type KJD = Pick<TCustomerSPPBIn, 'id' | 'nomor_surat'> & {
 	isClosed: boolean;
@@ -73,9 +73,13 @@ const kanbanPoRouters = router({
 							include: [
 								{
 									model: OrmCustomerPOItem,
-									attributes: ['id', 'unit1', 'unit2', 'unit3'] as KeyOf<
-										GG['OrmCustomerPOItem']
-									>,
+									attributes: [
+										'id',
+										'unit1',
+										'unit2',
+										'unit3',
+										'harga',
+									] as KeyOf<GG['OrmCustomerPOItem']>,
 								},
 								{
 									separate: true,
@@ -95,6 +99,7 @@ const kanbanPoRouters = router({
 										'id',
 										'name',
 										'keterangan',
+										'kode_item',
 									] as (keyof TMasterItem)[],
 								},
 							],
