@@ -145,11 +145,11 @@ const exportInternalRouters = router({
 	}),
 
 	sj_in: procedure.input(zIds).query(({ctx, input}) => {
-		const {sjIn, po, sup, inItem, item, poItem} = internalInAttributes();
+		const {sjIn, po, sup, inItem, tIndex, item, poItem} =
+			internalInAttributes();
 
 		type Ret = typeof sjIn.obj & {
-			oPo: typeof po.obj;
-			oSup: typeof sup.obj;
+			oPo: typeof po.obj & {dIndex: typeof tIndex.obj; oSup: typeof sup.obj};
 			oInItems: (typeof inItem.obj & {
 				oPoItem?: typeof poItem.obj & {oItem: typeof item.obj};
 			})[];
@@ -159,14 +159,19 @@ const exportInternalRouters = router({
 			let i = 0;
 			const ret: object[] = [];
 
-			const data = await po.model.findAll({
-				include: [{...poItem, include: [inItem]}],
+			const data = await sjIn.model.findAll({
+				logging: true,
+				include: [
+					{...po, include: [tIndex, sup]},
+					{...inItem, include: [{...poItem, include: [item]}]},
+				],
 				where: {id: input.ids},
-				attributes: po.attributes,
+				attributes: sjIn.attributes,
 			});
 
 			data.forEach(e => {
-				const {oPo, no_sj, oInItems, oSup: supp} = e.toJSON() as unknown as Ret;
+				const {oPo, no_sj, oInItems} = e.toJSON() as unknown as Ret;
+				const {oSup: supp} = oPo;
 
 				oInItems.forEach(itemIn => {
 					const {qty, kode, nama, unit, oPoItem} = itemIn;
