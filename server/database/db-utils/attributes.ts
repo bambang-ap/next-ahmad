@@ -68,12 +68,7 @@ import {PO_STATUS} from '@enum';
 
 export function getPrintPoAttributes() {
 	const Po = attrParserExclude(dPo, ['id_customer']);
-	const PoItem = attrParserExclude(dPoItem, [
-		'harga',
-		'id',
-		'id_po',
-		'master_item_id',
-	]);
+	const PoItem = attrParserExclude(dPoItem, ['id', 'id_po', 'master_item_id']);
 	const InItem = attrParserV2(dInItem, ['lot_no', 'qty1', 'qty2', 'qty3']);
 	const OutItem = attrParserV2(dOutItem, ['qty1', 'qty2', 'qty3']);
 	const KnbItem = attrParserV2(dKnbItem, ['id', 'qty1', 'qty2', 'qty3']);

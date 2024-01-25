@@ -34,6 +34,7 @@ export function exportPoMapper(): MapperReturn<
 			[2, 'Nama Item'],
 			[2, 'Kode Item'],
 			['PO', 6],
+			[2, 'Harga Per Item (Qty 3)'],
 			[2, 'Nomor SJ Masuk'],
 			['SJ Masuk', 6],
 			[2, 'Nomor Kanban'],
@@ -116,7 +117,7 @@ export function exportPoMapper(): MapperReturn<
 		headers,
 		renderItem: data => {
 			const {dCust, grade, dPoItems} = data;
-			const {dItem, dInItems} = dPoItems;
+			const {dItem, dInItems, harga} = dPoItems;
 			const {dKnbItems, dSJIn, dOutItems} = dInItems ?? {};
 			const {dKanban, dScanItems} = dKnbItems ?? {};
 
@@ -139,6 +140,7 @@ export function exportPoMapper(): MapperReturn<
 					<td>{dItem.name}</td>
 					<td>{dItem.kode_item}</td>
 					{renderQty(dPoItems, dPoItems)}
+					<td>{harga}</td>
 					<td>{dSJIn?.nomor_surat}</td>
 					{renderQty(dPoItems, dInItems)}
 					<td>{renderIndex(dKanban!, dKanban?.nomor_kanban!)}</td>
