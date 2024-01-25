@@ -81,9 +81,7 @@ export default function SPPBIN() {
 		() => {
 			return trpc.export.sppb.in.useQuery(
 				{ids: selectedIds!},
-				{
-					enabled: selectedIds.length! > 0,
-				},
+				{enabled: selectedIds.length! > 0},
 			);
 		},
 		exportedData => exportedData,

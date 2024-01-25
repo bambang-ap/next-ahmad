@@ -160,7 +160,6 @@ const exportInternalRouters = router({
 			const ret: object[] = [];
 
 			const data = await sjIn.model.findAll({
-				logging: true,
 				include: [
 					{...po, include: [tIndex, sup]},
 					{...inItem, include: [{...poItem, include: [item]}]},

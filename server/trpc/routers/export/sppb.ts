@@ -1,26 +1,8 @@
 import {z} from 'zod';
 
-import {
-	TCustomer,
-	TCustomerPO,
-	TCustomerSPPBIn,
-	TMasterItem,
-	TPOItem,
-	TPOItemSppbIn,
-	UQty,
-	UQtyList,
-} from '@appTypes/app.type';
+import {UQty, UQtyList} from '@appTypes/app.type';
 import {zIds} from '@appTypes/app.zod';
-import {
-	dIndex,
-	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerPOItem,
-	OrmCustomerSPPBIn,
-	OrmMasterItem,
-	OrmPOItemSppbIn,
-	processMapper,
-} from '@database';
+import {dIndex, exportKanbanAttributes, processMapper} from '@database';
 import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
 import {REJECT_REASON_VIEW} from '@enum';
 import {checkCredentialV2} from '@server';
@@ -29,19 +11,7 @@ import {dateUtils, itemInScanParser, qtyMap, renderIndex} from '@utils';
 
 import {appRouter} from '..';
 
-type InResult = {GRADE: RetCalculateScore} & Record<
-	| 'NO'
-	| 'TANGGAL SJ MASUK'
-	| 'CUSTOMER'
-	| 'NO PO'
-	| 'NO SURAT JALAN MASUK'
-	| 'PART NAME'
-	| 'PART NO'
-	| 'NO LOT CUSTOMER'
-	| 'PROSES'
-	| 'KETERANGAN',
-	string
->;
+type InResult = {GRADE: RetCalculateScore} & Record<string, string>;
 
 type OutResult = Record<
 	| 'NO'
@@ -66,24 +36,45 @@ const exportSppbRouters = router({
 	in: procedure
 		.input(z.object({ids: z.string().array()}))
 		.query(({input, ctx}) => {
-			type Data = TCustomerSPPBIn & {
-				OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
-				OrmPOItemSppbIns: (TPOItemSppbIn & {
-					OrmMasterItem: TMasterItem;
-					OrmCustomerPOItem: TPOItem;
+			type Data = typeof sjIn.obj & {
+				OrmCustomerPO: typeof po.obj & {OrmCustomer: typeof cust.obj};
+				OrmPOItemSppbIns: (typeof inItem.obj & {
+					OrmMasterItem: typeof masterItem.obj;
+					OrmCustomerPOItem: typeof poItem.obj;
+					OrmKanbanItems: (typeof knbItem.obj & {
+						OrmKanban: typeof kanban.obj & {dIndex: typeof tIndex.obj};
+					})[];
 				})[];
 			};
+
+			const {
+				tIndex,
+				kanban,
+				sjIn,
+				inItem,
+				po,
+				cust,
+				poItem,
+				knbItem,
+				item: masterItem,
+			} = exportKanbanAttributes();
+
 			return checkCredentialV2(ctx, async (): Promise<InResult[]> => {
 				let NO = 1;
+
 				const result: InResult[] = [];
-				const data = await OrmCustomerSPPBIn.findAll({
+				const data = await sjIn.model.findAll({
 					where: {id: input.ids},
+					attributes: sjIn.attributes,
 					include: [
-						{model: OrmCustomerPO, include: [OrmCustomer]},
+						{...po, include: [cust]},
 						{
-							separate: true,
-							model: OrmPOItemSppbIn,
-							include: [OrmMasterItem, OrmCustomerPOItem],
+							...inItem,
+							include: [
+								masterItem,
+								poItem,
+								{...knbItem, include: [{...kanban, include: [tIndex]}]},
+							],
 						},
 					],
 				});
@@ -93,7 +84,7 @@ const exportSppbRouters = router({
 				});
 
 				for (let i = 0; i < data.length; i++) {
-					const val = data[i]?.dataValues as Data;
+					const val = data[i]?.toJSON() as unknown as Data;
 					const grade = sjGrades[i]!;
 
 					for (const item of val.OrmPOItemSppbIns) {
@@ -101,6 +92,11 @@ const exportSppbRouters = router({
 							instruksi: item.OrmMasterItem.instruksi,
 							kategori_mesinn: item.OrmMasterItem.kategori_mesinn,
 						});
+
+						const noKanban = item.OrmKanbanItems.map(({OrmKanban}) => {
+							return renderIndex(OrmKanban, OrmKanban.nomor_kanban);
+						}).join(' | ');
+
 						const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
 							const qty = item[qtyKey];
 							if (!qty) return {[qtyKey.toUpperCase()]: ''};
@@ -119,6 +115,7 @@ const exportSppbRouters = router({
 							'PART NAME': item.OrmMasterItem.name!,
 							'PART NO': item.OrmMasterItem.kode_item!,
 							'NO LOT CUSTOMER': item.lot_no!,
+							'NOMOR KANBAN': noKanban,
 							GRADE: grade.score,
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 							PROSES: instruksi,

@@ -49,8 +49,15 @@ import {
 	oOut,
 	oPo,
 	oPoItem,
+	OrmCustomer,
+	OrmCustomerPO,
+	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
 	OrmKanban,
+	OrmKanbanItem,
+	OrmMasterItem,
 	OrmMenu,
+	OrmPOItemSppbIn,
 	oSjIn,
 	oStock,
 	oSup,
@@ -170,36 +177,54 @@ export function sppbInGetPage() {
 }
 
 export function exportKanbanAttributes() {
-	const A = attrParser(tKanban, [
+	const kanban = attrParserV2(OrmKanban, [
 		'nomor_kanban',
 		'keterangan',
 		'index_id',
 		'index_number',
 	]);
 	const tIndex = attrParserV2(dIndex);
-	const B = attrParser(tCustomerSPPBIn, ['nomor_surat']);
-	const C = attrParser(tPOItemSppbIn, ['id_item', 'id']);
-	const D = attrParser(tCustomerPO, ['nomor_po']);
-	const E = attrParser(tCustomer, ['name']);
-	const F = attrParser(tPOItem, ['id', 'unit1', 'unit2', 'unit3']);
-	const G = attrParser(tKanbanItem, ['id_item', 'qty1', 'qty2', 'qty3']);
-	const H = attrParser(tMasterItem, [
+	const sjIn = attrParserV2(OrmCustomerSPPBIn, ['id', 'tgl', 'nomor_surat']);
+	const inItem = attrParserV2(OrmPOItemSppbIn, [
+		'id_item',
+		'id',
+		'lot_no',
+		'qty1',
+		'qty2',
+		'qty3',
+	]);
+	const po = attrParserV2(OrmCustomerPO, ['nomor_po']);
+	const cust = attrParserV2(OrmCustomer, ['name']);
+	const poItem = attrParserV2(OrmCustomerPOItem, [
+		'id',
+		'unit1',
+		'unit2',
+		'unit3',
+	]);
+	const knbItem = attrParserV2(OrmKanbanItem, [
+		'id_item',
+		'qty1',
+		'qty2',
+		'qty3',
+	]);
+	const item = attrParserV2(OrmMasterItem, [
 		'kode_item',
 		'name',
+		'keterangan',
 		'instruksi',
 		'kategori_mesinn',
 	]);
 
-	type Ret = typeof A.obj & {
+	type Ret = typeof kanban.obj & {
 		dIndex?: TIndex;
-		OrmCustomerSPPBIn: typeof B.obj & {
-			OrmPOItemSppbIns: typeof C.obj[];
+		OrmCustomerSPPBIn: typeof sjIn.obj & {
+			OrmPOItemSppbIns: typeof inItem.obj[];
 		};
-		OrmCustomerPO: typeof D.obj & {
-			OrmCustomer: typeof E.obj;
-			OrmCustomerPOItems: typeof F.obj[];
+		OrmCustomerPO: typeof po.obj & {
+			OrmCustomer: typeof cust.obj;
+			OrmCustomerPOItems: typeof poItem.obj[];
 		};
-		OrmKanbanItems: (typeof G.obj & {OrmMasterItem: typeof H.obj})[];
+		OrmKanbanItems: (typeof knbItem.obj & {OrmMasterItem: typeof item.obj})[];
 	};
 
 	type Output = Record<
@@ -214,7 +239,19 @@ export function exportKanbanAttributes() {
 		string
 	>;
 
-	return {tIndex, A, B, C, D, E, F, G, H, Ret: {} as Ret, Output: {} as Output};
+	return {
+		tIndex,
+		kanban,
+		sjIn,
+		inItem,
+		po,
+		cust,
+		poItem,
+		knbItem,
+		item,
+		Ret: {} as Ret,
+		Output: {} as Output,
+	};
 }
 export function exportScanAttributes(route: Route['route']) {
 	type Output = Record<

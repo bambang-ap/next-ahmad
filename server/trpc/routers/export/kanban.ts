@@ -1,17 +1,6 @@
 import {z} from 'zod';
 
-import {
-	exportKanbanAttributes,
-	OrmCustomer,
-	OrmCustomerPO,
-	OrmCustomerPOItem,
-	OrmCustomerSPPBIn,
-	OrmKanban,
-	OrmKanbanItem,
-	OrmMasterItem,
-	OrmPOItemSppbIn,
-	processMapper,
-} from '@database';
+import {exportKanbanAttributes, OrmKanban, processMapper} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
 import {qtyMap, renderIndex} from '@utils';
@@ -21,35 +10,31 @@ const exportKanbanRouters = {
 		.input(z.object({idKanbans: z.string().array()}))
 		.query(({ctx, input}) => {
 			const {idKanbans} = input;
-			const {A, B, C, D, E, F, G, H, tIndex, Ret, Output} =
-				exportKanbanAttributes();
+			const {
+				kanban: A,
+				sjIn: B,
+				inItem: C,
+				po: D,
+				cust: E,
+				poItem: F,
+				knbItem: G,
+				item: H,
+				tIndex,
+				Ret,
+				Output,
+			} = exportKanbanAttributes();
 
 			type JJJ = typeof Output;
 
 			return checkCredentialV2(ctx, async (): Promise<JJJ[]> => {
 				const data = await OrmKanban.findAll({
 					where: {id: idKanbans},
-					attributes: A.keys,
+					attributes: A.attributes,
 					include: [
 						tIndex,
-						{
-							model: OrmCustomerSPPBIn,
-							attributes: B.keys,
-							include: [{model: OrmPOItemSppbIn, attributes: C.keys}],
-						},
-						{
-							model: OrmCustomerPO,
-							attributes: D.keys,
-							include: [
-								{attributes: E.keys, model: OrmCustomer},
-								{attributes: F.keys, model: OrmCustomerPOItem},
-							],
-						},
-						{
-							model: OrmKanbanItem,
-							attributes: G.keys,
-							include: [{model: OrmMasterItem, attributes: H.keys}],
-						},
+						{...B, include: [C]},
+						{...D, include: [E, F]},
+						{...G, include: [H]},
 					],
 				});
 
