@@ -47,7 +47,7 @@ const kanbanPoRouters = router({
 	get_customer: procedure.query(({ctx}) => {
 		return checkCredentialV2(ctx, async () => {
 			const data = await OrmCustomer.findAll({
-				attributes: ['id', 'name'] as KeyOf<TCustomerPO>,
+				attributes: ['id', 'name', 'keterangan'] as KeyOf<TCustomerPO>,
 			});
 			return data.map(e => e.dataValues);
 		});

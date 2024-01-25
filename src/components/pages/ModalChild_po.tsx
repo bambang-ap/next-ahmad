@@ -2,13 +2,13 @@ import {Fragment, useEffect} from 'react';
 
 import {Control, useController, UseFormReset, useWatch} from 'react-hook-form';
 
+import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {ModalTypePreview, TCustomer, TItemUnit} from '@appTypes/app.type';
 import {
 	Button,
 	Input,
 	Select,
 	selectMapper,
-	SelectPropsData,
 	Table,
 	TableProps,
 } from '@components';
@@ -68,13 +68,6 @@ export default function PoModalChild({
 		},
 	};
 
-	// const selectedMasterItemIds = poItem.map(e => e.master_item_id);
-
-	const mappedData = (data ?? []).map<SelectPropsData>(({name, id}) => ({
-		label: name,
-		value: id,
-	}));
-
 	function removeItem(index: number) {
 		onChangePoItem(poItem?.remove(index));
 	}
@@ -114,14 +107,12 @@ export default function PoModalChild({
 	return (
 		<div className="gap-y-2 flex flex-col">
 			<div className="flex gap-2">
-				<Select
-					className="flex-1"
-					disabled={isPreviewEdit}
-					firstOption="- Pilih customer -"
+				<SelectCustomer
+					data={data}
 					control={control}
-					data={mappedData}
-					label="Customer"
+					className="flex-1"
 					fieldName="id_customer"
+					disabled={isPreviewEdit}
 				/>
 				<Input
 					className="flex-1"

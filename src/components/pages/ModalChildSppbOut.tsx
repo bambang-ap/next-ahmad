@@ -1,6 +1,7 @@
 import {FormValue} from 'pages/app/customer/customer_sppb_out';
 import {useWatch} from 'react-hook-form';
 
+import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps} from '@appTypes/app.type';
 import {
@@ -59,11 +60,10 @@ export function SppbOutModalChild({
 				data={selectMapper(dataKendaraan, 'id', 'name')}
 			/>
 			<Input control={control} fieldName="keterangan" label="Keterangan" />
-			<Select
-				label="Customer"
+			<SelectCustomer
 				control={control}
 				fieldName="id_customer"
-				data={selectMapper(dataCustomer, 'id', 'name')}
+				data={dataCustomer}
 			/>
 			{selectedCustomer && (
 				<>

@@ -3,6 +3,7 @@ import {useEffect} from 'react';
 import type {ScanListFormType} from 'pages/app/scan/[route]/list';
 import {useWatch} from 'react-hook-form';
 
+import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {FormProps} from '@appTypes/app.type';
 import {
 	Button,
@@ -107,16 +108,14 @@ export function NewKanbanModalChild({
 			</div>
 
 			<div className="flex gap-2">
-				<Select
+				<SelectCustomer
 					key={idCustomer}
 					disabled={isPreview}
 					className="flex-1"
-					firstOption="- Pilih Customer -"
 					control={control}
 					isLoading={isLoadingCustomer}
-					data={selectMapper(dataCustomer ?? [], 'id', 'name')}
+					data={dataCustomer}
 					fieldName="id_customer"
-					label="Customer"
 				/>
 				{idCustomer && (
 					<Select

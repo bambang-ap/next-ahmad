@@ -3,6 +3,7 @@ import {useEffect} from 'react';
 import {FormType} from 'pages/app/customer/customer_sppb_in';
 import {useWatch} from 'react-hook-form';
 
+import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {FormProps, TCustomer} from '@appTypes/app.type';
 import {Button, Input, Select, selectMapper, Table, Text} from '@components';
 import {CRUD_ENABLED} from '@enum';
@@ -43,15 +44,14 @@ export function SppbInModalChild({
 	return (
 		<div className="flex flex-col gap-2">
 			<div className="flex gap-2">
-				<Select
+				<SelectCustomer
 					disabled={isPreviewEdit}
 					key={id_customer}
 					className="flex-1"
 					control={control}
 					fieldName="id_customer"
-					label="Customer"
 					isLoading={isFetchingCustomer}
-					data={selectMapper(dataCustomer, 'id', 'name')}
+					data={dataCustomer}
 				/>
 				<Select
 					key={`${isFetchingPo}${id_customer}${id_po}`}
