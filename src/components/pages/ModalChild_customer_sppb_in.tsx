@@ -102,6 +102,7 @@ export function SppbInModalChild({
 					'Harga',
 					'Nomor Lot',
 					'Jumlah',
+					isPreview && 'Total Harga',
 					!isPreview && 'Action',
 				]}
 				data={selectedPo?.OrmCustomerPOItems}
@@ -115,6 +116,8 @@ export function SppbInModalChild({
 					if (!selectedItem && item.isClosed) return false;
 
 					const included = isAdd ? true : !!selectedItem;
+
+					const totalHarga = (item?.harga ?? 0) * (selectedItem?.qty3 ?? 0);
 
 					return (
 						<>
@@ -156,7 +159,7 @@ export function SppbInModalChild({
 							<Cell hidden={!included} className="gap-2">
 								{qtyMap(({num, qtyKey, unitKey}) => {
 									const unit = item[unitKey];
-									if (!unit) return <Cell key={num} />;
+									if (!unit) return null;
 
 									const qty = item[qtyKey] ?? 0;
 									const qtyItem = selectedItem?.[qtyKey];
@@ -183,6 +186,15 @@ export function SppbInModalChild({
 									);
 								})}
 							</Cell>
+							{isPreview && (
+								<Cell hidden={!included}>
+									<InputDummy
+										disabled
+										label="Total Harga"
+										byPassValue={totalHarga}
+									/>
+								</Cell>
+							)}
 							<Cell>
 								<Input
 									shouldUnregister
