@@ -272,10 +272,11 @@ export function SppbOutModalChild({
 																		const maxVal = (qty ?? 0) - curQty;
 																		const max =
 																			outItem?.[qtyKey] ?? 0 + maxVal ?? 0;
-																		const jumlah =
-																			(!!outItem?.[qtyKey]
-																				? outItem?.[qtyKey]
-																				: itemInScan?.[qtyKey] ?? max) ?? 0;
+																		const jumlah = isAdd
+																			? max
+																			: (!!outItem?.[qtyKey]
+																					? outItem?.[qtyKey]
+																					: itemInScan?.[qtyKey] ?? max) ?? 0;
 
 																		const qtyRejectRP =
 																			rejectedItems?.[id_item]?.RP?.[qtyKey];
