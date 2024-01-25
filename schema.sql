@@ -33,7 +33,9 @@ CREATE TABLE public.customer (
     no_telp character varying(15),
     alamat character varying(255),
     up character varying(255),
-    active boolean DEFAULT true
+    active boolean DEFAULT true,
+    ppn boolean DEFAULT true,
+    keterangan character varying(100)
 );
 
 
