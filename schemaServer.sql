@@ -2,7 +2,7 @@
 -- PostgreSQL database dump
 --
 
--- Dumped from database version 15.3
+-- Dumped from database version 15.3 (Debian 15.3-1.pgdg110+1)
 -- Dumped by pg_dump version 15.3
 
 SET statement_timeout = 0;
@@ -240,7 +240,9 @@ CREATE TABLE public.internal_po (
     nomor_po character varying(100),
     keterangan character varying(100),
     index_id character varying(47),
-    index_number character varying(10)
+    index_number character varying(10),
+    discount_type character(1),
+    discount numeric
 );
 
 
@@ -258,7 +260,8 @@ CREATE TABLE public.internal_po_item (
     qty numeric,
     unit character varying(10),
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    discount_type character(1)
 );
 
 
@@ -523,7 +526,8 @@ CREATE TABLE public.master_item (
     kategori_mesin character varying(47),
     instruksi json DEFAULT '[]'::json,
     kategori_mesinn character varying(47)[],
-    keterangan character varying(100)
+    keterangan character varying(100),
+    harga numeric
 );
 
 
