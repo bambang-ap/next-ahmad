@@ -191,6 +191,7 @@ export function SppbOutModalChild({
 													'Kode Item',
 													'Nomor Lot',
 													'Nomor Lot IMI',
+													'Harga',
 													'Jumlah',
 													isAddEdit && 'Exclude',
 												]}
@@ -254,72 +255,80 @@ export function SppbOutModalChild({
 															<Cell>{dItem?.kode_item}</Cell>
 															<Cell>{lot_no}</Cell>
 															<Cell>{lot_no_imi}</Cell>
+
 															{isExcludedItem ? (
-																<Cell />
+																<Cell colSpan={2} />
 															) : (
-																<Cell className="flex gap-2">
-																	{qtyMap(({qtyKey, unitKey, num}) => {
-																		const unit = dPoItem?.[unitKey];
+																<>
+																	<Cell>
+																		<InputDummy
+																			label="Harga"
+																			byPassValue={dPoItem?.harga}
+																		/>
+																	</Cell>
+																	<Cell className="flex gap-2">
+																		{qtyMap(({qtyKey, unitKey, num}) => {
+																			const unit = dPoItem?.[unitKey];
 
-																		if (!unit) return null;
+																			if (!unit) return null;
 
-																		const qty = item?.[qtyKey];
-																		const curQty = dOutItems.reduce(
-																			(t, e) => t + (e?.[qtyKey] ?? 0),
-																			0,
-																		);
+																			const qty = item?.[qtyKey];
+																			const curQty = dOutItems.reduce(
+																				(t, e) => t + (e?.[qtyKey] ?? 0),
+																				0,
+																			);
 
-																		const maxVal = (qty ?? 0) - curQty;
-																		const max =
-																			outItem?.[qtyKey] ?? 0 + maxVal ?? 0;
-																		const jumlah = isAdd
-																			? max
-																			: (!!outItem?.[qtyKey]
-																					? outItem?.[qtyKey]
-																					: itemInScan?.[qtyKey] ?? max) ?? 0;
+																			const maxVal = (qty ?? 0) - curQty;
+																			const max =
+																				outItem?.[qtyKey] ?? 0 + maxVal ?? 0;
+																			const jumlah = isAdd
+																				? max
+																				: (!!outItem?.[qtyKey]
+																						? outItem?.[qtyKey]
+																						: itemInScan?.[qtyKey] ?? max) ?? 0;
 
-																		const qtyRejectRP =
-																			rejectedItems?.[id_item]?.RP?.[qtyKey];
-																		const qtyRejectTP =
-																			rejectedItems?.[id_item]?.TP?.[qtyKey];
-																		// const qtyRejectSC =
-																		// 	rejectedItems.SC?.[qtyKey];
+																			const qtyRejectRP =
+																				rejectedItems?.[id_item]?.RP?.[qtyKey];
+																			const qtyRejectTP =
+																				rejectedItems?.[id_item]?.TP?.[qtyKey];
+																			// const qtyRejectSC =
+																			// 	rejectedItems.SC?.[qtyKey];
 
-																		return (
-																			<div className="flex-1">
-																				<Input
-																					type="decimal"
-																					shouldUnregister
-																					control={control}
-																					label={`Qty ${num}`}
-																					className="flex-1 bg-white"
-																					rightAcc={<Text>{unit}</Text>}
-																					defaultValue={jumlah.toString()}
-																					fieldName={`${fieldNameItem}.${qtyKey}`}
-																					rules={{
-																						max: {
-																							value: max,
-																							message: `max is ${max}`,
-																						},
-																					}}
-																				/>
-																				{!!qtyRejectTP && (
-																					<Wrapper
-																						noColon
-																						sizes={['flex-1']}
-																						title={REJECT_REASON_VIEW.TP}>
-																						{`${qtyRejectTP?.toString()} ${unit}`}
-																					</Wrapper>
-																				)}
-																				{!!qtyRejectRP && (
-																					<Wrapper
-																						noColon
-																						sizes={['flex-1']}
-																						title={REJECT_REASON_VIEW.RP}>
-																						{`${qtyRejectRP?.toString()} ${unit}`}
-																					</Wrapper>
-																				)}
-																				{/* {!!qtyRejectSC && (
+																			return (
+																				<div className="flex-1">
+																					<Input
+																						type="decimal"
+																						shouldUnregister
+																						control={control}
+																						label={`Qty ${num}`}
+																						className="flex-1 bg-white"
+																						rightAcc={<Text>{unit}</Text>}
+																						defaultValue={jumlah.toString()}
+																						fieldName={`${fieldNameItem}.${qtyKey}`}
+																						rules={{
+																							max: {
+																								value: max,
+																								message: `max is ${max}`,
+																							},
+																						}}
+																					/>
+																					{!!qtyRejectTP && (
+																						<Wrapper
+																							noColon
+																							sizes={['flex-1']}
+																							title={REJECT_REASON_VIEW.TP}>
+																							{`${qtyRejectTP?.toString()} ${unit}`}
+																						</Wrapper>
+																					)}
+																					{!!qtyRejectRP && (
+																						<Wrapper
+																							noColon
+																							sizes={['flex-1']}
+																							title={REJECT_REASON_VIEW.RP}>
+																							{`${qtyRejectRP?.toString()} ${unit}`}
+																						</Wrapper>
+																					)}
+																					{/* {!!qtyRejectSC && (
 																				<Wrapper
 																					noColon
 																					sizes={["flex-1"]}
@@ -327,10 +336,11 @@ export function SppbOutModalChild({
 																					{`${qtyRejectSC?.toString()} ${unit}`}
 																				</Wrapper>
 																			)} */}
-																			</div>
-																		);
-																	})}
-																</Cell>
+																				</div>
+																			);
+																		})}
+																	</Cell>
+																</>
 															)}
 															<Cell>
 																<Input

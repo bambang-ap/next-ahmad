@@ -601,7 +601,13 @@ export function getPOSppbOutAttributes() {
 	]);
 	const sjOut = attrParserExclude(dSjOut, ['id']);
 	const outItem = attrParserV2(dOutItem, ['id', 'qty1', 'qty2', 'qty3']);
-	const poItem = attrParserV2(dPoItem, ['id', 'unit1', 'unit2', 'unit3']);
+	const poItem = attrParserV2(dPoItem, [
+		'id',
+		'unit1',
+		'unit2',
+		'unit3',
+		'harga',
+	]);
 	const knbItem = attrParserV2(dKnbItem, [
 		'id',
 		'id_item',
@@ -716,7 +722,7 @@ export function printSppbOutAttributes() {
 		'name',
 		'keterangan',
 	]);
-	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3']);
+	const poItem = attrParserV2(dPoItem, ['unit1', 'unit2', 'unit3','harga']);
 	const doc = attrParserV2(dDoc, ['doc_no', 'tgl_efektif', 'revisi', 'terbit']);
 
 	const sjInInclude: Includeable = {

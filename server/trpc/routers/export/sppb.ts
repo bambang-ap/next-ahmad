@@ -13,23 +13,7 @@ import {appRouter} from '..';
 
 type InResult = {GRADE: RetCalculateScore} & Record<string, string | number>;
 
-type OutResult = Record<
-	| 'NO'
-	| 'TANGGAL SJ KELUAR'
-	| 'CUSTOMER'
-	| 'NO SURAT JALAN MASUK'
-	| 'PART NAME / ITEM'
-	| 'PART NO'
-	| 'NO LOT CUSTOMER'
-	| 'NO PO'
-	| 'NO KANBAN'
-	| 'NO SURAT JALAN KELUAR'
-	| 'TGL SJ MASUK'
-	| 'NO LOT CUSTOMER'
-	| 'PROSES'
-	| 'KETERANGAN',
-	string | number
-> &
+type OutResult = Record<string, string | number> &
 	Partial<Record<`${REJECT_REASON_VIEW} ${UQty}` | UQtyList, string>>;
 
 const exportSppbRouters = router({
@@ -140,7 +124,7 @@ const exportSppbRouters = router({
 				const {date, invoice_no, dCust, dOutItems} = itemOut;
 				for (const {dInItem, ...outItem} of dOutItems) {
 					const {dPoItem, dSJIn, dItem, id, lot_no} = dInItem;
-					const {dPo} = dPoItem;
+					const {dPo, harga} = dPoItem;
 
 					const instruksi = await processMapper(ctx, {
 						instruksi: dItem.instruksi,
@@ -194,6 +178,7 @@ const exportSppbRouters = router({
 							indexKey: dIndex._alias1,
 						}),
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+						HARGA: harga!,
 						'TANGGAL SJ KELUAR': dateUtils.full(date)!,
 						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no!)!,
 						PROSES: instruksi,
