@@ -1,4 +1,4 @@
-import {DataTypes, Model, Sequelize} from 'sequelize';
+import {BOOLEAN, DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
 import {TCustomer} from '@appTypes/app.type';
 import {defaultExcludeColumn, defaultOrderBy} from '@constants';
@@ -15,6 +15,8 @@ export default function initOrmCustomer(sequelize: Sequelize) {
 			no_telp: {type: DataTypes.STRING},
 			npwp: {type: DataTypes.STRING},
 			up: {type: DataTypes.STRING},
+			ppn: BOOLEAN,
+			keterangan: STRING,
 		},
 		{
 			sequelize,
@@ -42,6 +44,8 @@ export function initCust(sequelize: Sequelize) {
 			no_telp: {type: DataTypes.STRING},
 			npwp: {type: DataTypes.STRING},
 			up: {type: DataTypes.STRING},
+			ppn: BOOLEAN,
+			keterangan: STRING,
 		},
 		{
 			sequelize,

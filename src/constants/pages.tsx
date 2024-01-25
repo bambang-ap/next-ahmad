@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import {
 	TCustomer,
 	TCustomerPO,
@@ -28,12 +26,15 @@ import {inferTransformedProcedureOutput} from '@trpc/server/shared';
 import {dateUtils} from '@utils';
 import {trpc} from '@utils/trpc';
 
+// FIXME: set this to false before deploying
+export const ppnEnabled = true;
+
 type Action = 'add' | 'edit' | 'delete';
 
 export type BodyArrayKey<T extends Record<string, any>> = [
 	keyof T,
-	() => unknown,
-	(item: unknown, data: unknown[]) => string,
+	() => any,
+	(item: any, data: any[]) => string,
 ];
 
 export type Body<T extends Record<string, any>> = (
@@ -70,6 +71,7 @@ export type ColUnion = FieldForm<UnionToIntersection<Types>>;
 export type FieldForm<T extends {}> = {
 	col: keyof T;
 	label?: string;
+	defaultValue?: unknown;
 } & (
 	| {type?: InputProps['type']}
 	| {
@@ -83,7 +85,7 @@ export type FieldForm<T extends {}> = {
 	  }
 );
 
-export const allowedPages: Record<PATHS, AllowedPages> = {
+export const allowedPages: Partial<Record<PATHS, AllowedPages>> = {
 	[PATHS.app_document]: {
 		enumName: CRUD_ENABLED.DOCUMENT,
 		searchKey: 'doc_no',
@@ -145,7 +147,7 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 						() =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.HARDNESS_KATEGORI}),
 						(item: THardness, data: THardnessKategori[]) =>
-							data?.find?.(e => e.id === item.id_kategori)?.name,
+							data?.find?.(e => e.id === item.id_kategori)?.name!,
 					],
 					'name',
 					'keterangan',
@@ -220,7 +222,7 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 						() =>
 							trpc.basic.get.useQuery({target: CRUD_ENABLED.MATERIAL_KATEGORI}),
 						(item: TMaterial, data: TMaterialKategori[]) =>
-							data?.find?.(e => e.id === item.id_kategori)?.name,
+							data?.find?.(e => e.id === item.id_kategori)?.name!,
 					],
 					'name',
 				];
@@ -295,7 +297,7 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 								target: CRUD_ENABLED.PARAMETER_KATEGORI,
 							}),
 						(item: TParameter, data: TParameterKategori[]) =>
-							data?.find?.(e => e.id === item.id_kategori)?.name,
+							data?.find?.(e => e.id === item.id_kategori)?.name!,
 					],
 					'name',
 					'keterangan',
@@ -374,7 +376,7 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 								target: CRUD_ENABLED.MESIN_KATEGORI,
 							}),
 						(item: TMesin, data: TKategoriMesin[]) =>
-							data?.find?.(e => e.id === item.kategori_mesin)?.name,
+							data?.find?.(e => e.id === item.kategori_mesin)?.name!,
 					],
 					'nomor_mesin',
 				];
@@ -499,15 +501,20 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 				'NPWP',
 				'No. Telepon',
 				'UP',
+				ppnEnabled && 'PPN',
+				'Keterangan',
 				'Action',
-				'',
-				'',
-				'',
-				'',
-				'',
 			],
 			get body(): Body<TCustomer> {
-				return ['name', 'alamat', 'npwp', 'no_telp', 'up'];
+				return [
+					'name',
+					'alamat',
+					'npwp',
+					'no_telp',
+					'up',
+					ppnEnabled && (item => (item.ppn ? 'Ya' : 'Tidak')),
+					'keterangan',
+				];
 			},
 		},
 		modalField: {
@@ -518,6 +525,8 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 					{col: 'npwp', label: 'NPWP'},
 					{col: 'no_telp', label: 'No. Telepon'},
 					{col: 'up', label: 'UP'},
+					{col: 'ppn', label: 'PPN', type: 'checkbox', defaultValue: true},
+					{col: 'keterangan', label: 'Keterangan'},
 				];
 			},
 			get edit() {
@@ -546,7 +555,7 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 						'role',
 						() => trpc.basic.get.useQuery({target: CRUD_ENABLED.ROLE}),
 						(item: TUser, data: TRole[]) =>
-							data?.find?.(e => e.id === item.role)?.name,
+							data?.find?.(e => e.id === item.role)?.name!,
 					],
 				];
 			},
@@ -569,8 +578,8 @@ export const allowedPages: Record<PATHS, AllowedPages> = {
 					{col: 'password', label: 'Password', type: 'password'},
 				];
 			},
-			get edit(): FieldForm<TUser>[] {
-				const userAdd = this.add?.slice();
+			get edit() {
+				const userAdd = this.add?.slice()!;
 				userAdd?.splice(-1);
 				return userAdd;
 			},

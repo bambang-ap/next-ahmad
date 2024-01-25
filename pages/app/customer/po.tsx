@@ -23,8 +23,6 @@ export default function POCustomer() {
 
 	const {type: modalType} = dataForm;
 
-	prettyConsole(dataForm);
-
 	const {property, selectedIds} = getIds(dataForm, 'idPo');
 	const {modalTitle, isDelete, isPreview} = modalTypeParser(
 		modalType,

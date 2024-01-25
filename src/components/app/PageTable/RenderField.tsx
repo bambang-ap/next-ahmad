@@ -7,7 +7,7 @@ type RenderFieldProps = {control: Control; item: ColUnion};
 
 export function RenderField(props: RenderFieldProps) {
 	const {control, item} = props;
-	const {col, label} = item;
+	const {col, label, defaultValue} = item;
 
 	if (item.type === 'select') {
 		const query = item.dataQuery();
@@ -30,6 +30,7 @@ export function RenderField(props: RenderFieldProps) {
 			control={control}
 			fieldName={col}
 			placeholder={col}
+			defaultValue={defaultValue}
 		/>
 	);
 }

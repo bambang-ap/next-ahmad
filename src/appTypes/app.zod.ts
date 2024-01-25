@@ -134,6 +134,8 @@ export const tCustomer = zId.extend({
 	alamat: z.string(),
 	no_telp: z.string(),
 	up: z.string().optional(),
+	ppn: z.boolean().default(true).optional(),
+	keterangan: z.string().nullish(),
 });
 
 export type TItemUnit = z.infer<typeof tItemUnit>;
