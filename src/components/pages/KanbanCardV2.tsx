@@ -17,7 +17,7 @@ export function RenderKanbanCardV2(props: AProps) {
 	const {id_item, qty1, qty2, qty3, OrmKanban, OrmPOItemSppbIn, OrmMasterItem} =
 		props;
 	const {OrmCustomerSPPBIn: dataSppbIn} = OrmPOItemSppbIn;
-	const {unit1, unit2, unit3, harga} = OrmPOItemSppbIn.OrmCustomerPOItem;
+	const {unit1, unit2, unit3 /* harga */} = OrmPOItemSppbIn.OrmCustomerPOItem;
 	const {
 		createdAt,
 		keterangan,
@@ -259,7 +259,8 @@ export function RenderKanbanCardV2(props: AProps) {
 				</tr>
 				<tr>
 					<BorderTd className={class3}>{`QTy3 : ${qty3} ${unit3}`}</BorderTd>
-					<BorderTd>Harga : {harga}</BorderTd>
+					<BorderTd className="text-white">.</BorderTd>
+					{/* <BorderTd>Harga : {harga}</BorderTd> */}
 				</tr>
 			</table>
 			<div className="mt-2 flex justify-between">

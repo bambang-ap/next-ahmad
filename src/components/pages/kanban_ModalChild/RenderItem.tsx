@@ -3,7 +3,7 @@ import {useWatch} from 'react-hook-form';
 
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, UnitQty} from '@appTypes/app.type';
-import {Button, Input, InputDummy, Table, Text} from '@components';
+import {Button, Input, Table, Text} from '@components';
 import {useLoader} from '@hooks';
 import type {KJD} from '@trpc/routers/kanban/po';
 import {modalTypeParser, qtyMap} from '@utils';
@@ -78,7 +78,7 @@ export function RenderItem({
 					'Kode Item',
 					'Nama Item',
 					'Nomor Lot',
-					'Harga',
+					// 'Harga',
 					'Jumlah',
 					!isPreview && 'Action',
 				]}
@@ -129,12 +129,12 @@ export function RenderItem({
 							<Cell>{rowItem?.OrmMasterItem?.kode_item}</Cell>
 							<Cell>{rowItem?.OrmMasterItem?.name}</Cell>
 							<Cell>{rowItem?.lot_no}</Cell>
-							<Cell>
+							{/* <Cell>
 								<InputDummy
 									label="harga"
 									byPassValue={rowItem?.OrmCustomerPOItem.harga}
 								/>
-							</Cell>
+							</Cell> */}
 							<Cell>
 								<div className="flex gap-2">
 									{qtyMap(({num, qtyKey: keyQty, unitKey: keyUnit}) => {

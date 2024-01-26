@@ -191,7 +191,7 @@ export function SppbOutModalChild({
 													'Kode Item',
 													'Nomor Lot',
 													'Nomor Lot IMI',
-													'Harga',
+													// 'Harga',
 													'Jumlah',
 													isAddEdit && 'Exclude',
 												]}
@@ -257,15 +257,15 @@ export function SppbOutModalChild({
 															<Cell>{lot_no_imi}</Cell>
 
 															{isExcludedItem ? (
-																<Cell colSpan={2} />
+																<Cell colSpan={1} />
 															) : (
 																<>
-																	<Cell>
+																	{/* <Cell>
 																		<InputDummy
 																			label="Harga"
 																			byPassValue={dPoItem?.harga}
 																		/>
-																	</Cell>
+																	</Cell> */}
 																	<Cell className="flex gap-2">
 																		{qtyMap(({qtyKey, unitKey, num}) => {
 																			const unit = dPoItem?.[unitKey];

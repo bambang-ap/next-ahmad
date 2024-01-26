@@ -102,7 +102,7 @@ const exportSppbRouters = router({
 							'NOMOR KANBAN': noKanban,
 							GRADE: grade.score,
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
-							HARGA: item.OrmCustomerPOItem.harga!,
+							// HARGA: item.OrmCustomerPOItem.harga!,
 							PROSES: instruksi,
 							KETERANGAN: item.OrmMasterItem.keterangan!,
 						});
@@ -124,7 +124,7 @@ const exportSppbRouters = router({
 				const {date, invoice_no, dCust, dOutItems} = itemOut;
 				for (const {dInItem, ...outItem} of dOutItems) {
 					const {dPoItem, dSJIn, dItem, id, lot_no} = dInItem;
-					const {dPo, harga} = dPoItem;
+					const {dPo /* harga */} = dPoItem;
 
 					const instruksi = await processMapper(ctx, {
 						instruksi: dItem.instruksi,
@@ -178,7 +178,7 @@ const exportSppbRouters = router({
 							indexKey: dIndex._alias1,
 						}),
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
-						HARGA: harga!,
+						// HARGA: harga!,
 						'TANGGAL SJ KELUAR': dateUtils.full(date)!,
 						'NO SURAT JALAN KELUAR': renderIndex(itemOut, invoice_no!)!,
 						PROSES: instruksi,

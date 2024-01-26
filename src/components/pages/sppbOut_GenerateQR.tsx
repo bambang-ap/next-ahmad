@@ -235,9 +235,9 @@ export function SPPBOutGenerateQR({
 								Qty {num}
 							</Td>
 						))}
-						<Td width="10%" center>
+						{/* <Td width="10%" center>
 							Harga
-						</Td>
+						</Td> */}
 						<Td width="10%" center>
 							Lot No
 						</Td>
@@ -311,7 +311,7 @@ export function SPPBOutGenerateQR({
 											</Td>
 										);
 									})}
-									<Td>{OrmCustomerPOItem.harga}</Td>
+									{/* <Td>{OrmCustomerPOItem.harga}</Td> */}
 									<Td>{OrmPOItemSppbIn.lot_no}</Td>
 									<Td>{lot_no_imi}</Td>
 									<Td>{OrmCustomerPOItem.dPo.nomor_po}</Td>

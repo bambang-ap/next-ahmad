@@ -71,7 +71,7 @@ const exportKanbanRouters = {
 						'PART NAME': name!,
 						'PART NO': kode_item!,
 						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
-						HARGA: poItem?.harga!,
+						// HARGA: poItem?.harga!,
 						PROSES: proses,
 						KETERANGAN: val.keterangan!,
 					};
