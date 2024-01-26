@@ -156,22 +156,25 @@ export const inRouters = router({
 							[Op.or]: [
 								hh.where,
 								wherePagesV3<InRetOutput>(
-									{
-										'$oSup.nama$': searcher,
-										no_sj: searcher,
-									},
+									{'$oSup.nama$': searcher, no_sj: searcher},
 									'or',
 								),
 							],
 					  };
 
 				const {count, rows} = await sjIn.model.findAndCountAll({
+					limit,
+					offset: (page - 1) * limit,
 					where: !!id_po ? {id_po} : where,
 					attributes: {include: [hh.attributes]},
 					include: [
 						sup,
 						{...po, include: [tIndex]},
-						{...inItem, include: [{...poItem, include: [item]}]},
+						{
+							...inItem,
+							separate: true,
+							include: [{...poItem, include: [item]}],
+						},
 					],
 				});
 

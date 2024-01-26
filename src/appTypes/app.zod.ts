@@ -774,18 +774,19 @@ export const sPoUpsert = sPo
 			.min(1),
 	});
 
+export type SInUpsertItem = z.infer<typeof sInUpsertItem>;
+export const sInUpsertItem = sInItem
+	.extend({
+		temp_id: z.string(),
+		oPoItem: oPoItem.extend({oItem: sItem.optional()}).optional(),
+	})
+	.partial({id: true, in_id: true, temp_id: true});
+
 export type SInUpsert = z.infer<typeof sInUpsert>;
 export const sInUpsert = sSjIn.partial({id: true}).extend({
-	oPo: sPo.extend({dIndex: tIndex.optional()}).optional(),
 	oSup: sSupplier.nullish(),
-	oInItems: sInItem
-		.extend({
-			temp_id: z.string(),
-			oPoItem: oPoItem.extend({oItem: sItem.optional()}).optional(),
-		})
-		.partial({id: true, in_id: true, temp_id: true})
-		.array()
-		.min(1),
+	oInItems: sInUpsertItem.array().min(1),
+	oPo: sPo.extend({dIndex: tIndex.optional()}).optional(),
 });
 
 export type SInUpsertManual = z.infer<typeof sInUpsertManual>;
