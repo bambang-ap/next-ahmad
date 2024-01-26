@@ -14,6 +14,7 @@ import {
 } from '@components';
 import {formatDate, selectUnitData} from '@constants';
 import {CRUD_ENABLED} from '@enum';
+import {useSession} from '@hooks';
 import type {PoGetV2} from '@trpc/routers/customer_po';
 import {modalTypeParser, moment, qtyMap} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -32,6 +33,7 @@ export default function PoModalChild({
 	control: Control<FormType>;
 	reset: UseFormReset<FormType>;
 }) {
+	const {isAdmin} = useSession();
 	const dataForm = useWatch({control});
 	const {type: modalType, OrmCustomerPOItems: poItem = [], tgl_po} = dataForm;
 
@@ -142,7 +144,6 @@ export default function PoModalChild({
 			{poItem && poItem.length > 0 && (
 				<Table
 					data={poItem}
-					reverseEachItem
 					header={headerTable}
 					className="overflow-y-auto"
 					renderItem={({item, Cell}, index) => {
@@ -176,7 +177,7 @@ export default function PoModalChild({
 												type="decimal"
 												control={control}
 												className="flex-1"
-												disabled={isPreview}
+												disabled={isPreview || !isAdmin}
 												key={selectedItem?.id}
 												defaultValue={selectedItem?.harga}
 												fieldName={`OrmCustomerPOItems.${index}.harga`}

@@ -17,6 +17,7 @@ export type VRenderItem<T, V = Cells> = MMapValue<T> & V;
 export type TRenderItem<T, R, V = {}> = (
 	value: VRenderItem<T, V>,
 	index: number,
+	items: T[],
 ) => R;
 
 export type CellSelectProps<F extends FieldValues> = Omit<
@@ -95,8 +96,8 @@ export function Table<T>(props: TableProps<T, Cells>) {
 			(data.length > 0 ? (
 				data.mmap((item, index) => {
 					const itemWithCell = {...item, Cell: Td};
-					const renderEach = renderItemEach?.(itemWithCell, index);
-					const renderItemRow = renderItem?.(itemWithCell, index);
+					const renderEach = renderItemEach?.(itemWithCell, index, data);
+					const renderItemRow = renderItem?.(itemWithCell, index, data);
 					const key = keyExtractor?.(item.item, index) ?? index;
 
 					const eachRenderer = renderEach && renderItemEach && (
