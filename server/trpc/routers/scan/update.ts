@@ -69,7 +69,12 @@ export function updateScan() {
 				where: {id_kanban, status: isProd ? 'qc' : 'finish_good'},
 			});
 
-			if (!!nextScan) throw new TRPCError({code: 'FORBIDDEN'});
+			if (!!nextScan)
+				throw new TRPCError({
+					code: 'FORBIDDEN',
+					message:
+						'Tidak bisa menghapus data, silahkan cek dan hapus data pada step selanjutnya.',
+				});
 		}
 	}
 
@@ -239,6 +244,7 @@ export function updateScan() {
 						await checkingNext(id_kanban, status);
 
 						const targetScan = await dScan.findOne({
+							transaction,
 							where: {id_kanban, status},
 						});
 						const targetScanData = targetScan?.toJSON();
@@ -246,6 +252,11 @@ export function updateScan() {
 						if (!!targetScanData) {
 							const {id} = targetScanData;
 
+							const id_item = (
+								await dScanItem.findAll({transaction, where: {id_scan: id}})
+							).map(e => e.toJSON().id);
+
+							await dRejItem.destroy({transaction, where: {id_item}});
 							await dScanItem.destroy({transaction, where: {id_scan: id}});
 							await dScan.destroy({transaction, where: {id}});
 						}
@@ -255,7 +266,8 @@ export function updateScan() {
 					} catch (err) {
 						await transaction.rollback();
 						if (err instanceof TRPCError) throw new TRPCError(err);
-						throw new TRPCError({code: 'BAD_REQUEST'});
+						// @ts-ignore
+						throw new TRPCError({...err, code: 'BAD_REQUEST'});
 					}
 				});
 			}),

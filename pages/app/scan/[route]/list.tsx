@@ -56,7 +56,7 @@ function RenderScanList() {
 
 	const {type} = formData;
 	const {isSelect, modalTitle, isPreview} = modalTypeParser(type);
-	const {title, isQC} = scanRouterParser(route);
+	const {title, isQC, isProduksi, isFG} = scanRouterParser(route);
 
 	const dateHeader = `Tanggal ${title}`;
 
@@ -134,8 +134,28 @@ function RenderScanList() {
 	const {mutateAsync: mutate} = trpc.scan.remove.useMutation(mutateOpts);
 
 	function navigate(id: string) {
-		StorageScan.get(route)?.set(prev => [id, ...prev]);
-		push({pathname: PATHS.app_scan_produksi});
+		const {app_scan_finish_good, app_scan_qc, app_scan_produksi} = PATHS;
+		const pathname = isProduksi
+			? app_scan_produksi
+			: isQC
+			? app_scan_qc
+			: isFG
+			? app_scan_finish_good
+			: undefined;
+
+		if (!pathname) {
+			StorageScan.get(route)?.set(prev => {
+				return prev.reduce(
+					(ret, cur) => {
+						if (ret.includes(cur)) return ret;
+						return [...ret, cur];
+					},
+					[id],
+				);
+			});
+
+			push({pathname});
+		}
 	}
 
 	async function removeScan(id: string) {

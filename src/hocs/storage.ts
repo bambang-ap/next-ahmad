@@ -40,10 +40,13 @@ export class Storage<T> {
 	set(value: T): void;
 	set(setter: (prevValue: T) => T): void;
 	set(valueOrSetter: any) {
-		let value = valueOrSetter;
+		let val = valueOrSetter;
 		if (typeof valueOrSetter === 'function') {
-			value = valueOrSetter(this.get()!);
+			val = valueOrSetter(this.get()!);
 		}
+
+		const value = val as T;
+
 		try {
 			if (this.primitive) localStorage.setItem(this.key, value as string);
 			else localStorage.setItem(this.key, JSON.stringify(value));
