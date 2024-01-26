@@ -18,6 +18,7 @@ import {
 	dScan,
 	getScanAttributes,
 	getScanAttributesV2,
+	indexWhereAttributes,
 	OrmCustomer,
 	OrmCustomerPO,
 	OrmCustomerPOItem,
@@ -96,14 +97,20 @@ const scanRouters = router({
 					search,
 				);
 
+				const {where: where3, attributes} = indexWhereAttributes<ScanList>(
+					'dKanban.dIndex.prefix',
+					'dKanban.index_number',
+					search,
+				);
+
 				const {count, rows: data} = await scan.model.findAndCountAll({
 					limit,
-					attributes: [num, ...(scan.attributes ?? [])],
+					attributes: [num, attributes, ...(scan.attributes ?? [])],
 					order: scanOrder(),
 					offset: (page - 1) * limit,
 					where: {
 						status: target,
-						...(search ? {[Op.or]: [where1, where2]} : {}),
+						...(search ? {[Op.or]: [where1, where2, where3]} : {}),
 					},
 					include: [
 						{...kanban, include: [tIndex, sjIn, {...po, include: [cust]}]},

@@ -136,13 +136,8 @@ export function indexWhereAttributes<T extends {}>(
 	);
 
 	const whereQuery = !!search
-		? where(col(indexCol), Op.iLike, `%${search}%`)
+		? where(attribute, Op.iLike, `%${search}%`)
 		: undefined;
-
-	// FIXME: replace here with bottom
-	// const whereQuery = !!search
-	// 	? where(attribute, Op.iLike, `%${search}%`)
-	// 	: undefined;
 
 	return {
 		attributes: [attribute, indexAlias] as ProjectionAlias,
