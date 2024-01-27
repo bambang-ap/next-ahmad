@@ -2,7 +2,7 @@ import {DataTypes, Model, Sequelize, STRING} from 'sequelize';
 
 import {TPOItem} from '@appTypes/app.type';
 import {defaultExcludeColumn} from '@constants';
-import {ormDecimalType} from '@database';
+import {ormDecimalType, tableWithDiscount} from '@database';
 import {TABLES} from '@enum';
 
 export class OrmCustomerPOItem extends Model<TPOItem> {}
@@ -29,6 +29,7 @@ export function initPoItem(sequelize: Sequelize) {
 			// unit4: STRING,
 			// unit5: STRING,
 			...unitQtyField,
+			...tableWithDiscount,
 		},
 		{
 			sequelize,
@@ -58,6 +59,7 @@ export default function initOrmCustomerPOItem(sequelize: Sequelize) {
 			// unit4: STRING,
 			// unit5: STRING,
 			...unitQtyField,
+			...tableWithDiscount,
 		},
 		{
 			sequelize,

@@ -6,6 +6,7 @@ import {
 	ModelStatic,
 	Order,
 	Sequelize,
+	STRING,
 } from 'sequelize';
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from 'zod';
 
@@ -22,6 +23,11 @@ export * from './getPoScore';
 export * from './getPoStatus';
 export * from './relation';
 export * from './where';
+
+export const tableWithDiscount = {
+	discount_type: STRING,
+	discount: ormDecimalType('discount', 0),
+};
 
 export function attrParser<
 	T extends ZodRawShape,

@@ -17,7 +17,7 @@ POCustomer.getLayout = getLayout;
 export default function POCustomer() {
 	const modalRef = useRef<ModalRef>(null);
 
-	const {control, reset, watch, clearErrors, handleSubmit} =
+	const {control, reset, setValue, watch, clearErrors, handleSubmit} =
 		useForm<FormType>();
 	const dataForm = watch();
 
@@ -170,7 +170,7 @@ export default function POCustomer() {
 				<Form
 					onSubmit={submit}
 					context={{hideButton: isPreview, disabled: isPreview}}>
-					<PoModalChild reset={reset} control={control} />
+					<PoModalChild reset={reset} control={control} setValue={setValue} />
 				</Form>
 			</Modal>
 			<div className="overflow-x-auto w-full">{component}</div>

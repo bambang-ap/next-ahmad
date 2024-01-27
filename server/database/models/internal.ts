@@ -11,7 +11,7 @@ import {
 	SStock,
 	SSupplier,
 } from '@appTypes/app.zod';
-import {defaultScope, ormDecimalType} from '@database';
+import {defaultScope, ormDecimalType, tableWithDiscount} from '@database';
 import {INTERNAL_TABLES} from '@enum';
 
 export class oStock extends Model<SStock> {}
@@ -87,9 +87,8 @@ export function initOPo(sequelize: Sequelize) {
 			sup_id: STRING,
 			index_id: STRING,
 			index_number: STRING,
-			discount_type: STRING,
-			discount: ormDecimalType('discount', 0),
 			keterangan: STRING,
+			...tableWithDiscount,
 		},
 		{
 			...defaultScope(sequelize, false),
@@ -104,14 +103,13 @@ export class oPoItem extends Model<SPoItem> {}
 export function initOPoItem(sequelize: Sequelize) {
 	oPoItem.init(
 		{
-			discount_type: STRING,
 			id: {type: STRING, primaryKey: true},
-			discount: ormDecimalType('discount', 0),
 			qty: ormDecimalType('qty'),
 			id_item: STRING,
 			id_po: STRING,
 			unit: STRING,
 			updatedAt: STRING,
+			...tableWithDiscount,
 		},
 		{
 			...defaultScope(sequelize, false),

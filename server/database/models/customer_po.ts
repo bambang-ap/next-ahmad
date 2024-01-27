@@ -4,6 +4,8 @@ import {TCustomerPO} from '@appTypes/app.type';
 import {defaultExcludeColumn, defaultOrderBy} from '@constants';
 import {TABLES} from '@enum';
 
+import {tableWithDiscount} from '../db-utils';
+
 export class OrmCustomerPO extends Model<TCustomerPO> {}
 
 export default function initOrmCustomerPO(sequelize: Sequelize) {
@@ -14,6 +16,7 @@ export default function initOrmCustomerPO(sequelize: Sequelize) {
 			nomor_po: {type: DataTypes.STRING},
 			tgl_po: {type: DataTypes.STRING},
 			due_date: {type: DataTypes.STRING},
+			...tableWithDiscount,
 		},
 		{
 			sequelize,
@@ -44,6 +47,7 @@ export function initDPo(sequelize: Sequelize) {
 			nomor_po: {type: DataTypes.STRING},
 			tgl_po: {type: DataTypes.STRING},
 			due_date: {type: DataTypes.STRING},
+			...tableWithDiscount,
 		},
 		{
 			sequelize,

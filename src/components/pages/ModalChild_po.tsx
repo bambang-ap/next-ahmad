@@ -1,9 +1,18 @@
 import {Fragment, useEffect} from 'react';
 
-import {Control, useController, UseFormReset, useWatch} from 'react-hook-form';
+import {useController, useWatch} from 'react-hook-form';
 
+import {
+	DiscountRenderer,
+	DiscountSelection,
+} from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
-import {ModalTypePreview, TCustomer, TItemUnit} from '@appTypes/app.type';
+import {
+	FormProps,
+	ModalTypePreview,
+	TCustomer,
+	TItemUnit,
+} from '@appTypes/app.type';
 import {
 	Button,
 	Input,
@@ -27,12 +36,10 @@ export type FormType = PoGetV2 & {
 	idPo?: MyObject<boolean>;
 };
 export default function PoModalChild({
+	setValue,
 	control,
 	reset: resetForm,
-}: {
-	control: Control<FormType>;
-	reset: UseFormReset<FormType>;
-}) {
+}: FormProps<FormType, 'control' | 'reset' | 'setValue'>) {
 	const {isAdmin} = useSession();
 	const dataForm = useWatch({control});
 	const {type: modalType, OrmCustomerPOItems: poItem = [], tgl_po} = dataForm;
@@ -63,6 +70,7 @@ export default function PoModalChild({
 				'Kode Item',
 				'Harga',
 				...qtyList.map(num => `Jumlah ${num}`),
+				'Total',
 			];
 
 			if (isPreview) return tableHeader;
@@ -108,14 +116,15 @@ export default function PoModalChild({
 
 	return (
 		<div className="gap-y-2 flex flex-col">
+			<SelectCustomer
+				data={data}
+				control={control}
+				className="flex-1"
+				fieldName="id_customer"
+				disabled={isPreviewEdit}
+			/>
+
 			<div className="flex gap-2">
-				<SelectCustomer
-					data={data}
-					control={control}
-					className="flex-1"
-					fieldName="id_customer"
-					disabled={isPreviewEdit}
-				/>
 				<Input
 					className="flex-1"
 					disabled={isPreview}
@@ -123,6 +132,16 @@ export default function PoModalChild({
 					fieldName="nomor_po"
 					label="PO"
 				/>
+				<DiscountSelection
+					className="flex-1"
+					control={control}
+					setValue={setValue}
+					type="discount_type"
+					discount="discount"
+				/>
+			</div>
+
+			<div className="flex gap-2">
 				<Input
 					className="flex-1"
 					type="date"
@@ -237,6 +256,25 @@ export default function PoModalChild({
 												</Cell>
 											);
 										})}
+										<Cell className="gap-2">
+											<DiscountRenderer
+												control={control}
+												setValue={setValue}
+												length={poItem.length}
+												qtyPrice={[
+													`OrmCustomerPOItems.${index}.qty3`,
+													`OrmCustomerPOItems.${index}.harga`,
+												]}
+												type={[
+													'discount_type',
+													`OrmCustomerPOItems.${index}.discount_type`,
+												]}
+												discount={[
+													'discount',
+													`OrmCustomerPOItems.${index}.discount`,
+												]}
+											/>
+										</Cell>
 										{!isPreview && (
 											<Cell>
 												<Button

@@ -76,7 +76,7 @@ export const zCreatedUpdated = zCreated.extend(zUpdated.shape);
 
 export type ZDiscount = z.infer<typeof zDiscount>;
 export const zDiscount = z.object({
-	discount: zDecimal.optional(),
+	discount: zDecimal.nullish(),
 	discount_type: z.nativeEnum(DiscType).nullish(),
 });
 
@@ -187,6 +187,7 @@ export const tPOItem = zId.extend({
 	...unitUnit.shape,
 	...unitQty.shape,
 	...zCreated.shape,
+	...zDiscount.shape,
 });
 
 export type TPOItemSppbIn = z.infer<typeof tPOItemSppbIn>;
@@ -207,6 +208,7 @@ export const tCustomerPO = zId.extend({
 	id_customer: z.string(),
 	nomor_po: z.string(),
 	...zCreated.shape,
+	...zDiscount.shape,
 });
 
 export type TCustomerPOExtended = z.infer<typeof tCustomerPOExtended>;

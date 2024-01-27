@@ -27,9 +27,13 @@ import {
 } from '@database';
 import {getSJInGrade, poCustomerSjGrade} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {
+	checkCredentialV2,
+	generateId,
+	pagingResult,
+	procedureError,
+} from '@server';
 import {procedure, router} from '@trpc';
-import {TRPCError} from '@trpc/server';
 
 import {appRouter} from '.';
 
@@ -226,7 +230,7 @@ const customer_poRouters = router({
 					return Success;
 				} catch (err) {
 					await transaction.rollback();
-					throw new TRPCError({code: 'BAD_REQUEST'});
+					procedureError(err);
 				}
 			});
 		}),
@@ -241,37 +245,45 @@ const customer_poRouters = router({
 		)
 		.mutation(async ({input, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
-				const {id, po_item, ...body} = input;
+				const transaction = await ORM.transaction();
 
-				await OrmCustomerPO.upsert({...body, id});
+				try {
+					const {id, po_item, ...body} = input;
 
-				const poItemPromises = po_item?.map(({id: itemId, ...item}) => {
-					const isExist = po_item.find(e => e.id === itemId);
+					await OrmCustomerPO.upsert({...body, id});
 
-					if (!isExist) OrmCustomerPOItem.destroy({where: {id: itemId}});
+					const poItemPromises = po_item?.map(({id: itemId, ...item}) => {
+						const isExist = po_item.find(e => e.id === itemId);
 
-					return OrmCustomerPOItem.upsert({
-						...item,
-						id: itemId || generateId('POI_'),
-						id_po: input.id,
+						if (!isExist) OrmCustomerPOItem.destroy({where: {id: itemId}});
+
+						return OrmCustomerPOItem.upsert({
+							...item,
+							id: itemId || generateId('POI_'),
+							id_po: input.id,
+						});
 					});
-				});
 
-				const existingPoItems = await OrmCustomerPOItem.findAll({
-					where: {id_po: id},
-				});
+					const existingPoItems = await OrmCustomerPOItem.findAll({
+						where: {id_po: id},
+					});
 
-				const excludeItem = existingPoItems.filter(
-					({dataValues: {id: itemId}}) => {
-						const item = po_item.find(e => e.id === itemId);
-						return !item;
-					},
-				);
+					const excludeItem = existingPoItems.filter(
+						({dataValues: {id: itemId}}) => {
+							const item = po_item.find(e => e.id === itemId);
+							return !item;
+						},
+					);
 
-				await Promise.all(poItemPromises);
-				await Promise.all(excludeItem.map(e => e.destroy()));
+					await Promise.all(poItemPromises);
+					await Promise.all(excludeItem.map(e => e.destroy()));
 
-				return Success;
+					await transaction.commit();
+					return Success;
+				} catch (err) {
+					await transaction.rollback();
+					procedureError(err);
+				}
 			});
 		}),
 
@@ -279,18 +291,28 @@ const customer_poRouters = router({
 		.input(zId)
 		.mutation(async ({input: {id}, ctx: {req, res}}) => {
 			return checkCredentialV2({req, res}, async () => {
-				const dataSppb = await OrmCustomerSPPBIn.findAll({where: {id_po: id}});
-				await Promise.all(
-					dataSppb.map(async sppb => {
-						return OrmPOItemSppbIn.destroy({
-							where: {id_sppb_in: sppb.dataValues.id},
-						});
-					}),
-				);
-				await OrmCustomerSPPBIn.destroy({where: {id_po: id}});
-				await OrmCustomerPOItem.destroy({where: {id_po: id}});
-				await OrmCustomerPO.destroy({where: {id}});
-				return Success;
+				const transaction = await ORM.transaction();
+
+				try {
+					const dataSppb = await OrmCustomerSPPBIn.findAll({
+						where: {id_po: id},
+					});
+					await Promise.all(
+						dataSppb.map(async sppb => {
+							return OrmPOItemSppbIn.destroy({
+								where: {id_sppb_in: sppb.dataValues.id},
+							});
+						}),
+					);
+					await OrmCustomerSPPBIn.destroy({where: {id_po: id}});
+					await OrmCustomerPOItem.destroy({where: {id_po: id}});
+					await OrmCustomerPO.destroy({where: {id}});
+					await transaction.commit();
+					return Success;
+				} catch (err) {
+					await transaction.rollback();
+					procedureError(err);
+				}
 			});
 		}),
 });
