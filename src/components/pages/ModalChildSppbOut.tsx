@@ -1,7 +1,12 @@
+import objectPath from 'object-path';
 import {FormValue} from 'pages/app/customer/customer_sppb_out';
 import {useWatch} from 'react-hook-form';
 
-import {DiscountRenderer} from '@appComponent/DiscountSelection';
+import {
+	DiscountRenderer,
+	getDiscValue,
+	RenderTotalHarga,
+} from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps} from '@appTypes/app.type';
@@ -160,6 +165,8 @@ export function SppbOutModalChild({
 										'nomor_surat',
 									);
 
+									const nameItems = `po.${i}.sppb_in.${ii}.items` as const;
+
 									return (
 										<>
 											<div className="flex gap-2 items-center">
@@ -197,6 +204,34 @@ export function SppbOutModalChild({
 													'Total',
 													isAddEdit && 'Exclude',
 												]}
+												renderItemEach={({Cell, isLast}, _, items) => {
+													if (!isLast) return false;
+
+													return (
+														<RenderTotalHarga
+															Cell={Cell}
+															colSpan={6}
+															items={items}
+															calculate={item => {
+																const nameItem =
+																	`${nameItems}.${item.id}` as const;
+																const qty3 = objectPath.get<number>(
+																	dataForm,
+																	`${nameItem}.qty3`,
+																	0,
+																);
+
+																const {totalPrice} = getDiscValue(
+																	item.dPoItem.discount_type,
+																	item.dPoItem.discount,
+																	(item.dPoItem.harga ?? 0) * qty3,
+																);
+
+																return totalPrice;
+															}}
+														/>
+													);
+												}}
 												renderItem={({Cell, item}) => {
 													const {
 														dItem,
@@ -224,8 +259,7 @@ export function SppbOutModalChild({
 
 													const isExcludedItem = items?.exclude;
 
-													const fieldNameItem =
-														`po.${i}.sppb_in.${ii}.items.${id_item}` as const;
+													const nameItem = `${nameItems}.${id_item}` as const;
 
 													if (isPreview && !hasItem) return <></>;
 													if (isClosed) {
@@ -242,14 +276,14 @@ export function SppbOutModalChild({
 																		control={control}
 																		shouldUnregister
 																		defaultValue={dItem?.id}
-																		fieldName={`${fieldNameItem}.master_item_id`}
+																		fieldName={`${nameItem}.master_item_id`}
 																	/>
 																	<Input
 																		hidden
 																		control={control}
 																		shouldUnregister
 																		defaultValue={dPoItem.id}
-																		fieldName={`${fieldNameItem}.id_item_po`}
+																		fieldName={`${nameItem}.id_item_po`}
 																	/>
 																</>
 															)}
@@ -308,7 +342,7 @@ export function SppbOutModalChild({
 																						className="flex-1 bg-white"
 																						rightAcc={<Text>{unit}</Text>}
 																						defaultValue={jumlah.toString()}
-																						fieldName={`${fieldNameItem}.${qtyKey}`}
+																						fieldName={`${nameItem}.${qtyKey}`}
 																						rules={{
 																							max: {
 																								value: max,
@@ -349,33 +383,39 @@ export function SppbOutModalChild({
 																			control={control}
 																			setValue={setValue}
 																			qtyPrice={[
-																				`${fieldNameItem}.qty3`,
+																				`${nameItem}.qty3`,
 																				dPoItem?.harga!,
 																			]}
 																			type={[
 																				dPoItem?.discount_type!,
-																				`${fieldNameItem}.discount_type`,
+																				`${nameItem}.discount_type`,
 																			]}
 																			discount={[
 																				dPoItem?.discount!,
-																				`${fieldNameItem}.discount`,
+																				`${nameItem}.discount`,
 																			]}
 																		/>
 																	</Cell>
 																</>
 															)}
-															<Cell>
-																<Input
-																	key={fieldNameItem}
-																	type="checkbox"
-																	label="exclude"
-																	control={control}
-																	fieldName={`${fieldNameItem}.exclude`}
-																	defaultValue={
-																		hasItem ? false : isEdit ? true : undefined
-																	}
-																/>
-															</Cell>
+															{isAddEdit && (
+																<Cell>
+																	<Input
+																		key={nameItem}
+																		type="checkbox"
+																		label="exclude"
+																		control={control}
+																		fieldName={`${nameItem}.exclude`}
+																		defaultValue={
+																			hasItem
+																				? false
+																				: isEdit
+																				? true
+																				: undefined
+																		}
+																	/>
+																</Cell>
+															)}
 														</>
 													);
 												}}

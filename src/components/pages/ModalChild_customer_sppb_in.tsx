@@ -1,9 +1,14 @@
 import {useEffect} from 'react';
 
+import objectPath from 'object-path';
 import {FormType} from 'pages/app/customer/customer_sppb_in';
 import {useWatch} from 'react-hook-form';
 
-import {DiscountRenderer} from '@appComponent/DiscountSelection';
+import {
+	DiscountRenderer,
+	getDiscValue,
+	RenderTotalHarga,
+} from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {FormProps, TCustomer} from '@appTypes/app.type';
 import {
@@ -110,6 +115,32 @@ export function SppbInModalChild({
 					!isPreview && 'Action',
 				]}
 				data={selectedPo?.OrmCustomerPOItems ?? []}
+				renderItemEach={({Cell, isLast}, _, items) => {
+					if (!isLast) return false;
+
+					return (
+						<RenderTotalHarga
+							Cell={Cell}
+							colSpan={5}
+							items={items}
+							calculate={(item, index) => {
+								const qty3 = objectPath.get<number>(
+									dataForm,
+									`po_item.${index}.qty3`,
+									0,
+								);
+
+								const {totalPrice} = getDiscValue(
+									item.discount_type,
+									item.discount,
+									(item.harga ?? 0) * qty3,
+								);
+
+								return totalPrice;
+							}}
+						/>
+					);
+				}}
 				renderItem={({Cell, item}, index) => {
 					if (isAdd && item.isClosed) return false;
 

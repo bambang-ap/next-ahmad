@@ -7,6 +7,7 @@ import {FormProps} from '@appTypes/app.type';
 import {Input, InputDummy} from '@baseComps/Input';
 import {ButtonGroup} from '@baseComps/Input/ButtonGroup';
 import {SelectPropsData} from '@baseComps/Input/Select';
+import {Cells} from '@baseComps/Table';
 import {Button} from '@baseComps/Touchable/Button';
 import {DiscType} from '@enum';
 
@@ -67,19 +68,6 @@ export function DiscountRenderer<T extends FieldValues>({
 		total,
 		discVal / length,
 	);
-
-	prettyConsole({
-		price,
-		discType,
-		discVal,
-		qty,
-		qtyPath,
-		typeSource,
-		discSource,
-		typeTargetName,
-		discTargetName,
-		totalPrice,
-	});
 
 	useEffect(() => {
 		// @ts-ignore
@@ -182,6 +170,36 @@ export function DiscountSelection<T extends FieldValues>(props: Props<T>) {
 					},
 				}}
 			/>
+		</>
+	);
+}
+
+export function RenderTotalHarga<T>({
+	items,
+	Cell,
+	colSpan,
+	calculate,
+}: {
+	items: T[];
+	colSpan: number;
+	calculate: (item: T, index: number) => number;
+} & Cells) {
+	const priceTotal = items.reduce(
+		(total, item, index) => total + calculate(item, index),
+		0,
+	);
+
+	return (
+		<>
+			<Cell colSpan={colSpan} />
+			<Cell>
+				<InputDummy
+					disabled
+					className="flex-1"
+					byPassValue={priceTotal}
+					label="Total Harga"
+				/>
+			</Cell>
 		</>
 	);
 }

@@ -6,6 +6,7 @@ import {
 	DiscountRenderer,
 	DiscountSelection,
 	getDiscValue,
+	RenderTotalHarga,
 } from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {
@@ -17,7 +18,6 @@ import {
 import {
 	Button,
 	Input,
-	InputDummy,
 	Select,
 	selectMapper,
 	Table,
@@ -170,28 +170,21 @@ export default function PoModalChild({
 					renderItemEach={({Cell, isLast}, _, items) => {
 						if (!isLast) return false;
 
-						const priceTotal = items.reduce((f, e) => {
-							const {totalPrice} = getDiscValue(
-								e.discount_type,
-								e.discount,
-								(e.harga ?? 0) * (e.qty3 ?? 0),
-							);
-
-							return f + totalPrice;
-						}, 0);
-
 						return (
-							<>
-								<Cell colSpan={7} />
-								<Cell>
-									<InputDummy
-										disabled
-										className="flex-1"
-										byPassValue={priceTotal}
-										label="Total Harga"
-									/>
-								</Cell>
-							</>
+							<RenderTotalHarga
+								Cell={Cell}
+								colSpan={7}
+								items={items}
+								calculate={item => {
+									const {totalPrice} = getDiscValue(
+										item.discount_type,
+										item.discount,
+										(item.harga ?? 0) * (item.qty3 ?? 0),
+									);
+
+									return totalPrice;
+								}}
+							/>
 						);
 					}}
 					renderItem={({item, Cell}, index) => {
@@ -287,6 +280,7 @@ export default function PoModalChild({
 										})}
 										<Cell className="gap-2">
 											<DiscountRenderer
+												key={`${item.id}-${item.harga}`}
 												control={control}
 												setValue={setValue}
 												length={poItem.length}
