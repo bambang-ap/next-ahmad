@@ -189,10 +189,10 @@ export function useTableFilterComponent<
 				isLoading={isFetching}
 				topComponent={topComponent}
 				renderItem={(item, i) =>
-					renderItem?.({...item, printData, CellSelect}, i)!
+					renderItem?.({...item, printData, CellSelect}, i, data?.rows!)!
 				}
 				renderItemEach={(item, i) =>
-					renderItemEach?.({...item, printData, CellSelect}, i)!
+					renderItemEach?.({...item, printData, CellSelect}, i, data?.rows!)!
 				}
 				header={[
 					hasProp && isSelect && (
