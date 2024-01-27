@@ -292,14 +292,14 @@ export default function PoModalChild({
 												length={poItem.length}
 												qtyPrice={[
 													`OrmCustomerPOItems.${index}.qty3`,
-													`OrmCustomerPOItems.${index}.harga`,
+													item.harga!,
 												]}
 												type={[
-													'discount_type',
+													dataForm.discount_type!,
 													`OrmCustomerPOItems.${index}.discount_type`,
 												]}
 												discount={[
-													'discount',
+													dataForm.discount!,
 													`OrmCustomerPOItems.${index}.discount`,
 												]}
 											/>

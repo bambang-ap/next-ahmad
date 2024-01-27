@@ -16,10 +16,10 @@ const btnData: SelectPropsData<DiscType>[] = [
 ];
 
 type RProps<T extends FieldValues> = FormProps<T, 'control' | 'setValue'> & {
-	type: [source: FieldPath<T>, target: FieldPath<T>];
-	discount: [source: FieldPath<T>, target: FieldPath<T>];
-	qtyPrice: [qty: FieldPath<T>, price: FieldPath<T>];
-	length: number;
+	type: [source: DiscType, targetPath: FieldPath<T>];
+	discount: [source: number, targetPath: FieldPath<T>];
+	qtyPrice: [qtyPath: FieldPath<T>, price: number];
+	length?: number;
 };
 
 export function getDiscValue(
@@ -46,19 +46,18 @@ export function DiscountRenderer<T extends FieldValues>({
 	control,
 	setValue,
 	discount,
-	length,
+	length = 1,
 	qtyPrice,
 }: RProps<T>) {
-	const [a, typeTargetName] = type;
-	const [b, discTargetName] = discount;
-	const [qty, price] = qtyPrice;
-	const [typeSource, discSource, discType, discVal = 0, qtyy = 0, pricee = 0] =
-		useWatch({
-			control,
-			name: [a, b, typeTargetName, discTargetName, qty, price],
-		});
+	const [typeSource, typeTargetName] = type;
+	const [discSource, discTargetName] = discount;
+	const [qtyPath, price] = qtyPrice;
+	const [discType, discVal = 0, qty = 0] = useWatch({
+		control,
+		name: [typeTargetName, discTargetName, qtyPath],
+	});
 
-	const total = qtyy * pricee;
+	const total = qty * price;
 
 	const {discValue, totalPrice} = getDiscValue(
 		discType,
@@ -68,7 +67,9 @@ export function DiscountRenderer<T extends FieldValues>({
 	);
 
 	useEffect(() => {
+		// @ts-ignore
 		setValue(typeTargetName, typeSource);
+		// @ts-ignore
 		setValue(discTargetName, discSource);
 	}, [typeSource, discSource]);
 

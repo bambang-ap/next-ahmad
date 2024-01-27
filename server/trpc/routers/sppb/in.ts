@@ -67,6 +67,8 @@ const sppbInRouters = router({
 					'unit1',
 					'unit2',
 					'unit3',
+					'discount',
+					'discount_type',
 				]);
 				const C = attrParser(tMasterItem, ['name', 'kode_item']);
 				const D = attrParser(tPOItemSppbIn, ['qty1', 'qty2', 'qty3']);

@@ -3,6 +3,7 @@ import {useEffect} from 'react';
 import {FormType} from 'pages/app/customer/customer_sppb_in';
 import {useWatch} from 'react-hook-form';
 
+import {DiscountRenderer} from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {FormProps, TCustomer} from '@appTypes/app.type';
 import {
@@ -21,13 +22,15 @@ import {trpc} from '@utils/trpc';
 export function SppbInModalChild({
 	control,
 	reset,
-}: FormProps<FormType, 'control' | 'reset'>) {
+	setValue,
+}: FormProps<FormType, 'control' | 'reset' | 'setValue'>) {
 	const dataForm = useWatch({control});
 
 	const {
 		id_customer = '',
 		dPo: OrmCustomerPO,
 		dInItems: OrmPOItemSppbIns,
+		po_item,
 		id_po,
 		type,
 	} = dataForm;
@@ -48,6 +51,7 @@ export function SppbInModalChild({
 	if (isDelete) return <Button type="submit">Ya</Button>;
 
 	const selectedPo = listPo.find(e => e.id === id_po);
+	const keyPo = `${id_customer}${id_po}`;
 
 	return (
 		<div className="flex flex-col gap-2">
@@ -62,7 +66,7 @@ export function SppbInModalChild({
 					data={dataCustomer}
 				/>
 				<Select
-					key={`${isFetchingPo}${id_customer}${id_po}`}
+					key={keyPo}
 					className="flex-1"
 					disabled={isPreviewEdit}
 					control={control}
@@ -102,10 +106,10 @@ export function SppbInModalChild({
 					'Harga',
 					'Nomor Lot',
 					'Jumlah',
-					isPreview && 'Total Harga',
+					'Total Harga',
 					!isPreview && 'Action',
 				]}
-				data={selectedPo?.OrmCustomerPOItems}
+				data={selectedPo?.OrmCustomerPOItems ?? []}
 				renderItem={({Cell, item}, index) => {
 					if (isAdd && item.isClosed) return false;
 
@@ -115,9 +119,10 @@ export function SppbInModalChild({
 
 					if (!selectedItem && item.isClosed) return false;
 
-					const included = isAdd ? true : !!selectedItem;
-
-					const totalHarga = (item?.harga ?? 0) * (selectedItem?.qty3 ?? 0);
+					const itemIncluded = po_item?.[index]?.included;
+					const includedDefaultValue = isAdd ? true : !!selectedItem;
+					const included =
+						itemIncluded === undefined ? includedDefaultValue : itemIncluded;
 
 					return (
 						<>
@@ -145,7 +150,12 @@ export function SppbInModalChild({
 							<Cell>{item.OrmMasterItem.kode_item}</Cell>
 							<Cell>{item.OrmMasterItem.name}</Cell>
 							<Cell hidden={!included}>
-								<InputDummy disabled label="Harga" byPassValue={item.harga} />
+								<InputDummy
+									className="flex-1"
+									disabled
+									label="Harga"
+									byPassValue={item.harga}
+								/>
 							</Cell>
 							<Cell hidden={!included}>
 								<Input
@@ -186,23 +196,25 @@ export function SppbInModalChild({
 									);
 								})}
 							</Cell>
-							{isPreview && (
-								<Cell hidden={!included}>
-									<InputDummy
-										disabled
-										label="Total Harga"
-										byPassValue={totalHarga}
-									/>
-								</Cell>
-							)}
+
+							<Cell hidden={!included} className="gap-2">
+								<DiscountRenderer
+									control={control}
+									setValue={setValue}
+									length={selectedPo?.OrmCustomerPOItems.length}
+									qtyPrice={[`po_item.${index}.qty3`, item.harga!]}
+									type={[item.discount_type!, `po_item.${index}.discount_type`]}
+									discount={[item.discount!, `po_item.${index}.discount`]}
+								/>
+							</Cell>
+
 							<Cell>
 								<Input
 									shouldUnregister
 									type="checkbox"
-									label="Included"
 									className="flex-1"
 									control={control}
-									defaultValue={included}
+									defaultValue={includedDefaultValue}
 									fieldName={`po_item.${index}.included`}
 									renderChildren={v => (
 										<Button icon={v ? 'faTrash' : 'faPlus'} />

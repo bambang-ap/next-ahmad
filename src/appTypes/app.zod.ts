@@ -199,6 +199,7 @@ export const tPOItemSppbIn = zId.extend({
 	included: z.boolean(),
 	...zCreated.shape,
 	...unitQty.shape,
+	...zDiscount.shape,
 });
 
 export type TCustomerPO = z.infer<typeof tCustomerPO>;

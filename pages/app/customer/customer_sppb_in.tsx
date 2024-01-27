@@ -38,9 +38,10 @@ export default function SPPBIN() {
 	const tableRef = useRef<TableFilterV3Ref>(null);
 	const {mutateOpts, ...loader} = useLoader();
 
-	const {control, handleSubmit, watch, reset, clearErrors} = useForm<FormType>({
-		defaultValues: {type: 'add'},
-	});
+	const {control, handleSubmit, watch, setValue, reset, clearErrors} =
+		useForm<FormType>({
+			defaultValues: {type: 'add'},
+		});
 
 	const {mutate: mutateUpsert} = trpc.sppb.in.upsert.useMutation(mutateOpts);
 	const {mutate: mutateDelete} = trpc.sppb.in.delete.useMutation(mutateOpts);
@@ -146,7 +147,11 @@ export default function SPPBIN() {
 				<Form
 					context={{disabled: isPreview, hideButton: isPreview}}
 					onSubmit={submit}>
-					<SppbInModalChild reset={reset} control={control} />
+					<SppbInModalChild
+						setValue={setValue}
+						reset={reset}
+						control={control}
+					/>
 				</Form>
 			</Modal>
 		</>
