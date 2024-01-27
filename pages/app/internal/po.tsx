@@ -2,7 +2,6 @@ import {FormEventHandler, Fragment, useRef} from 'react';
 
 import {useForm, useWatch} from 'react-hook-form';
 
-import {DiscountSelection} from '@appComponent/DiscountSelection';
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SPoUpsert} from '@appTypes/app.zod';
@@ -258,12 +257,12 @@ function RenderModal({
 				)}
 			</div>
 
-			<DiscountSelection
+			{/* <DiscountSelection
 				control={control}
 				resetField={resetField}
 				type="form.discount_type"
 				discount="form.discount"
-			/>
+			/> */}
 
 			<Input control={control} fieldName="form.keterangan" label="Keterangan" />
 
@@ -274,18 +273,18 @@ function RenderModal({
 					</Button>
 				}
 				data={form?.oPoItems}
-				renderItemEach={({Cell}, i) => {
-					return (
-						<Cell colSpan={5} className="items-center gap-2">
-							<DiscountSelection
-								control={control}
-								resetField={resetField}
-								discount={`form.oPoItems.${i}.discount`}
-								type={`form.oPoItems.${i}.discount_type`}
-							/>
-						</Cell>
-					);
-				}}
+				// renderItemEach={({Cell}, i) => {
+				// 	return (
+				// 		<Cell colSpan={5} className="items-center gap-2">
+				// 			<DiscountSelection
+				// 				control={control}
+				// 				resetField={resetField}
+				// 				discount={`form.oPoItems.${i}.discount`}
+				// 				type={`form.oPoItems.${i}.discount_type`}
+				// 			/>
+				// 		</Cell>
+				// 	);
+				// }}
 				renderItem={({Cell, item}, i) => {
 					const idItem = item.id ?? item.temp_id!;
 					const oItem =
