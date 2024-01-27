@@ -391,7 +391,7 @@ function RenderPdf(props: RetPoInternal) {
 
 			const sum = oItem?.harga! * qty;
 			const ppnValue = oItem?.ppn ? sum * ppnMultiply : 0;
-			const [discVal] = aa(sum, discount_type!, discount);
+			const [discVal] = aa(sum, discount_type!, discount!);
 
 			ret.jumlah += sum;
 			ret.ppn += ppnValue;
@@ -477,7 +477,7 @@ function RenderPdf(props: RetPoInternal) {
 
 						const {qty, unit, oItem, discount, discount_type} = item;
 						const sum = oItem?.harga! * qty;
-						const [disc] = aa(sum, discount_type!, discount);
+						const [disc] = aa(sum, discount_type!, discount!);
 
 						return (
 							<tr key={item.id}>
