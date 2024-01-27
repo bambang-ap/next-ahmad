@@ -176,8 +176,8 @@ export default function InternalPo() {
 function RenderModal({
 	reset,
 	control,
-	resetField,
-}: FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
+}: // resetField,
+FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
 	const {type, form} = useWatch({control});
 
 	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
