@@ -5,6 +5,7 @@ import {useController, useWatch} from 'react-hook-form';
 import {
 	DiscountRenderer,
 	DiscountSelection,
+	getDiscValue,
 } from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {
@@ -16,6 +17,7 @@ import {
 import {
 	Button,
 	Input,
+	InputDummy,
 	Select,
 	selectMapper,
 	Table,
@@ -165,6 +167,33 @@ export default function PoModalChild({
 					data={poItem}
 					header={headerTable}
 					className="overflow-y-auto"
+					renderItemEach={({Cell, isLast}, _, items) => {
+						if (!isLast) return false;
+
+						const priceTotal = items.reduce((f, e) => {
+							const {totalPrice} = getDiscValue(
+								e.discount_type,
+								e.discount,
+								(e.harga ?? 0) * (e.qty3 ?? 0),
+							);
+
+							return f + totalPrice;
+						}, 0);
+
+						return (
+							<>
+								<Cell colSpan={7} />
+								<Cell>
+									<InputDummy
+										disabled
+										className="flex-1"
+										byPassValue={priceTotal}
+										label="Total Harga"
+									/>
+								</Cell>
+							</>
+						);
+					}}
 					renderItem={({item, Cell}, index) => {
 						const selectedItem = listItems.find(
 							e => e.id === item.master_item_id,

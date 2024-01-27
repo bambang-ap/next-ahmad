@@ -22,6 +22,25 @@ type RProps<T extends FieldValues> = FormProps<T, 'control' | 'setValue'> & {
 	length: number;
 };
 
+export function getDiscValue(
+	discType?: DiscType | null,
+	discVal?: number | null,
+	total?: number | null,
+	length = 1,
+) {
+	const disc = discVal ?? 0;
+	const tot = total ?? 0;
+
+	const discValue =
+		discType === DiscType.Percentage
+			? disc * tot * 0.01
+			: discType === DiscType.Value
+			? length
+			: 0;
+
+	return {discValue, totalPrice: tot - discValue};
+}
+
 export function DiscountRenderer<T extends FieldValues>({
 	type,
 	control,
@@ -41,12 +60,12 @@ export function DiscountRenderer<T extends FieldValues>({
 
 	const total = qtyy * pricee;
 
-	const discValue =
-		discType === DiscType.Percentage
-			? discVal * total * 0.01
-			: discType === DiscType.Value
-			? discVal / length
-			: 0;
+	const {discValue, totalPrice} = getDiscValue(
+		discType,
+		discVal,
+		total,
+		discVal / length,
+	);
 
 	useEffect(() => {
 		setValue(typeTargetName, typeSource);
@@ -63,8 +82,8 @@ export function DiscountRenderer<T extends FieldValues>({
 			<InputDummy
 				disabled
 				label="Total"
-				key={total - discValue}
-				byPassValue={total - discValue}
+				key={totalPrice}
+				byPassValue={totalPrice}
 			/>
 		</>
 	);
