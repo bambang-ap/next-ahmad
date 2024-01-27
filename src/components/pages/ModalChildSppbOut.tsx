@@ -1,6 +1,7 @@
 import {FormValue} from 'pages/app/customer/customer_sppb_out';
 import {useWatch} from 'react-hook-form';
 
+import {DiscountRenderer} from '@appComponent/DiscountSelection';
 import {SelectCustomer} from '@appComponent/PageTable/SelectCustomer';
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps} from '@appTypes/app.type';
@@ -19,10 +20,10 @@ import {isClosedParser, modalTypeParser, qtyMap, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
 
 export function SppbOutModalChild({
-	// unregister,
 	reset,
 	control,
-}: FormProps<FormValue, 'control' | 'reset' | 'unregister'>) {
+	setValue,
+}: FormProps<FormValue, 'control' | 'reset' | 'setValue'>) {
 	const dataForm = useWatch({control});
 	const {id_customer, type: modalType, po: listPO, invoice_no} = dataForm;
 
@@ -191,8 +192,9 @@ export function SppbOutModalChild({
 													'Kode Item',
 													'Nomor Lot',
 													'Nomor Lot IMI',
-													// 'Harga',
+													'Harga',
 													'Jumlah',
+													'Total',
 													isAddEdit && 'Exclude',
 												]}
 												renderItem={({Cell, item}) => {
@@ -257,15 +259,17 @@ export function SppbOutModalChild({
 															<Cell>{lot_no_imi}</Cell>
 
 															{isExcludedItem ? (
-																<Cell colSpan={1} />
+																<Cell colSpan={3} />
 															) : (
 																<>
-																	{/* <Cell>
+																	<Cell>
 																		<InputDummy
+																			disabled
 																			label="Harga"
+																			className="flex-1"
 																			byPassValue={dPoItem?.harga}
 																		/>
-																	</Cell> */}
+																	</Cell>
 																	<Cell className="flex gap-2">
 																		{qtyMap(({qtyKey, unitKey, num}) => {
 																			const unit = dPoItem?.[unitKey];
@@ -339,6 +343,24 @@ export function SppbOutModalChild({
 																				</div>
 																			);
 																		})}
+																	</Cell>
+																	<Cell className="gap-2">
+																		<DiscountRenderer
+																			control={control}
+																			setValue={setValue}
+																			qtyPrice={[
+																				`${fieldNameItem}.qty3`,
+																				dPoItem?.harga!,
+																			]}
+																			type={[
+																				dPoItem?.discount_type!,
+																				`${fieldNameItem}.discount_type`,
+																			]}
+																			discount={[
+																				dPoItem?.discount!,
+																				`${fieldNameItem}.discount`,
+																			]}
+																		/>
 																	</Cell>
 																</>
 															)}

@@ -106,7 +106,7 @@ export function SppbInModalChild({
 					'Harga',
 					'Nomor Lot',
 					'Jumlah',
-					'Total Harga',
+					'Total',
 					!isPreview && 'Action',
 				]}
 				data={selectedPo?.OrmCustomerPOItems ?? []}
@@ -201,7 +201,6 @@ export function SppbInModalChild({
 								<DiscountRenderer
 									control={control}
 									setValue={setValue}
-									length={selectedPo?.OrmCustomerPOItems.length}
 									qtyPrice={[`po_item.${index}.qty3`, item.harga!]}
 									type={[item.discount_type!, `po_item.${index}.discount_type`]}
 									discount={[item.discount!, `po_item.${index}.discount`]}

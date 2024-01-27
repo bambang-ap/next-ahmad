@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-unused-vars */
 import {FormEventHandler, useRef} from 'react';
 
 import {MutateOptions} from '@tanstack/react-query';
@@ -32,7 +31,7 @@ export type FormValue = {
 const widthSize = 1100;
 
 export default function SPPBOUT() {
-	const {control, reset, unregister, watch, clearErrors, handleSubmit} =
+	const {control, reset, setValue, watch, clearErrors, handleSubmit} =
 		useForm<FormValue>();
 
 	const dataForm = watch();
@@ -180,7 +179,7 @@ export default function SPPBOUT() {
 					context={{disabled: isPreview, hideButton: isPreview}}
 					className="flex flex-col gap-2 max-h-[600px] overflow-y-auto">
 					<SppbOutModalChild
-						unregister={unregister}
+						setValue={setValue}
 						reset={reset}
 						control={control}
 					/>

@@ -52,10 +52,12 @@ export function DiscountRenderer<T extends FieldValues>({
 	const [typeSource, typeTargetName] = type;
 	const [discSource, discTargetName] = discount;
 	const [qtyPath, price] = qtyPrice;
-	const [discType, discVal = 0, qty = 0] = useWatch({
-		control,
-		name: [typeTargetName, discTargetName, qtyPath],
-	});
+
+	const obj = useWatch({control});
+
+	const qty = objectPath.get<number>(obj, qtyPath, 0);
+	const discType = objectPath.get<DiscType | null>(obj, typeTargetName, null);
+	const discVal = objectPath.get<number>(obj, discTargetName, 0);
 
 	const total = qty * price;
 
@@ -65,6 +67,19 @@ export function DiscountRenderer<T extends FieldValues>({
 		total,
 		discVal / length,
 	);
+
+	prettyConsole({
+		price,
+		discType,
+		discVal,
+		qty,
+		qtyPath,
+		typeSource,
+		discSource,
+		typeTargetName,
+		discTargetName,
+		totalPrice,
+	});
 
 	useEffect(() => {
 		// @ts-ignore
