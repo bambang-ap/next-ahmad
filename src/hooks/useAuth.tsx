@@ -4,15 +4,19 @@ import {
 	getSession as getSessionNext,
 	useSession as useSessionNext,
 } from 'next-auth/react';
+import {useSetRecoilState} from 'recoil';
 
 import {TSession} from '@appTypes/app.type';
 import {PATHS} from '@enum';
 import {useRouter} from '@hooks';
+import {atomHeaderTitle} from '@recoil/atoms';
 import {isAdminRole} from '@utils';
 
 import {useMenu} from './useMenu';
 
 export const useAuth = () => {
+	const setTitle = useSetRecoilState(atomHeaderTitle);
+
 	const {all: allSub = []} = useMenu();
 	const {status} = useSession();
 	const {replace, asPath} = useRouter();
@@ -22,12 +26,20 @@ export const useAuth = () => {
 
 	useEffect(() => {
 		function targeting() {
-			if (asPath.includes('scanRemove')) return;
-			if (status === 'unauthenticated') replace(PATHS.signin);
+			if (status === 'unauthenticated') {
+				return replace(PATHS.signin);
+			}
+
 			if (status === 'authenticated') {
+				if (asPath === PATHS.app) {
+					setTitle('Landing Page');
+					return;
+				}
+
+				if (asPath.includes(PATHS.dev_scan_remove)) return;
 				if (!asPath.includes(PATHS.app)) replace(PATHS.app);
 				else if (asPath.includes('?')) return;
-				else if (index < 0) replace({pathname: firstPath});
+				else if (index < 0) replace({pathname: PATHS.app});
 			}
 		}
 

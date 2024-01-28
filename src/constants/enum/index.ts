@@ -8,8 +8,12 @@ export enum USER_ROLE {
 }
 
 export enum PATHS {
+	dev_scan_remove = '/app/scanRemove',
+
 	signin = '/auth/signin',
 	app = '/app',
+	app_dashboard = '/app/dashboard',
+	app_dashboard_transaksi = '/app/dashboard/transaksi',
 	app_customer = '/app/customer',
 	app_customer_customer_sppb_in = '/app/customer/customer_sppb_in',
 	app_customer_customer_sppb_out = '/app/customer/customer_sppb_out',
