@@ -14,6 +14,14 @@ import {indexAlias, TDateFilter} from '@appTypes/app.zod';
 import {formatAll, regPrefix} from '@constants';
 import {moment} from '@utils';
 
+export type L1<T extends {}> = Path<ObjectNonArray<T>>;
+
+type K = Primitive | WhereAttributeHashValue<any>;
+type L2<T extends {}> = `$${Path<ObjectNonArray<T>>}$`;
+type L<T extends {}> = L1<T> | L2<T>;
+type U<T extends {}> = ['or' | 'and', O<T>];
+type O<T extends {}> = Partial<Record<L<T>, K | [filter: true, value: K]>>;
+
 export function groupPages<T extends {}>(searchKey: L1<T>): any {
 	return searchKey;
 }
@@ -85,13 +93,6 @@ export function wherePagesV3<T extends {}>(
 			.filter(Boolean),
 	};
 }
-
-type K = Primitive | WhereAttributeHashValue<any>;
-type L1<T extends {}> = Path<ObjectNonArray<T>>;
-type L2<T extends {}> = `$${Path<ObjectNonArray<T>>}$`;
-type L<T extends {}> = L1<T> | L2<T>;
-type U<T extends {}> = ['or' | 'and', O<T>];
-type O<T extends {}> = Partial<Record<L<T>, K | [filter: true, value: K]>>;
 
 export function wherePagesV4<T extends {}>(
 	...searchKeys: (U<T> | O<T>)[]

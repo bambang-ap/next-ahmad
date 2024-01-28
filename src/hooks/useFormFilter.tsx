@@ -13,7 +13,8 @@ import {Input, Select} from '@components';
 import {formatDate} from '@constants';
 import {dateUtils, getMoments, moment} from '@utils';
 
-export type UseDateFilterProps<F extends FieldValues> = F & TDateFilter;
+export type UseDateFilterProps<F extends FieldValues = FieldValues> = F &
+	TDateFilter;
 
 export function useFormFilter<T extends TDateFilter & {}>(
 	options?: UseFormProps<T | TDateFilter> & {sameMonth?: boolean},
@@ -94,10 +95,10 @@ export function useFormFilter<T extends TDateFilter & {}>(
 				return {
 					...prev,
 					filterFrom: moment(filterFrom)
-						.set('year', parseInt(filterYear))
+						.set('year', parseInt(filterYear?.toString()))
 						.format(formatDate),
 					filterTo: moment(filterTo)
-						.set('year', parseInt(filterYear))
+						.set('year', parseInt(filterYear?.toString()))
 						.format(formatDate),
 				};
 			});
