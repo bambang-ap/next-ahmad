@@ -13,9 +13,11 @@ import {appRouter} from '..';
 import {defaultDashboardRouter} from './default';
 import machineDashboardRouters from './machine';
 import mainDashboardRouter from './main';
+import dashboardSalesRouters from './sales';
 
 const dashboardRouters = router({
 	...defaultDashboardRouter,
+	sales: dashboardSalesRouters(),
 	main: mainDashboardRouter(),
 	machine: machineDashboardRouters,
 	unitCountPoItem: procedure.query(({ctx}) => {

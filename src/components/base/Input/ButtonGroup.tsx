@@ -99,7 +99,7 @@ function GroupBtn({
 }: GroupBtnProps) {
 	return (
 		<>
-			<div>{btnLabel}</div>
+			{!!btnLabel && <div>{btnLabel}</div>}
 			<BtnGroup
 				orientation={vertical ? 'vertical' : 'horizontal'}
 				className={classNames({'flex-wrap': wrapped}, className)}
