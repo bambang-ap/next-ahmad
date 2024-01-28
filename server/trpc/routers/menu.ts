@@ -31,27 +31,25 @@ const menuRouters = router({
 		type RetType = typeof RetSub;
 
 		return checkCredentialV2(ctx, async session => {
-			const useRole = {[Op.substring]: session?.user?.role};
+			const userRole = {[Op.substring]: session?.user?.role};
 
 			const rows = await menu.model.findAll({
 				attributes: menu.attributes,
-				include: [{...menu, include: [menu]}],
+				include: [
+					{
+						...menu,
+						required: false,
+						where: {accepted_role: userRole},
+					},
+				],
 				order: orderPages<RetType>({
 					index: true,
 					'OrmMenus.index': true,
-					'OrmMenus.OrmMenus.index': true,
 				}),
-				where: wherePagesV4<RetType>(
-					{parent_id: {[Op.is]: null}, accepted_role: useRole},
-					[
-						'or',
-						{
-							accepted_role: useRole,
-							'$OrmMenus.accepted_role$': useRole,
-							'$OrmMenus.OrmMenus.accepted_role$': useRole,
-						},
-					],
-				),
+				where: wherePagesV4<RetType>({
+					parent_id: {[Op.is]: null},
+					accepted_role: userRole,
+				}),
 			});
 
 			return rows.map(e => e.toJSON() as unknown as RetType);

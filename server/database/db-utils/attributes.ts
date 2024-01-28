@@ -955,7 +955,7 @@ export function menuAttributes() {
 
 	type Ret = typeof menu.obj & {
 		OrmMenus?: (typeof menu.obj & {
-			OrmMenus?: typeof menu.obj[];
+			// OrmMenus?: typeof menu.obj[];
 		})[];
 	};
 
