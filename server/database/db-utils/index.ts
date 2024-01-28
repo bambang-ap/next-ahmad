@@ -1,6 +1,8 @@
 import {
+	col,
 	DECIMAL,
 	FindAttributeOptions,
+	fn,
 	literal,
 	Model,
 	ModelStatic,
@@ -10,13 +12,15 @@ import {
 } from 'sequelize';
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from 'zod';
 
-import {Context, TMasterItem} from '@appTypes/app.type';
+import {Context, TDecimal, TItemUnit, TMasterItem} from '@appTypes/app.type';
 import {
 	defaultExcludeColumn,
 	defaultExcludeColumns,
 	defaultOrderBy,
 } from '@constants';
 import {appRouter} from '@trpc/routers';
+
+import {L1, literalFieldType} from './where';
 
 export * from './attributes';
 export * from './getPoScore';
@@ -28,6 +32,60 @@ export const tableWithDiscount = {
 	discount_type: STRING,
 	discount: ormDecimalType('discount', 0),
 };
+
+export function selectorDashboardSales<T extends {}>(
+	{
+		unit,
+		qty,
+		harga,
+		type,
+		disc,
+	}: Record<'unit' | 'qty' | 'harga' | 'type' | 'disc', LiteralUnion<L1<T>>>,
+	debug = false,
+) {
+	const [unitCol, qtyCol, hargaCol, discCol, typeCol] = [
+		literalFieldType(unit),
+		literalFieldType(qty),
+		literalFieldType(harga),
+		literalFieldType(disc),
+		literalFieldType(type),
+	];
+
+	const litTotal = `COALESCE(${hargaCol}, 0) * COALESCE(${qtyCol}, 0)`;
+
+	const litDiscQuery = `
+case
+	when ${typeCol} is not null
+		then case
+			when ${typeCol} = '%' then COALESCE(${qtyCol}, 0) * COALESCE(${hargaCol}, 0) * 0.01
+			when ${typeCol} = '1' then COALESCE(${qtyCol}, 0) * COALESCE(${hargaCol}, 0) - COALESCE(${discCol}, 0)
+		else 0 end
+	else 0
+end`;
+
+	const litDisc = litDiscQuery.replace(/\s+/g, ' ').replace(/\n/g, '');
+
+	type Ret = {
+		unit: TItemUnit;
+		qty: TDecimal;
+		total: TDecimal;
+		disc_val: TDecimal;
+		total_after: TDecimal;
+	};
+
+	return {
+		Ret: {} as Ret,
+		group: [unitCol],
+		logging: debug,
+		attributes: [
+			[unit, 'unit'],
+			[fn('sum', col('qty3')), 'qty'],
+			[fn('sum', literal(litTotal)), 'total'],
+			[fn('sum', literal(litDisc)), 'disc_val'],
+			[fn('sum', literal(`${litTotal} - ${litDisc}`)), 'total_after'],
+		] as FindAttributeOptions,
+	};
+}
 
 export function attrParser<
 	T extends ZodRawShape,
