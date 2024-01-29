@@ -50,7 +50,7 @@ type FormType = {
 
 InternalPo.getLayout = getLayout;
 
-const paperWidth = 1550;
+const paperWidth = 1600;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
@@ -72,7 +72,6 @@ export default function InternalPo() {
 		exportUseQuery: () =>
 			trpc.export.internal.po.useQuery({ids: selectedIds}, {enabled}),
 		genPdfOptions: {
-			debug: true,
 			tagId: 'internal-po',
 			filename: 'internal-po',
 			splitPagePer: 2,
@@ -469,8 +468,8 @@ function RenderPdf(props: RetPoInternal) {
 									<BorderTd />
 									<BorderTd />
 									<BorderTd />
-									<BorderTd />
-									<BorderTd />
+									{/* <BorderTd />
+									<BorderTd /> */}
 								</tr>
 							);
 						}
@@ -487,8 +486,8 @@ function RenderPdf(props: RetPoInternal) {
 								<BorderTd>{unit}</BorderTd>
 								<BorderTd>{numberFormat(oItem?.harga!)}</BorderTd>
 								<BorderTd>{numberFormat(sum)}</BorderTd>
-								<BorderTd>{numberFormat(disc)}</BorderTd>
-								<BorderTd>{numberFormat(sum - disc)}</BorderTd>
+								{/* <BorderTd>{numberFormat(disc)}</BorderTd>
+								<BorderTd>{numberFormat(sum - disc)}</BorderTd> */}
 							</tr>
 						);
 					})}
@@ -496,10 +495,10 @@ function RenderPdf(props: RetPoInternal) {
 						<BorderTd colSpan={5}>Jumlah</BorderTd>
 						<BorderTd>{numberFormat(jumlah)}</BorderTd>
 					</tr>
-					<tr>
+					{/* <tr>
 						<BorderTd colSpan={5}>Diskon</BorderTd>
 						<BorderTd>{numberFormat(disc)}</BorderTd>
-					</tr>
+					</tr> */}
 					<tr>
 						<BorderTd colSpan={5}>PPn {ppnPercentage}%</BorderTd>
 						<BorderTd>{numberFormat(ppn)}</BorderTd>
