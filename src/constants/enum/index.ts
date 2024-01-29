@@ -224,6 +224,26 @@ export const MenuColorClass = {
 	Material: classNames('bg-teal-500'),
 };
 
+export const MenuName: Record<keyof typeof MenuColorClass, string> = {
+	PO: 'Po',
+	SJIn: 'SJ Masuk',
+	Kanban: 'Kanban',
+	Prod: 'Prod',
+	QC: 'QC',
+	FG: 'Finish Good',
+	SJOut: 'SJ Keluar',
+	[REJECT_REASON.TP]: 'Reject Test Piece',
+	[REJECT_REASON.RP]: 'Reject Re-Process',
+	[REJECT_REASON.SC]: 'Reject Scrap',
+	OtPO: 'Outstanding Po',
+	OtProd: 'Outstanding Produksi',
+	OtSjOut: 'Outstanding SJ Keluar',
+	Mesin: 'Mesin',
+	Vehicle: 'Kendaraan',
+	Cust: 'Customer',
+	Material: 'Material',
+};
+
 export const MenuColor = Object.entries(MenuColorClass).reduce(
 	(ret, [a, b]) => {
 		type J = typeof twColors;

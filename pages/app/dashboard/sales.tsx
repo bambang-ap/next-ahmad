@@ -11,9 +11,9 @@ export default function DashboardSales() {
 	} = useFormFilter<DashboardForm>({sameMonth: true});
 
 	return (
-		<>
-			{fromToComponent}
+		<div className="gap-2 flex flex-col">
+			<div className="flex gap-2">{fromToComponent}</div>
 			<DashboardNilai control={control} />
-		</>
+		</div>
 	);
 }

@@ -1,4 +1,4 @@
-import {tDateFilter} from '@appTypes/app.zod';
+import {tDateFilter, TDecimal, TItemUnit} from '@appTypes/app.zod';
 import {
 	attrParserV2,
 	dInItem,
@@ -9,6 +9,18 @@ import {
 } from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
+
+import {RouterOutput} from '..';
+
+export type Ret = {
+	unit: TItemUnit;
+	qty: TDecimal;
+	total: TDecimal;
+	disc_val: TDecimal;
+	total_after: TDecimal;
+};
+
+export type RetNilai = RouterOutput['dashboard']['sales']['nilai'];
 
 export default function dashboardSalesRouters() {
 	const qtyCol = 'qty3' as const;
@@ -43,6 +55,7 @@ export default function dashboardSalesRouters() {
 					},
 					wherePo,
 				);
+				const dataPo = await poItem.model.unscoped().findAll(optionsPo);
 
 				const whereIn = whereDateFilter<RetIn>('$dInItem.createdAt$', input);
 				const optionsIn = selectorDashboardSales<RetIn>(
@@ -68,7 +81,6 @@ export default function dashboardSalesRouters() {
 					whereOut,
 				);
 
-				const dataPo = await poItem.model.unscoped().findAll(optionsPo);
 				const dataIn = await inItem.model
 					.unscoped()
 					.findAll({...optionsIn, include: [{...poItem, attributes: []}]});
@@ -83,7 +95,13 @@ export default function dashboardSalesRouters() {
 					],
 				});
 
-				return {dataPo, dataIn, dataOut};
+				const [a, b, c] = [
+					dataPo as unknown as Ret[],
+					dataIn as unknown as Ret[],
+					dataOut as unknown as Ret[],
+				];
+
+				return {PO: a, SJIn: b, SJOut: c};
 			});
 		}),
 	});

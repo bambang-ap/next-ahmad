@@ -13,7 +13,7 @@ import {
 } from 'sequelize';
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from 'zod';
 
-import {Context, TDecimal, TItemUnit, TMasterItem} from '@appTypes/app.type';
+import {Context, TMasterItem} from '@appTypes/app.type';
 import {
 	defaultExcludeColumn,
 	defaultExcludeColumns,
@@ -67,16 +67,7 @@ end`;
 
 	const litDisc = litDiscQuery.replace(/\s+/g, ' ').replace(/\n/g, '');
 
-	type Ret = {
-		unit: TItemUnit;
-		qty: TDecimal;
-		total: TDecimal;
-		disc_val: TDecimal;
-		total_after: TDecimal;
-	};
-
 	return {
-		Ret: {} as Ret,
 		group: [unitCol],
 		logging: debug,
 		attributes: [
@@ -88,7 +79,7 @@ end`;
 		] as FindAttributeOptions,
 		where: {
 			...wherePagesV4({
-				[`$${unit}$`]: {[Op.not]: null},
+				[`$${unit}$`]: {[Op.eq]: 'kg'},
 				[`$${qty}$`]: {[Op.not]: 'NaN'},
 				[`$${harga}$`]: {[Op.not]: 'NaN'},
 			}),
