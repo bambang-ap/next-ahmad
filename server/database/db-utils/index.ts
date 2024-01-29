@@ -6,6 +6,7 @@ import {
 	literal,
 	Model,
 	ModelStatic,
+	Op,
 	Order,
 	Sequelize,
 	STRING,
@@ -20,7 +21,7 @@ import {
 } from '@constants';
 import {appRouter} from '@trpc/routers';
 
-import {L1, literalFieldType} from './where';
+import {L1, literalFieldType, wherePagesV4} from './where';
 
 export * from './attributes';
 export * from './getPoScore';
@@ -41,6 +42,7 @@ export function selectorDashboardSales<T extends {}>(
 		type,
 		disc,
 	}: Record<'unit' | 'qty' | 'harga' | 'type' | 'disc', LiteralUnion<L1<T>>>,
+	where: any,
 	debug = false,
 ) {
 	const [unitCol, qtyCol, hargaCol, discCol, typeCol] = [
@@ -78,12 +80,20 @@ end`;
 		group: [unitCol],
 		logging: debug,
 		attributes: [
-			[unit, 'unit'],
-			[fn('sum', col('qty3')), 'qty'],
+			[col(unit), 'unit'],
+			[fn('sum', literal(qtyCol)), 'qty'],
 			[fn('sum', literal(litTotal)), 'total'],
 			[fn('sum', literal(litDisc)), 'disc_val'],
 			[fn('sum', literal(`${litTotal} - ${litDisc}`)), 'total_after'],
 		] as FindAttributeOptions,
+		where: {
+			...wherePagesV4({
+				[`$${unit}$`]: {[Op.not]: null},
+				[`$${qty}$`]: {[Op.not]: 'NaN'},
+				[`$${harga}$`]: {[Op.not]: 'NaN'},
+			}),
+			...where,
+		},
 	};
 }
 
