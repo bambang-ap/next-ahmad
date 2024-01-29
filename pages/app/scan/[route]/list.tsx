@@ -143,7 +143,7 @@ function RenderScanList() {
 			? app_scan_finish_good
 			: undefined;
 
-		if (!pathname) {
+		if (!!pathname) {
 			StorageScan.get(route)?.set(prev => {
 				return prev.reduce(
 					(ret, cur) => {
