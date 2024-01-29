@@ -539,6 +539,7 @@ export const tScanNew = zId.extend({
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
 	id_qc: z.string().nullish(),
+	printed: z.number().optional().default(0),
 	...zCreatedUpdated.shape,
 });
 

@@ -41,6 +41,7 @@ export function RenderData(props: PropsWithChildren<Props>) {
 			<Cell>{renderIndex(data, data.nomor_kanban!)}</Cell>
 			<Cell>{data?.keterangan}</Cell>
 			<Cell>{theDate}</Cell>
+			<Cell>{item.printed}</Cell>
 			{!isSelect && (
 				<Cell className="flex gap-2">
 					{/* <Button icon="faPrint" onClick={() => printOne?.(item.id_kanban)} /> */}

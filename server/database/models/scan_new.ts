@@ -1,4 +1,4 @@
-import {BOOLEAN, JSONB, Model, Sequelize, STRING} from 'sequelize';
+import {BOOLEAN, JSONB, Model, NUMBER, Sequelize, STRING} from 'sequelize';
 
 import {TScanNew, TScanNewItem, TScanRejectItem} from '@appTypes/app.type';
 import {defaultExcludeColumns} from '@constants';
@@ -22,6 +22,7 @@ export function initdScan(sequelize: Sequelize) {
 			is_rejected: BOOLEAN,
 			id_po: STRING,
 			id_qc: STRING,
+			printed: NUMBER,
 		},
 		{
 			sequelize,

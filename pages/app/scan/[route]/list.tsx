@@ -77,6 +77,7 @@ function RenderScanList() {
 			'Nomor Kanban',
 			'Keterangan',
 			dateHeader,
+			'Dicetak',
 			!isSelect && 'Action',
 		],
 		genPdfOptions: isQC
