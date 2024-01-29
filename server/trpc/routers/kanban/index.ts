@@ -2,8 +2,8 @@ import {z} from 'zod';
 
 import {zId} from '@appTypes/app.zod';
 import {isProd, Success} from '@constants';
-import {OrmKanban, OrmKanbanItem, OrmScan} from '@database';
-import {checkCredentialV2} from '@server';
+import {ORM, OrmKanban, OrmKanbanItem, OrmScan} from '@database';
+import {checkCredentialV2, procedureError} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
 
@@ -18,16 +18,21 @@ const kanbanRouters = router({
 	printed: procedure.input(z.string().array()).mutation(({ctx, input}) => {
 		if (!isProd) return Success;
 		return checkCredentialV2(ctx, async () => {
-			const kanbans = await OrmKanban.findAll({where: {id: input}});
-			const promisedKanbans = kanbans.map(({dataValues}) =>
-				OrmKanban.update(
-					{printed: dataValues?.printed! + 1},
-					{where: {id: dataValues.id}},
-				),
-			);
-			await Promise.all(promisedKanbans);
+			const transaction = await ORM.transaction();
 
-			return Success;
+			try {
+				const kanbans = await OrmKanban.findAll({where: {id: input}});
+				const promisedKanbans = kanbans.map(({dataValues: {id, printed = 0}}) =>
+					OrmKanban.update({printed: printed + 1}, {transaction, where: {id}}),
+				);
+				await Promise.all(promisedKanbans);
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				procedureError(err);
+			}
 		});
 	}),
 	delete: procedure

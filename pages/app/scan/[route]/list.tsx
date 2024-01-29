@@ -83,7 +83,6 @@ function RenderScanList() {
 		genPdfOptions: isQC
 			? {
 					splitPagePer: 4,
-					debug: true,
 					orientation: 'l',
 					width: 2250,
 					tagId: `${route}-generated`,
@@ -102,6 +101,7 @@ function RenderScanList() {
 			  }
 			: undefined,
 		enabledExport: true,
+		afterPrint,
 		exportRenderItem: item => item,
 		exportUseQuery: () =>
 			trpc.export.scan.useQuery(
@@ -133,6 +133,19 @@ function RenderScanList() {
 	});
 
 	const {mutateAsync: mutate} = trpc.scan.remove.useMutation(mutateOpts);
+	const {mutateAsync: mutatePrint} =
+		trpc.print.scanPrinted.useMutation(mutateOpts);
+
+	function afterPrint() {
+		mutatePrint(
+			{ids: selectedIds},
+			{
+				onSettled() {
+					refetch();
+				},
+			},
+		);
+	}
 
 	function navigate(id: string) {
 		const {app_scan_finish_good, app_scan_qc, app_scan_produksi} = PATHS;

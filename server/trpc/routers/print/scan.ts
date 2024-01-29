@@ -1,13 +1,35 @@
 import {tRoute, zIds} from '@appTypes/app.zod';
+import {Success} from '@constants';
 import {
+	dScan,
 	literalFieldType,
+	ORM,
 	printScanAttributes,
 	whereNearestDate,
 } from '@database';
-import {checkCredentialV2} from '@server';
+import {checkCredentialV2, procedureError} from '@server';
 import {procedure} from '@trpc';
 
 export const printScanRouter = {
+	scanPrinted: procedure.input(zIds).mutation(({ctx, input}) => {
+		return checkCredentialV2(ctx, async () => {
+			const transaction = await ORM.transaction();
+
+			try {
+				const scans = await dScan.findAll({where: {id: input.ids}});
+				const promisedScans = scans.map(({dataValues: {id, printed = 0}}) =>
+					dScan.update({printed: printed + 1}, {where: {id}, transaction}),
+				);
+				await Promise.all(promisedScans);
+
+				await transaction.commit();
+				return Success;
+			} catch (err) {
+				await transaction.rollback();
+				procedureError(err);
+			}
+		});
+	}),
 	scan: procedure.input(zIds.extend(tRoute.shape)).query(({ctx, input}) => {
 		type RetType = typeof Ret;
 
@@ -55,15 +77,13 @@ export const printScanRouter = {
 				],
 			});
 
-			return data.map(e => {
-				const val = e.toJSON() as unknown as RetType;
+			const result = data.map(e => e.toJSON() as unknown as RetType);
 
-				// const dScanItems = val.dScanItems.filter(
-				// 	f => f.createdAt == val.createdAt,
-				// );
+			// await Promise.all(result.map(async (id)=>{
 
-				return {...val, dScanItems: val.dScanItems};
-			});
+			// }));
+
+			return result;
 		});
 	}),
 };

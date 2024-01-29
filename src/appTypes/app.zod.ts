@@ -271,7 +271,7 @@ export type TKanban = z.infer<typeof tKanban>;
 export const tKanban = zId.extend({
 	...zIndex.shape,
 	...zCreatedUpdated.shape,
-	printed: z.number().optional(),
+	printed: z.number().default(0).optional(),
 	id_po: z.string(),
 	nomor_kanban: z.string().nullish(),
 	id_sppb_in: z.string(),
@@ -539,7 +539,7 @@ export const tScanNew = zId.extend({
 	id_customer: z.string(),
 	is_rejected: z.boolean().optional(),
 	id_qc: z.string().nullish(),
-	printed: z.number().optional().default(0),
+	printed: z.number().default(0).optional(),
 	...zCreatedUpdated.shape,
 });
 

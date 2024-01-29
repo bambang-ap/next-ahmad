@@ -176,7 +176,11 @@ export default function Kanban() {
 	}
 
 	function updatePrint(): void {
-		mutatePrint(selectedIds);
+		mutatePrint(selectedIds, {
+			onSettled() {
+				refetch();
+			},
+		});
 	}
 
 	function navigateReject() {
