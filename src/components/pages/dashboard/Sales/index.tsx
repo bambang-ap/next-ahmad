@@ -19,21 +19,31 @@ export default function DashboardNilai({control}: FormProps<DashboardForm>) {
 		<>
 			<div className="flex">
 				{dataEntries.map(([key, values]) => {
+					const rClassName = 'child:flex-1 child:p-2';
 					return (
 						<div key={key} className="flex flex-col flex-1 bg-gray-200">
-							<div className="p-2 text-center font-bold text-white bg-gray-600">
-								{MenuName[key]}
+							<div
+								className={classNames(
+									'flex font-bold text-white bg-gray-600',
+									'child:text-center',
+									rClassName,
+								)}>
+								<div>{MenuName[key]}</div>
+								<div>{MenuName[key]} Diskon</div>
 							</div>
 							<div>
-								{values.map(({total_after, unit}) => {
+								{values.map(({total_after, disc_val, unit}) => {
 									return (
 										<div
 											key={unit}
 											className={classNames(
-												'flex flex-1 justify-end px-4 py-2 font-bold text-white',
+												'flex flex-1 justify-end font-bold text-white',
+												rClassName,
+												'text-right',
 												MenuColorClass[key],
 											)}>
-											{numberFormat(total_after, true)}
+											<div>{numberFormat(total_after, true)}</div>
+											<div>{numberFormat(disc_val, true)}</div>
 										</div>
 									);
 								})}

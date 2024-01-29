@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/no-unused-vars */
 import {Includeable, Op} from 'sequelize';
 import {z} from 'zod';
 
@@ -248,21 +249,23 @@ const customer_poRouters = router({
 				const transaction = await ORM.transaction();
 
 				try {
-					const {id, po_item, ...body} = input;
+					const {id, po_item, createdAt: _, ...body} = input;
 
 					await OrmCustomerPO.upsert({...body, id});
 
-					const poItemPromises = po_item?.map(({id: itemId, ...item}) => {
-						const isExist = po_item.find(e => e.id === itemId);
+					const poItemPromises = po_item?.map(
+						({id: itemId, createdAt: __, ...item}) => {
+							const isExist = po_item.find(e => e.id === itemId);
 
-						if (!isExist) OrmCustomerPOItem.destroy({where: {id: itemId}});
+							if (!isExist) OrmCustomerPOItem.destroy({where: {id: itemId}});
 
-						return OrmCustomerPOItem.upsert({
-							...item,
-							id: itemId || generateId('POI_'),
-							id_po: input.id,
-						});
-					});
+							return OrmCustomerPOItem.upsert({
+								...item,
+								id: itemId || generateId('POI_'),
+								id_po: input.id,
+							});
+						},
+					);
 
 					const existingPoItems = await OrmCustomerPOItem.findAll({
 						where: {id_po: id},

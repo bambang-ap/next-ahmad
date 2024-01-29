@@ -54,18 +54,19 @@ export function selectorDashboardSales<T extends {}>(
 	];
 
 	const litTotal = `COALESCE(${hargaCol}, 0) * COALESCE(${qtyCol}, 0)`;
+	const litDisc = `COALESCE(${discCol}, 0)`;
 
 	const litDiscQuery = `
 case
 	when ${typeCol} is not null
 		then case
-			when ${typeCol} = '%' then COALESCE(${qtyCol}, 0) * COALESCE(${hargaCol}, 0) * 0.01
-			when ${typeCol} = '1' then COALESCE(${qtyCol}, 0) * COALESCE(${hargaCol}, 0) - COALESCE(${discCol}, 0)
+			when ${typeCol} = '%' then ${litTotal} * ${litDisc} * 0.01
+			when ${typeCol} = '1' then ${litDisc}
 		else 0 end
 	else 0
-end`;
-
-	const litDisc = litDiscQuery.replace(/\s+/g, ' ').replace(/\n/g, '');
+end`
+		.replace(/\s+/g, ' ')
+		.replace(/\n/g, '');
 
 	return {
 		group: [unitCol],
@@ -74,8 +75,8 @@ end`;
 			[col(unit), 'unit'],
 			[fn('sum', literal(qtyCol)), 'qty'],
 			[fn('sum', literal(litTotal)), 'total'],
-			[fn('sum', literal(litDisc)), 'disc_val'],
-			[fn('sum', literal(`${litTotal} - ${litDisc}`)), 'total_after'],
+			[fn('sum', literal(litDiscQuery)), 'disc_val'],
+			[fn('sum', literal(`${litTotal} - ${litDiscQuery}`)), 'total_after'],
 		] as FindAttributeOptions,
 		where: {
 			...wherePagesV4({
