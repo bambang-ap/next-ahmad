@@ -2,7 +2,6 @@ import {Op, WhereOptions} from 'sequelize';
 
 import {TCustomerSPPBIn} from '@appTypes/app.type';
 import {ZCreatedQty} from '@appTypes/app.zod';
-import {SJ_IN_POINT} from '@constants';
 import {
 	attrParserV2,
 	dOutItem,
@@ -14,7 +13,7 @@ import {
 	wherePagesV3,
 } from '@database';
 import {REJECT_REASON} from '@enum';
-import {moment, qtyMap} from '@utils';
+import {calculatePoint, calculateScore, moment, qtyMap} from '@utils';
 
 export type RetSjGrade = Awaited<ReturnType<typeof getSJInGrade>>;
 export type RetCalculateScore = ReturnType<typeof calculateScore>;
@@ -141,27 +140,4 @@ export function poCustomerSjGrade(id_po: string, sjGrades: RetSjGrade) {
 	}
 
 	return grade;
-}
-
-export function calculatePoint(day: number) {
-	return SJ_IN_POINT[day] || 0;
-}
-
-export function calculateScore(day: number, point: number) {
-	if (day < 0) return 'N/A';
-
-	switch (true) {
-		case point <= 49:
-			return 'E';
-		case point <= 69:
-			return 'D';
-		case point <= 79:
-			return 'C';
-		case point <= 89:
-			return 'B';
-		case point <= 100:
-			return 'A';
-		default:
-			return 'E';
-	}
 }

@@ -33,8 +33,10 @@ import {
 	ppnMultiply,
 	qtyList,
 	regPrefix,
+	SJ_IN_POINT,
 } from '@constants';
-import {getPoScore, getPOSppbOutAttributes} from '@database';
+import type {getPoScore, getPOSppbOutAttributes} from '@database';
+import type {RetGrade} from '@db/getGrade';
 import {PO_SCORE_STATUS, REJECT_REASON, USER_ROLE} from '@enum';
 import {Fields, useLoader} from '@hooks';
 import {
@@ -293,6 +295,54 @@ export function itemInScanParser(
 	});
 
 	return {itemInScan, rejectedItems: rejItems};
+}
+
+export function averageGrade(
+	points: RetGrade = [],
+): Pick<RetGrade[number], 'day' | 'point' | 'score'> {
+	let start: string | undefined, end: string | undefined;
+
+	for (let i = 0; i < points.length; i++) {
+		const {startDate, endDate} = points[i]!;
+		if (i === 0) start = startDate;
+		if (i === points.length - 1) end = endDate;
+	}
+
+	return {
+		get day() {
+			if (!end) return -1;
+			return moment(end).diff(moment(start), 'day');
+		},
+		get point() {
+			return calculatePoint(this.day);
+		},
+		get score() {
+			return calculateScore(this.day, this.point);
+		},
+	};
+}
+
+export function calculatePoint(day: number) {
+	return SJ_IN_POINT[day] || 0;
+}
+
+export function calculateScore(day: number, point: number) {
+	if (day < 0) return 'N/A';
+
+	switch (true) {
+		case point <= 49:
+			return 'E';
+		case point <= 69:
+			return 'D';
+		case point <= 79:
+			return 'C';
+		case point <= 89:
+			return 'B';
+		case point <= 100:
+			return 'A';
+		default:
+			return 'E';
+	}
 }
 
 export function itemSppbOut(

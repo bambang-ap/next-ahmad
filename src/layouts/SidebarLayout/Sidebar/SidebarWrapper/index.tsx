@@ -50,6 +50,8 @@ function RenderSidebar() {
 								<Icon name="faUserCircle" className="text-3xl" />
 
 								<Text>{data?.user?.name}</Text>
+
+								{!isProd && <Text>{process.env.DEV_PGSQL_HOST}</Text>}
 							</div>
 						</div>
 					</Box>

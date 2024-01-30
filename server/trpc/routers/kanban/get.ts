@@ -5,6 +5,7 @@ import {
 	AppRouterCaller,
 	KanbanGetRow,
 	PagingResult,
+	RetGrade,
 	TCustomer,
 	THardness,
 	THardnessKategori,
@@ -52,6 +53,7 @@ import {
 	OrmUser,
 	wherePagesV2,
 } from '@database';
+import {getKanbanGrade} from '@db/getGrade';
 import {checkCredentialV2, pagingResult} from '@server';
 import {procedure} from '@trpc';
 import {appRouter} from '@trpc/routers';
@@ -149,6 +151,7 @@ export const kanbanGet = {
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
 		type UUU = TKanban & {
+			scores: RetGrade;
 			dIndex?: TIndex;
 			OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
 			OrmCustomerSPPBIn: TCustomerSPPBIn;
@@ -191,12 +194,13 @@ export const kanbanGet = {
 				],
 			});
 
-			return pagingResult(
-				count,
-				page,
-				limit,
-				rows.map(e => e.dataValues as UUU),
-			);
+			const pageData = rows.map(async e => {
+				const val = e.toJSON() as unknown as UUU;
+
+				return {...val, scores: await getKanbanGrade({id_kanban: val.id})};
+			});
+
+			return pagingResult(count, page, limit, await Promise.all(pageData));
 		});
 	}),
 	get: procedure

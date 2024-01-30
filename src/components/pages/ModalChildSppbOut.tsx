@@ -316,21 +316,28 @@ export function SppbOutModalChild({
 																				0,
 																			);
 
-																			const maxVal = (qty ?? 0) - curQty;
+																			const qtyRejectRP =
+																				rejectedItems?.[id_item]?.RP?.[qtyKey];
+																			const qtyRejectTP =
+																				rejectedItems?.[id_item]?.TP?.[qtyKey];
+																			const qtyRejectSC =
+																				rejectedItems?.[id_item]?.SC?.[qtyKey];
+
+																			const totalReject =
+																				(qtyRejectRP ?? 0) +
+																				(qtyRejectTP ?? 0) +
+																				(qtyRejectSC ?? 0);
+
+																			const maxVal =
+																				(qty ?? 0) - curQty - totalReject;
+
 																			const max =
-																				outItem?.[qtyKey] ?? 0 + maxVal ?? 0;
+																				(outItem?.[qtyKey] ?? 0) + maxVal;
 																			const jumlah = isAdd
 																				? max
 																				: (!!outItem?.[qtyKey]
 																						? outItem?.[qtyKey]
 																						: itemInScan?.[qtyKey] ?? max) ?? 0;
-
-																			const qtyRejectRP =
-																				rejectedItems?.[id_item]?.RP?.[qtyKey];
-																			const qtyRejectTP =
-																				rejectedItems?.[id_item]?.TP?.[qtyKey];
-																			// const qtyRejectSC =
-																			// 	rejectedItems.SC?.[qtyKey];
 
 																			return (
 																				<div className="flex-1">
@@ -366,14 +373,14 @@ export function SppbOutModalChild({
 																							{`${qtyRejectRP?.toString()} ${unit}`}
 																						</Wrapper>
 																					)}
-																					{/* {!!qtyRejectSC && (
-																				<Wrapper
-																					noColon
-																					sizes={["flex-1"]}
-																					title={REJECT_REASON_VIEW.SC}>
-																					{`${qtyRejectSC?.toString()} ${unit}`}
-																				</Wrapper>
-																			)} */}
+																					{!!qtyRejectSC && (
+																						<Wrapper
+																							noColon
+																							sizes={['flex-1']}
+																							title={REJECT_REASON_VIEW.SC}>
+																							{`${qtyRejectSC?.toString()} ${unit}`}
+																						</Wrapper>
+																					)}
 																				</div>
 																			);
 																		})}

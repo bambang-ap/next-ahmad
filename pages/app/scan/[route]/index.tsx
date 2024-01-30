@@ -508,7 +508,9 @@ function RenderNewScanPage(props: {keys: ScanIds} & TRoute) {
 																fieldName={fieldName}
 																disabled={isFG}
 																rightAcc={<Text>{poItem[unitKey]}</Text>}
-																defaultValue={rejectItem?.[qtyKey]!.toString()}
+																defaultValue={
+																	rejectItem?.[qtyKey]!.toString() ?? 0
+																}
 																rules={
 																	isFG
 																		? {}

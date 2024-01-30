@@ -4,6 +4,7 @@ import {FieldValues, UseFormReturn} from 'react-hook-form';
 import {qtyList} from '@constants';
 import type {menuAttributes} from '@database';
 import type {RouterOutput} from '@trpc/routers';
+export type {RetGrade} from '@db/getGrade';
 export type {
 	AppRouter,
 	AppRouterCaller,

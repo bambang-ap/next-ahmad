@@ -2,6 +2,7 @@ import {FormEventHandler, useRef} from 'react';
 
 import {useForm} from 'react-hook-form';
 
+import type {RetGrade} from '@appTypes/app.type';
 import {
 	ModalTypePreview,
 	ModalTypeSelect,
@@ -16,6 +17,7 @@ import {useRouter, useTableFilterComponent} from '@hooks';
 import {RenderKanbanCardV2} from '@pageComponent/KanbanCardV2';
 import {NewKanbanModalChild} from '@pageComponent/kanban_ModalChild/index-new';
 import {
+	averageGrade,
 	classNames,
 	dateUtils,
 	getIds,
@@ -105,6 +107,8 @@ export default function Kanban() {
 		},
 		useQuery: form => trpc.kanban.getPage.useQuery(form),
 		renderItem: ({Cell, CellSelect, item}, index) => {
+			const {score} = averageGrade(item.scores as RetGrade);
+
 			return (
 				<>
 					<CellSelect fieldName={`idKanbans.${item.id}`} />
@@ -119,6 +123,7 @@ export default function Kanban() {
 						<RenderNameMesin list_mesin={item.list_mesin} />
 					</Cell>
 					<Cell>{item.keterangan}</Cell>
+					<Cell>{score}</Cell>
 					<Cell className="flex justify-center">{item.printed}</Cell>
 					{!isSelect && (
 						<Cell className="flex gap-x-2">
