@@ -655,7 +655,9 @@ CREATE TABLE public.po (
     tgl_po character varying(50),
     due_date character varying(50),
     "createdAt" timestamp without time zone,
-    "updatedAt" timestamp without time zone
+    "updatedAt" timestamp without time zone,
+    discount_type character(1),
+    discount numeric
 );
 
 
@@ -704,7 +706,9 @@ CREATE TABLE public.po_itemm (
     "updatedAt" timestamp without time zone,
     id_po character varying(47),
     harga numeric,
-    master_item_id character varying(47)
+    master_item_id character varying(47),
+    discount_type character(1),
+    discount numeric
 );
 
 
@@ -768,7 +772,8 @@ CREATE TABLE public.scan_new (
     "updatedAt" timestamp without time zone,
     is_rejected boolean DEFAULT false,
     id_po character varying(47),
-    id_qc character varying(47)
+    id_qc character varying(47),
+    printed integer DEFAULT 0
 );
 
 
