@@ -38,8 +38,8 @@ const exportKanbanRouters = {
 					],
 				});
 
-				const promisedData = data.map<Promise<JJJ>>(async ({toJSON}) => {
-					const val = toJSON() as unknown as typeof Ret;
+				const promisedData = data.map<Promise<JJJ>>(async row => {
+					const val = row.toJSON() as unknown as typeof Ret;
 
 					const item = val.OrmKanbanItems?.[0];
 					const {instruksi, kategori_mesinn, kode_item, name} =
