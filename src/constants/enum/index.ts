@@ -225,10 +225,10 @@ export const MenuColorClass = {
 };
 
 export const MenuName: Record<keyof typeof MenuColorClass, string> = {
-	PO: 'Po',
+	PO: 'PO',
 	SJIn: 'SJ Masuk',
 	Kanban: 'Kanban',
-	Prod: 'Prod',
+	Prod: 'Produksi',
 	QC: 'QC',
 	FG: 'Finish Good',
 	SJOut: 'SJ Keluar',

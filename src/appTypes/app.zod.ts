@@ -666,6 +666,12 @@ export const tDashboardView = z
 	.or(z.literal('machine_chart'))
 	.or(z.literal('machine_daily'));
 
+export type TDashboardSalesView = z.infer<typeof tDashboardSalesView>;
+export const tDashboardSalesView = z
+	.literal('nilai')
+	.or(z.literal('daily'))
+	.or(z.literal('monthly'));
+
 export type TDashboardInternal = z.infer<typeof tDashboardInternal>;
 export const tDashboardInternal = z
 	.literal('transaksi')

@@ -105,7 +105,7 @@ function GroupBtn({
 				className={classNames({'flex-wrap': wrapped}, className)}
 				variant={wrapped ? 'outlined' : 'contained'}>
 				{data.map(btn => {
-					const label = btn.label ?? btn.value;
+					const label = (btn.label ?? btn.value)?.toString()?.ucwords();
 					// const selectedValue = btn.value === value;
 					// @ts-ignore
 					const selectedValue = value?.includes(btn.value);

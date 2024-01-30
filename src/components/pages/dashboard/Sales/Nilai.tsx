@@ -1,12 +1,17 @@
 import {useWatch} from 'react-hook-form';
 
 import {FormProps} from '@appTypes/app.type';
+import {TDashboardSalesView} from '@appTypes/app.zod';
 import {MenuColorClass, MenuName} from '@enum';
 import {UseDateFilterProps} from '@hooks';
 import {numberFormat} from '@utils';
 import {trpc} from '@utils/trpc';
 
-export type DashboardForm = UseDateFilterProps<{}>;
+export type DashboardForm = UseDateFilterProps<{
+	chartType: 'bar' | 'line';
+	view: TDashboardSalesView;
+	withDiscount: boolean;
+}>;
 
 export default function DashboardNilai({control}: FormProps<DashboardForm>) {
 	const input = useWatch({control});
