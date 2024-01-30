@@ -50,15 +50,9 @@ export function RenderKanbanCardV2(props: AProps) {
 
 	const {lot_no} = itemSppbIn ?? {};
 	const [class1, class2, class3] = [
-		classNames({
-			['text-white']: !qty1 || !unit1,
-		}),
-		classNames({
-			['text-white']: !qty2 || !unit2,
-		}),
-		classNames({
-			['text-white']: !qty3 || !unit3,
-		}),
+		classNames('text-2xl', {['text-white']: !qty1 || !unit1}),
+		classNames('text-2xl', {['text-white']: !qty2 || !unit2}),
+		classNames('text-2xl', {['text-white']: !qty3 || !unit3}),
 	] as const;
 
 	type KK = Record<'nomorMesin' | 'process' | 'material', string[]> &
@@ -218,8 +212,12 @@ export function RenderKanbanCardV2(props: AProps) {
 					<BorderTd rowSpan={2} className="text-base">
 						Qty / Jumlah
 					</BorderTd>
-					<BorderTd className={class1}>{`Qty1 : ${qty1} ${unit1}`}</BorderTd>
-					<BorderTd className={class2}>{`Qty2 : ${qty2} ${unit2}`}</BorderTd>
+					<BorderTd
+						rootClassName="max-h-20"
+						className={class1}>{`${qty1} ${unit1}`}</BorderTd>
+					<BorderTd
+						rootClassName="max-h-20"
+						className={class2}>{`${qty2} ${unit2}`}</BorderTd>
 					<BorderTd colSpan={2} rowSpan={2} rootClassName="!p-0">
 						<TableBorder
 							unit="px"
@@ -258,8 +256,12 @@ export function RenderKanbanCardV2(props: AProps) {
 					</BorderTd>
 				</tr>
 				<tr>
-					<BorderTd className={class3}>{`QTy3 : ${qty3} ${unit3}`}</BorderTd>
-					<BorderTd className="text-white">.</BorderTd>
+					<BorderTd
+						rootClassName="max-h-20"
+						className={class3}>{`${qty3} ${unit3}`}</BorderTd>
+					<BorderTd rootClassName="max-h-20" className="text-white">
+						.
+					</BorderTd>
 					{/* <BorderTd>Harga : {harga}</BorderTd> */}
 				</tr>
 			</table>
