@@ -76,7 +76,7 @@ export default function POCustomer() {
 					<Cell>{dateUtils.date(tgl_po)}</Cell>
 					<Cell>{dateUtils.date(due_date)}</Cell>
 					<Cell>{status}</Cell>
-					<Cell>{grade}</Cell>
+					<Cell>{grade.score}</Cell>
 					<Cell className="flex gap-x-2">
 						<Button onClick={() => showModal('preview', item)}>Preview</Button>
 						<Button onClick={() => showModal('edit', item)}>Edit</Button>

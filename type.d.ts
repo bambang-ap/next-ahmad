@@ -2,6 +2,9 @@ type TNextApi = (req: NextApiRequest, res: NextApiResponse) => void;
 type KeyOf<T extends {}> = (keyof T)[];
 type OfKey<T extends string[]> = T[number];
 
+type AtLeast<T, K extends keyof T> = Partial<T> & Pick<T, K>;
+type PartialOne<T, K extends keyof T> = AtLeast<T, Exclude<keyof T, K>>;
+
 // declare module 'next' {
 // 	import type {ReactElement, ReactNode} from 'react';
 

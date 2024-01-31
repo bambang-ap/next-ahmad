@@ -509,18 +509,22 @@ export function getScanAttributes(route: TScanTarget) {
 }
 
 export function poGetAttributes() {
-	const A = attrParser(tCustomerPO);
-	const B = attrParser(tCustomer, ['name']);
-	const C = attrParser(tPOItem);
-	const D = attrParser(tMasterItem);
+	const po = attrParserV2(OrmCustomerPO);
+	const cust = attrParserV2(OrmCustomer, ['name']);
+	const poItem = attrParserV2(OrmCustomerPOItem);
+	const item = attrParserV2(OrmMasterItem);
+	const inItem = attrParserV2(OrmPOItemSppbIn, ['id', 'createdAt']);
 
-	type Ret = typeof A.obj & {
+	type Ret = typeof po.obj & {
 		status: PO_STATUS;
-		OrmCustomer: typeof B.obj;
-		OrmCustomerPOItems: (typeof C.obj & {OrmMasterItem: typeof D.obj})[];
+		OrmCustomer: typeof cust.obj;
+		OrmCustomerPOItems: (typeof poItem.obj & {
+			OrmMasterItem: typeof item.obj;
+			OrmPOItemSppbIns: typeof inItem.obj[];
+		})[];
 	};
 
-	return {A, B, C, D, Ret: {} as Ret};
+	return {po, cust, poItem, item, inItem, Ret: {} as Ret};
 }
 
 export function sppbOutGetAttributes() {

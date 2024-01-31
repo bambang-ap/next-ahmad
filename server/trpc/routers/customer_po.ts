@@ -26,7 +26,7 @@ import {
 	poGetAttributes,
 	wherePagesV2,
 } from '@database';
-import {getSJInGrade, poCustomerSjGrade} from '@db/getSjGrade';
+import {getKanbanGrade} from '@db/getGrade';
 import {PO_STATUS} from '@enum';
 import {
 	checkCredentialV2,
@@ -35,6 +35,7 @@ import {
 	procedureError,
 } from '@server';
 import {procedure, router} from '@trpc';
+import {averageGrade} from '@utils';
 
 import {appRouter} from '.';
 
@@ -77,37 +78,49 @@ const customer_poRouters = router({
 	getV2: procedure.input(tableFormValue).query(({ctx, input}) => {
 		const {limit, search, page} = input;
 
-		const {A, B, C, D} = poGetAttributes();
+		const {po, cust, poItem, item, inItem} = poGetAttributes();
 
 		return checkCredentialV2(ctx, async () => {
-			const {count, rows} = await OrmCustomerPO.findAndCountAll({
+			const {count, rows} = await po.model.findAndCountAll({
 				limit,
-				attributes: A.keys,
+				attributes: po.attributes,
 				offset: (page - 1) * limit,
 				order: orderPages<PoGetV2>({createdAt: false}),
+				include: [
+					cust,
+					{
+						...poItem,
+						separate: true,
+						include: [item, {...inItem, separate: true}],
+					},
+				],
 				where: wherePagesV2<PoGetV2>(
 					['nomor_po', '$OrmCustomer.name$'],
 					search,
 				),
-				include: [
-					{model: OrmCustomer, attributes: B.keys},
-					{
-						separate: true,
-						attributes: C.keys,
-						model: OrmCustomerPOItem,
-						include: [{model: OrmMasterItem, attributes: D.keys}],
-					},
-				],
-			});
-
-			const sjGrades = await getSJInGrade({
-				id_po: rows.map(e => e.dataValues.id),
 			});
 
 			const promisedRows = rows.map(async e => {
-				const val = e.dataValues as PoGetV2;
+				const val = e.toJSON() as unknown as PoGetV2;
 				const status = await getCurrentPOStatus(val.id);
-				const grade = poCustomerSjGrade(val.id, sjGrades);
+
+				const grades = await Promise.all(
+					val.OrmCustomerPOItems.map(async itemPo => {
+						const scores = await getKanbanGrade({
+							id_item: itemPo.OrmPOItemSppbIns.map(e => e.id),
+						});
+
+						return averageGrade(
+							scores,
+							itemPo.OrmPOItemSppbIns?.[0]?.createdAt,
+						);
+					}),
+				);
+
+				const grade = averageGrade(
+					grades,
+					val.OrmCustomerPOItems?.[0]?.createdAt,
+				);
 
 				return {...val, status, grade};
 			});
