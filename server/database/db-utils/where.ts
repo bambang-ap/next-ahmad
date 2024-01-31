@@ -147,8 +147,9 @@ export function indexWhereAttributes<T extends {}>(
 }
 
 export function whereNearestDate(a: string, b: string) {
+	// to Add minutes: mi
 	return literal(
-		`TO_CHAR(${a}, 'yyyy/mm/dd hh:mm') = TO_CHAR(${b}, 'yyyy/mm/dd hh:mm')`,
+		`TO_CHAR(${a}, 'yyyy/mm/dd-hh') = TO_CHAR(${b}, 'yyyy/mm/dd-hh')`,
 	);
 }
 

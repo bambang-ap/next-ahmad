@@ -73,7 +73,7 @@ export function updateScan() {
 				throw new TRPCError({
 					code: 'FORBIDDEN',
 					message:
-						'Tidak bisa menghapus data, silahkan cek dan hapus data pada step selanjutnya.',
+						'Tidak bisa mengubah data, silahkan cek dan hapus data pada step selanjutnya.',
 				});
 		}
 	}
