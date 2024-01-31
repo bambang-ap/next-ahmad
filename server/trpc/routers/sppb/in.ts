@@ -221,7 +221,7 @@ const sppbInRouters = router({
 				const rows = rr.map(async e => {
 					const val = e.toJSON() as unknown as SppbInRows;
 
-					const scores = await getKanbanGrade({
+					const {scores} = await getKanbanGrade({
 						id_item: val.dInItems.map(({id}) => id),
 					});
 

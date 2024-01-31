@@ -106,7 +106,7 @@ const customer_poRouters = router({
 
 				const grades = await Promise.all(
 					val.OrmCustomerPOItems.map(async itemPo => {
-						const scores = await getKanbanGrade({
+						const {scores} = await getKanbanGrade({
 							id_item: itemPo.OrmPOItemSppbIns.map(e => e.id),
 						});
 
