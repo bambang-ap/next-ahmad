@@ -124,7 +124,7 @@ export default function SPPBIN() {
 							<Cell>{index + 1}</Cell>
 							<Cell>{dateUtils.date(item.tgl)}</Cell>
 							<Cell>{item.dPo?.nomor_po}</Cell>
-							<Cell>{item.dPo?.dCust.name}</Cell>
+							<Cell>{item.dPo?.dCust?.name}</Cell>
 							<Cell>{item.nomor_surat}</Cell>
 							<Cell>{item.grade?.score}</Cell>
 							{!isSelect && (

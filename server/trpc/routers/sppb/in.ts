@@ -200,6 +200,7 @@ const sppbInRouters = router({
 
 			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
 				const {count, rows: rr} = await sjIn.model.findAndCountAll({
+					limit,
 					attributes: sjIn.attributes,
 					offset: (page - 1) * limit,
 					include: [

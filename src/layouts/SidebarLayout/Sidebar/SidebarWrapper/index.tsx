@@ -45,11 +45,15 @@ function RenderSidebar() {
 				<Box mt={3}>
 					<Box mx={2}>
 						<div className="flex rounded-lg flex-col gap-2 p-4">
-							<Text>{IMIConst.title}</Text>
+							<div
+								className="text-2xl font-bold cursor-pointer"
+								onClick={() => push(PATHS.app)}>
+								{IMIConst.title}
+							</div>
 							<div className="flex items-center gap-2">
-								<Icon name="faUserCircle" className="text-3xl" />
+								<Icon name="faUserCircle" className="text-4xl" />
 
-								<Text>{data?.user?.name}</Text>
+								<Text className="text-xl">{data?.user?.name}</Text>
 
 								{!isProd && <Text>{process.env.DEV_PGSQL_HOST}</Text>}
 							</div>
