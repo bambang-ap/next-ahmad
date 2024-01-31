@@ -297,7 +297,8 @@ export function itemInScanParser(
 	return {itemInScan, rejectedItems: rejItems};
 }
 
-type AvgGrade = PartialOne<RetGrade[number], 'id'>[];
+type AvgGrade = PartialOne<RetGrade['scores'][number], 'id'>[];
+
 export function averageGrade(
 	points: AvgGrade = [],
 	startDate?: string,

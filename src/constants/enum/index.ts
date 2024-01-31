@@ -93,11 +93,11 @@ export enum PO_STATUS {
 }
 
 export enum KANBAN_STATUS {
-	A = 'Open',
-	B = 'Produksi',
-	C = 'QC',
-	D = 'Finish Good',
-	E = 'Surat Jalan Keluar',
+	'Open',
+	'Produksi',
+	'QC',
+	'Finish Good',
+	'Surat Jalan Keluar',
 }
 
 export enum INTERNAL_PO_STATUS {

@@ -11,7 +11,7 @@ import {
 } from '@appTypes/app.zod';
 import {Button, Form, Modal, ModalRef} from '@components';
 import {cuttingLineClassName, isProd, nonRequiredRefetch} from '@constants';
-import {PATHS} from '@enum';
+import {KANBAN_STATUS, PATHS} from '@enum';
 import {getLayout} from '@hoc';
 import {useRouter, useTableFilterComponent} from '@hooks';
 import {RenderKanbanCardV2} from '@pageComponent/KanbanCardV2';
@@ -67,6 +67,8 @@ export default function Kanban() {
 			'Nomor Surat',
 			'Customer',
 			'Mesin',
+			'Grade',
+			'Status',
 			'Keterangan',
 			'Di cetak',
 			!isSelect && 'Action',
@@ -107,7 +109,7 @@ export default function Kanban() {
 		},
 		useQuery: form => trpc.kanban.getPage.useQuery(form),
 		renderItem: ({Cell, CellSelect, item}, index) => {
-			const {score} = averageGrade(item.scores as RetGrade);
+			const {score} = averageGrade(item.scores as RetGrade['scores']);
 
 			return (
 				<>
@@ -122,8 +124,9 @@ export default function Kanban() {
 					<Cell>
 						<RenderNameMesin list_mesin={item.list_mesin} />
 					</Cell>
-					<Cell>{item.keterangan}</Cell>
 					<Cell>{score}</Cell>
+					<Cell>{KANBAN_STATUS[item.status?.[0]!]}</Cell>
+					<Cell>{item.keterangan}</Cell>
 					<Cell className="flex justify-center">{item.printed}</Cell>
 					{!isSelect && (
 						<Cell className="flex gap-x-2">

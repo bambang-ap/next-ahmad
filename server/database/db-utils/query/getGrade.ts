@@ -1,8 +1,16 @@
 import {WhereOptions} from 'sequelize';
 
-import {TKanbanItem} from '@appTypes/app.type';
+import {TKanbanItem, TScanTarget} from '@appTypes/app.type';
 import {ZCreatedQty} from '@appTypes/app.zod';
-import {dInItem, dKnbItem, dOutItem} from '@database';
+import {
+	dInItem,
+	dKanban,
+	dKnbItem,
+	dOutItem,
+	dRejItem,
+	dScan,
+	dScanItem,
+} from '@database';
 import {moment, qtyMap} from '@utils';
 
 import {attrParserV2, orderPages} from '..';
@@ -17,23 +25,23 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 	const inItem = attrParserV2(dInItem, qtys);
 	const knbItem = attrParserV2(dKnbItem, [...qtys, 'id']);
 	const outItem = attrParserV2(dOutItem, qtys);
-	// const knb = attrParserV2(dKanban, ['id']);
-	// const scn = attrParserV2(dScan, ['status']);
-	// const scnItem = attrParserV2(dScanItem, qtys);
-	// const rejItem = attrParserV2(dRejItem, [...qtys, 'reason']);
+	const knb = attrParserV2(dKanban, ['id']);
+	const scn = attrParserV2(dScan, ['status']);
+	const scnItem = attrParserV2(dScanItem, qtys);
+	const rejItem = attrParserV2(dRejItem, [...qtys, 'reason']);
 
 	type Ret = typeof knbItem.obj & {
 		dInItem: typeof inItem.obj & {
 			dOutItems: typeof outItem.obj[];
 			dKnbItems: typeof knbItem.obj[];
 		};
-		// dKanban: typeof knb.obj & {
-		// 	dScans: (typeof scn.obj & {
-		// 		dScanItems: (typeof scnItem.obj & {
-		// 			dRejItems: typeof rejItem.obj[];
-		// 		})[];
-		// 	})[];
-		// };
+		dKanban: typeof knb.obj & {
+			dScans: (typeof scn.obj & {
+				dScanItems: (typeof scnItem.obj & {
+					dRejItems: typeof rejItem.obj[];
+				})[];
+			})[];
+		};
 	};
 
 	const data = await knbItem.model.findAll({
@@ -42,10 +50,10 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 		order: orderPages<Ret>({'dInItem.dOutItems.createdAt': false}),
 		include: [
 			{...inItem, include: [outItem, knbItem]},
-			// {
-			// 	...knb,
-			// 	include: [{...scn, include: [{...scnItem, include: [rejItem]}]}],
-			// },
+			{
+				...knb,
+				include: [{...scn, include: [{...scnItem, include: [rejItem]}]}],
+			},
 		],
 	});
 
@@ -92,5 +100,44 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 		return retValue;
 	});
 
-	return mapScore;
+	const mapStatus = data.map((e, i) => {
+		const val = e.toJSON() as unknown as Ret;
+		const {dScans: scans} = val.dKanban;
+
+		const outDone = mapScore[i]!.day >= 0;
+
+		if (outDone) return 4;
+
+		if (scans.length > 0) {
+			const order: TScanTarget[] = ['finish_good', 'qc', 'produksi'];
+
+			const sortedScans = scans.sortOrder(order, v => v.status);
+
+			for (const {status, dScanItems} of sortedScans) {
+				const compare = qtyMap(({qtyKey}) => {
+					const totalScan = dScanItems.reduce((t, c) => {
+						return t + (c[qtyKey] ?? 0);
+					}, 0);
+
+					return totalScan === val[qtyKey];
+				});
+
+				if (compare.includes(false)) continue;
+
+				if (status === 'finish_good') return 3;
+				if (status === 'qc') return 2;
+				if (status === 'produksi') return 1;
+			}
+		}
+
+		return 0;
+	});
+
+	return {
+		scores: mapScore,
+		/**
+		 * @status based on KANBAN_STATUS index
+		 */
+		status: mapStatus,
+	};
 }

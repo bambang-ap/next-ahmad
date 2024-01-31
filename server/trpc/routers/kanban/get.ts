@@ -150,12 +150,12 @@ export const kanbanGet = {
 		});
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
-		type UUU = TKanban & {
-			scores: RetGrade;
+		type UUU = {
 			dIndex?: TIndex;
 			OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
 			OrmCustomerSPPBIn: TCustomerSPPBIn;
-		};
+		} & TKanban &
+			RetGrade;
 		return checkCredentialV2(ctx, async (): Promise<PagingResult<UUU>> => {
 			const {limit, page, search} = input;
 
@@ -178,9 +178,9 @@ export const kanbanGet = {
 			);
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
-				limit,
+				limit: 1,
 				order: orderPages<UUU>({createdAt: false, index_number: false}),
-				offset: (page - 1) * limit,
+				offset: 2, //(page - 1) * limit,
 				where: search ? {[Op.or]: [where1, indexAttr?.where, where2]} : {},
 				attributes: {include: [indexAttr.attributes]},
 				include: [
@@ -197,7 +197,9 @@ export const kanbanGet = {
 			const pageData = rows.map(async e => {
 				const val = e.toJSON() as unknown as UUU;
 
-				return {...val, scores: await getKanbanGrade({id_kanban: val.id})};
+				const scoresStatus = await getKanbanGrade({id_kanban: val.id});
+
+				return {...val, ...scoresStatus};
 			});
 
 			return pagingResult(count, page, limit, await Promise.all(pageData));
