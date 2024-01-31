@@ -34,7 +34,7 @@ export default function DashboardNilai({control}: FormProps<DashboardForm>) {
 									rClassName,
 								)}>
 								<div>{MenuName[key]}</div>
-								<div>{MenuName[key]} Diskon</div>
+								{input.withDiscount && <div>{MenuName[key]} Diskon</div>}
 							</div>
 							<div>
 								{values.map(({total_after, disc_val, unit}) => {
@@ -48,7 +48,9 @@ export default function DashboardNilai({control}: FormProps<DashboardForm>) {
 												MenuColorClass[key],
 											)}>
 											<div>{numberFormat(total_after, true)}</div>
-											<div>{numberFormat(disc_val, true)}</div>
+											{input.withDiscount && (
+												<div>{numberFormat(disc_val, true)}</div>
+											)}
 										</div>
 									);
 								})}

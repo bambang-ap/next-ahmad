@@ -17,7 +17,7 @@ export default function DashboardSales() {
 		form: {control, watch},
 	} = useFormFilter<DashboardForm>({
 		sameMonth: true,
-		defaultValues: {chartType: 'bar', view: 'nilai', withDiscount: true},
+		defaultValues: {chartType: 'bar', view: 'nilai', withDiscount: false},
 	});
 
 	const {view} = watch();
@@ -47,20 +47,18 @@ export default function DashboardSales() {
 				<ButtonGroup control={control} fieldName="view" data={btnData} />
 				<div className="flex w-1/3 gap-2">
 					{isDaily || isMonthly ? (
-						<>
-							<MonthYear hideMonth={isDaily} />
-							<Input
-								type="checkbox"
-								control={control}
-								fieldName="withDiscount"
-								renderChildren={v => (
-									<Button color={v ? 'primary' : undefined} icon="faTags" />
-								)}
-							/>
-						</>
+						<MonthYear hideMonth={isDaily} />
 					) : (
 						fromToComponent
 					)}
+					<Input
+						type="checkbox"
+						control={control}
+						fieldName="withDiscount"
+						renderChildren={v => (
+							<Button color={v ? 'primary' : undefined} icon="faTags" />
+						)}
+					/>
 				</div>
 			</div>
 
