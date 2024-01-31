@@ -299,19 +299,22 @@ export function itemInScanParser(
 
 export function averageGrade(
 	points: RetGrade = [],
-): Pick<RetGrade[number], 'day' | 'point' | 'score'> {
-	let start: string | undefined, end: string | undefined;
+	startDate?: string,
+): Omit<RetGrade[number], 'id'> {
+	let endDate: string | undefined;
 
 	for (let i = 0; i < points.length; i++) {
-		const {startDate, endDate} = points[i]!;
-		if (i === 0) start = startDate;
-		if (i === points.length - 1) end = endDate;
+		const {startDate: start, endDate: end} = points[i]!;
+		if (i === 0 && startDate === undefined) startDate = start;
+		if (i === points.length - 1) endDate = end;
 	}
 
 	return {
+		startDate,
+		endDate,
 		get day() {
-			if (!end) return -1;
-			return moment(end).diff(moment(start), 'day');
+			if (!endDate) return -1;
+			return moment(endDate).diff(moment(startDate), 'day');
 		},
 		get point() {
 			return calculatePoint(this.day);

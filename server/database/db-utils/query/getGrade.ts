@@ -1,3 +1,5 @@
+import {WhereOptions} from 'sequelize';
+
 import {TKanbanItem} from '@appTypes/app.type';
 import {ZCreatedQty} from '@appTypes/app.zod';
 import {dInItem, dKnbItem, dOutItem} from '@database';
@@ -9,9 +11,7 @@ import {calculatePoint, calculateScore} from '@utils';
 
 export type RetGrade = Awaited<ReturnType<typeof getKanbanGrade>>;
 
-export async function getKanbanGrade({
-	id_kanban,
-}: Pick<TKanbanItem, 'id_kanban'>) {
+export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 	const qtys: (keyof ZCreatedQty)[] = ['createdAt', 'qty1', 'qty2', 'qty3'];
 
 	const inItem = attrParserV2(dInItem, qtys);
@@ -37,7 +37,7 @@ export async function getKanbanGrade({
 	};
 
 	const data = await knbItem.model.findAll({
-		where: {id_kanban},
+		where,
 		attributes: knbItem.attributes,
 		order: orderPages<Ret>({'dInItem.dOutItems.createdAt': false}),
 		include: [

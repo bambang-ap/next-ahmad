@@ -31,7 +31,7 @@ import {
 	sppbInGetPage,
 	wherePagesV2,
 } from '@database';
-import {getSJInGrade} from '@db/getSjGrade';
+import {getKanbanGrade} from '@db/getGrade';
 import {
 	checkCredentialV2,
 	generateId,
@@ -43,7 +43,7 @@ import {procedure, router} from '@trpc';
 import {appRouter} from '..';
 
 import {TRPCError} from '@trpc/server';
-import {qtyMap, qtyReduce} from '@utils';
+import {averageGrade, qtyMap, qtyReduce} from '@utils';
 
 import {GetPageRows} from '../customer_po';
 
@@ -200,12 +200,16 @@ const sppbInRouters = router({
 
 			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
 				const {count, rows: rr} = await sjIn.model.findAndCountAll({
-					limit,
 					attributes: sjIn.attributes,
 					offset: (page - 1) * limit,
 					include: [
 						{...po, include: [cust]},
-						{...inItem, separate: true, include: [poItem, item]},
+						{
+							...inItem,
+							separate: true,
+							order: [['createdAt', 'DESC']],
+							include: [poItem, item],
+						},
 					],
 					where: wherePagesV2<SppbInRows>(
 						['nomor_surat', '$dPo.nomor_po$', '$dPo.dCust.name$'],
@@ -215,9 +219,14 @@ const sppbInRouters = router({
 
 				const rows = rr.map(async e => {
 					const val = e.toJSON() as unknown as SppbInRows;
-					const grade = await getSJInGrade({id: val.id});
 
-					return {...val, grade: grade.find(g => g.id === val.id)};
+					const scores = await getKanbanGrade({
+						id_item: val.dInItems.map(({id}) => id),
+					});
+
+					const grade = averageGrade(scores, val.dInItems?.[0]?.createdAt);
+
+					return {...val, grade};
 				});
 
 				return pagingResult(count, page, limit, await Promise.all(rows));

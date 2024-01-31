@@ -63,8 +63,9 @@ import {
 	oSup,
 	whereNearestDate,
 } from '@database';
-import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
+import {RetCalculateScore} from '@db/getSjGrade';
 import {PO_STATUS} from '@enum';
+import {averageGrade} from '@utils';
 
 export function getPrintPoAttributes() {
 	const Po = attrParserExclude(dPo, ['id_customer']);
@@ -144,7 +145,13 @@ export function getPrintPoAttributes() {
 }
 
 export function sppbInGetPage() {
-	const sjIn = attrParserV2(dSJIn, ['tgl', 'id', 'id_po', 'nomor_surat']);
+	const sjIn = attrParserV2(dSJIn, [
+		'tgl',
+		'id',
+		'id_po',
+		'nomor_surat',
+		'createdAt',
+	]);
 	const po = attrParserV2(dPo, ['nomor_po']);
 	const cust = attrParserV2(dCust, ['name', 'id']);
 	const inItem = attrParserV2(dInItem);
@@ -152,7 +159,7 @@ export function sppbInGetPage() {
 	const item = attrParserV2(dItem);
 
 	type Ret = typeof sjIn.obj & {
-		grade?: Awaited<ReturnType<typeof getSJInGrade>>[number];
+		grade?: ReturnType<typeof averageGrade>;
 		dPo: typeof po.obj & {dCust: typeof cust.obj};
 		dInItems: (typeof inItem.obj & {
 			dPoItem: typeof poItem.obj;
