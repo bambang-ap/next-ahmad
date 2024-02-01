@@ -23,7 +23,7 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 	const qtys: (keyof ZCreatedQty)[] = ['createdAt', 'qty1', 'qty2', 'qty3'];
 
 	const inItem = attrParserV2(dInItem, qtys);
-	const knbItem = attrParserV2(dKnbItem, [...qtys, 'id']);
+	const knbItem = attrParserV2(dKnbItem, [...qtys, 'id', 'id_item']);
 	const outItem = attrParserV2(dOutItem, qtys);
 	const knb = attrParserV2(dKanban, ['id']);
 	const scn = attrParserV2(dScan, ['status']);
@@ -58,7 +58,12 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 	});
 
 	const mapScore = data.map(e => {
-		const {id, dInItem: itemSjIn, ...val} = e.toJSON() as unknown as Ret;
+		const {
+			id,
+			id_item,
+			dInItem: itemSjIn,
+			...val
+		} = e.toJSON() as unknown as Ret;
 		const {dKnbItems, dOutItems} = itemSjIn;
 
 		const compare = qtyMap(({qtyKey}) => {
@@ -79,6 +84,7 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 
 		const retValue = {
 			id,
+			id_item,
 			startDate: val.createdAt,
 			get endDate() {
 				if (isClosed) {

@@ -194,6 +194,7 @@ export function exportKanbanAttributes() {
 		'qty1',
 		'qty2',
 		'qty3',
+		'createdAt',
 	]);
 	const po = attrParserV2(OrmCustomerPO, ['nomor_po']);
 	const cust = attrParserV2(OrmCustomer, ['name']);

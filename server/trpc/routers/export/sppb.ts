@@ -3,11 +3,18 @@ import {z} from 'zod';
 import {UQty, UQtyList} from '@appTypes/app.type';
 import {zIds} from '@appTypes/app.zod';
 import {dIndex, exportKanbanAttributes, processMapper} from '@database';
+import {getKanbanGrade} from '@db/getGrade';
 import {RetCalculateScore} from '@db/getSjGrade';
 import {REJECT_REASON_VIEW} from '@enum';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
-import {dateUtils, itemInScanParser, qtyMap, renderIndex} from '@utils';
+import {
+	averageGrade,
+	dateUtils,
+	itemInScanParser,
+	qtyMap,
+	renderIndex,
+} from '@utils';
 
 import {appRouter} from '..';
 
@@ -80,9 +87,18 @@ const exportSppbRouters = router({
 						),
 					);
 
+					const {scores} = await getKanbanGrade({
+						id_item: val.OrmPOItemSppbIns.map(({id}) => id),
+					});
+
 					for (let index = 0; index < val.OrmPOItemSppbIns.length; index++) {
 						const item = val.OrmPOItemSppbIns[index]!;
 						const instruksi = instruksis[index]!;
+
+						const grade = averageGrade(
+							scores.filter(e => e.id_item === item.id),
+							item.createdAt,
+						);
 
 						const noKanban = item.OrmKanbanItems.map(({OrmKanban}) => {
 							return renderIndex(OrmKanban, OrmKanban.nomor_kanban);
@@ -109,7 +125,7 @@ const exportSppbRouters = router({
 							'PART NO': item.OrmMasterItem.kode_item!,
 							'NO LOT CUSTOMER': item.lot_no!,
 							'NOMOR KANBAN': noKanban,
-							GRADE: 'grade.score',
+							GRADE: grade.score,
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 							// HARGA: item.OrmCustomerPOItem.harga!,
 							PROSES: instruksi,
