@@ -6,12 +6,16 @@ export type BorderTdProps = TdHTMLAttributes<HTMLTableCellElement> & {
 	top?: boolean;
 	col?: boolean;
 	center?: boolean;
+	left?: boolean;
+	right?: boolean;
 	rootClassName?: string;
 };
 
 export function BorderTd({
 	children,
 	center,
+	left,
+	right,
 	top,
 	className,
 	col = false,
@@ -31,7 +35,13 @@ export function BorderTd({
 			<div
 				className={classNames(
 					'flex',
-					{['justify-center']: center, ['items-start']: top, 'flex-col': col},
+					{
+						['justify-center']: center,
+						['justify-start']: left,
+						['justify-end']: right,
+						['items-start']: top,
+						'flex-col': col,
+					},
 					className,
 				)}>
 				{children}

@@ -56,7 +56,7 @@ type FormType = {
 
 InternalPo.getLayout = getLayout;
 
-const paperWidth = 1600;
+const paperWidth = 1750;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
@@ -406,37 +406,65 @@ function aa(price: number, type?: DiscType, value?: number): [number, number] {
 	return [s, price - s];
 }
 
+function parsePoItem(oPoItems: SPoUpsert['oPoItems']) {
+	return oPoItems.map(item => {
+		const {oItem, qty, discount, discount_type} = item;
+
+		const calculated = {
+			get sum() {
+				return (oItem?.harga ?? 0) * qty;
+			},
+			get disc() {
+				return aa(this.sum, discount_type!, discount!)[0];
+			},
+			get afterDisc() {
+				return this.sum - this.disc;
+			},
+			get ppnVal() {
+				return oItem?.ppn ? this.afterDisc * ppnMultiply : 0;
+			},
+			get total() {
+				return this.afterDisc + this.ppnVal;
+			},
+		};
+
+		return {...item, calculated};
+	});
+}
+
+const colSpan = 6;
+
 function RenderPdf(props: RetPoInternal) {
 	// const [width, height] = paperSizeCalculator(paperWidth, {minus: 45});
 	const {
 		data: {user},
 	} = useSession();
-	const {date, oPoItems, oSup, keterangan} = props;
+	const {date, oPoItems, oSup, discount_type, discount, keterangan} = props;
 
-	const {jumlah, ppn, /* disc ,*/ total} = oPoItems.reduce(
-		(ret, item) => {
-			const {oItem, qty, discount, discount_type} = item;
+	const parsedItem = parsePoItem(oPoItems);
 
-			const sum = oItem?.harga! * qty;
-			const ppnValue = oItem?.ppn ? sum * ppnMultiply : 0;
-			const [discVal] = aa(sum, discount_type!, discount!);
+	const calculatedTotal = parsedItem.slice(1).reduce(
+		(ret, cur) => {
+			const entry = entries(cur.calculated);
 
-			ret.jumlah += sum;
-			ret.ppn += ppnValue;
-			ret.total += sum + ppnValue;
-			ret.disc += discVal;
+			for (const [key, val] of entry) {
+				ret![key]! += val;
+			}
+
 			return ret;
 		},
-		{jumlah: 0, ppn: 0, total: 0, disc: 0},
+		{...parsedItem?.[0]?.calculated},
 	);
 
-	const itemRender = oPoItems.concat(
+	const isPercentage = discount_type === DiscType.Percentage;
+	const itemRender = parsedItem.concat(
 		// @ts-ignore
-		Array.from({length: maxItem - oPoItems.length}).fill(null),
+		Array.from({length: maxItem - parsedItem.length}).fill(null),
 	);
 
 	return (
 		<div
+			key={123}
 			/* style={{width, height}} */ className="w-full h-full bg-white p-4 flex flex-col gap-2">
 			<div className="flex flex-col flex-1 gap-2">
 				<TableBorder className="w-full">
@@ -480,12 +508,13 @@ function RenderPdf(props: RetPoInternal) {
 
 				<TableBorder className="w-full">
 					<tr>
-						<BorderTd>NO.</BorderTd>
-						<BorderTd>Nama Barang</BorderTd>
-						<BorderTd>Qty</BorderTd>
-						<BorderTd>Satuan</BorderTd>
-						<BorderTd>Harga /Satuan</BorderTd>
-						<BorderTd>Jumlah</BorderTd>
+						<BorderTd width="3%">NO.</BorderTd>
+						<BorderTd width="25%">Nama Barang</BorderTd>
+						<BorderTd width="10%">Qty</BorderTd>
+						<BorderTd width="15%">Satuan</BorderTd>
+						<BorderTd width="15%">Harga /Satuan</BorderTd>
+						<BorderTd width="15%">Diskon</BorderTd>
+						<BorderTd width="17%">Jumlah</BorderTd>
 					</tr>
 					{itemRender.map((item, index) => {
 						if (!item) {
@@ -497,15 +526,12 @@ function RenderPdf(props: RetPoInternal) {
 									<BorderTd />
 									<BorderTd />
 									<BorderTd />
-									{/* <BorderTd />
-									<BorderTd /> */}
+									<BorderTd />
 								</tr>
 							);
 						}
 
-						const {qty, unit, oItem /* discount, discount_type */} = item;
-						const sum = oItem?.harga! * qty;
-						// const [disc] = aa(sum, discount_type!, discount!);
+						const {qty, unit, oItem, calculated} = item;
 
 						return (
 							<tr key={item.id}>
@@ -513,28 +539,43 @@ function RenderPdf(props: RetPoInternal) {
 								<BorderTd>{oItem?.nama}</BorderTd>
 								<BorderTd>{qty}</BorderTd>
 								<BorderTd>{unit}</BorderTd>
-								<BorderTd>{numberFormat(oItem?.harga!)}</BorderTd>
-								<BorderTd>{numberFormat(sum)}</BorderTd>
-								{/* <BorderTd>{numberFormat(disc)}</BorderTd>
-								<BorderTd>{numberFormat(sum - disc)}</BorderTd> */}
+								<BorderTd right>{numberFormat(oItem?.harga!)}</BorderTd>
+								<BorderTd right>{numberFormat(calculated.disc)}</BorderTd>
+								<BorderTd right>{numberFormat(calculated.sum)}</BorderTd>
 							</tr>
 						);
 					})}
 					<tr>
-						<BorderTd colSpan={5}>Jumlah</BorderTd>
-						<BorderTd>{numberFormat(jumlah)}</BorderTd>
-					</tr>
-					{/* <tr>
-						<BorderTd colSpan={5}>Diskon</BorderTd>
-						<BorderTd>{numberFormat(disc)}</BorderTd>
-					</tr> */}
-					<tr>
-						<BorderTd colSpan={5}>PPn {ppnPercentage}%</BorderTd>
-						<BorderTd>{numberFormat(ppn)}</BorderTd>
+						<BorderTd center colSpan={colSpan}>
+							Jumlah
+						</BorderTd>
+						<BorderTd right>{numberFormat(calculatedTotal.sum!)}</BorderTd>
 					</tr>
 					<tr>
-						<BorderTd colSpan={5}>Total</BorderTd>
-						<BorderTd>{numberFormat(total)}</BorderTd>
+						<BorderTd center colSpan={colSpan}>
+							Diskon {isPercentage && `${discount}%`}
+						</BorderTd>
+						<BorderTd right>{numberFormat(calculatedTotal.disc!)}</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd center colSpan={colSpan}>
+							Jumlah Setelah Diskon
+						</BorderTd>
+						<BorderTd right>
+							{numberFormat(calculatedTotal.afterDisc!)}
+						</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd center colSpan={colSpan}>
+							PPn {ppnPercentage}%
+						</BorderTd>
+						<BorderTd right>{numberFormat(calculatedTotal.ppnVal!)}</BorderTd>
+					</tr>
+					<tr>
+						<BorderTd center colSpan={colSpan}>
+							Total
+						</BorderTd>
+						<BorderTd right>{numberFormat(calculatedTotal.total!)}</BorderTd>
 					</tr>
 				</TableBorder>
 			</div>
