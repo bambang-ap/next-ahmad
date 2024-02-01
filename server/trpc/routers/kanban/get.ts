@@ -178,9 +178,9 @@ export const kanbanGet = {
 			);
 
 			const {count, rows} = await OrmKanban.findAndCountAll({
-				limit: 1,
+				limit,
 				order: orderPages<UUU>({createdAt: false, index_number: false}),
-				offset: 2, //(page - 1) * limit,
+				offset: (page - 1) * limit,
 				where: search ? {[Op.or]: [where1, indexAttr?.where, where2]} : {},
 				attributes: {include: [indexAttr.attributes]},
 				include: [
