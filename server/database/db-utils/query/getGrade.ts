@@ -134,10 +134,11 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 	});
 
 	return {
-		scores: mapScore,
 		/**
 		 * @status based on KANBAN_STATUS index
 		 */
 		status: mapStatus,
+		scores: mapScore,
+		where,
 	};
 }

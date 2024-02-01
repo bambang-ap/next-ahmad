@@ -3,7 +3,7 @@ import {z} from 'zod';
 import {UQty, UQtyList} from '@appTypes/app.type';
 import {zIds} from '@appTypes/app.zod';
 import {dIndex, exportKanbanAttributes, processMapper} from '@database';
-import {getSJInGrade, RetCalculateScore} from '@db/getSjGrade';
+import {RetCalculateScore} from '@db/getSjGrade';
 import {REJECT_REASON_VIEW} from '@enum';
 import {checkCredentialV2} from '@server';
 import {procedure, router} from '@trpc';
@@ -63,27 +63,36 @@ const exportSppbRouters = router({
 					],
 				});
 
-				const sjGrades = await getSJInGrade({
-					id: data.map(e => e.dataValues.id!),
-				});
+				// const sjGrades = await getSJInGrade({
+				// 	id: data.map(e => e.dataValues.id!),
+				// });
 
 				for (let i = 0; i < data.length; i++) {
 					const val = data[i]?.toJSON() as unknown as Data;
-					const grade = sjGrades[i]!;
+					// const grade = sjGrades[i]!;
 
-					for (const item of val.OrmPOItemSppbIns) {
-						const instruksi = await processMapper(ctx, {
-							instruksi: item.OrmMasterItem.instruksi,
-							kategori_mesinn: item.OrmMasterItem.kategori_mesinn,
-						});
+					const instruksis = await Promise.all(
+						val.OrmPOItemSppbIns.map(item =>
+							processMapper({
+								instruksi: item.OrmMasterItem.instruksi,
+								kategori_mesinn: item.OrmMasterItem.kategori_mesinn,
+							}),
+						),
+					);
+
+					for (let index = 0; index < val.OrmPOItemSppbIns.length; index++) {
+						const item = val.OrmPOItemSppbIns[index]!;
+						const instruksi = instruksis[index]!;
 
 						const noKanban = item.OrmKanbanItems.map(({OrmKanban}) => {
 							return renderIndex(OrmKanban, OrmKanban.nomor_kanban);
 						}).join(' | ');
 
 						const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
-							const qty = item[qtyKey];
+							const qty = item?.[qtyKey];
+
 							if (!qty) return {[qtyKey.toUpperCase()]: ''};
+
 							return {
 								[qtyKey.toUpperCase()]: `${qty}`,
 								[unitKey.toUpperCase()]: `${item.OrmCustomerPOItem[unitKey]}`,
@@ -100,7 +109,7 @@ const exportSppbRouters = router({
 							'PART NO': item.OrmMasterItem.kode_item!,
 							'NO LOT CUSTOMER': item.lot_no!,
 							'NOMOR KANBAN': noKanban,
-							GRADE: grade.score,
+							GRADE: 'grade.score',
 							...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 							// HARGA: item.OrmCustomerPOItem.harga!,
 							PROSES: instruksi,
@@ -126,7 +135,7 @@ const exportSppbRouters = router({
 					const {dPoItem, dSJIn, dItem, id, lot_no} = dInItem;
 					const {dPo /* harga */} = dPoItem;
 
-					const instruksi = await processMapper(ctx, {
+					const instruksi = await processMapper({
 						instruksi: dItem.instruksi,
 						kategori_mesinn: dItem.kategori_mesinn,
 					});

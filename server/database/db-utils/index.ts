@@ -13,13 +13,29 @@ import {
 } from 'sequelize';
 import {noUnrecognized, objectKeyMask, z, ZodObject, ZodRawShape} from 'zod';
 
-import {Context, TMasterItem} from '@appTypes/app.type';
+import {
+	RouterInput,
+	TKategoriMesin,
+	TMasterItem,
+	TMesin,
+} from '@appTypes/app.type';
 import {
 	defaultExcludeColumn,
 	defaultExcludeColumns,
 	defaultOrderBy,
 } from '@constants';
-import {appRouter} from '@trpc/routers';
+import {
+	OrmHardness,
+	OrmHardnessKategori,
+	OrmKanbanInstruksi,
+	OrmKategoriMesin,
+	OrmMaterial,
+	OrmMaterialKategori,
+	OrmMesin,
+	OrmParameter,
+	OrmParameterKategori,
+} from '@database';
+import type {DataProcess} from '@trpc/routers/kanban/get';
 
 import {L1, literalFieldType, wherePagesV4} from './where';
 
@@ -200,13 +216,84 @@ export function ormDecimalType(fieldName: string, defaultValue?: any) {
 	};
 }
 
+export type KJKD = {
+	dataProcess: DataProcess[];
+	mesin?: TMesin & {OrmKategoriMesin: TKategoriMesin};
+};
+
+export async function getMesinProcess(
+	input: RouterInput['kanban']['mesinProcess'],
+): Promise<KJKD[]> {
+	const {process, selectedMesin, kategoriMesin} = input;
+
+	if (!!kategoriMesin) {
+		const dataProcess = await OrmKategoriMesin.findAll({
+			where: {id: kategoriMesin},
+		});
+		const dd = dataProcess.map(async ({dataValues}) => {
+			const k = await kjsdfjh(dataValues.id);
+			return {dataProcess: k};
+		});
+
+		return Promise.all(dd);
+	}
+
+	const listMesin = await OrmMesin.findAll({
+		where: {id: selectedMesin},
+		include: [{model: OrmKategoriMesin, as: OrmKategoriMesin._alias}],
+	});
+
+	const jhsdf = listMesin?.map(async mesin => {
+		const dataProcess = await kjsdfjh(mesin.dataValues.kategori_mesin);
+		return {
+			dataProcess,
+			mesin: mesin.dataValues as KJKD['mesin'],
+		};
+	});
+
+	return Promise.all(jhsdf);
+
+	async function kjsdfjh(kategori: string) {
+		const pr = process?.[kategori];
+
+		const result = pr?.map(async p => {
+			const {hardness, id_instruksi, material, parameter} = p;
+
+			const prcs = await OrmKanbanInstruksi.findOne({
+				where: {id: id_instruksi},
+			});
+
+			const hdns = await OrmHardness.findAll({
+				where: {id: hardness},
+				include: [OrmHardnessKategori],
+			});
+			const mtrl = await OrmMaterial.findAll({
+				where: {id: material},
+				include: [OrmMaterialKategori],
+			});
+			const prmtr = await OrmParameter.findAll({
+				where: {id: parameter},
+				include: [OrmParameterKategori],
+			});
+
+			return {
+				process: prcs,
+				hardness: hdns,
+				material: mtrl,
+				parameter: prmtr,
+			};
+		});
+
+		// @ts-ignore
+		return (await Promise.all(result)) as DataProcess[];
+	}
+}
+
 export async function processMapper(
-	ctx: Context,
 	item?: Partial<Pick<TMasterItem, 'instruksi' | 'kategori_mesinn'>>,
 ) {
 	const {instruksi: process, kategori_mesinn} = item ?? {};
-	const routerCaller = appRouter.createCaller(ctx);
-	const processes = await routerCaller.kanban.mesinProcess({
+	const processes = await getMesinProcess({
 		process,
 		kategoriMesin: kategori_mesinn,
 	});

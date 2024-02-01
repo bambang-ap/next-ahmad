@@ -52,7 +52,7 @@ const exportKanbanRouters = {
 						itm => itm.id === sppbInItem?.id_item,
 					);
 
-					const proses = await processMapper(ctx, {instruksi, kategori_mesinn});
+					const proses = await processMapper({instruksi, kategori_mesinn});
 
 					const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
 						const qty = item?.[qtyKey];

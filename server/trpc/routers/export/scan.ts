@@ -52,7 +52,7 @@ const exportScanRouters = {
 						};
 					});
 
-					const instruksi = await processMapper(ctx, dItem);
+					const instruksi = await processMapper(dItem);
 
 					const mesinnnn = await OrmMesin.findAll({
 						where: dInItem?.id ? {id: dKanban?.list_mesin[dInItem?.id]} : {},
