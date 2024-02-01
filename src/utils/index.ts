@@ -297,12 +297,14 @@ export function itemInScanParser(
 	return {itemInScan, rejectedItems: rejItems};
 }
 
-type AvgGrade = PartialOne<RetGrade['scores'][number], 'id'>[];
+type X = RetGrade['scores'][number];
+type D = 'id' | 'id_item';
+type AvgGrade = PartialOne<X, D>[];
 
 export function averageGrade(
 	points: AvgGrade = [],
 	startDate?: string,
-): Omit<AvgGrade[number], 'id'> {
+): Omit<AvgGrade[number], D> {
 	let endDate: string | undefined;
 
 	for (let i = 0; i < points.length; i++) {

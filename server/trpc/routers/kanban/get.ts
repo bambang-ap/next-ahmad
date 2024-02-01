@@ -144,9 +144,11 @@ export const kanbanGet = {
 			dIndex?: TIndex;
 			OrmCustomerPO: TCustomerPO & {OrmCustomer: TCustomer};
 			OrmCustomerSPPBIn: TCustomerSPPBIn;
-		} & TKanban &
-			RetGrade;
-		return checkCredentialV2(ctx, async (): Promise<PagingResult<UUU>> => {
+		} & TKanban;
+
+		type UOO = UUU & RetGrade;
+
+		return checkCredentialV2(ctx, async (): Promise<PagingResult<UOO>> => {
 			const {limit, page, search} = input;
 
 			const where1 = wherePagesV2<UUU>(
@@ -185,7 +187,7 @@ export const kanbanGet = {
 			});
 
 			const pageData = rows.map(async e => {
-				const val = e.toJSON() as unknown as UUU;
+				const val = e.toJSON() as unknown as UOO;
 
 				const scoresStatus = await getKanbanGrade({id_kanban: val.id});
 
