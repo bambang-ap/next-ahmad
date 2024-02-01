@@ -2,6 +2,12 @@ import {FormEventHandler, Fragment, useRef} from 'react';
 
 import {useForm, useWatch} from 'react-hook-form';
 
+import {
+	DiscountRenderer,
+	DiscountSelection,
+	getDiscValue,
+	RenderTotalHarga,
+} from '@appComponent/DiscountSelection';
 import {Wrapper} from '@appComponent/Wrapper';
 import {FormProps, ModalTypeSelect} from '@appTypes/app.type';
 import {SPoUpsert} from '@appTypes/app.zod';
@@ -54,7 +60,7 @@ const paperWidth = 1600;
 
 export default function InternalPo() {
 	const modalRef = useRef<ModalRef>(null);
-	const {control, reset, resetField, watch, handleSubmit, clearErrors} =
+	const {control, reset, setValue, watch, handleSubmit, clearErrors} =
 		useForm<FormType>();
 	const dataForm = watch();
 
@@ -161,11 +167,7 @@ export default function InternalPo() {
 				<Form
 					context={{hideButton: isPreview, disabled: isPreview}}
 					onSubmit={submit}>
-					<RenderModal
-						reset={reset}
-						control={control}
-						resetField={resetField}
-					/>
+					<RenderModal reset={reset} control={control} setValue={setValue} />
 				</Form>
 			</Modal>
 		</>
@@ -175,8 +177,8 @@ export default function InternalPo() {
 function RenderModal({
 	reset,
 	control,
-}: // resetField,
-FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
+	setValue,
+}: FormProps<FormType, 'control' | 'reset' | 'setValue'>) {
 	const {type, form} = useWatch({control});
 
 	const {isDelete, isEdit, isPreviewEdit} = modalTypeParser(type);
@@ -256,12 +258,12 @@ FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
 				)}
 			</div>
 
-			{/* <DiscountSelection
+			<DiscountSelection
 				control={control}
-				resetField={resetField}
+				setValue={setValue}
 				type="form.discount_type"
 				discount="form.discount"
-			/> */}
+			/>
 
 			<Input control={control} fieldName="form.keterangan" label="Keterangan" />
 
@@ -272,18 +274,30 @@ FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
 					</Button>
 				}
 				data={form?.oPoItems}
-				// renderItemEach={({Cell}, i) => {
-				// 	return (
-				// 		<Cell colSpan={5} className="items-center gap-2">
-				// 			<DiscountSelection
-				// 				control={control}
-				// 				resetField={resetField}
-				// 				discount={`form.oPoItems.${i}.discount`}
-				// 				type={`form.oPoItems.${i}.discount_type`}
-				// 			/>
-				// 		</Cell>
-				// 	);
-				// }}
+				renderItemEach={({Cell, isLast}, _, items) => {
+					if (!isLast) return false;
+
+					return (
+						<RenderTotalHarga
+							Cell={Cell}
+							colSpan={5}
+							items={items}
+							calculate={item => {
+								const oItem =
+									item?.oItem ??
+									dataItem?.rows.find(e => e.id === item?.id_item);
+
+								const {totalPrice} = getDiscValue(
+									item.discount_type,
+									item.discount,
+									(oItem?.harga ?? 0) * (item.qty ?? 0),
+								);
+
+								return totalPrice;
+							}}
+						/>
+					);
+				}}
 				renderItem={({Cell, item}, i) => {
 					const idItem = item.id ?? item.temp_id!;
 					const oItem =
@@ -353,7 +367,22 @@ FormProps<FormType, 'control' | 'reset' | 'resetField'>) {
 								/>
 							</Cell>
 
-							<Cell rowSpan={2}>
+							<Cell className="gap-2">
+								<DiscountRenderer
+									control={control}
+									setValue={setValue}
+									length={form?.oPoItems?.length}
+									key={`${item.id}-${oItem?.harga}`}
+									qtyPrice={[`form.oPoItems.${i}.qty`, oItem?.harga!]}
+									discount={[form?.discount!, `form.oPoItems.${i}.discount`]}
+									type={[
+										form?.discount_type!,
+										`form.oPoItems.${i}.discount_type`,
+									]}
+								/>
+							</Cell>
+
+							<Cell>
 								<Button icon="faTrash" onClick={() => removeItem(idItem)} />
 							</Cell>
 						</Fragment>
