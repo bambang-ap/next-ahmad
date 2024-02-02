@@ -15,7 +15,7 @@ export default function DashboardMonthly({
 	control,
 	days,
 }: FormProps<DashboardForm> & {days: string[]}) {
-	const {filterYear, id_customer, chartType, withDiscount, view} = useWatch({
+	const {filterYear, chartType, withDiscount, view} = useWatch({
 		control,
 	});
 
