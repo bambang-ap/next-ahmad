@@ -11,6 +11,7 @@ export type DashboardForm = UseDateFilterProps<{
 	chartType: 'bar' | 'line';
 	view: TDashboardSalesView;
 	withDiscount: boolean;
+	id_customer?: string;
 }>;
 
 export default function DashboardNilai({control}: FormProps<DashboardForm>) {

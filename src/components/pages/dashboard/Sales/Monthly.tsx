@@ -15,7 +15,9 @@ export default function DashboardMonthly({
 	control,
 	days,
 }: FormProps<DashboardForm> & {days: string[]}) {
-	const {filterYear, chartType, withDiscount, view} = useWatch({control});
+	const {filterYear, id_customer, chartType, withDiscount, view} = useWatch({
+		control,
+	});
 
 	const horizontal = useRecoilValue(atomIsMobile);
 
