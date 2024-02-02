@@ -28,9 +28,9 @@ export type FormValue = {
 	idSppbOuts?: MyObject<boolean>;
 } & TCustomerSPPBOutUpsert;
 
-// const widthSize = 1100; // For Portrait
-export const widthSize = 1750; // For Landscape
-export const orientation = 'l';
+export const widthSize = 1100; // For Portrait
+// export const widthSize = 1750; // For Landscape
+export const orientation: 'p' | 'l' = 'p';
 
 export default function SPPBOUT() {
 	const {control, reset, setValue, watch, clearErrors, handleSubmit} =
