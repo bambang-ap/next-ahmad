@@ -232,7 +232,7 @@ export function isClosedParser(poData: RouterOutput['sppb']['out']['getPO']) {
 				const currentQty = itemSppbOut(item.dOutItems);
 
 				const compare = qtyMap(({qtyKey}) => {
-					return currentQty?.[qtyKey] == (itemInScan?.[qtyKey] ?? 0);
+					return (itemInScan?.[qtyKey] ?? 0) <= (currentQty?.[qtyKey] ?? 0);
 				});
 
 				return {

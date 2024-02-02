@@ -240,6 +240,7 @@ export function SppbOutModalChild({
 														isClosed,
 														dPoItem,
 														itemInScan,
+														currentQty,
 														rejectedItems,
 														dOutItems,
 													} = item ?? {};
@@ -311,10 +312,7 @@ export function SppbOutModalChild({
 																			if (!unit) return null;
 
 																			const qty = item?.[qtyKey];
-																			const curQty = dOutItems.reduce(
-																				(t, e) => t + (e?.[qtyKey] ?? 0),
-																				0,
-																			);
+																			const curQty = currentQty[qtyKey] ?? 0;
 
 																			const qtyRejectRP =
 																				rejectedItems?.[id_item]?.RP?.[qtyKey];
