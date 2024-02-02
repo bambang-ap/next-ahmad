@@ -1,6 +1,7 @@
 import {PropsWithChildren, useMemo} from 'react';
 
 import Head from 'next/head';
+import {orientation} from 'pages/app/customer/customer_sppb_out';
 
 import {Wrapper, WrapperProps} from '@appComponent/Wrapper';
 import {RouterOutput, TInstruksiKanban} from '@appTypes/app.type';
@@ -154,6 +155,7 @@ export function SPPBOutGenerateQR({
 	const session = useSession();
 	const [width, height] = paperSizeCalculator(widthSize, {
 		minus: 25,
+		orientation,
 		paperSize: paperCont,
 	});
 

@@ -28,7 +28,9 @@ export type FormValue = {
 	idSppbOuts?: MyObject<boolean>;
 } & TCustomerSPPBOutUpsert;
 
-const widthSize = 1100;
+// const widthSize = 1100; // For Portrait
+export const widthSize = 1750; // For Landscape
+export const orientation = 'l';
 
 export default function SPPBOUT() {
 	const {control, reset, setValue, watch, clearErrors, handleSubmit} =
@@ -69,6 +71,7 @@ export default function SPPBOUT() {
 			!isSelect && 'Action',
 		],
 		genPdfOptions: {
+			orientation,
 			splitPagePer: 1,
 			width: widthSize,
 			paperSize: paperCont,
