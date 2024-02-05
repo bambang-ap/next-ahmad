@@ -42,7 +42,9 @@ export default function Kanban() {
 
 	const {push} = useRouter();
 	const {control, watch, reset, clearErrors, handleSubmit} =
-		useForm<KanbanFormType>();
+		useForm<KanbanFormType>({
+			defaultValues: {idKanbans: {KNB_240203a520: true}},
+		});
 
 	const dataForm = watch();
 
@@ -88,6 +90,7 @@ export default function Kanban() {
 				{enabled: selectedIds.length > 0},
 			),
 		genPdfOptions: {
+			debug: true,
 			width: 1900,
 			splitPagePer: 4,
 			orientation: 'l',

@@ -42,8 +42,6 @@ const exportKanbanRouters = {
 					const val = row.toJSON() as unknown as typeof Ret;
 
 					const item = val.OrmKanbanItems?.[0];
-					const {instruksi, kategori_mesinn, kode_item, name} =
-						item?.OrmMasterItem ?? {};
 
 					const sppbInItem = val.OrmCustomerSPPBIn.OrmPOItemSppbIns.find(
 						e => e.id === item?.id_item,
@@ -51,6 +49,9 @@ const exportKanbanRouters = {
 					const poItem = val.OrmCustomerPO.OrmCustomerPOItems.find(
 						itm => itm.id === sppbInItem?.id_item,
 					);
+
+					const {instruksi, kategori_mesinn, kode_item, name} =
+						poItem?.OrmMasterItem ?? {};
 
 					const proses = await processMapper({instruksi, kategori_mesinn});
 

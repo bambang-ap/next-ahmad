@@ -14,10 +14,10 @@ function Text(props: TextProps) {
 type AProps = RouterOutput['print']['kanban'][number];
 
 export function RenderKanbanCardV2(props: AProps) {
-	const {id_item, qty1, qty2, qty3, OrmKanban, OrmPOItemSppbIn, OrmMasterItem} =
-		props;
+	const {id_item, qty1, qty2, qty3, OrmKanban, OrmPOItemSppbIn} = props;
 	const {OrmCustomerSPPBIn: dataSppbIn} = OrmPOItemSppbIn;
-	const {unit1, unit2, unit3 /* harga */} = OrmPOItemSppbIn.OrmCustomerPOItem;
+	const {unit1, unit2, unit3 /* harga */, OrmMasterItem} =
+		OrmPOItemSppbIn.OrmCustomerPOItem;
 	const {
 		createdAt,
 		keterangan,

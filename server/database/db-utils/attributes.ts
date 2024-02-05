@@ -221,14 +221,16 @@ export function exportKanbanAttributes() {
 
 	type Ret = typeof kanban.obj & {
 		dIndex?: TIndex;
+		OrmKanbanItems: typeof knbItem.obj[];
 		OrmCustomerSPPBIn: typeof sjIn.obj & {
 			OrmPOItemSppbIns: typeof inItem.obj[];
 		};
 		OrmCustomerPO: typeof po.obj & {
 			OrmCustomer: typeof cust.obj;
-			OrmCustomerPOItems: typeof poItem.obj[];
+			OrmCustomerPOItems: (typeof poItem.obj & {
+				OrmMasterItem: typeof item.obj;
+			})[];
 		};
-		OrmKanbanItems: (typeof knbItem.obj & {OrmMasterItem: typeof item.obj})[];
 	};
 
 	type Output = Record<string, string | number>;

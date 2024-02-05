@@ -1,19 +1,6 @@
 import {z} from 'zod';
 
 import {
-	tCustomer,
-	tCustomerPO,
-	tCustomerSPPBIn,
-	tDocument,
-	tKanban,
-	tKanbanItem,
-	tMasterItem,
-	tPOItem,
-	tPOItemSppbIn,
-	tUser,
-} from '@appTypes/app.zod';
-import {
-	attrParser,
 	attrParserV2,
 	dIndex,
 	OrmCustomer,
@@ -34,22 +21,23 @@ export const printKanbanRouter = {
 	kanban: procedure
 		.input(z.object({id: z.string().array()}))
 		.query(({ctx, input}) => {
-			type UU = typeof A.obj & {
-				OrmMasterItem: typeof F.obj;
-				OrmPOItemSppbIn: typeof G.obj & {
-					OrmCustomerPOItem: typeof I.obj;
-					OrmCustomerSPPBIn: typeof J.obj;
+			type UU = typeof knbItem.obj & {
+				OrmPOItemSppbIn: typeof inItem.obj & {
+					OrmCustomerPOItem: typeof poItem.obj & {
+						OrmMasterItem: typeof item.obj;
+					};
+					OrmCustomerSPPBIn: typeof sjIn.obj;
 				};
-				OrmKanban: typeof B.obj & {
+				OrmKanban: typeof knb.obj & {
 					dIndex?: typeof tIndex.obj;
-					OrmDocument: typeof C.obj;
-					OrmCustomerPO: typeof D.obj & {OrmCustomer: typeof E.obj};
-					[OrmKanban._aliasCreatedBy]: typeof H.obj;
+					OrmDocument: typeof doc.obj;
+					OrmCustomerPO: typeof po.obj & {OrmCustomer: typeof cust.obj};
+					[OrmKanban._aliasCreatedBy]: typeof user.obj;
 				};
 			};
 
 			const tIndex = attrParserV2(dIndex);
-			const A = attrParser(tKanbanItem, [
+			const knbItem = attrParserV2(OrmKanbanItem, [
 				'id',
 				'id_kanban',
 				'id_item',
@@ -57,7 +45,7 @@ export const printKanbanRouter = {
 				'qty2',
 				'qty3',
 			]);
-			const B = attrParser(tKanban, [
+			const knb = attrParserV2(OrmKanban, [
 				'id',
 				'image',
 				'createdAt',
@@ -67,59 +55,43 @@ export const printKanbanRouter = {
 				'index_number',
 				'list_mesin',
 			]);
-			const C = attrParser(tDocument, ['doc_no', 'revisi', 'tgl_efektif']);
-			const D = attrParser(tCustomerPO, ['nomor_po']);
-			const E = attrParser(tCustomer, ['name']);
-			const F = attrParser(tMasterItem, ['kode_item', 'instruksi', 'name']);
-			const G = attrParser(tPOItemSppbIn, ['lot_no']);
-			const H = attrParser(tUser, ['name']);
-			const I = attrParser(tPOItem, ['unit1', 'unit2', 'unit3', 'harga']);
-			const J = attrParser(tCustomerSPPBIn, ['nomor_surat', 'tgl']);
+			const doc = attrParserV2(OrmDocument, [
+				'doc_no',
+				'revisi',
+				'tgl_efektif',
+			]);
+			const po = attrParserV2(OrmCustomerPO, ['nomor_po']);
+			const cust = attrParserV2(OrmCustomer, ['name']);
+			const item = attrParserV2(OrmMasterItem, [
+				'kode_item',
+				'instruksi',
+				'name',
+			]);
+			const inItem = attrParserV2(OrmPOItemSppbIn, ['lot_no']);
+			const user = attrParserV2(OrmUser, ['name']);
+			const poItem = attrParserV2(OrmCustomerPOItem, [
+				'unit1',
+				'unit2',
+				'unit3',
+				'harga',
+			]);
+			const sjIn = attrParserV2(OrmCustomerSPPBIn, ['nomor_surat', 'tgl']);
 
 			return checkCredentialV2(ctx, async (): Promise<UU[]> => {
-				const data = await OrmKanbanItem.findAll({
+				const data = await knbItem.model.findAll({
 					where: {id_kanban: input.id},
-					attributes: A.keys,
+					attributes: knbItem.attributes,
 					order: [['id_kanban', 'desc']],
 					include: [
+						{...inItem, include: [{...poItem, include: [item]}, sjIn]},
 						{
-							model: OrmKanban,
-							attributes: B.keys,
+							...knb,
 							include: [
+								doc,
 								tIndex,
-								{
-									model: OrmDocument,
-									attributes: C.keys,
-								},
-								{
-									model: OrmCustomerPO,
-									attributes: D.keys,
-									include: [{model: OrmCustomer, attributes: E.keys}],
-								},
-								{
-									model: OrmUser,
-									attributes: H.keys,
-									as: OrmKanban._aliasCreatedBy,
-								},
+								{...po, include: [cust]},
+								{...user, as: OrmKanban._aliasCreatedBy},
 							],
-						},
-						{
-							model: OrmPOItemSppbIn,
-							attributes: G.keys,
-							include: [
-								{
-									attributes: I.keys,
-									model: OrmCustomerPOItem,
-								},
-								{
-									attributes: J.keys,
-									model: OrmCustomerSPPBIn,
-								},
-							],
-						},
-						{
-							model: OrmMasterItem,
-							attributes: F.keys,
 						},
 					],
 				});

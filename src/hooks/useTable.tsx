@@ -8,7 +8,7 @@ export function useTableFilter(defaultValue?: Partial<TableFormValue>) {
 		limit: defaultLimit,
 		page: 1,
 		pageTotal: 1,
-		search: '',
+		search: 'KNB_240203a520',
 		...defaultValue,
 	};
 
