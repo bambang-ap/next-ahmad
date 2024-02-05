@@ -7,6 +7,7 @@ import {
 import {useSetRecoilState} from 'recoil';
 
 import {TSession} from '@appTypes/app.type';
+import {isProd} from '@constants';
 import {PATHS} from '@enum';
 import {useRouter} from '@hooks';
 import {atomHeaderTitle} from '@recoil/atoms';
@@ -30,7 +31,7 @@ export const useAuth = () => {
 				return replace(PATHS.signin);
 			}
 
-			if (status === 'authenticated') {
+			if (status === 'authenticated' && isProd) {
 				if (asPath === PATHS.app) {
 					setTitle('Landing Page');
 					return;

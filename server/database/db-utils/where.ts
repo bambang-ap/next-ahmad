@@ -117,11 +117,19 @@ export function whereDateFilter<T extends {}>(
 	const from = moment(filterFrom).startOf('date').format(formatAll);
 	const to = moment(filterTo).endOf('date').format(formatAll);
 
+	const fieldName = `${literalFieldType(field.replace(/\$/g, ''))}::TIMESTAMP`;
+
 	return {
-		[field as string]: {
-			[Op.and]: [{[Op.gte]: from}, {[Op.lte]: to}],
-		},
+		[Op.and]: [
+			literal(`${fieldName} >= '${from}' AND ${fieldName} <= '${to}'`),
+		],
 	};
+
+	// return {
+	// 	[field as string]: {
+	// 		[Op.and]: [{[Op.gte]: from}, {[Op.lte]: to}],
+	// 	},
+	// };
 }
 
 export function indexWhereAttributes<T extends {}>(

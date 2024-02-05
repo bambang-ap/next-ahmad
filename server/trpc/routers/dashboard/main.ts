@@ -13,7 +13,10 @@ import {
 	dScan,
 	dScanItem,
 	groupPages,
+	OrmCustomerPO,
 	OrmCustomerPOItem,
+	OrmCustomerSPPBIn,
+	OrmCustomerSPPBOut,
 	OrmCustomerSPPBOutItem,
 	OrmKanbanItem,
 	OrmPOItemSppbIn,
@@ -43,7 +46,11 @@ export default function mainDashboardRouter() {
 
 			return {
 				group: [uu],
-				where: {[uu]: unitData, ...whereDateFilter('$createdAt$', input)},
+				where: {
+					[uu]: unitData,
+					...whereDateFilter('$OrmCustomerPO.tgl_po$', input),
+				},
+				include: [{model: OrmCustomerPO, attributes: []}],
 				attributes: [
 					[uu, 'unit'],
 					[fn('sum', col(`qty${num}`)), 'qty'],
@@ -66,10 +73,13 @@ export default function mainDashboardRouter() {
 			return {
 				group,
 				raw: true,
-				include: [{model: OrmCustomerPOItem, attributes: []}],
+				include: [
+					{model: OrmCustomerSPPBIn, attributes: []},
+					{model: OrmCustomerPOItem, attributes: []},
+				],
 				where: {
 					[`$${group}$`]: unitData,
-					...whereDateFilter('$OrmPOItemSppbIn.createdAt$', input),
+					...whereDateFilter('$OrmCustomerSPPBIn.tgl$', input),
 				},
 				attributes: [
 					[col(group), 'unit'],
@@ -92,7 +102,6 @@ export default function mainDashboardRouter() {
 			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
 			return {
 				group,
-				raw: true,
 				where: {
 					[`$${group}$`]: unitData,
 					...whereDateFilter('$OrmKanbanItem.createdAt$', input),
@@ -134,15 +143,15 @@ export default function mainDashboardRouter() {
 			};
 
 			const {inItem, knbItem, poItem, scn, scnItem} = getAttributes();
-
 			const group = groupPages<Ret>(`dKnbItem.dInItem.dPoItem.unit${num}`);
+
 			const data = scnItem.model.findAll({
 				group,
-				where: {
-					...wherePagesV3<Ret>({'$dScan.status$': target}),
-					...whereDateFilter('$dScanItem.createdAt$', input),
-					[`$${group}$`]: unitData,
-				},
+				where: [
+					wherePagesV3<Ret>({'$dScan.status$': target}),
+					whereDateFilter('$dScanItem.createdAt$', input),
+					{[`$${group}$`]: unitData},
+				],
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`dScanItem.qty${num}`)), 'qty'],
@@ -192,11 +201,11 @@ export default function mainDashboardRouter() {
 			);
 			const data = rejItem.model.findAll({
 				group,
-				where: {
-					...wherePagesV3<Ret>({reason: target}),
-					...whereDateFilter('$dRejItem.createdAt$', input),
-					[`$${group}$`]: unitData,
-				},
+				where: [
+					wherePagesV3<Ret>({reason: target}),
+					whereDateFilter('$dRejItem.createdAt$', input),
+					{[`$${group}$`]: unitData},
+				],
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`dRejItem.qty${num}`)), 'qty'],
@@ -260,9 +269,10 @@ export function dashSppbOut(input: TInput) {
 			raw: true,
 			where: {
 				[`$${group}$`]: unitData,
-				...whereDateFilter('$OrmCustomerSPPBOutItem.createdAt$', input),
+				...whereDateFilter('$OrmCustomerSPPBOut.date$', input),
 			},
 			include: [
+				{model: OrmCustomerSPPBOut, attributes: []},
 				{
 					attributes: [],
 					model: OrmPOItemSppbIn,
