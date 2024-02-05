@@ -2,6 +2,7 @@ import {z} from 'zod';
 
 import {
 	PagingResult,
+	TableFormValue,
 	TCustomerPO,
 	TMasterItem,
 	TPOItem,
@@ -181,56 +182,16 @@ const sppbInRouters = router({
 				where: tCustomerSPPBIn.partial().optional(),
 			}),
 		)
-		.query(async ({ctx, input}): Promise<SppbInRows[]> => {
-			// FIXME: the type
-			const routerCaller = appRouter.createCaller(ctx);
-
-			const {rows} = await routerCaller.sppb.in.getPage({
-				...input,
-				limit: 99999999,
-			});
+		.query(async ({input}): Promise<SppbInRows[]> => {
+			const {rows} = await getSppbInPages({...input, limit: 99999999});
 
 			return rows;
 		}),
 	getPage: procedure
 		.input(tableFormValue.partial())
 		.query(({ctx: {req, res}, input}) => {
-			const {sjIn, po, cust, inItem, poItem, item} = sppbInGetPage();
-			const {limit = defaultLimit, page = 1, search} = input;
-
 			return checkCredentialV2({req, res}, async (): Promise<GetPage> => {
-				const {count, rows: rr} = await sjIn.model.findAndCountAll({
-					limit,
-					attributes: sjIn.attributes,
-					offset: (page - 1) * limit,
-					include: [
-						{...po, include: [cust]},
-						{
-							...inItem,
-							separate: true,
-							order: [['createdAt', 'DESC']],
-							include: [poItem, item],
-						},
-					],
-					where: wherePagesV2<SppbInRows>(
-						['nomor_surat', '$dPo.nomor_po$', '$dPo.dCust.name$'],
-						search,
-					),
-				});
-
-				const rows = rr.map(async e => {
-					const val = e.toJSON() as unknown as SppbInRows;
-
-					const {scores} = await getKanbanGrade({
-						id_item: val.dInItems.map(({id}) => id),
-					});
-
-					const grade = averageGrade(scores, val.dInItems?.[0]?.createdAt);
-
-					return {...val, grade};
-				});
-
-				return pagingResult(count, page, limit, await Promise.all(rows));
+				return getSppbInPages(input);
 			});
 		}),
 	upsert: procedure
@@ -314,3 +275,46 @@ const sppbInRouters = router({
 });
 
 export default sppbInRouters;
+
+export async function getSppbInPages(
+	input: Partial<TableFormValue>,
+): Promise<GetPage> {
+	const {sjIn, po, cust, inItem, poItem, item} = sppbInGetPage();
+	const {limit = defaultLimit, page = 1, search, id} = input;
+
+	const {count, rows: rr} = await sjIn.model.findAndCountAll({
+		limit,
+		attributes: sjIn.attributes,
+		offset: (page - 1) * limit,
+		include: [
+			{...po, include: [cust]},
+			{
+				...inItem,
+				separate: true,
+				order: [['createdAt', 'DESC']],
+				include: [poItem, item],
+			},
+		],
+		where: [
+			id && {id},
+			wherePagesV2<SppbInRows>(
+				['nomor_surat', '$dPo.nomor_po$', '$dPo.dCust.name$'],
+				search,
+			),
+		].filter(Boolean),
+	});
+
+	const rows = rr.map(async e => {
+		const val = e.toJSON() as unknown as SppbInRows;
+
+		const {scores} = await getKanbanGrade({
+			id_item: val.dInItems.map(({id}) => id),
+		});
+
+		const grade = averageGrade(scores, val.dInItems?.[0]?.createdAt);
+
+		return {...val, grade};
+	});
+
+	return pagingResult(count, page, limit, await Promise.all(rows));
+}

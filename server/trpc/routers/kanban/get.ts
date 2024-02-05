@@ -2,7 +2,6 @@ import {Op} from 'sequelize';
 import {z} from 'zod';
 
 import {
-	AppRouterCaller,
 	KanbanGetRow,
 	PagingResult,
 	RetGrade,
@@ -53,6 +52,7 @@ import {checkCredentialV2, pagingResult} from '@server';
 import {procedure} from '@trpc';
 import {appRouter} from '@trpc/routers';
 
+import {getSppbInPages} from '../sppb/in';
 import kanbanPoRouters from './po';
 
 export type DataProcess = {
@@ -120,8 +120,6 @@ export const kanbanGet = {
 			});
 		}),
 	detail: procedure.input(z.string()).query(({ctx, input: id}) => {
-		const routerCaller = appRouter.createCaller(ctx);
-
 		return checkCredentialV2(ctx, async (): Promise<KanbanGetRow | null> => {
 			const dataKanban = await OrmKanban.findOne({
 				where: {id},
@@ -136,7 +134,7 @@ export const kanbanGet = {
 
 			if (!dataKanban) return null;
 
-			return parseDetailKanban(dataKanban.dataValues, routerCaller);
+			return parseDetailKanban(dataKanban.dataValues);
 		});
 	}),
 	getPage: procedure.input(tableFormValue).query(({ctx, input}) => {
@@ -238,21 +236,17 @@ export const kanbanGet = {
 		}),
 };
 
-async function parseDetailKanban(
-	dataValues: TKanban,
-	routerCaller: AppRouterCaller,
-) {
+async function parseDetailKanban(dataValues: TKanban) {
 	const {id_sppb_in, id} = dataValues;
 
 	const dataItems = await OrmKanbanItem.findAll({
 		where: {id_kanban: dataValues.id},
 		include: [OrmMasterItem],
 	});
-	const dataSppbIn = await routerCaller.sppb.in.get({
-		type: 'sppb_in',
-		where: {id: id_sppb_in},
-	});
+
 	const dataScan = await OrmScan.findOne({where: {id_kanban: id}});
+	const dataSppbInPages = await getSppbInPages({id: id_sppb_in});
+	const dataSppbIn = dataSppbInPages?.rows;
 
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
 	// const {image, ...restDataValues} = dataValues;
