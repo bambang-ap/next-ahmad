@@ -43,7 +43,7 @@ export const defaultDashboardRouter = {
 					path: PATHS.app_customer_po,
 					image: '/public/assets/dashboard/po.png',
 					bgColor: MenuColor.PO,
-					count: dPo.count({where: whereDateFilter('$createdAt$', input)}),
+					count: dPo.count({where: whereDateFilter('$tgl_po$', input)}),
 				},
 				{
 					title: 'Kendaraan',
@@ -57,14 +57,14 @@ export const defaultDashboardRouter = {
 					path: PATHS.app_customer_customer_sppb_in,
 					image: '/public/assets/dashboard/sppb-in.png',
 					bgColor: MenuColor.SJIn,
-					count: dSJIn.count({where: whereDateFilter('$createdAt$', input)}),
+					count: dSJIn.count({where: whereDateFilter('$tgl$', input)}),
 				},
 				{
 					title: 'SPPB Out',
 					path: PATHS.app_customer_customer_sppb_out,
 					image: '/public/assets/dashboard/sppb-out.png',
 					bgColor: MenuColor.SJOut,
-					count: dSjOut.count({where: whereDateFilter('$createdAt$', input)}),
+					count: dSjOut.count({where: whereDateFilter('$date$', input)}),
 				},
 				{
 					title: 'Kanban',
