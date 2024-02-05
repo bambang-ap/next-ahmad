@@ -112,10 +112,10 @@ export const defaultDashboardRouter = {
 					image: '/public/assets/dashboard/kanban.png',
 					path: PATHS.app_scan_produksi_list,
 					count: dScan.count({
-						where: {
-							status: 'produksi' as TScanTarget,
-							...whereDateFilter('$createdAt$', input),
-						},
+						where: [
+							{status: 'produksi' as TScanTarget},
+							whereDateFilter('$createdAt$', input),
+						],
 					}),
 				},
 				{
@@ -124,10 +124,10 @@ export const defaultDashboardRouter = {
 					image: '/public/assets/dashboard/kanban.png',
 					path: PATHS.app_scan_qc_list,
 					count: dScan.count({
-						where: {
-							status: 'qc' as TScanTarget,
-							...whereDateFilter('$createdAt$', input),
-						},
+						where: [
+							{status: 'qc' as TScanTarget},
+							whereDateFilter('$createdAt$', input),
+						],
 					}),
 				},
 				{
@@ -136,10 +136,10 @@ export const defaultDashboardRouter = {
 					image: '/public/assets/dashboard/kanban.png',
 					path: PATHS.app_scan_finish_good_list,
 					count: dScan.count({
-						where: {
-							status: 'finish_good' as TScanTarget,
-							...whereDateFilter('$createdAt$', input),
-						},
+						where: [
+							{status: 'finish_good' as TScanTarget},
+							whereDateFilter('$createdAt$', input),
+						],
 					}),
 				},
 			];

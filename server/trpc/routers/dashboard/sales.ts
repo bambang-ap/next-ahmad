@@ -62,10 +62,10 @@ export default function dashboardSalesRouters() {
 				disc: 'dPoItem.discount',
 				type: 'dPoItem.discount_type',
 			},
-			{
-				...whereDateFilter<RetPo>('$dPoItem.createdAt$', input),
-				...wherePagesV2<RetPo>(['$dPo.id_customer$'], id_customer),
-			},
+			[
+				whereDateFilter<RetPo>('$dPoItem.createdAt$', input),
+				wherePagesV2<RetPo>(['$dPo.id_customer$'], id_customer),
+			],
 		);
 
 		const optionsIn = selectorDashboardSales<RetIn>(
@@ -76,10 +76,10 @@ export default function dashboardSalesRouters() {
 				disc: 'dPoItem.discount',
 				type: 'dPoItem.discount_type',
 			},
-			{
-				...whereDateFilter<RetIn>('$dInItem.createdAt$', input),
-				...wherePagesV2<RetIn>(['$dPoItem.dPo.id_customer$'], id_customer),
-			},
+			[
+				whereDateFilter<RetIn>('$dInItem.createdAt$', input),
+				wherePagesV2<RetIn>(['$dPoItem.dPo.id_customer$'], id_customer),
+			],
 		);
 
 		const optionsOut = selectorDashboardSales<RetOut>(
@@ -90,13 +90,13 @@ export default function dashboardSalesRouters() {
 				disc: 'dInItem.dPoItem.discount',
 				type: 'dInItem.dPoItem.discount_type',
 			},
-			{
-				...whereDateFilter<RetOut>('$dOutItem.createdAt$', input),
-				...wherePagesV2<RetOut>(
+			[
+				whereDateFilter<RetOut>('$dOutItem.createdAt$', input),
+				wherePagesV2<RetOut>(
 					['$dInItem.dPoItem.dPo.id_customer$'],
 					id_customer,
 				),
-			},
+			],
 		);
 
 		const dataPo = await poItem.model

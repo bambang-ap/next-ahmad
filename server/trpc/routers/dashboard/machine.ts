@@ -50,15 +50,15 @@ async function s(input: Partial<TDateFilter & TMachineFilter>) {
 			'dKnbItem.dInItem.dPoItem.unit2': true,
 			'dKnbItem.dInItem.dPoItem.unit3': true,
 		}),
-		where: {
-			...dateFilter,
-			...wherePagesV3<Ret>({
+		where: [
+			dateFilter,
+			wherePagesV3<Ret>({
 				'$dScan.status$': 'produksi',
 				'$dKnbItem.id_mesin$': {[Op.not]: null},
 				'$dKnbItem.dMesin.dKatMesin.id$': [true, machineCatId],
 				'$dKnbItem.dMesin.id$': [true, machineId],
 			}),
-		},
+		],
 		include: [
 			{
 				...knbItem,

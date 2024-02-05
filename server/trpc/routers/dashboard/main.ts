@@ -46,10 +46,10 @@ export default function mainDashboardRouter() {
 
 			return {
 				group: [uu],
-				where: {
-					[uu]: unitData,
-					...whereDateFilter('$OrmCustomerPO.tgl_po$', input),
-				},
+				where: [
+					{[uu]: unitData},
+					whereDateFilter('$OrmCustomerPO.tgl_po$', input),
+				],
 				include: [{model: OrmCustomerPO, attributes: []}],
 				attributes: [
 					[uu, 'unit'],
@@ -77,10 +77,10 @@ export default function mainDashboardRouter() {
 					{model: OrmCustomerSPPBIn, attributes: []},
 					{model: OrmCustomerPOItem, attributes: []},
 				],
-				where: {
-					[`$${group}$`]: unitData,
-					...whereDateFilter('$OrmCustomerSPPBIn.tgl$', input),
-				},
+				where: [
+					{[`$${group}$`]: unitData},
+					whereDateFilter('$OrmCustomerSPPBIn.tgl$', input),
+				],
 				attributes: [
 					[col(group), 'unit'],
 					[fn('sum', col(`OrmPOItemSppbIn.qty${num}`)), 'qty'],
@@ -102,10 +102,10 @@ export default function mainDashboardRouter() {
 			const group = `OrmPOItemSppbIn.OrmCustomerPOItem.unit${num}`;
 			return {
 				group,
-				where: {
-					[`$${group}$`]: unitData,
-					...whereDateFilter('$OrmKanbanItem.createdAt$', input),
-				},
+				where: [
+					{[`$${group}$`]: unitData},
+					whereDateFilter('$OrmKanbanItem.createdAt$', input),
+				],
 				include: [
 					{
 						attributes: [],
@@ -267,10 +267,10 @@ export function dashSppbOut(input: TInput) {
 		return {
 			group,
 			raw: true,
-			where: {
-				[`$${group}$`]: unitData,
-				...whereDateFilter('$OrmCustomerSPPBOut.date$', input),
-			},
+			where: [
+				{[`$${group}$`]: unitData},
+				whereDateFilter('$OrmCustomerSPPBOut.date$', input),
+			],
 			include: [
 				{model: OrmCustomerSPPBOut, attributes: []},
 				{
