@@ -53,11 +53,13 @@ import {
 	OrmCustomerPO,
 	OrmCustomerPOItem,
 	OrmCustomerSPPBIn,
+	OrmDocument,
 	OrmKanban,
 	OrmKanbanItem,
 	OrmMasterItem,
 	OrmMenu,
 	OrmPOItemSppbIn,
+	OrmUser,
 	oSjIn,
 	oStock,
 	oSup,
@@ -980,4 +982,74 @@ export function menuAttributes() {
 	};
 
 	return {menu, RetSub: {} as Ret, Ret: {} as Omit<Ret, 'OrmMenus'>};
+}
+
+export function kanbanPrintAttr() {
+	type Ret = typeof knbItem.obj & {
+		OrmPOItemSppbIn: typeof inItem.obj & {
+			OrmCustomerPOItem: typeof poItem.obj & {
+				OrmMasterItem: typeof item.obj;
+			};
+			OrmCustomerSPPBIn: typeof sjIn.obj;
+		};
+		OrmKanban: typeof knb.obj & {
+			dIndex?: typeof tIndex.obj;
+			OrmDocument: typeof doc.obj;
+			OrmCustomerPO: typeof po.obj & {OrmCustomer: typeof cust.obj};
+			[OrmKanban._aliasCreatedBy]: typeof user.obj;
+		};
+	};
+
+	const tIndex = attrParserV2(dIndex);
+	const knbItem = attrParserV2(OrmKanbanItem, [
+		'id',
+		'id_kanban',
+		'id_item',
+		'qty1',
+		'qty2',
+		'qty3',
+	]);
+	const knb = attrParserV2(OrmKanban, [
+		'id',
+		'image',
+		'createdAt',
+		'keterangan',
+		'nomor_kanban',
+		'index_id',
+		'index_number',
+		'list_mesin',
+	]);
+	const doc = attrParserV2(OrmDocument, ['doc_no', 'revisi', 'tgl_efektif']);
+	const po = attrParserV2(OrmCustomerPO, ['nomor_po']);
+	const cust = attrParserV2(OrmCustomer, ['name']);
+	const item = attrParserV2(OrmMasterItem, [
+		'kode_item',
+		'instruksi',
+		'name',
+		'kategori_mesinn',
+	]);
+	const inItem = attrParserV2(OrmPOItemSppbIn, ['lot_no']);
+	const user = attrParserV2(OrmUser, ['name']);
+	const poItem = attrParserV2(OrmCustomerPOItem, [
+		'unit1',
+		'unit2',
+		'unit3',
+		'harga',
+	]);
+	const sjIn = attrParserV2(OrmCustomerSPPBIn, ['nomor_surat', 'tgl']);
+
+	return {
+		Ret: {} as Ret,
+		tIndex,
+		knbItem,
+		knb,
+		doc,
+		po,
+		cust,
+		item,
+		inItem,
+		user,
+		poItem,
+		sjIn,
+	};
 }

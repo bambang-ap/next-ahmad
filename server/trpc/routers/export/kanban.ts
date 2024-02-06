@@ -1,88 +1,57 @@
-import {z} from 'zod';
-
-import {exportKanbanAttributes, OrmKanban, processMapper} from '@database';
+import {zIds} from '@appTypes/app.zod';
+import {processMapper} from '@database';
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
 import {qtyMap, renderIndex} from '@utils';
 
+import {getPrintKanbanData} from '../print/kanban';
+
 const exportKanbanRouters = {
-	kanban: procedure
-		.input(z.object({idKanbans: z.string().array()}))
-		.query(({ctx, input}) => {
-			const {idKanbans} = input;
-			const {
-				kanban: A,
-				sjIn: B,
-				inItem: C,
-				po: D,
-				cust: E,
-				poItem: F,
-				knbItem: G,
-				item: H,
-				tIndex,
-				Ret,
-				Output,
-			} = exportKanbanAttributes();
+	kanban: procedure.input(zIds).query(({ctx, input}) => {
+		type Output = Record<string, string | number>;
 
-			type JJJ = typeof Output;
+		return checkCredentialV2(ctx, async (): Promise<Output[]> => {
+			const data = await getPrintKanbanData(input);
 
-			return checkCredentialV2(ctx, async (): Promise<JJJ[]> => {
-				const data = await OrmKanban.findAll({
-					where: {id: idKanbans},
-					attributes: A.attributes,
-					include: [
-						tIndex,
-						{...B, include: [C]},
-						{...D, include: [E, F]},
-						{...G, include: [H]},
-					],
-				});
+			const dataMapping = data.map(async val => {
+				const {OrmKanban, OrmPOItemSppbIn} = val;
+				const {OrmCustomerPO, keterangan} = OrmKanban;
+				const {OrmCustomerSPPBIn, OrmCustomerPOItem} = OrmPOItemSppbIn;
+				const {OrmMasterItem, harga} = OrmCustomerPOItem;
+				const {kode_item, name, instruksi, kategori_mesinn} = OrmMasterItem;
 
-				const promisedData = data.map<Promise<JJJ>>(async row => {
-					const val = row.toJSON() as unknown as typeof Ret;
+				const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
+					const qty = val?.[qtyKey];
 
-					const item = val.OrmKanbanItems?.[0];
-
-					const sppbInItem = val.OrmCustomerSPPBIn.OrmPOItemSppbIns.find(
-						e => e.id === item?.id_item,
-					);
-					const poItem = val.OrmCustomerPO.OrmCustomerPOItems.find(
-						itm => itm.id === sppbInItem?.id_item,
-					);
-
-					const {instruksi, kategori_mesinn, kode_item, name} =
-						poItem?.OrmMasterItem ?? {};
-
-					const proses = await processMapper({instruksi, kategori_mesinn});
-
-					const qtyMapping = qtyMap(({qtyKey, unitKey}) => {
-						const qty = item?.[qtyKey];
-						if (!qty) return {[qtyKey.toUpperCase()]: ''};
-						return {
-							[qtyKey.toUpperCase()]: `${qty}`,
-							[unitKey.toUpperCase()]: `${poItem?.[unitKey]}`,
-						};
-					});
-
-					const result = {
-						CUSTOMER: val.OrmCustomerPO.OrmCustomer.name,
-						'NOMOR PO': val.OrmCustomerPO.nomor_po,
-						'NOMOR SJ': val.OrmCustomerSPPBIn.nomor_surat,
-						'NOMOR KANBAN': renderIndex(val, val.nomor_kanban!)!,
-						'PART NAME': name!,
-						'PART NO': kode_item!,
-						...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
-						// HARGA: poItem?.harga!,
-						PROSES: proses,
-						KETERANGAN: val.keterangan!,
+					return {
+						[qtyKey.toUpperCase()]: !qty ? '' : `${qty}`,
+						[unitKey.toUpperCase()]: !qty
+							? ''
+							: `${OrmCustomerPOItem?.[unitKey]}`,
 					};
-
-					return result;
 				});
 
-				return Promise.all(promisedData);
+				const proses = await processMapper({instruksi, kategori_mesinn});
+
+				const result = {
+					CUSTOMER: OrmCustomerPO.OrmCustomer.name,
+					'NOMOR PO': OrmCustomerPO.nomor_po,
+					'NOMOR SJ': OrmCustomerSPPBIn.nomor_surat,
+					'NOMOR KANBAN': renderIndex(OrmKanban, OrmKanban.nomor_kanban!)!,
+					'PART NAME': name!,
+					'PART NO': kode_item!,
+					...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
+					HARGA: harga!,
+					PROSES: proses,
+					KETERANGAN: keterangan!,
+				};
+
+				return result as Output;
 			});
-		}),
+
+			return Promise.all(dataMapping);
+		});
+	}),
 };
 
 export default exportKanbanRouters;

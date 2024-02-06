@@ -42,9 +42,7 @@ export default function Kanban() {
 
 	const {push} = useRouter();
 	const {control, watch, reset, clearErrors, handleSubmit} =
-		useForm<KanbanFormType>({
-			defaultValues: {idKanbans: {KNB_240203a520: true}},
-		});
+		useForm<KanbanFormType>();
 
 	const dataForm = watch();
 
@@ -86,7 +84,7 @@ export default function Kanban() {
 		afterPrint: updatePrint,
 		exportUseQuery: () =>
 			trpc.export.kanban.useQuery(
-				{idKanbans: selectedIds},
+				{ids: selectedIds},
 				{enabled: selectedIds.length > 0},
 			),
 		genPdfOptions: {
@@ -96,7 +94,7 @@ export default function Kanban() {
 			tagId: 'kanban-data-print',
 			useQuery: () =>
 				trpc.print.kanban.useQuery(
-					{id: selectedIds},
+					{ids: selectedIds},
 					{enabled: selectedIds.length > 0},
 				),
 			renderItem: data => {
