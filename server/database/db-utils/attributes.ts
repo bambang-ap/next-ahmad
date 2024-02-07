@@ -364,6 +364,7 @@ export function printScanAttributes() {
 	const item = attrParserV2(dItem, [
 		'instruksi',
 		'kategori_mesinn',
+		'kategori_mesin',
 		'name',
 		'kode_item',
 	]);

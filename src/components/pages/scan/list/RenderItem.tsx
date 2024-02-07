@@ -29,7 +29,11 @@ export function RenderItem({data: dataItem, rootData: data}: Prop) {
 
 	const masterItem = knbItem?.dItem;
 
-	const process = Object.values(masterItem?.instruksi ?? {})?.[0];
+	const [, process] =
+		entries(masterItem?.instruksi).find(e =>
+			masterItem?.kategori_mesinn.includes(e[0]),
+		) ?? [];
+
 	const detailProcess = process?.[0];
 
 	const {data: qrImageKanban} = trpc.qr.useQuery<any, string>(
