@@ -94,14 +94,14 @@ end`
 			[fn('sum', literal(litDiscQuery)), 'disc_val'],
 			[fn('sum', literal(`${litTotal} - ${litDiscQuery}`)), 'total_after'],
 		] as FindAttributeOptions,
-		where: {
-			...wherePagesV4({
+		where: [
+			where,
+			wherePagesV4({
 				[`$${unit}$`]: {[Op.eq]: 'kg'},
 				[`$${qty}$`]: {[Op.not]: 'NaN'},
 				[`$${harga}$`]: {[Op.not]: 'NaN'},
 			}),
-			...where,
-		},
+		],
 	};
 }
 
