@@ -7,12 +7,12 @@ import {PagingResult, TSession} from '@appTypes/app.type';
 import {TIndex, ZIndex} from '@appTypes/app.zod';
 import {IndexNumber, USER_ROLE} from '@enum';
 import {TRPCError} from '@trpc/server';
-import {moment} from '@utils';
+import {isAdminRole, moment} from '@utils';
 
 import {orderPages} from './database/db-utils';
 import {dIndex} from './database/models/index_number';
 
-export {generateId} from '@utils';
+export {generateId, isAdminRole} from '@utils';
 
 export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 	if (req.headers['user-agent']?.toLowerCase()?.includes('postman')) {
@@ -24,7 +24,11 @@ export const getSession = async (req: NextApiRequest, res: NextApiResponse) => {
 
 	const session = (await getServerSession(req, res, authOptions)) as TSession;
 
-	return {session, hasSession: !!session};
+	return {
+		session,
+		hasSession: !!session,
+		isAdmin: isAdminRole(session?.user?.role),
+	};
 };
 
 export const Response = <T extends object>(res: NextApiResponse) => {

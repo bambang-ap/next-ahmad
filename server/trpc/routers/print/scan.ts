@@ -1,3 +1,5 @@
+import {Attributes, FindOptions} from 'sequelize';
+
 import {tRoute, zIds} from '@appTypes/app.zod';
 import {Success} from '@constants';
 import {
@@ -55,13 +57,23 @@ export const printScanRouter = {
 			const a = literalFieldType<RetType>('createdAt', 'dScan');
 			const b = literalFieldType<RetType>('dScanItems.createdAt');
 
-			const data = await scan.model.findAll({
-				where: {id: ids, status: route},
+			const options: FindOptions<Attributes<dScan>> = {
 				attributes: scan.attributes,
+				where: {id: ids, status: route},
+			};
+
+			const check = await scan.model.findAll({
+				...options,
+				raw: true,
+				include: [scnItem],
+			});
+
+			const data = await scan.model.findAll({
+				...options,
 				include: [
 					{
 						...scnItem,
-						where: whereNearestDate(a, b),
+						where: check.length > 0 ? whereNearestDate(a, b) : undefined,
 						include: [
 							rejItem,
 							{
@@ -78,10 +90,6 @@ export const printScanRouter = {
 			});
 
 			const result = data.map(e => e.toJSON() as unknown as RetType);
-
-			// await Promise.all(result.map(async (id)=>{
-
-			// }));
 
 			return result;
 		});
