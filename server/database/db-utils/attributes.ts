@@ -548,7 +548,8 @@ export function sppbOutGetAttributes() {
 		'id_sppb_in',
 		'master_item_id',
 	]);
-	const sjIn = attrParserV2(dSJIn, ['id_po']);
+	const sjIn = attrParserV2(dSJIn, ['nomor_surat', 'id_po']);
+	const po = attrParserV2(dPo, ['nomor_po']);
 	const cust = attrParserV2(dCust, ['name']);
 	const vehicle = attrParserV2(dVehicle, ['name']);
 
@@ -558,7 +559,7 @@ export function sppbOutGetAttributes() {
 		dVehicle: typeof vehicle.obj;
 		dOutItems: (typeof outItem.obj & {
 			dInItem: typeof inItem.obj & {
-				dSJIn: typeof sjIn.obj;
+				dSJIn: typeof sjIn.obj & {dPo: typeof po.obj};
 			};
 		})[];
 	};
@@ -568,6 +569,7 @@ export function sppbOutGetAttributes() {
 		sjOut,
 		inItem,
 		sjIn,
+		po,
 		cust,
 		tIndex,
 		vehicle,

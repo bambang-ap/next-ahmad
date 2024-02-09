@@ -80,7 +80,7 @@ const sppbOutRouters = router({
 		type RetType = typeof Ret;
 
 		const {limit, page, search} = input;
-		const {outItem, sjOut, tIndex, inItem, sjIn, cust, vehicle, Ret} =
+		const {outItem, po:poModel, sjOut, tIndex, inItem, sjIn, cust, vehicle, Ret} =
 			sppbOutGetAttributes();
 
 		function remapData(data: RetType): TCustomerSPPBOutUpsert {
@@ -147,7 +147,11 @@ const sppbOutRouters = router({
 					tIndex,
 					vehicle,
 					cust,
-					{...outItem, separate: true, include: [{...inItem, include: [sjIn]}]},
+					{
+						...outItem,
+						separate: true,
+						include: [{...inItem, include: [{...sjIn, include: [poModel]}]}],
+					},
 				],
 			});
 
