@@ -66,6 +66,9 @@ export function RenderKategori({
 	const {data: availableMesins = []} =
 		trpc.kanban.availableMesins.useQuery(katMesin);
 
+	const iKat = itemDetail.kategori_mesinn.findIndex(e => e === katMesin);
+	const deftVal = itemDetail.default_mesin[iKat];
+
 	useEffect(() => {
 		if (!!itemDetail?.instruksi) reset({instruksi: itemDetail.instruksi});
 	}, [!!itemDetail?.instruksi]);
@@ -73,8 +76,10 @@ export function RenderKategori({
 	return (
 		<div className="flex gap-2">
 			<Select
+				key={uuid()}
 				label="Mesin"
 				fieldName={name}
+				defaultValue={deftVal}
 				disabled={isDisabled}
 				control={parentProps.control}
 				className={classNames('w-1/6', {'mt-4': !!hasSelected})}

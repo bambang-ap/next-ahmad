@@ -17,10 +17,7 @@ export type RenderProcessProps = {
 };
 
 export function RenderProcess({idKat, control, reset}: RenderProcessProps) {
-	const [instruksiObj = {}] = useWatch({
-		control,
-		name: ['instruksi'],
-	});
+	const [instruksiObj = {}] = useWatch({control, name: ['instruksi']});
 
 	const instruksis = instruksiObj[idKat] ?? [];
 

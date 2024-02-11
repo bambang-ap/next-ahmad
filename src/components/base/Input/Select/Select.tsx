@@ -1,4 +1,4 @@
-import {useContext} from 'react';
+import {useContext, useEffect} from 'react';
 
 import {Autocomplete, Box, TextField} from '@mui/material';
 
@@ -119,6 +119,7 @@ function SelectComponent<F extends FieldValues>({
 	controller,
 	disableClear,
 	firstOption,
+	defaultValue,
 	className,
 	isLoading = false,
 	topSelected,
@@ -156,6 +157,10 @@ function SelectComponent<F extends FieldValues>({
 			{fieldState.error?.message}
 		</Text>
 	);
+
+	useEffect(() => {
+		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
+	}, [value, defaultValue]);
 
 	if (isDisabled) {
 		return (
