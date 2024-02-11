@@ -3,8 +3,13 @@ import {z} from 'zod';
 import {PagingResult} from '@appTypes/app.type';
 import {tableFormValue, TMasterItem, tMasterItem, zId} from '@appTypes/app.zod';
 import {Success} from '@constants';
-import {OrmKategoriMesin, OrmMasterItem, wherePages} from '@database';
-import {checkCredentialV2, generateId, pagingResult} from '@server';
+import {ORM, OrmKategoriMesin, OrmMasterItem, wherePages} from '@database';
+import {
+	checkCredentialV2,
+	generateId,
+	pagingResult,
+	procedureError,
+} from '@server';
 import {procedure, router} from '@trpc';
 
 import {appRouter} from '.';
@@ -63,11 +68,23 @@ const itemRouters = router({
 	upsert: procedure
 		.input(tMasterItem.partial({id: true}))
 		.mutation(({ctx, input}) => {
-			const {id = generateId('MI'), ...body} = input;
-			return checkCredentialV2(ctx, async () => {
-				await OrmMasterItem.upsert({id, ...body});
+			const {id = generateId('MI'), default_mesin = [], ...body} = input;
 
-				return Success;
+			return checkCredentialV2(ctx, async () => {
+				const transaction = await ORM.transaction();
+
+				try {
+					await OrmMasterItem.upsert(
+						{id, default_mesin, ...body},
+						{transaction},
+					);
+
+					await transaction.commit();
+					return Success;
+				} catch (err) {
+					await transaction.rollback();
+					procedureError(err);
+				}
 			});
 		}),
 

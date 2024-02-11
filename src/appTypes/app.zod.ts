@@ -227,6 +227,7 @@ export const tMasterItem = zId.extend({
 	// FIXME: Remove
 	kategori_mesin: z.string().nullish(),
 	kategori_mesinn: z.string().array(),
+	default_mesin: z.string().array(),
 	keterangan: z.string().nullish(),
 	instruksi: z.record(
 		z

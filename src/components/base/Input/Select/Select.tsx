@@ -74,21 +74,26 @@ export function selectMapperV2<T extends FieldValues, P extends FieldPath<T>>(
 	});
 }
 
-export function selectMapper<T extends FieldValues, P extends FieldPath<T>>(
+export function selectMapper<
+	T extends FieldValues,
+	P extends FieldPath<T>,
+	PP extends FieldPath<T>,
+>(
 	data: T[],
 	value: P | P[] | [string, P][],
-	label: P | P[] | [string, P][],
+	label: PP | PP[] | [string, PP][],
 ) {
+	type O = P | PP;
 	// @ts-ignore
 	// eslint-disable-next-line @typescript-eslint/no-unused-vars
-	return data?.map<SelectPropsData>(item => {
+	return data?.map<SelectDataProps>(item => {
 		function finder(path?: string) {
 			if (!path) return undefined;
 
 			return eval(`item?.${path.replace(/\./g, '?.')}`);
 		}
 
-		function finderY(pathValue: P | P[] | [string, P][]) {
+		function finderY(pathValue: O | O[] | [string, O][]) {
 			if (!Array.isArray(pathValue)) return finder(pathValue);
 			else {
 				return pathValue

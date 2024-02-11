@@ -119,15 +119,19 @@ export function ModalChildMasterItem({
 								'w-1/6': !!kategori,
 								'flex-1': !kategori,
 							})}>
-							<Select
-								key={kategori}
-								control={control}
-								className="flex-1"
-								fieldName={`kategori_mesinn.${i}`}
-								data={selectMapper(data ?? [], 'id', 'name').filter(
-									e => e.value === kategori || !kategoriMesin.includes(e.value),
-								)}
-							/>
+							<div className="flex flex-col flex-1 gap-2">
+								<Select
+									key={kategori}
+									control={control}
+									className="flex-1"
+									fieldName={`kategori_mesinn.${i}`}
+									data={selectMapper(data ?? [], 'id', 'name').filter(
+										e =>
+											e.value === kategori || !kategoriMesin.includes(e.value),
+									)}
+								/>
+								<RRR index={i} control={control} katMesin={kategori} />
+							</div>
 							<Button
 								onClick={() =>
 									reset(prev => {
@@ -135,10 +139,12 @@ export function ModalChildMasterItem({
 											[prev.kategori_mesinn[i]!]: [],
 										};
 										delete prev.instruksi[prev.kategori_mesinn[i]!];
-										return formData(prev).set(
-											'kategori_mesinn',
-											prev.kategori_mesinn.remove(i),
-										);
+
+										return {
+											...prev,
+											kategori_mesinn: prev.kategori_mesinn.remove(i),
+											default_mesin: prev.default_mesin.remove(i),
+										};
 									})
 								}>
 								Delete
@@ -161,5 +167,25 @@ export function ModalChildMasterItem({
 
 			<Button type="submit">Submit</Button>
 		</>
+	);
+}
+
+// FIXME:
+// @ts-ignore
+function RRR({control, katMesin, index}) {
+	const {data = []} = trpc.kanban.availableMesins.useQuery(katMesin, {
+		enabled: !!katMesin,
+	});
+
+	if (!katMesin) return null;
+
+	return (
+		<Select
+			label="Mesin"
+			className="flex-1"
+			control={control}
+			fieldName={`default_mesin.${index}`}
+			data={selectMapper(data, 'id', 'nomor_mesin')}
+		/>
 	);
 }
