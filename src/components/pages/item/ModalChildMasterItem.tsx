@@ -1,6 +1,3 @@
-// @ts-nocheck
-// FIXME:
-
 import {Control, UseFormReset, useWatch} from 'react-hook-form';
 
 import {
@@ -8,9 +5,10 @@ import {
 	TKategoriMesin,
 	TMasterItem,
 } from '@appTypes/app.type';
-import {Button, Input, Select, selectMapper, Text} from '@components';
+import {Button, Gallery, Input, Select, selectMapper, Text} from '@components';
+import {selectUnitData} from '@constants';
 import {CRUD_ENABLED} from '@enum';
-import {classNames, formData} from '@utils';
+import {classNames, formData, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
 
 import {RenderProcess} from './RenderProcess';
@@ -29,12 +27,15 @@ export function ModalChildMasterItem({
 	const {data} = trpc.basic.get.useQuery<any, TKategoriMesin[]>({
 		target: CRUD_ENABLED.MESIN_KATEGORI,
 	});
-	const [modalType, kategoriMesin = []] = useWatch({
-		control,
-		name: ['type', 'kategori_mesinn'],
-	});
+	const {
+		type: modalType,
+		kategori_mesinn: kategoriMesin = [],
+		unit_notes = [],
+	} = useWatch({control});
 
-	if (modalType === 'delete') {
+	const {isAddEdit, isDelete} = modalTypeParser(modalType);
+
+	if (isDelete) {
 		return (
 			<div>
 				<Text>Hapus ?</Text>
@@ -43,12 +44,60 @@ export function ModalChildMasterItem({
 		);
 	}
 
+	function add() {
+		// @ts-ignore
+		reset(prev => {
+			return {...prev, unit_notes: [...(prev.unit_notes ?? []), []]};
+		});
+	}
+
+	function remove(index: number) {
+		reset(prev => {
+			return {...prev, unit_notes: prev.unit_notes.remove(index)};
+		});
+	}
+
 	return (
 		<>
 			<Input control={control} fieldName="name" />
 			<Input control={control} fieldName="kode_item" label="Kode Item" />
 			<Input control={control} fieldName="harga" type="decimal" />
 			<Input control={control} fieldName="keterangan" />
+
+			<Gallery
+				columns={3}
+				data={isAddEdit ? [...unit_notes, null] : unit_notes}
+				renderItem={({item}, i) => {
+					const className = 'relative items-center flex border rounded-xl p-2';
+
+					if (item === null)
+						return (
+							<div className={classNames(className, 'justify-center')}>
+								<Button icon="faPlus" onClick={add}>
+									Tambah Unit Notes
+								</Button>
+							</div>
+						);
+					return (
+						<div key={i} className={classNames('gap-2', className)}>
+							<Select
+								className="flex-1"
+								control={control}
+								data={selectUnitData}
+								fieldName={`unit_notes.${i}.0`}
+								label={`Unit ${i + 1}`}
+							/>
+							<Input
+								className="flex-1"
+								control={control}
+								fieldName={`unit_notes.${i}.1`}
+								label={`Notes ${i + 1}`}
+							/>
+							<Button icon="faTrash" onClick={() => remove(i)} />
+						</div>
+					);
+				}}
+			/>
 
 			<Button
 				onClick={() =>
@@ -99,7 +148,9 @@ export function ModalChildMasterItem({
 							<div className="flex-1">
 								<RenderProcess
 									idKat={kategori}
+									// @ts-ignore
 									control={control}
+									// @ts-ignore
 									reset={reset}
 								/>
 							</div>

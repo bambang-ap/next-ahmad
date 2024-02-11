@@ -19,6 +19,7 @@ export default function initOrmMasterItem(sequelize: Sequelize) {
 			kategori_mesin: STRING,
 			keterangan: STRING,
 			harga: ormDecimalType('harga'),
+			unit_notes: JSONB,
 		},
 		{
 			sequelize,
@@ -48,6 +49,7 @@ export function initDItem(sequelize: Sequelize) {
 			kategori_mesin: STRING,
 			keterangan: STRING,
 			harga: ormDecimalType('harga'),
+			unit_notes: JSONB,
 		},
 		{
 			sequelize,
