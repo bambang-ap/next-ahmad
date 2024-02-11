@@ -1030,6 +1030,7 @@ export function kanbanPrintAttr() {
 		'instruksi',
 		'name',
 		'kategori_mesinn',
+		'unit_notes',
 	]);
 	const inItem = attrParserV2(OrmPOItemSppbIn, ['lot_no']);
 	const user = attrParserV2(OrmUser, ['name']);

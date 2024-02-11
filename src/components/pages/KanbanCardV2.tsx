@@ -1,4 +1,4 @@
-import {RouterOutput} from '@appTypes/app.type';
+import {RouterOutput, TMasterItem} from '@appTypes/app.type';
 import {BorderTd, Text as Txt, TextProps} from '@components';
 import {nonRequiredRefetch} from '@constants';
 import {DataProcess} from '@trpc/routers/kanban/get';
@@ -27,10 +27,11 @@ export function RenderKanbanCardV2(props: AProps) {
 		OrmCustomerPO,
 		dataCreatedBy,
 		id: idKanban,
-		image,
+		// image,
 	} = OrmKanban;
 
 	const processes = OrmMasterItem?.instruksi;
+	const unit_notes = OrmMasterItem?.unit_notes ?? [];
 	const selectedMesin = list_mesin?.[id_item];
 
 	const {data: qrImage} = trpc.qr.useQuery(idKanban, {enabled: !!idKanban});
@@ -184,7 +185,10 @@ export function RenderKanbanCardV2(props: AProps) {
 					<BorderTd center className="text-base">
 						MATERIAL
 					</BorderTd>
-					<BorderTd rowSpan={3}>{image && <img alt="" src={image} />}</BorderTd>
+					<BorderTd rowSpan={3}>
+						<RenderUnitNotes unit_notes={unit_notes} />
+					</BorderTd>
+					{/* <BorderTd rowSpan={3}>{image && <img alt="" src={image} />}</BorderTd> */}
 				</tr>
 				<tr>
 					<BorderTd className="text-base">Part Name</BorderTd>
@@ -270,5 +274,15 @@ export function RenderKanbanCardV2(props: AProps) {
 				<TxtBold>{`Created by : ${dataCreatedBy?.name}`}</TxtBold>
 			</div>
 		</>
+	);
+}
+
+export function RenderUnitNotes({unit_notes}: Pick<TMasterItem, 'unit_notes'>) {
+	return (
+		<div className="flex flex-col gap-2">
+			{unit_notes.map(([unit, notes], i) => {
+				return <Text key={`${i}-${unit}`}>{`1 ${unit} = ${notes}`}</Text>;
+			})}
+		</div>
 	);
 }
