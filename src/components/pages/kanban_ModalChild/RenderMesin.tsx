@@ -67,7 +67,7 @@ export function RenderKategori({
 		trpc.kanban.availableMesins.useQuery(katMesin);
 
 	const iKat = itemDetail.kategori_mesinn.findIndex(e => e === katMesin);
-	const deftVal = itemDetail.default_mesin[iKat];
+	const deftVal = itemDetail.default_mesin?.[iKat];
 
 	useEffect(() => {
 		if (!!itemDetail?.instruksi) reset({instruksi: itemDetail.instruksi});
