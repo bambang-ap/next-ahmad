@@ -227,7 +227,7 @@ export const tMasterItem = zId.extend({
 	// FIXME: Remove
 	kategori_mesin: z.string().nullish(),
 	kategori_mesinn: z.string().array(),
-	default_mesin: z.string().array(),
+	default_mesin: z.string().array().nullish(),
 	keterangan: z.string().nullish(),
 	instruksi: z.record(
 		z
@@ -301,7 +301,7 @@ export type TKanbanUpsertItem = z.infer<typeof tKanbanUpsertItem>;
 export const tKanbanUpsertItem = tKanbanItem
 	.extend({
 		id_sppb_in: z.string().nullish(),
-		OrmMasterItem: tMasterItem.partial({default_mesin: true}).optional(),
+		OrmMasterItem: tMasterItem.optional(),
 	})
 	.partial({id: true, id_kanban: true});
 
