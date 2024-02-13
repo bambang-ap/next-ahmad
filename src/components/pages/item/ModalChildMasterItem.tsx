@@ -143,7 +143,8 @@ export function ModalChildMasterItem({
 										return {
 											...prev,
 											kategori_mesinn: prev.kategori_mesinn.remove(i),
-											default_mesin: prev.default_mesin.remove(i),
+											default_mesin:
+												prev?.default_mesin?.remove(i) ?? prev?.default_mesin,
 										};
 									})
 								}>
