@@ -24,6 +24,7 @@ import {CheckBox, CheckboxProps} from './CheckBox';
 
 export type InputProps = Pick<CheckboxProps, 'renderChildren'> & {
 	byPassValue?: string | number | boolean;
+	replaceValue?: string | number | boolean;
 	hidden?: boolean;
 	placeholder?: string;
 	placeholderBottom?: string;
@@ -57,6 +58,7 @@ export function InputComponent<F extends FieldValues>(
 	const theme = useTheme();
 	const {
 		byPassValue,
+		replaceValue,
 		hidden,
 		type = 'text',
 		label: labelProps,
@@ -106,14 +108,18 @@ export function InputComponent<F extends FieldValues>(
 	) : null;
 
 	useEffect(() => {
-		if (type === 'checkbox') {
-			if (value === undefined && defaultValue !== undefined)
-				setTimeout(() => onChange(defaultValue), 100);
+		if (replaceValue !== undefined) {
+			setTimeout(() => onChange(replaceValue), 100);
 		} else {
-			if (!value && !!defaultValue)
-				setTimeout(() => onChange(defaultValue), 100);
+			if (type === 'checkbox') {
+				if (value === undefined && defaultValue !== undefined)
+					setTimeout(() => onChange(defaultValue), 100);
+			} else {
+				if (!value && !!defaultValue)
+					setTimeout(() => onChange(defaultValue), 100);
+			}
 		}
-	}, [value, defaultValue]);
+	}, [value, defaultValue, replaceValue]);
 
 	switch (type) {
 		case 'date': {

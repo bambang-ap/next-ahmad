@@ -118,6 +118,7 @@ export const isProd = process.env.NODE_ENV === 'production';
 
 export const defaultLimit = 10;
 export const qtyList = [1, 2, 3] as const;
+export const qtyIndex = [0, 1, 2] as const;
 
 export const SidebarCollapseOn: Breakpoint = 'sm';
 

@@ -1,6 +1,6 @@
-import {RouterOutput, TMasterItem} from '@appTypes/app.type';
+import {RouterOutput, TItemUnit, TMasterItem} from '@appTypes/app.type';
 import {BorderTd, Text as Txt, TextProps} from '@components';
-import {nonRequiredRefetch} from '@constants';
+import {nonRequiredRefetch, qtyIndex} from '@constants';
 import {DataProcess} from '@trpc/routers/kanban/get';
 import {classNames, dateUtils, moment, renderIndex} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -280,8 +280,13 @@ export function RenderKanbanCardV2(props: AProps) {
 export function RenderUnitNotes({unit_notes}: Pick<TMasterItem, 'unit_notes'>) {
 	return (
 		<div className="flex flex-col gap-2">
-			{unit_notes.map(([unit, notes], i) => {
-				return <Text key={`${i}-${unit}`}>{`1 ${unit} = ${notes}`}</Text>;
+			{qtyIndex.map(i => {
+				const [satuan, num, ss] = unit_notes?.[i] ?? [];
+				const unit: TItemUnit = ss || i === 0 ? 'kg' : 'pcs';
+
+				if (!num) return null;
+
+				return <Text key={`${i}-${unit}`}>{`${satuan} ${num}${unit}`}</Text>;
 			})}
 		</div>
 	);

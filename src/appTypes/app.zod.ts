@@ -220,7 +220,11 @@ export const tCustomerPOExtended = tCustomerPO.extend({
 
 export type TMasterItem = z.infer<typeof tMasterItem>;
 export const tMasterItem = zId.extend({
-	unit_notes: z.tuple([tItemUnit, z.string()]).array(),
+	unit_notes: z.tuple([
+		z.tuple([z.literal('Berat/pcs'), zDecimal.nullish()]),
+		z.tuple([z.literal('Pcs/Lot'), zDecimal.nullish()]),
+		z.tuple([z.literal('Qty/Lot'), zDecimal.nullish(), tItemUnit.nullish()]),
+	]),
 	harga: zDecimal,
 	name: z.string().nullish(),
 	kode_item: z.string().nullish(),

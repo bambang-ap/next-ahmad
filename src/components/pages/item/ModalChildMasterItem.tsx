@@ -5,8 +5,8 @@ import {
 	TKategoriMesin,
 	TMasterItem,
 } from '@appTypes/app.type';
-import {Button, Gallery, Input, Select, selectMapper, Text} from '@components';
-import {selectUnitData} from '@constants';
+import {Button, Input, Select, selectMapper, Text} from '@components';
+import {qtyIndex, selectUnitData} from '@constants';
 import {CRUD_ENABLED} from '@enum';
 import {classNames, formData, modalTypeParser} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -27,13 +27,11 @@ export function ModalChildMasterItem({
 	const {data} = trpc.basic.get.useQuery<any, TKategoriMesin[]>({
 		target: CRUD_ENABLED.MESIN_KATEGORI,
 	});
-	const {
-		type: modalType,
-		kategori_mesinn: kategoriMesin = [],
-		unit_notes = [],
-	} = useWatch({control});
+	const {type: modalType, kategori_mesinn: kategoriMesin = []} = useWatch({
+		control,
+	});
 
-	const {isAddEdit, isDelete} = modalTypeParser(modalType);
+	const {isDelete} = modalTypeParser(modalType);
 
 	if (isDelete) {
 		return (
@@ -44,48 +42,28 @@ export function ModalChildMasterItem({
 		);
 	}
 
-	function add() {
-		// @ts-ignore
-		reset(prev => {
-			return {...prev, unit_notes: [...(prev.unit_notes ?? []), []]};
-		});
-	}
-
-	function remove(index: number) {
-		reset(prev => {
-			return {...prev, unit_notes: prev.unit_notes.remove(index)};
-		});
-	}
-
 	return (
 		<>
 			<Input control={control} fieldName="name" />
 			<Input control={control} fieldName="kode_item" label="Kode Item" />
 			<Input control={control} fieldName="harga" type="decimal" />
 			<Input control={control} fieldName="keterangan" />
-
-			<Gallery
-				columns={3}
-				data={isAddEdit ? [...unit_notes, null] : unit_notes}
-				renderItem={({item}, i) => {
+			<div className="flex gap-1">
+				{qtyIndex.map(i => {
 					const className = 'relative items-center flex border rounded-xl p-2';
 
-					if (item === null)
-						return (
-							<div className={classNames(className, 'justify-center')}>
-								<Button icon="faPlus" onClick={add}>
-									Tambah Unit Notes
-								</Button>
-							</div>
-						);
+					const defaultValue: TMasterItem['unit_notes'][number][0] =
+						i === 0 ? 'Berat/pcs' : i === 1 ? 'Pcs/Lot' : 'Qty/Lot';
+
 					return (
 						<div key={i} className={classNames('gap-2', className)}>
-							<Select
+							<Input
+								disabled
+								replaceValue={defaultValue}
 								className="flex-1"
 								control={control}
-								data={selectUnitData}
 								fieldName={`unit_notes.${i}.0`}
-								label={`Unit ${i + 1}`}
+								label={`Notes ${i + 1}`}
 							/>
 							<Input
 								className="flex-1"
@@ -93,11 +71,19 @@ export function ModalChildMasterItem({
 								fieldName={`unit_notes.${i}.1`}
 								label={`Notes ${i + 1}`}
 							/>
-							<Button icon="faTrash" onClick={() => remove(i)} />
+							{i === 2 && (
+								<Select
+									className="flex-1"
+									control={control}
+									data={selectUnitData}
+									fieldName={`unit_notes.${i}.2`}
+									label={`Unit ${i + 1}`}
+								/>
+							)}
 						</div>
 					);
-				}}
-			/>
+				})}
+			</div>
 
 			<Button
 				onClick={() =>
