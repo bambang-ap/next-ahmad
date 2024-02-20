@@ -255,7 +255,8 @@ async function parseDetailKanban(dataValues: TKanban) {
 	const objectData: KanbanGetRow = {
 		...restDataValues,
 		dataScan: dataScan?.dataValues,
-		dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in),
+		// @ts-ignore
+		dataSppbIn: dataSppbIn.find(e => e.id === id_sppb_in)!,
 		get id_customer() {
 			return this.OrmCustomerPO?.id_customer;
 		},
