@@ -1,5 +1,6 @@
 import {zIds} from '@appTypes/app.zod';
 import {processMapper} from '@database';
+import {getKanbanGrade} from '@db/getGrade';
 import {checkCredentialV2} from '@server';
 import {procedure} from '@trpc';
 import {qtyMap, renderIndex} from '@utils';
@@ -12,6 +13,8 @@ const exportKanbanRouters = {
 
 		return checkCredentialV2(ctx, async (): Promise<Output[]> => {
 			const data = await getPrintKanbanData(input);
+
+			const asd = await getKanbanGrade({id_kanban: input.ids});
 
 			const dataMapping = data.map(async val => {
 				const {OrmKanban, OrmPOItemSppbIn} = val;
@@ -31,6 +34,8 @@ const exportKanbanRouters = {
 					};
 				});
 
+				const status = asd?.scores?.find?.(e => e.id === val.id);
+
 				const proses = await processMapper({instruksi, kategori_mesinn});
 
 				const result = {
@@ -42,6 +47,7 @@ const exportKanbanRouters = {
 					'PART NO': kode_item!,
 					...qtyMapping.reduce((a, b) => ({...a, ...b}), {}),
 					HARGA: harga!,
+					STATUS: status?.score!,
 					PROSES: proses,
 					KETERANGAN: keterangan!,
 				};

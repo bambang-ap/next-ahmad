@@ -80,17 +80,19 @@ export default function Kanban() {
 			</>
 		),
 		enabledExport: true,
+		exportName: 'Data-Kanban',
 		exportRenderItem: renderItemAsIs,
-		afterPrint: updatePrint,
 		exportUseQuery: () =>
 			trpc.export.kanban.useQuery(
 				{ids: selectedIds},
 				{enabled: selectedIds.length > 0},
 			),
+		afterPrint: updatePrint,
 		genPdfOptions: {
 			width: 1900,
 			splitPagePer: 4,
 			orientation: 'l',
+			filename: 'Kanban',
 			tagId: 'kanban-data-print',
 			useQuery: () =>
 				trpc.print.kanban.useQuery(

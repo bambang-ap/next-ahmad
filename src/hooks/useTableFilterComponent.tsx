@@ -71,6 +71,7 @@ type Props<
 
 	exportRenderItem: (item: NonNullable<EQ['data']>[number]) => ER;
 	exportUseQuery: () => EQ;
+	exportName?: string;
 
 	afterPrint?: NoopVoid;
 
@@ -96,6 +97,7 @@ export function useTableFilterComponent<
 		reset,
 		property,
 		enabledExport = false,
+		exportName,
 		exportRenderItem,
 		exportUseQuery,
 		renderItem,
@@ -118,7 +120,7 @@ export function useTableFilterComponent<
 	const genPdfKey = useMemo(uuid, []);
 	const dataForm = useWatch({control});
 	const exportData = useExport(
-		{loader, renderItem: exportRenderItem},
+		{loader, renderItem: exportRenderItem, names: [exportName]},
 		exportUseQuery,
 	);
 
