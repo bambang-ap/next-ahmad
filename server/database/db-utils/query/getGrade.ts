@@ -1,58 +1,50 @@
 import {WhereOptions} from 'sequelize';
 
 import {TKanbanItem, TScanTarget} from '@appTypes/app.type';
-import {ZCreatedQty} from '@appTypes/app.zod';
-import {
-	dInItem,
-	dKanban,
-	dKnbItem,
-	dOutItem,
-	dRejItem,
-	dScan,
-	dScanItem,
-} from '@database';
 import {moment, qtyMap} from '@utils';
 
-import {attrParserV2, orderPages} from '..';
+import {kanbanGradeAttributes, orderPages} from '..';
 
 import {calculatePoint, calculateScore} from '@utils';
 
-export type RetGrade = Awaited<ReturnType<typeof getKanbanGrade>>;
+export type RetGradeWhere = ReturnType<typeof kanbanGradeAttributes>['Ret'];
+export type RetGrade = {
+	where?: WhereOptions<TKanbanItem>;
+	status: (0 | 1 | 2 | 3 | 4)[];
+	scores: {
+		id: string;
+		day: number;
+		point: number;
+		id_item: string;
+		endDate?: string;
+		startDate?: string;
+		score: ReturnType<typeof calculateScore>;
+		customer?: RetGradeWhere['dKanban']['dPo']['dCust'];
+	}[];
+};
 
-export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
-	const qtys: (keyof ZCreatedQty)[] = ['createdAt', 'qty1', 'qty2', 'qty3'];
-
-	const inItem = attrParserV2(dInItem, qtys);
-	const knbItem = attrParserV2(dKnbItem, [...qtys, 'id', 'id_item']);
-	const outItem = attrParserV2(dOutItem, qtys);
-	const knb = attrParserV2(dKanban, ['id']);
-	const scn = attrParserV2(dScan, ['status']);
-	const scnItem = attrParserV2(dScanItem, qtys);
-	const rejItem = attrParserV2(dRejItem, [...qtys, 'reason']);
-
-	type Ret = typeof knbItem.obj & {
-		dInItem: typeof inItem.obj & {
-			dOutItems: typeof outItem.obj[];
-			dKnbItems: typeof knbItem.obj[];
-		};
-		dKanban: typeof knb.obj & {
-			dScans: (typeof scn.obj & {
-				dScanItems: (typeof scnItem.obj & {
-					dRejItems: typeof rejItem.obj[];
-				})[];
-			})[];
-		};
-	};
+export async function getKanbanGrade(
+	where?: WhereOptions<TKanbanItem>,
+	withCustomer?: boolean,
+): Promise<RetGrade> {
+	const {inItem, po, cust, knb, knbItem, outItem, rejItem, scn, scnItem} =
+		kanbanGradeAttributes();
 
 	const data = await knbItem.model.findAll({
 		where,
 		attributes: knbItem.attributes,
-		order: orderPages<Ret>({'dInItem.dOutItems.createdAt': false}),
+		order: orderPages<RetGradeWhere>({
+			'dKanban.dPo.dCust.name': true,
+			'dInItem.dOutItems.createdAt': false,
+		}),
 		include: [
 			{...inItem, include: [outItem, knbItem]},
 			{
 				...knb,
-				include: [{...scn, include: [{...scnItem, include: [rejItem]}]}],
+				include: [
+					{...po, include: [cust]},
+					{...scn, include: [{...scnItem, include: [rejItem]}]},
+				],
 			},
 		],
 	});
@@ -63,7 +55,7 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 			id_item,
 			dInItem: itemSjIn,
 			...val
-		} = e.toJSON() as unknown as Ret;
+		} = e.toJSON() as unknown as RetGradeWhere;
 		const {dKnbItems, dOutItems} = itemSjIn;
 
 		const compare = qtyMap(({qtyKey}) => {
@@ -86,6 +78,7 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 			id,
 			id_item,
 			startDate: val.createdAt,
+			customer: withCustomer ? val.dKanban.dPo.dCust : undefined,
 			get endDate() {
 				if (isClosed) {
 					return dOutItems?.[0]?.createdAt;
@@ -107,7 +100,7 @@ export async function getKanbanGrade(where: WhereOptions<TKanbanItem>) {
 	});
 
 	const mapStatus = data.map((e, i) => {
-		const val = e.toJSON() as unknown as Ret;
+		const val = e.toJSON() as unknown as RetGradeWhere;
 		const {dScans: scans} = val.dKanban;
 
 		const outDone = mapScore[i]!.day >= 0;

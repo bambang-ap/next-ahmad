@@ -301,16 +301,23 @@ type X = RetGrade['scores'][number];
 type D = 'id' | 'id_item';
 type AvgGrade = PartialOne<X, D>[];
 
+export function averageScore(scores: AvgGrade = []) {
+	const point = Math.add(0, ...scores.map(e => e.point)) / scores.length;
+	const score = calculateScore(1, point);
+
+	return {point: point.toFixed(decimalValue), score};
+}
+
 export function averageGrade(
-	points: AvgGrade = [],
+	scores: AvgGrade = [],
 	startDate?: string,
 ): Omit<AvgGrade[number], D> {
 	let endDate: string | undefined;
 
-	for (let i = 0; i < points.length; i++) {
-		const {startDate: start, endDate: end} = points[i]!;
+	for (let i = 0; i < scores.length; i++) {
+		const {startDate: start, endDate: end} = scores[i]!;
 		if (i === 0 && startDate === undefined) startDate = start;
-		if (i === points.length - 1) endDate = end;
+		if (i === scores.length - 1) endDate = end;
 	}
 
 	return {

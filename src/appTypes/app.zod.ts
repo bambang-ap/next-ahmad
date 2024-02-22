@@ -143,6 +143,7 @@ export const tCustomer = zId.extend({
 	up: z.string().optional(),
 	ppn: z.boolean().default(true).optional(),
 	keterangan: z.string().nullish(),
+	...zCreatedUpdated.shape,
 });
 
 export type TItemUnit = z.infer<typeof tItemUnit>;

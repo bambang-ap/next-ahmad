@@ -11,6 +11,7 @@ import {qtyMap} from '@utils';
 import {appRouter} from '..';
 
 import {defaultDashboardRouter} from './default';
+import dashboardGradeRouters from './grade';
 import machineDashboardRouters from './machine';
 import mainDashboardRouter from './main';
 import dashboardSalesRouters from './sales';
@@ -18,6 +19,7 @@ import dashboardSalesRouters from './sales';
 const dashboardRouters = router({
 	...defaultDashboardRouter,
 	sales: dashboardSalesRouters(),
+	grade: dashboardGradeRouters(),
 	main: mainDashboardRouter(),
 	machine: machineDashboardRouters,
 	unitCountPoItem: procedure.query(({ctx}) => {

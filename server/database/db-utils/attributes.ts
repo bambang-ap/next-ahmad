@@ -18,6 +18,7 @@ import {
 	tScan,
 	tUser,
 	ZCreated,
+	ZCreatedQty,
 } from '@appTypes/app.zod';
 import {
 	attrParser,
@@ -1055,5 +1056,48 @@ export function kanbanPrintAttr() {
 		user,
 		poItem,
 		sjIn,
+	};
+}
+
+export function kanbanGradeAttributes() {
+	const qtys: (keyof ZCreatedQty)[] = ['createdAt', 'qty1', 'qty2', 'qty3'];
+
+	const inItem = attrParserV2(dInItem, qtys);
+	const knbItem = attrParserV2(dKnbItem, [...qtys, 'id', 'id_item']);
+	const outItem = attrParserV2(dOutItem, qtys);
+	const knb = attrParserV2(dKanban, ['id', 'id_po']);
+	const po = attrParserV2(dPo, ['id_customer']);
+	const cust = attrParserV2(dCust, ['id', 'name']);
+	const scn = attrParserV2(dScan, ['status']);
+	const scnItem = attrParserV2(dScanItem, qtys);
+	const rejItem = attrParserV2(dRejItem, [...qtys, 'reason']);
+
+	type Ret = typeof knbItem.obj & {
+		dInItem: typeof inItem.obj & {
+			dOutItems: typeof outItem.obj[];
+			dKnbItems: typeof knbItem.obj[];
+		};
+		dKanban: typeof knb.obj & {
+			dPo: typeof po.obj & {dCust?: typeof cust.obj};
+			dScans: (typeof scn.obj & {
+				dScanItems: (typeof scnItem.obj & {
+					dRejItems: typeof rejItem.obj[];
+				})[];
+			})[];
+		};
+	};
+
+	return {
+		po,
+		qtys,
+		inItem,
+		knbItem,
+		outItem,
+		knb,
+		cust,
+		scn,
+		scnItem,
+		rejItem,
+		Ret: {} as Ret,
 	};
 }
