@@ -1,3 +1,5 @@
+import {PropsWithChildren} from 'react';
+
 import * as svgIcon from '@fortawesome/free-solid-svg-icons';
 import {FontAwesomeIcon} from '@fortawesome/react-fontawesome';
 import {FieldValues} from 'react-hook-form';
@@ -30,9 +32,15 @@ export function Icon({name, onClick, className}: IconProps) {
 	);
 }
 
-export function Spinner({className}: Pick<IconProps, 'className'>) {
+export function Spinner({
+	className,
+	children,
+}: PropsWithChildren<Pick<IconProps, 'className'>>) {
 	return (
-		<Icon name="faSpinner" className={classNames('animate-spin', className)} />
+		<div className={classNames('flex gap-2 items-center', className)}>
+			<Icon name="faSpinner" className={classNames('animate-spin')} />
+			{children}
+		</div>
 	);
 }
 

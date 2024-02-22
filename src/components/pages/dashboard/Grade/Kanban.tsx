@@ -2,6 +2,7 @@ import {useWatch} from 'react-hook-form';
 
 import {FormProps} from '@appTypes/app.type';
 import {TDashboardSalesView} from '@appTypes/app.zod';
+import {Spinner} from '@baseComps/Icon';
 import {UseDateFilterProps} from '@hooks';
 import {averageScore} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -17,12 +18,15 @@ export default function DashboardGradeKanban({
 }: FormProps<DashboardForm>) {
 	const input = useWatch({control});
 
-	const {data} = trpc.dashboard.grade.kanban.useQuery(input);
+	const {data, isLoading} = trpc.dashboard.grade.kanban.useQuery(input);
 
 	const dataEntries = entries(data);
 
 	return (
 		<>
+			{isLoading && (
+				<Spinner className="text-xl self-center">Harap tunggu</Spinner>
+			)}
 			<div className="flex flex-col">
 				{dataEntries.map(([key, values], i) => {
 					const rClassName = 'child:p-2';

@@ -10,7 +10,7 @@ import {
 	Input,
 	Modal,
 	ModalRef,
-	MultipleSelect,
+	Select,
 	selectMapper,
 	TableFilterV2,
 	TableFilterV2Ref,
@@ -150,7 +150,8 @@ function ModalChildSupItem({control}: {control: Control<SupplierItemForm>}) {
 
 	return (
 		<>
-			<MultipleSelect
+			<Select
+				multiple
 				label="Supplier"
 				control={control}
 				fieldName="supplier"

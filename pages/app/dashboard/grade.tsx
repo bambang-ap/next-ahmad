@@ -1,4 +1,4 @@
-import {MultipleSelect, selectMapper} from '@components';
+import {Select, selectMapper} from '@components';
 import {getLayout} from '@hoc';
 import {useFormFilter} from '@hooks';
 import DashboardGradeKanban, {
@@ -35,7 +35,7 @@ export default function DashboardSales() {
 	}
 
 	return (
-		<div className="gap-2 flex flex-col">
+		<div className="gap-4 flex flex-col">
 			<div className="flex gap-2 items-center justify-between">
 				{/* <div className="flex-1">
 					<ButtonGroup
@@ -46,10 +46,11 @@ export default function DashboardSales() {
 					/>
 				</div> */}
 
-				<MultipleSelect
-					// className="w-1/4 mr-6"
+				<Select
+					multiple
 					className="flex-1"
 					control={control}
+					firstOption="Customer"
 					isLoading={isLoading}
 					data={selectMapper(data ?? [], 'id', 'name')}
 					fieldName="id_customer"

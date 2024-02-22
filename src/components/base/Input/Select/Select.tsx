@@ -1,6 +1,9 @@
+import CheckBoxIcon from '@mui/icons-material/CheckBox';
+import CheckBoxOutlineBlankIcon from '@mui/icons-material/CheckBoxOutlineBlank';
+
 import {useContext, useEffect} from 'react';
 
-import {Autocomplete, Box, TextField} from '@mui/material';
+import {Autocomplete, Box, Checkbox, Chip, TextField} from '@mui/material';
 
 import {FormContext} from '@baseComps/Form';
 import {Icon} from '@baseComps/Icon';
@@ -24,6 +27,8 @@ export type SelectPropsData<T extends number | string = string> = {
 };
 
 export type SelectProps = {
+	limitTags?: number;
+	multiple?: boolean;
 	firstOption?: string;
 	disabled?: boolean;
 	data?: SelectPropsData<string | number>[];
@@ -114,6 +119,8 @@ export function selectMapper<
 }
 
 function SelectComponent<F extends FieldValues>({
+	multiple,
+	limitTags = 3,
 	data = [],
 	disabled,
 	controller,
@@ -127,19 +134,25 @@ function SelectComponent<F extends FieldValues>({
 	forceEditable,
 	label: labelProps,
 }: ControlledComponentProps<F, SelectProps>) {
+	// type T = SelectPropsData<string | number>;
+
 	const formContext = useContext(FormContext);
 	const tick = useTicker(isLoading, 5);
 
 	const {
 		fieldState,
-		field: {value, onChange, name},
+		field: {value: val, onChange, name},
 	} = controller;
 
 	const errMsg = fieldState.error?.message;
+	const value = (val ?? []) as (string | number)[];
 	const label = !noLabel && (labelProps || name).ucwords();
 
 	const isDisabled = forceEditable ? false : formContext?.disabled || disabled;
-	const selectedValue = data.find(e => e.value === value);
+	const selectedValue = data.find(e => e.value === val);
+	const selectedValueMulti = data.filter(e => value.includes(e.value));
+	const selectedValues = selectedValueMulti.map(e => e.value);
+
 	const filteredData =
 		topSelected && selectedValue?.value
 			? [selectedValue, ...data.filter(e => e.value !== selectedValue.value)]
@@ -158,15 +171,33 @@ function SelectComponent<F extends FieldValues>({
 		</Text>
 	);
 
+	const icon = <CheckBoxOutlineBlankIcon fontSize="small" />;
+	const checkedIcon = <CheckBoxIcon fontSize="small" />;
+
+	function onClick(option: SelectPropsData<string | number>) {
+		onChange(
+			selectedValues.includes(option.value)
+				? selectedValues.filter(e => e !== option.value)
+				: selectedValues.concat([option.value]),
+		);
+	}
+
 	useEffect(() => {
-		if (!value && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
-	}, [value, defaultValue]);
+		if (!multiple) {
+			if (!val && !!defaultValue) setTimeout(() => onChange(defaultValue), 100);
+		}
+	}, [multiple, val, defaultValue]);
 
 	if (isDisabled) {
+		const bVal = multiple
+			? selectedValueMulti.map(e => e.label || e.value).join(' | ')
+			: selectedValue?.label;
+
 		return (
 			<InputComponent
 				disabled
-				byPassValue={selectedValue?.label}
+				multiline={multiple}
+				byPassValue={bVal}
 				noLabel={noLabel}
 				label={label as string}
 				controller={controller}
@@ -183,19 +214,51 @@ function SelectComponent<F extends FieldValues>({
 				className,
 			)}>
 			<Autocomplete
+				limitTags={limitTags}
+				multiple={multiple}
 				loading={isLoading}
 				loadingText={isLoadingText}
 				disableClearable={disableClear}
-				options={filteredData}
+				disablePortal={multiple}
+				disableCloseOnSelect={multiple}
+				options={multiple ? data : filteredData}
 				disabled={isDisabled}
-				defaultValue={selectedValue}
-				onChange={(_, option) => onChange(option?.value)}
+				value={multiple ? selectedValueMulti : undefined}
+				defaultValue={multiple ? undefined : selectedValue}
+				onChange={(_, option) => {
+					if (multiple) {
+						// @ts-ignore
+						if (option?.length === 0) onChange([]);
+					}
+
+					// @ts-ignore
+					return onChange(option?.value);
+				}}
 				getOptionDisabled={({value: OptDisabledValue}) => !OptDisabledValue}
 				getOptionLabel={({value: optionValue, label: optionLabel}) =>
 					optionLabel || (optionValue as string)
 				}
 				renderOption={(props, option) => {
 					const isSelected = selectedValue?.value === option.value;
+
+					if (multiple) {
+						return (
+							<li
+								{...props}
+								onClick={e => {
+									props?.onClick?.(e);
+									onClick(option);
+								}}>
+								<Checkbox
+									icon={icon}
+									checkedIcon={checkedIcon}
+									style={{marginRight: 8}}
+									checked={selectedValues.includes(option.value)}
+								/>
+								{option.label || option.value}
+							</li>
+						);
+					}
 
 					return (
 						<Box component="li" {...props} key={option.value} className="m-0">
@@ -212,23 +275,38 @@ function SelectComponent<F extends FieldValues>({
 						</Box>
 					);
 				}}
-				renderInput={params => (
-					<>
-						<TextField
-							{...params}
-							{...defaultTextFieldProps}
-							label={label}
-							error={!!errMsg}
-							placeholder={firstOption}
-							sx={{
-								'& .MuiInputBase-input.Mui-disabled': {
-									WebkitTextFillColor: '#000000',
-								},
-							}}
-						/>
-						{errorMessage}
-					</>
-				)}
+				renderTags={
+					multiple
+						? (tagValue, getTagProps) =>
+								tagValue.map((option, index) => (
+									<Chip
+										{...getTagProps({index})}
+										label={option.label ?? option.value}
+										key={index.toString()}
+										onDelete={undefined}
+									/>
+								))
+						: undefined
+				}
+				renderInput={params => {
+					return (
+						<>
+							<TextField
+								{...params}
+								{...defaultTextFieldProps}
+								label={label}
+								error={!!errMsg}
+								placeholder={firstOption}
+								sx={{
+									'& .MuiInputBase-input.Mui-disabled': {
+										WebkitTextFillColor: '#000000',
+									},
+								}}
+							/>
+							{errorMessage}
+						</>
+					);
+				}}
 			/>
 		</div>
 	);
