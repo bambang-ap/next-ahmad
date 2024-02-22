@@ -149,8 +149,8 @@ function SelectComponent<F extends FieldValues>({
 	const label = !noLabel && (labelProps || name).ucwords();
 
 	const isDisabled = forceEditable ? false : formContext?.disabled || disabled;
-	const selectedValue = data.find(e => e.value === val);
-	const selectedValueMulti = data.filter(e => value.includes(e.value));
+	const selectedValue = data?.find(e => e.value === val);
+	const selectedValueMulti = data?.filter(e => value?.includes?.(e.value));
 	const selectedValues = selectedValueMulti.map(e => e.value);
 
 	const filteredData =
