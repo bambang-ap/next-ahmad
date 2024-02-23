@@ -64,7 +64,7 @@ export function wherePages(
 }
 
 export function wherePagesV2<T extends {}>(
-	searchKey: (L<T> | false)[],
+	searchKey: (LiteralUnion<L<T>> | false)[],
 	search?: string | WhereAttributeHashValue<any>,
 	like = true,
 ): any {
@@ -171,4 +171,12 @@ export function literalFieldType<T extends {}>(
 	const r = !rootTable ? '' : `${rootTable}"."`;
 
 	return `"${r}${result}"`;
+}
+
+export function sumLiteral<T extends {}>(
+	alias: string,
+	fieldName: LiteralUnion<L1<T>>,
+	rootTable?: string,
+): ProjectionAlias {
+	return [literal(`SUM(${literalFieldType(fieldName, rootTable)})`), alias];
 }

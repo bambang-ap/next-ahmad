@@ -24,7 +24,7 @@ MesinKategori.getLayout = getLayout;
 
 type FormType = Fields<TUserUpsert>;
 
-export default function MesinKategori() {
+export default function User() {
 	const modalRef = useRef<ModalRef>(null);
 	const {data: roles} = trpc.basic.get.useQuery<any, TRole[]>({
 		target: CRUD_ENABLED.ROLE,

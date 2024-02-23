@@ -94,14 +94,14 @@ end`
 			[fn('sum', literal(litDiscQuery)), 'disc_val'],
 			[fn('sum', literal(`${litTotal} - ${litDiscQuery}`)), 'total_after'],
 		] as FindAttributeOptions,
-		where: [
-			where,
-			wherePagesV4({
+		where: {
+			...wherePagesV4({
 				[`$${unit}$`]: {[Op.eq]: 'kg'},
 				[`$${qty}$`]: {[Op.not]: 'NaN'},
 				[`$${harga}$`]: {[Op.not]: 'NaN'},
 			}),
-		],
+			...where,
+		},
 	};
 }
 
@@ -154,14 +154,20 @@ export function attrParserZod<
 export function attrParserV2<T extends {}, K extends keyof T>(
 	model: ModelStatic<Model<T>>,
 	attributes?: K[],
+	emptyAttributes = false,
 ) {
 	type ObjType = Pick<T, K>;
 
 	function _modify<_K extends keyof T>(attrs?: _K[]) {
-		return attrParserV2(model, attrs);
+		return attrParserV2(model, attrs, emptyAttributes);
 	}
 
-	return {model, obj: {} as ObjType, attributes, _modify};
+	return {
+		model,
+		_modify,
+		obj: {} as ObjType,
+		attributes: emptyAttributes ? [] : attributes,
+	};
 }
 
 export function attrParserExclude<T extends {}, K extends keyof T>(

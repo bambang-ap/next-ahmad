@@ -15,6 +15,7 @@ import printRouters from './print';
 import rejectRouters from './reject';
 import scanRouters from './scan';
 import sppbRouters from './sppb';
+import stockRouters from './stock';
 import userRouters from './user';
 import user_loginRouters from './user_login';
 
@@ -35,6 +36,7 @@ export const appRouter = router({
 	internal: internalRouters,
 	index: indexRouters,
 	user: userRouters(),
+	stock: stockRouters(),
 });
 
 export type AppRouter = typeof appRouter;

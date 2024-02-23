@@ -29,6 +29,7 @@ import {
 	modalTypeParser,
 	nullRenderItem,
 	nullUseQuery,
+	renderItemAsIs,
 	sleep,
 	transformIds,
 } from '@utils';
@@ -69,8 +70,8 @@ type Props<
 		form: TableFormValue,
 	) => UseTRPCQueryResult<PagingResult<T>, unknown>;
 
-	exportRenderItem: (item: NonNullable<EQ['data']>[number]) => ER;
-	exportUseQuery: () => EQ;
+	exportRenderItem?: (item: NonNullable<EQ['data']>[number]) => ER;
+	exportUseQuery?: () => EQ;
 	exportName?: string;
 
 	afterPrint?: NoopVoid;
@@ -98,8 +99,8 @@ export function useTableFilterComponent<
 		property,
 		enabledExport = false,
 		exportName,
-		exportRenderItem,
-		exportUseQuery,
+		exportRenderItem = renderItemAsIs,
+		exportUseQuery = nullUseQuery,
 		renderItem,
 		renderItemEach,
 		genPdfOptions,
@@ -120,6 +121,7 @@ export function useTableFilterComponent<
 	const genPdfKey = useMemo(uuid, []);
 	const dataForm = useWatch({control});
 	const exportData = useExport(
+		// @ts-ignore
 		{loader, renderItem: exportRenderItem, names: [exportName]},
 		exportUseQuery,
 	);
