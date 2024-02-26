@@ -20,7 +20,7 @@ import {Fields, useTableFilterComponent} from '@hooks';
 import {modalTypeParser, nullUseQuery, renderItemAsIs} from '@utils';
 import {trpc} from '@utils/trpc';
 
-MesinKategori.getLayout = getLayout;
+User.getLayout = getLayout;
 
 type FormType = Fields<TUserUpsert>;
 

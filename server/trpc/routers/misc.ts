@@ -5,7 +5,7 @@ import {z} from 'zod';
 
 import {tCustomer, TUser, zMd5} from '@appTypes/app.zod';
 import {isProd, Success} from '@constants';
-import {dUser, ORM} from '@database';
+import {dItem, dUser, ORM} from '@database';
 import {generateId, getNow} from '@server';
 import {procedure, router} from '@trpc';
 import {TRPCError} from '@trpc/server';
