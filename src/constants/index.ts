@@ -291,24 +291,10 @@ export function chartOpts(
 				borderColor: '#90A4AE',
 				strokeDashArray: 0,
 				position: 'back',
-				xaxis: {
-					lines: {
-						show: true,
-					},
-				},
-				yaxis: {
-					lines: {
-						show: true,
-					},
-				},
-				row: {
-					colors: undefined,
-					opacity: 0.5,
-				},
-				column: {
-					colors: undefined,
-					opacity: 0.5,
-				},
+				xaxis: {lines: {show: true}},
+				yaxis: {lines: {show: true}},
+				row: {colors: undefined, opacity: 0.5},
+				column: {colors: undefined, opacity: 0.5},
 				padding: {
 					top: 0,
 					right: 0,

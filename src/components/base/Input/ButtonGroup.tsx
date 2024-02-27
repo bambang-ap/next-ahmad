@@ -16,10 +16,11 @@ import {SelectProps, SelectPropsData} from './Select';
 export const ButtonGroup = withReactFormController(GrpComp1);
 export const MultipleButtonGroup = withReactFormController(GrpComp2);
 
-type GroupBtnProps = GroupBtnSelect & {
+type GroupBtnProps<T extends string | number = string> = GroupBtnSelect & {
+	multiple?: boolean;
 	className?: string;
 	disabled?: boolean;
-	value?: unknown;
+	value?: T | T[];
 	onClear?: NoopVoid;
 	onChange?: (btn: SelectPropsData<string | number>) => unknown;
 };
@@ -69,7 +70,8 @@ function GrpComp2<F extends FieldValues>(
 	return (
 		<GroupBtn
 			{...props}
-			value={value}
+			multiple
+			value={value as string[]}
 			disabled={isDisabled}
 			onClear={() => onChange(undefined)}
 			onChange={btn => {
@@ -89,6 +91,7 @@ function GroupBtn({
 	data = [],
 	label: btnLabel,
 	className,
+	multiple,
 	clearable,
 	wrapped,
 	value,
@@ -106,9 +109,9 @@ function GroupBtn({
 				variant={wrapped ? 'outlined' : 'contained'}>
 				{data.map(btn => {
 					const label = (btn.label ?? btn.value)?.toString()?.ucwords();
-					// const selectedValue = btn.value === value;
-					// @ts-ignore
-					const selectedValue = value?.includes(btn.value);
+					const selectedValue = multiple
+						? value?.includes(btn.value as string)
+						: btn.value === value;
 
 					const btnn = (
 						<Button

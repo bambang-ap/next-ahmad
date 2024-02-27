@@ -5,7 +5,6 @@ import {useRecoilValue} from 'recoil';
 import {FormProps} from '@appTypes/app.type';
 import {chartOpts, formatDate} from '@constants';
 import {useMachine} from '@hooks';
-// import {useMachine} from '@hooks';
 import {Chart} from '@prevComp/Chart';
 import {atomIsMobile} from '@recoil/atoms';
 import {dateUtils} from '@utils';

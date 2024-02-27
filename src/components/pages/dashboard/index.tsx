@@ -51,7 +51,7 @@ export default function Dashboard() {
 		form: {control, watch, reset},
 	} = useFormFilter<DashboardForm>({
 		sameMonth: true,
-		defaultValues: {qtyKey: [2, 3], chartType: 'bar'},
+		defaultValues: {qtyKey: [3], chartType: 'bar'},
 	});
 	const {view} = watch();
 
