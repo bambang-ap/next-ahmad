@@ -35,8 +35,10 @@ export default function dashboardGradeRouters() {
 					const {id = '', ...customer} = cust! ?? {};
 					if (!ret[id]) ret[id] = {customer, status: [], scores: []};
 
-					ret[id].scores.push(cur);
-					ret[id].status.push(grades.status[i]!);
+					if (cur.score !== 'N/A') {
+						ret[id].scores.push(cur);
+						ret[id].status.push(grades.status[i]!);
+					}
 					return ret;
 				}, {});
 

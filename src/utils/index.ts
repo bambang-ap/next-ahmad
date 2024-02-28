@@ -301,7 +301,10 @@ type X = RetGrade['scores'][number];
 type D = 'id' | 'id_item';
 type AvgGrade = PartialOne<X, D>[];
 
-export function averageScore(scores: AvgGrade = []) {
+export function averageScore(scores: AvgGrade = []): {
+	score: ReturnType<typeof calculateScore>;
+	point: string;
+} {
 	const point = Math.add(0, ...scores.map(e => e.point)) / scores.length;
 	const score = calculateScore(1, point);
 

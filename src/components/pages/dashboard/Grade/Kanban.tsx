@@ -3,6 +3,7 @@ import {useWatch} from 'react-hook-form';
 import {FormProps} from '@appTypes/app.type';
 import {TDashboardSalesView} from '@appTypes/app.zod';
 import {Spinner} from '@baseComps/Icon';
+import {decimalValue} from '@constants';
 import {UseDateFilterProps} from '@hooks';
 import {averageScore} from '@utils';
 import {trpc} from '@utils/trpc';
@@ -37,6 +38,7 @@ export default function DashboardGradeKanban({
 				<div>Customer</div>
 				<div>Poin</div>
 				<div>Grade</div>
+				<div>Completed Kanban</div>
 			</div>
 			<div className="flex flex-col">
 				{dataEntries.map(([key, values], i) => {
@@ -44,7 +46,10 @@ export default function DashboardGradeKanban({
 
 					const {customer, scores} = values;
 
-					const {point, score} = averageScore(scores);
+					const {point, score} =
+						scores.length > 0
+							? averageScore(scores)
+							: {point: (100).toFixed(decimalValue), score: 'A' as const};
 
 					const isOdd = i % 2 == 0;
 					const classes = classNames(
@@ -63,6 +68,7 @@ export default function DashboardGradeKanban({
 							<div className="!text-left">{customer?.name}</div>
 							<div>{point}</div>
 							<div>{score}</div>
+							<div>{scores.length}</div>
 						</div>
 					);
 				})}
