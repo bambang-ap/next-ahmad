@@ -19,17 +19,7 @@ export default function Stock() {
 	const {component} = useTableFilterComponent({
 		reset,
 		control,
-		header: [
-			'No',
-			'Nama',
-			'Kode Item',
-			'Qty1 Masuk',
-			'Qty1 Out',
-			'Qty2 Masuk',
-			'Qty2 Out',
-			'Qty3 Masuk',
-			'Qty3 Out',
-		],
+		header: ['No', 'Nama', 'Kode Item', 'Qty1', 'Qty2', 'Qty3'],
 		useQuery: form => trpc.stock.get.useQuery(form),
 		renderItem({Cell, item}, i) {
 			const {
@@ -48,28 +38,36 @@ export default function Stock() {
 					<Cell>{i + 1}</Cell>
 					<Cell>{name}</Cell>
 					<Cell>{kode_item}</Cell>
-					<Cell>
-						{parseFloat(inQty1?.toString() ?? '0').toFixed(decimalValue)}
-					</Cell>
-					<Cell>
-						{parseFloat(outQty1?.toString() ?? '0').toFixed(decimalValue)}
-					</Cell>
-					<Cell>
-						{parseFloat(inQty2?.toString() ?? '0').toFixed(decimalValue)}
-					</Cell>
-					<Cell>
-						{parseFloat(outQty2?.toString() ?? '0').toFixed(decimalValue)}
-					</Cell>
-					<Cell>
-						{parseFloat(inQty3?.toString() ?? '0').toFixed(decimalValue)}
-					</Cell>
-					<Cell>
-						{parseFloat(outQty3?.toString() ?? '0').toFixed(decimalValue)}
-					</Cell>
+					<Cell width="15%">{calculate(inQty1, outQty1)}</Cell>
+					<Cell width="15%">{calculate(inQty2, outQty2)}</Cell>
+					<Cell width="15%">{calculate(inQty3, outQty3)}</Cell>
 				</>
 			);
 		},
 	});
+
+	function calculate(inQty: number | null, outQty: number | null) {
+		const qtyIn = Math.add(0, inQty!).toFixed(decimalValue);
+		const qtyOut = Math.add(0, outQty!).toFixed(decimalValue);
+		const stock = Math.subtract(inQty!, outQty!).toFixed(decimalValue);
+
+		return (
+			<div className="flex-1 flex flex-col">
+				<div className="flex justify-between">
+					<div>Masuk</div>
+					<div>{qtyIn}</div>
+				</div>
+				<div className="flex justify-between">
+					<div>Keluar</div>
+					<div>{qtyOut}</div>
+				</div>
+				<div className="flex justify-between">
+					<div>Stock</div>
+					<div>{stock}</div>
+				</div>
+			</div>
+		);
+	}
 
 	return <>{component}</>;
 }
