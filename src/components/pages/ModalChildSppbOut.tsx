@@ -234,10 +234,11 @@ export function SppbOutModalChild({
 
 															const items = sppb.items?.[id_item];
 
-															const lot_no_imi = sppbInSelected?.dKanbans
-																.filter(
-																	e => e.dKnbItems?.[0]?.id_item === item.id,
-																)
+															const kanbans = sppbInSelected?.dKanbans.filter(
+																e => e.dKnbItems?.[0]?.id_item === item.id,
+															);
+
+															const lot_no_imi = kanbans
 																?.map(e => e.dScans?.[0]?.lot_no_imi)
 																.join(' | ');
 
@@ -301,7 +302,18 @@ export function SppbOutModalChild({
 
 																					if (!unit) return null;
 
-																					const qty = item?.[qtyKey];
+																					// const qty = item?.[qtyKey];
+																					const qty = Math.add(
+																						0,
+																						...kanbans?.map(e =>
+																							Math.add(
+																								0,
+																								...e.dKnbItems.map(
+																									ee => ee?.[qtyKey]!,
+																								),
+																							),
+																						)!,
+																					);
 																					const curQty =
 																						currentQty[qtyKey] ?? 0;
 
@@ -337,6 +349,7 @@ export function SppbOutModalChild({
 
 																					return (
 																						<div className="flex-1">
+																							{maxVal}|{qty}
 																							<Input
 																								type="decimal"
 																								shouldUnregister
