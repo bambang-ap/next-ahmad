@@ -16,6 +16,7 @@ import {classNames} from '@utils';
 import {trpc} from '@utils/trpc';
 
 type RenderMesinProps = {
+	isKanban?: boolean;
 	disabled?: boolean;
 	masterId: string;
 	idItem: string;
@@ -82,6 +83,7 @@ export function RenderKategori({
 				defaultValue={deftVal}
 				disabled={isDisabled}
 				control={parentProps.control}
+				disableClear={parentProps?.isKanban}
 				className={classNames('w-1/6', {'mt-4': !!hasSelected})}
 				data={selectMapper(availableMesins, 'id', 'nomor_mesin')}
 			/>

@@ -93,6 +93,7 @@ export function RenderItem({
 								<Wrapper title="Keterangan">{keterangan}</Wrapper>
 							)}
 							<RenderMesin
+								isKanban
 								reset={reset}
 								control={control}
 								masterId={rowItem?.master_item_id!}
