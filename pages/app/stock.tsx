@@ -19,7 +19,7 @@ export default function Stock() {
 	const {component} = useTableFilterComponent({
 		reset,
 		control,
-		header: ['No', 'Nama', 'Kode Item', 'Qty1', 'Qty2', 'Qty3'],
+		header: ['No', 'Nama', 'Kode Item', 'BOX/PALET/DRUM', 'PCS', 'KG'],
 		useQuery: form => trpc.stock.get.useQuery(form),
 		renderItem({Cell, item}, i) {
 			const {
