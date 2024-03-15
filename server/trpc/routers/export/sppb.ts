@@ -199,6 +199,7 @@ const exportSppbRouters = router({
 						'PART NAME / ITEM': dItem.name!,
 						'PART NO': dItem.kode_item!,
 						'NO LOT CUSTOMER': lot_no!,
+						'LOT NO IMI': selectedKanban?.dScans?.[0]?.lot_no_imi!,
 						'NO KANBAN': renderIndex(selectedKanban!, {
 							indexKey: dIndex._alias1,
 						}),
