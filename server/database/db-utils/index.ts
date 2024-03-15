@@ -58,7 +58,7 @@ export function selectorDashboardSales<T extends {}>(
 		type,
 		disc,
 	}: Record<'unit' | 'qty' | 'harga' | 'type' | 'disc', LiteralUnion<L1<T>>>,
-	where: any,
+	where: any[],
 	debug = false,
 ) {
 	const [unitCol, qtyCol, hargaCol, discCol, typeCol] = [
@@ -94,14 +94,14 @@ end`
 			[fn('sum', literal(litDiscQuery)), 'disc_val'],
 			[fn('sum', literal(`${litTotal} - ${litDiscQuery}`)), 'total_after'],
 		] as FindAttributeOptions,
-		where: {
-			...wherePagesV4({
+		where: [
+			wherePagesV4({
 				[`$${unit}$`]: {[Op.eq]: 'kg'},
 				[`$${qty}$`]: {[Op.not]: 'NaN'},
 				[`$${harga}$`]: {[Op.not]: 'NaN'},
 			}),
 			...where,
-		},
+		],
 	};
 }
 
