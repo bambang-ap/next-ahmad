@@ -1,4 +1,6 @@
-import {router} from '@trpc';
+import {zIds} from '@appTypes/app.zod';
+import {checkCredentialV2} from '@server';
+import {procedure, router} from '@trpc';
 
 import exportInternalRouters from './internal';
 import exportKanbanRouters from './kanban';
@@ -12,6 +14,9 @@ const exportRouters = router({
 	...exportKanbanRouters,
 	sppb: exportSppbRouters,
 	internal: exportInternalRouters,
+	stock: procedure.input(zIds).query(({input, ctx}) => {
+		return checkCredentialV2(ctx, async () => {});
+	}),
 });
 
 export default exportRouters;

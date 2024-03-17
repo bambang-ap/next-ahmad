@@ -722,9 +722,17 @@ export function getIds<
 	P extends keyof KK,
 >(dataForm: KK, property?: P) {
 	const selectedIds = !!property ? transformIds(dataForm[property]) : [];
-	return {selectedIds, property, enabled: selectedIds.length > 0};
+	return {
+		/**
+		 * Use on "useQuery" as enabled option
+		 */
+		enabled: selectedIds.length > 0,
+		selectedIds,
+		property,
+	};
 }
 
+export type FormIds = {selectedIds: MyObject<boolean>};
 export function formParser<
 	F extends Fields,
 	KK extends DeepPartialSkipArrayKey<F>,
