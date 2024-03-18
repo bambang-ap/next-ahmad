@@ -151,23 +151,51 @@ export function attrParserZod<
 	};
 }
 
-export function attrParserV2<T extends {}, K extends keyof T>(
+type AttrParserV2<T extends {}, K extends keyof T> = {
+	model: ModelStatic<Model<T, T>>;
+	_modify: <_K extends keyof T>(attrs?: _K[] | undefined) => void;
+	obj: Pick<T, K>;
+	attributes: K[] | undefined;
+};
+// @ts-ignore
+export function attrParserV2<T extends {}, K extends keyof T, E extends true>(
 	model: ModelStatic<Model<T>>,
 	attributes?: K[],
-	emptyAttributes = false,
-) {
+	emptyAttributes?: E,
+): AttrParserV2<T, K> & {objModel: AttrParserV2<T, K>};
+export function attrParserV2<
+	T extends {},
+	K extends keyof T,
+	E extends false | undefined,
+>(
+	model: ModelStatic<Model<T>>,
+	attributes?: K[],
+	emptyAttributes?: E,
+): AttrParserV2<T, K>;
+export function attrParserV2<
+	T extends {},
+	K extends keyof T,
+	E extends boolean,
+>(model: ModelStatic<Model<T>>, attributes?: K[], emptyAttributes?: E) {
 	type ObjType = Pick<T, K>;
 
 	function _modify<_K extends keyof T>(attrs?: _K[]) {
+		// @ts-ignore
 		return attrParserV2(model, attrs, emptyAttributes);
 	}
 
-	return {
+	const obj = {
 		model,
 		_modify,
 		obj: {} as ObjType,
 		attributes: emptyAttributes ? [] : attributes,
 	};
+
+	if (emptyAttributes) {
+		return {...obj, objModel: attrParserV2(model, attributes)};
+	}
+
+	return obj;
 }
 
 export function attrParserExclude<T extends {}, K extends keyof T>(

@@ -32,14 +32,21 @@ export function TableFilter<T>({
 		reset,
 		handleSubmit,
 		control: searchControl,
-	} = useForm({defaultValues: {search: ''}});
+	} = useForm({defaultValues: {search: '', page}});
 
 	const formValue = watch();
+
+	const isFirst = page === 1;
+	const isLast = page === pageCount;
 
 	const searching = formValue.search && formValue.search.length > 0;
 
 	const doSearch = handleSubmit(({search}) => {
 		resetForm(prev => ({...prev, search}));
+	});
+
+	const doSwitchPage = handleSubmit(({page}) => {
+		resetForm(prev => ({...prev, page}));
 	});
 
 	function clearSearch() {
@@ -48,6 +55,7 @@ export function TableFilter<T>({
 	}
 
 	useEffect(() => {
+		reset(prev => ({...prev, page}));
 		resetForm(prev => ({...prev, pageTotal: pageCount}));
 		if (page > pageCount) resetForm(prev => ({...prev, page: 1}));
 	}, [pageCount, page]);
@@ -96,11 +104,26 @@ export function TableFilter<T>({
 				</div>
 			}
 			bottomComponent={
-				<div className="px-2 flex justify-center">
+				<div className="px-2 gap-4 flex justify-between items-center">
+					<form onSubmit={doSwitchPage}>
+						<Input
+							type="number"
+							fieldName="page"
+							className="w-20"
+							label="Go To Page"
+							inputClassName="text-center"
+							control={searchControl}
+						/>
+					</form>
 					<Pagination
 						// eslint-disable-next-line @typescript-eslint/no-shadow
 						onChange={(_, page) => resetForm(prev => ({...prev, page}))}
-						count={Number(formValue?.pageTotal ?? 1)}
+						hidePrevButton={isFirst}
+						hideNextButton={isLast}
+						page={page}
+						variant="outlined"
+						count={pageCount}
+						shape="rounded"
 					/>
 				</div>
 			}

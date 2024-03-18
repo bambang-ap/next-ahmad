@@ -1,5 +1,5 @@
 import {TDecimal, UnitQty, UQty} from '@appTypes/app.type';
-import {tableFormValue} from '@appTypes/app.zod';
+import {tableFormValue, zIds} from '@appTypes/app.zod';
 import {
 	attrParserExclude,
 	attrParserV2,
@@ -13,32 +13,53 @@ import {checkCredentialV2, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
 
 export default function stockRouters() {
+	type A = ReturnType<typeof attributes>;
+
+	type Ret = A['Ret'];
+	type Rett = A['Rett'];
+
+	function attributes() {
+		const qtys: (keyof UnitQty)[] = ['qty1', 'qty2', 'qty3'];
+		const item = attrParserExclude(dItem.unscoped(), [
+			'instruksi',
+			'kategori_mesinn',
+			'default_mesin',
+			'kategori_mesin',
+			'keterangan',
+			'harga',
+			'unit_notes',
+		]);
+		const inItem = attrParserV2(dInItem, qtys, true);
+		const outItem = attrParserV2(dOutItem, qtys, true);
+		const inItem2 = attrParserV2(dInItem, [...qtys, 'createdAt', 'id']);
+		const outItem2 = attrParserV2(dOutItem, [...qtys, 'createdAt', 'id_item']);
+
+		type RetA = typeof item.obj & {
+			dInItems: (typeof inItem.obj & {dOutItems: typeof outItem.obj})[];
+		};
+		type RetB = typeof item.obj &
+			Record<ToString<`${UQty}`, 'inQty' | 'outQty'>, null | TDecimal>;
+
+		return {
+			qtys,
+			item,
+			inItem,
+			outItem,
+			inItem2,
+			outItem2,
+			Ret: {} as RetA,
+			Rett: {} as RetB,
+		};
+	}
+
 	return router({
 		get: procedure.input(tableFormValue).query(({ctx, input}) => {
 			const {limit, page, search} = input;
 
-			const qtys: (keyof UnitQty)[] = ['qty1', 'qty2', 'qty3'];
-			const item = attrParserExclude(dItem.unscoped(), [
-				'instruksi',
-				'kategori_mesinn',
-				'default_mesin',
-				'kategori_mesin',
-				'keterangan',
-				'harga',
-				'unit_notes',
-			]);
-			const inItem = attrParserV2(dInItem, qtys, true);
-			const outItem = attrParserV2(dOutItem, qtys, true);
-
-			type Ret = typeof item.obj & {
-				dInItems: (typeof inItem.obj & {dOutItems: typeof outItem.obj})[];
-			};
-			type Rett = typeof item.obj &
-				Record<ToString<`${UQty}`, 'inQty' | 'outQty'>, null | TDecimal>;
+			const {inItem, item, outItem} = attributes();
 
 			return checkCredentialV2(ctx, async () => {
 				const {count, rows} = await item.model.findAndCountAll({
-					logging: true,
 					limit,
 					subQuery: false,
 					group: ['dItem.id'],
@@ -64,6 +85,32 @@ export default function stockRouters() {
 					limit,
 					rows as unknown as Rett[],
 				);
+			});
+		}),
+		export: procedure.input(zIds).query(({input, ctx}) => {
+			const {inItem2, item, outItem2} = attributes();
+
+			return checkCredentialV2(ctx, async () => {
+				type Ret = typeof item.obj & {
+					dInItems: typeof inItem2.obj & {dOutItems: typeof outItem2.obj};
+				};
+
+				const data = await item.model.findAll({
+					raw: true,
+					nest: true,
+					where: {id: input.ids},
+					attributes: item.attributes,
+					include: [{...inItem2, includee: [outItem2]}],
+				});
+
+				const result = data.reduce<MyObject[]>((ret, cur, index) => {
+					const val = cur as unknown as Ret;
+
+					const i = index - 1;
+					return ret;
+				}, []);
+
+				return {result, data};
 			});
 		}),
 	});

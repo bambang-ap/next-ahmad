@@ -27,7 +27,7 @@ export default function Stock() {
 		control,
 		property,
 		enabledExport: true,
-		exportUseQuery: () => trpc.export.stock.useQuery({ids: selectedIds}),
+		exportUseQuery: () => trpc.stock.export.useQuery({ids: selectedIds}),
 		header: ['No', 'Nama', 'Kode Item', 'BOX/PALET/DRUM', 'PCS', 'KG'],
 		useQuery: form => trpc.stock.get.useQuery(form),
 		renderItem({CellSelect, Cell, item}, i) {

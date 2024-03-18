@@ -1,6 +1,6 @@
 import {ChangeEventHandler, useContext, useEffect, useRef} from 'react';
 
-import {TextField, useTheme} from '@mui/material';
+import {TextField, TextFieldProps, useTheme} from '@mui/material';
 import {CalendarPicker} from '@mui/x-date-pickers';
 import {AdapterMoment} from '@mui/x-date-pickers/AdapterMoment';
 import {LocalizationProvider} from '@mui/x-date-pickers/LocalizationProvider';
@@ -26,6 +26,7 @@ export type InputProps = Pick<CheckboxProps, 'renderChildren'> & {
 	byPassValue?: string | number | boolean;
 	replaceValue?: string | number | boolean;
 	hidden?: boolean;
+	inputClassName?: string;
 	placeholder?: string;
 	placeholderBottom?: string;
 	label?: string;
@@ -60,6 +61,7 @@ export function InputComponent<F extends FieldValues>(
 		byPassValue,
 		replaceValue,
 		hidden,
+		inputClassName,
 		type = 'text',
 		label: labelProps,
 		disabled,
@@ -121,6 +123,20 @@ export function InputComponent<F extends FieldValues>(
 		}
 	}, [value, defaultValue, replaceValue]);
 
+	const textFieldRestProps = {...restProps, ...field};
+	const aProps: TextFieldProps = {
+		...defaultTextFieldProps,
+		fullWidth: true,
+		label,
+		error: !!errorMessage,
+		InputLabelProps: defaultTextFieldProps.InputLabelProps,
+		InputProps: {
+			startAdornment,
+			endAdornment: <Icon name="faCalendar" />,
+			classes: {input: classNames('focus:bg-yellow', inputClassName)},
+		},
+	};
+
 	switch (type) {
 		case 'date': {
 			return (
@@ -135,12 +151,8 @@ export function InputComponent<F extends FieldValues>(
 						onClick={isDisabled ? undefined : () => modalRef.current?.show()}
 					/>
 					<TextField
-						{...defaultTextFieldProps}
-						InputLabelProps={defaultTextFieldProps.InputLabelProps}
+						{...aProps}
 						className="cursor-pointer w-full"
-						error={!!errorMessage}
-						fullWidth
-						label={label}
 						disabled
 						sx={{
 							'& .MuiInputBase-input.Mui-disabled': {
@@ -157,13 +169,7 @@ export function InputComponent<F extends FieldValues>(
 						}}
 						placeholder={formatDateView}
 						value={value ? moment(value).format(formatDateView) : undefined}
-						InputProps={{
-							startAdornment,
-							endAdornment: <Icon name="faCalendar" />,
-							classes: {input: 'focus:bg-yellow'},
-						}}
-						{...restProps}
-						{...field}
+						{...textFieldRestProps}
 					/>
 					{errorMessage}
 					<Modal ref={modalRef}>
@@ -233,15 +239,8 @@ export function InputComponent<F extends FieldValues>(
 			return (
 				<div className={classNames({hidden}, 'pt-2', className)}>
 					<TextField
-						{...defaultTextFieldProps}
+						{...aProps}
 						multiline={multiline}
-						InputLabelProps={{
-							...defaultTextFieldProps.InputLabelProps,
-							// shrink: type === 'date' ? true : undefined,
-						}}
-						error={!!errorMessage}
-						fullWidth
-						label={label}
 						type={type}
 						disabled={forceEditable ? false : isDisabled}
 						sx={{
@@ -253,17 +252,15 @@ export function InputComponent<F extends FieldValues>(
 						value={byPassValue ?? value ?? ''}
 						onChange={onChangeEvent}
 						InputProps={{
+							...aProps.InputProps,
 							endAdornment: (
 								<>
 									{bottomInfo}
 									{endAdornment}
 								</>
 							),
-							startAdornment,
-							classes: {input: 'focus:bg-yellow'},
 						}}
-						{...restProps}
-						{...field}
+						{...textFieldRestProps}
 					/>
 					{placeholderBottom && (
 						<Text className="pt-2">{placeholderBottom}</Text>
