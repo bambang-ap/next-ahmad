@@ -17,7 +17,7 @@ export default function Stock() {
 		resolver: zodResolver(tUserUpsert.or(zId)),
 	});
 
-	const {selectedIds, property} = formParser(watch(), {
+	const {selectedIds, property, enabled} = formParser(watch(), {
 		pageName: 'Stock',
 		property: 'selectedIds',
 	});
@@ -27,7 +27,8 @@ export default function Stock() {
 		control,
 		property,
 		enabledExport: true,
-		exportUseQuery: () => trpc.stock.export.useQuery({ids: selectedIds}),
+		exportUseQuery: () =>
+			trpc.stock.export.useQuery({ids: selectedIds}, {enabled}),
 		header: ['No', 'Nama', 'Kode Item', 'BOX/PALET/DRUM', 'PCS', 'KG'],
 		useQuery: form => trpc.stock.get.useQuery(form),
 		renderItem({CellSelect, Cell, item}, i) {

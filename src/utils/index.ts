@@ -24,6 +24,7 @@ import {
 	defaultErrorMutation,
 	formatAll,
 	formatDate,
+	formatDateShort,
 	formatDateStringView,
 	formatDateView,
 	formatFullView,
@@ -79,6 +80,8 @@ export function getMoments(date: string | momentTz.Moment) {
 }
 
 export const dateUtils = {
+	short: (date?: LiteralUnion<'now'> | number) =>
+		convertDate(formatDateShort, date),
 	date: (date?: LiteralUnion<'now'> | number) =>
 		convertDate(formatDateView, date),
 	readable: (date?: LiteralUnion<'now'> | number) =>

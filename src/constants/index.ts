@@ -166,6 +166,7 @@ export const formatFull = `${formatDate} - ${formatHour}` as const;
 export const formatAll = `${formatDate} HH:mm:ss.SSS` as const;
 
 export const formatDateView = 'DD/MM/YYYY';
+export const formatDateShort = 'DD-MMM-YY';
 export const formatDateStringView = 'D MMMM YYYY';
 export const formatFullView = `${formatDateView} - ${formatHour}`;
 

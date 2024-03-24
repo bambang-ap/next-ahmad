@@ -3,20 +3,22 @@ import {tableFormValue, zIds} from '@appTypes/app.zod';
 import {
 	attrParserExclude,
 	attrParserV2,
+	dIndex,
 	dInItem,
 	dItem,
 	dOutItem,
-	sumLiteral,
+	dSJIn,
+	dSjOut,
 	wherePagesV2,
 } from '@database';
 import {checkCredentialV2, pagingResult} from '@server';
 import {procedure, router} from '@trpc';
+import {dateUtils, renderIndex} from '@utils';
 
 export default function stockRouters() {
 	type A = ReturnType<typeof attributes>;
 
 	type Ret = A['Ret'];
-	type Rett = A['Rett'];
 
 	function attributes() {
 		const qtys: (keyof UnitQty)[] = ['qty1', 'qty2', 'qty3'];
@@ -29,13 +31,16 @@ export default function stockRouters() {
 			'harga',
 			'unit_notes',
 		]);
+		const sjIn = attrParserV2(dSJIn, ['nomor_surat']);
+		const sjOut = attrParserV2(dSjOut, ['index_id', 'index_number']);
+		const tIndex = attrParserV2(dIndex);
 		const inItem = attrParserV2(dInItem, qtys, true);
 		const outItem = attrParserV2(dOutItem, qtys, true);
-		const inItem2 = attrParserV2(dInItem, [...qtys, 'createdAt', 'id']);
-		const outItem2 = attrParserV2(dOutItem, [...qtys, 'createdAt', 'id_item']);
+		const inItem2 = attrParserV2(dInItem, [...qtys, 'createdAt']);
+		const outItem2 = attrParserV2(dOutItem, [...qtys, 'createdAt']);
 
 		type RetA = typeof item.obj & {
-			dInItems: (typeof inItem.obj & {dOutItems: typeof outItem.obj})[];
+			dInItems: (typeof inItem.obj & {dOutItems: typeof outItem.obj[]})[];
 		};
 		type RetB = typeof item.obj &
 			Record<ToString<`${UQty}`, 'inQty' | 'outQty'>, null | TDecimal>;
@@ -47,6 +52,9 @@ export default function stockRouters() {
 			outItem,
 			inItem2,
 			outItem2,
+			sjIn,
+			sjOut,
+			tIndex,
 			Ret: {} as RetA,
 			Rett: {} as RetB,
 		};
@@ -56,61 +64,130 @@ export default function stockRouters() {
 		get: procedure.input(tableFormValue).query(({ctx, input}) => {
 			const {limit, page, search} = input;
 
-			const {inItem, item, outItem} = attributes();
+			const {item, inItem2, outItem2} = attributes();
 
 			return checkCredentialV2(ctx, async () => {
-				const {count, rows} = await item.model.findAndCountAll({
+				const {count: c1, rows: r1} = await item.model.findAndCountAll({
 					limit,
-					subQuery: false,
-					group: ['dItem.id'],
 					offset: (page - 1) * limit,
-					include: [{...inItem, include: [outItem]}],
+					attributes: item.attributes,
 					where: wherePagesV2<Ret>(['name', 'kode_item'], search),
-					attributes: {
-						...item.attributes,
-						include: [
-							sumLiteral<Ret>('inQty1', 'dInItems.qty1'),
-							sumLiteral<Ret>('outQty1', 'dInItems.dOutItems.qty1'),
-							sumLiteral<Ret>('inQty2', 'dInItems.qty2'),
-							sumLiteral<Ret>('outQty2', 'dInItems.dOutItems.qty2'),
-							sumLiteral<Ret>('inQty3', 'dInItems.qty3'),
-							sumLiteral<Ret>('outQty3', 'dInItems.dOutItems.qty3'),
-						],
-					},
+					include: [{...inItem2, include: [{...outItem2, separate: true}]}],
 				});
 
-				return pagingResult(
-					!!search ? rows.length : Math.add(0, ...count.map(e => e.count)),
-					page,
-					limit,
-					rows as unknown as Rett[],
-				);
+				const resultData = r1.map(rowItem => {
+					const {dInItems, ...rr} = rowItem.toJSON() as unknown as Ret;
+					const result = {
+						...rr,
+						inQty1: 0,
+						inQty2: 0,
+						inQty3: 0,
+						outQty1: 0,
+						outQty2: 0,
+						outQty3: 0,
+					};
+
+					for (const aa of dInItems) {
+						result.inQty1 += aa.qty1;
+						result.inQty2 += aa.qty2 ?? 0;
+						result.inQty3 += aa.qty3 ?? 0;
+						for (const bb of aa.dOutItems) {
+							result.outQty1 += bb.qty1;
+							result.outQty2 += bb.qty2 ?? 0;
+							result.outQty3 += bb.qty3 ?? 0;
+						}
+					}
+
+					return result;
+				});
+
+				return pagingResult(c1, page, limit, resultData);
 			});
 		}),
+
 		export: procedure.input(zIds).query(({input, ctx}) => {
-			const {inItem2, item, outItem2} = attributes();
+			const {inItem2, sjIn, sjOut, tIndex, item, outItem2} = attributes();
 
 			return checkCredentialV2(ctx, async () => {
-				type Ret = typeof item.obj & {
-					dInItems: typeof inItem2.obj & {dOutItems: typeof outItem2.obj};
+				type RetExport = typeof item.obj & {
+					dInItems: (typeof inItem2.obj & {
+						dSJIn: typeof sjIn.obj;
+						dOutItems: (typeof outItem2.obj & {
+							dSjOut: typeof sjOut.obj & {dIndex: typeof tIndex.obj};
+						})[];
+					})[];
 				};
 
 				const data = await item.model.findAll({
-					raw: true,
-					nest: true,
 					where: {id: input.ids},
 					attributes: item.attributes,
-					include: [{...inItem2, includee: [outItem2]}],
+					include: [
+						{
+							...inItem2,
+							include: [
+								sjIn,
+								{...outItem2, include: [{...sjOut, include: [tIndex]}]},
+							],
+						},
+					],
 				});
 
-				const result = data.reduce<MyObject[]>((ret, cur, index) => {
-					const val = cur as unknown as Ret;
+				const result = [];
 
-					const i = index - 1;
-					return ret;
-				}, []);
+				for (const dataItem of data) {
+					const a = dataItem.toJSON() as unknown as RetExport;
 
-				return {result, data};
+					const emptyRow = {
+						'Part Name': a.name,
+						'Part Code': a.kode_item,
+						'Tgl Masuk': '',
+						'No SJ Masuk': '',
+						'Qty (Box/Pallet)': '',
+						'Qty Pcs': '',
+						'Qty Kg': '',
+						'Tgl Keluar': '',
+						'No SJ Keluar': '',
+						'Out Qty (Box/Pallet)': '',
+						'Out Qty Pcs': '',
+						'Out Qty Kg': '',
+					};
+
+					for (const b of a.dInItems) {
+						let sjInRow = {
+							...emptyRow,
+							'Qty (Box/Pallet)': b.qty1?.toString()!,
+							'Qty Pcs': b.qty2?.toString()!,
+							'Qty Kg': b.qty3?.toString()!,
+							'Tgl Masuk': dateUtils.short(b.createdAt),
+							'No SJ Masuk': b.dSJIn.nomor_surat,
+						};
+
+						if (b.dOutItems.length === 0) result.push(sjInRow);
+						else {
+							for (let i = 0; i < b.dOutItems.length; i++) {
+								const c = b.dOutItems[i]!;
+
+								result.push({
+									...sjInRow,
+									'Tgl Keluar': dateUtils.short(c.createdAt),
+									'No SJ Keluar': renderIndex(c.dSjOut),
+									'Out Qty (Box/Pallet)': c.qty1,
+									'Out Qty Pcs': c.qty2,
+									'Out Qty Kg': c.qty3,
+								});
+
+								sjInRow = {
+									...sjInRow,
+									'Qty (Box/Pallet)': '',
+									'Qty Pcs': '',
+									'Qty Kg': '',
+								};
+							}
+						}
+					}
+				}
+
+				return result;
 			});
 		}),
 	});

@@ -111,8 +111,9 @@ export function TableFilter<T>({
 							fieldName="page"
 							className="w-20"
 							label="Go To Page"
-							inputClassName="text-center"
 							control={searchControl}
+							disabled={pageCount <= 0}
+							inputClassName="text-center"
 						/>
 					</form>
 					<Pagination

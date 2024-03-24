@@ -151,9 +151,9 @@ export function attrParserZod<
 	};
 }
 
-type AttrParserV2<T extends {}, K extends keyof T> = {
+export type AttrParserV2<T extends {}, K extends keyof T> = {
 	model: ModelStatic<Model<T, T>>;
-	_modify: <_K extends keyof T>(attrs?: _K[] | undefined) => void;
+	_modify: <_K extends keyof T>(attrs?: _K[] | undefined) => AttrParserV2<T, K>;
 	obj: Pick<T, K>;
 	attributes: K[] | undefined;
 };
